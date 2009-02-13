@@ -1,0 +1,9 @@
+The unification is the main point of NUL.
+
+Unification is _associative_ and _commutative_ .
+
+The unification of two expressions fails if there is no way to have the two expressions equal (knowing that the two expression can be fuzzy)
+
+{{{ ( _, 3 ) = ( 5, _ ) }}} will succeed and give the value {{{ 5, 3 }}}.
+
+{{{ ( _, 3 ) = ( _, 5 ) }}} will fail.
