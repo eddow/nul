@@ -1,0 +1,8 @@
+Affirmative languages have been rarely used till now. Few "alife and kicking" example are LOGO, PROLOG and SQL.
+
+In affirmative languages, you cannot "unset what you set before".
+The C script saying " a = 2 ; a = 3 ; " is understood in C as to put 2 then 3 as value for "a".
+For affirmatives language, the equivalent would be harmful : you state that "a" is 2, then you state that "a" is 3 ... or everybody knows that if "a" is 2, it cannot be 3 !
+
+In imperative languages, "=" means "becomes"
+In affirmative languages, "=" means "is" (was, has always been and will always be : "is")
