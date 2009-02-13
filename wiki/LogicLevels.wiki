@@ -1,0 +1,45 @@
+There are, globally, three logic levels.
+People used to C-like languages are used to the two first logic levels and know a bit of the third one as "flow control"
+Using PROLOG for instance is only about the third logic level.
+Here are the operators comonly used for these levels.
+Content-or is the one that will "satisfy himself " by the first affirmative value. The greedy one is the one that will and still compute the result with all intermediate results
+
+||        || and || or      || or     ||
+||        ||     || content || greedy ||
+||bit     || &   ||         ||  |     ||
+||boolean || &&  ||  | |    ||        ||
+||control ||  ;  ||   :     ||   [ ]  ||
+
+The bit-wise level manage indeed numbers, even integers. This is a legacy from CPU architeture and binary logic. Not anymore useful in databases and RSS bindings but as all C-like languages implement it, it would be confusing to use them somehow else.
+This level has no content-or while the value they compute are numbers (or bit fields).
+The boolean-wise level manage boolean values. They are between value management and flow control. A C sentence stating " true || funct() " will never enter the call to "funct" while the condition is known to be true.
+This level has no greedy-or while the value they give boolean values. The Javascript " || " that can manage any type of value is an hybrd between the NUL " || " and " : " .
+
+Note that the and operation is always content : the false-equivalent value, weither it is the boolean false or a failure, can never be more false than this neither detailed; So that to find it once is ebough to conclude to false-like result of the and operation.
+
+Control-wise level
+Each knowledge gathering (in NUL or other logic languages) will give a value or a failure. The failure can be considered as a "meta-false" and any value as a "meta-true". Would I say "meta-ok"
+The main difference between NUL and C " ; " operator (even if in C, " ; " is not an operator. Here, let's consider the C sentences "a; b; c;" as the NUL sentence "a ; b ; c") is that the NUL ones means " AND " while the C ones means " AND THEN " ... as any main sequential separator of an imperative language.
+Note by the way that the difference is illusory here, while the NUL " ; " operator is NOT commutative (even if it is asociative). The sequence is never lost, the ' then ' is under-sayed in NUL too.
+In NUL, the eact meaning of " a ; b " is " b while a ". So basically, the value of this is the value of " b " if " a " didn't fail - in which case it is a complete failure.
+This operator is written " , " within PROLOG.
+
+
+The content-meta-or " : " is also well known of C-like languages programmers. Its role is really similar to the " else " keyword every imperative language know.
+In formal language, it should be translated as " First of " : the first working answer is the one taken. It is then called exclusive-or while only one of the possibilities (the first true) will be taken.
+Note: the javascript " || " can have the same kind of behaviour when given non-boolean values. Beside it, the " || " operator has a flow-control effect similar to this " : " .
+
+The greedy-meta-or is not really used within C-lik languages. This weird operator were chosen while the only known operator that looks like the NUL's one is the meta language square : a kind of " else" but where no possibility is forgotten.
+The PROLOG operator " ; " had the same effect, browsing all possibilities.
+The value " 5 [] 3 " can not be reduced and will remain " 5 [] 3 ". If you try to unify this to 5, it will work and give 5. If you try to unify it with 2, it will fail.
+Note that this greedy-or will be used to describe tables.
+
+= Level switching =
+Bit-wise to boolean-wise level switching resemble a lot to C-like languages. if B is a boolean and N a number,
+B ? 1 : 0     gives a number out of a boolean
+0!= N & 1    gives a boolean out of a bit-wise number operation
+
+From boolean-wise level to control-wise level, the assertion operator " ? " takes a boolean value and fail when the value is false. When B is a boolean, " ? B " has the value " true " or fails;
+
+From control-wise level to boolean-wise level, the content-meta-or can be used to reach any level from control-wise level. When C is a sentence that can fail, when A and B are values,
+the sentence  " C ; A : B " transform the succes of " C " into values, that can be true and false to reach the boolean-wise level.
