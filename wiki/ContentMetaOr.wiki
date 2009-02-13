@@ -1,4 +1,4 @@
-Like the GreedyMetaOR, the _content_ meta-or will express that the value taken can be one of the ones given in the {{{or}}}.
+Like the [GreedyMetaOr greedy meta-or], the _content_ meta-or will express that the value taken can be one of the ones given in the {{{or}}}.
 
 {{{ (a=5) : (a=6) : (a=7) }}} can lead to the tree results where {{{a}}} is five, six or seven.
 
