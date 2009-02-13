@@ -1,5 +1,5 @@
 ||  !  || (up-to come) executor ||
-|| []  || [GreedyMetaOR Greedy meta-or] ||
+|| []  || [GreedyMetaOr Greedy meta-or] ||
 ||  ;  || [MetaAnd Meta-and] ||
 || :-  || [Lambda] ||
 ||  ,  || [Tuple Tuple creation] ||
