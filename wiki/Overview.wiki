@@ -1,0 +1,20 @@
+NUL intend to be a language able to express anything another language can express.
+NUL is an assertive or an affirmative language and not an imperative language. This means that the work done is made by writing the knowledge we have of a situation more than the steps needed to solve a problem. People used to PROLOG, LOGO or even SQL languages will find in NUL something they know, while the syntax now used will allow C/C++, Java and Javascript programmers to step easily in it.
+
+What does it means pragmatically : As a first example, the equality "=" sign has, beside a characteristic, the same meaning as in C languages : "a = b" means a change of a state where, therefore, the variable "a" has the same value as what "b" refers to. This expression has a value that is the one of "b" (and of "a" by the way, while "a" is now known as having the same value as "b").
+The characteristic that change between affirmative languages and C languages is that the equivalence operator "=" is commutative. In extenso, to write "a = b" or "b = a" is the same.
+What is called affectation in C languages is called unification in NUL and other affirmative languages.
+
+With syntax/semantic division, the NUL language intend to be able to understand a C program as well as a PROLOG program (with different syntax analyser)
+
+For the ones used to C, Java, Php, ... imperative languages, please begin by reading the imperative to NUL guide.
+
+NUL also intend to know fuzzy expressions. For example, a pair of two identic elements : ∀x (x, x)  . This expression is valid and known as it is by NUL.If you don't give it any other information, the NUL engine will just tell you it's a pair of similar elements (and it'll specify the element is named "x" if you asked debug info).
+
+If you give him "a pair of two similar element that is also a pair whose first element is five" : ∀x ( x, x ) = ( 5, ?anything? )
+The NUL engine will give as a result  ( 5, 5 ) , of course.
+In the native syntax, the last expression is written :  \/x ( x, x ) = ( 5, _ )
+
+Shape : For now, NUL comes as a JavaScript interpreter. This means that you just have to create a web page, include the NUL javascript references and then make a call to NUL; to which you give a string : a NUL source code, and that gives you a NUL evaluated epression.
+It is more like the javascript "eval" function, except that the awaited language is NUL and not javascript; but basically, if you give them the string "5 + 7", they both give you back the number 12 (knowing that NUL returns an object specifying "number" and such, without going through the javascript "typeof" system by instance).
+NUL has for now several pages : a sandbox used indeed to debug the NUL interpreter (but that can be used to evaluate user-entered expressions in an input text) and a unit-testing page refering several NUL expressions and their expected value.
