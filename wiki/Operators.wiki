@@ -11,5 +11,11 @@
 ||  !  || boolean negation ||
 || < > <= >= || atom comparison ||
 || <<= || (up-to come) insert ||
-|| + - * / % || atom addition, substraction, multiplication, division, modulo ||
+|| + - `*` / % || atom addition, substraction, multiplication, division, modulo ||
 || & | ^ || atom and, or, xor ||
+
+Other structures are :
+|| \/local ... || [FuzzyExpressions fuzzy expressions] ||
+|| `[`local ... `]` || [AutoReferences Auto-references] ||
+|| { ... } || [Sets] ||
+|| ...`[`...`]` || [TakeExpression Token expressions] ||
