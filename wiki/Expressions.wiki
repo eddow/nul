@@ -1,0 +1,9 @@
+Expressions are the main items of NUL.
+
+Expressions are always known in a tree-shape.
+An expression can be a leave : an atom (number, string, boolean) or another expression : an operator and components.
+
+Anexpression can have locals and attributes.
+Locals are just a bunch of place holders for values
+For instance : \/x \/y (x, y) is an expression, a pair, having two place holders (one for "x" and one for "y") (read more about localising)
+Attributes are on their way to be implemented (77% done) and are the root of the OO side of NUL.
