@@ -1,0 +1,12 @@
+The meta-and is a list of expressions that have to succeed (ie. not to fail).
+The right-most expression is the one that will be taken as value.
+
+So, in english, {{{ a; b; c }}} means " {{{c}}} after {{{a}}} and {{{b}}} "
+
+===== Example =====
+{{{ a = b + 1 ; a + 5 }}} is equivalent to {{{b+6}}}, beside the fact that then, something is known about {{{a}}}.
+
+Note: When evaluated, it can return another meta-and with less expressions. the expressions that *cannot fail* are removed automatically.
+
+If a and b are locals, {{{a+2 = b+1; a+b; a}}} will be reduced to {{{a+2 = b+1; a}}}, because {{{a+b}}} cannot fail.
+later, when values will be given to {{{a}}} and {{{b}}}, the expression will either fail (if {{{a+2}}} is not equal to {{{b+1}}}) or has the value given to {{{a}}}
