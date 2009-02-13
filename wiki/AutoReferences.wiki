@@ -19,6 +19,6 @@ One intuitive way is to write {{{\/f f = { 1 [] \/n n > 1 ? n :- n * f[n-1] } }}
 
 This way works, but there is a shortcut :
 
-{{{`[`f { 1 [] \/n n > 1 ? n :- n * f[n-1] }`]` }}}
+{{{ [f { 1 [] \/n n > 1 ? n :- n * f[n-1] }] }}}
 
 so basically, {{{`[`f ...`]`}}} means that  {{{...}}} is an expression where {{{f}}} is the whole expression itself.
