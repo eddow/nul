@@ -1,1 +1,1 @@
-If {{{S}}} is a [Set], then {{{ S[x] }}} is the value of an element of {{{S}}} unified to {{{x}}}
+If {{{S}}} is a [Sets set], then {{{ S[x] }}} is the value of an element of {{{S}}} unified to {{{x}}}
