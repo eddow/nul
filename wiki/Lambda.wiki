@@ -9,4 +9,4 @@ the table-taking operation {{{...[index]}}} will, if the value is a lambda opera
 
 Here are some expression evaluation to illustrate
 || {{{(\/x x :- x*2) = 5 || 5 :- 10 || Because  {{{ (x :- ...) = 5 }}} is equivalent to {{{ (x=5):- ... }}}||
-|| {{{ {\/x x :- x*2}[5] || 10 || Because the _take_ operation returns only the right part of the lambda operator ||
+|| {{{ {\/x x :- x*2}`[`5`]` || 10 || Because the _take_ operation returns only the right part of the lambda operator ||
