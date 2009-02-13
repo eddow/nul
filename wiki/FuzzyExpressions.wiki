@@ -1,0 +1,16 @@
+Fuzzy expressions can be defined in _extension- with the [GreedyMetaOr greedy meta-or].
+
+Sometimes, it is still nice to define a fuzzy expression by definition.
+
+If you express the for-each sign (back-slash slash : " \/ ") sign followed by an identifier, you can then express an expression that will involve this identifier.
+Note: this identifier will never change its value, it has one and, even if we don't know which one yet, it will get always sharper - but never change !
+It is like when you try to guess the age of your neighbour. You can get closer and closer but (since you don't take years to find it out), it doesn't change : this is the main difference between imperative languages using affectation and assertive languages using unification.
+Note: the local declared will be useable only in the place of the "..." of course.
+
+===== Example =====
+
+{{{ \/x  x=(5,_) ; x=(_,3) }}} will give the result (5,3)
+
+{{{\/x (x, x+1) }}} will remain like this, a fuzzy expression meaning " a pair of numbers, where the second one is the first one incremented "
+
+{{{(\/x (x, x+1)) = (5, _) }}} will give the result (5, 6)
