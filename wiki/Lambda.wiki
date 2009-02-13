@@ -1,0 +1,12 @@
+The lambda operator act usually as a regular pair builder.
+Some of its properties anyway makes it different, Here is a _equivalence_ table that shows the properties of this operator
+
+|| (a :- b) :- z || a :- (b = z) ||
+|| (a :- b) = z || (a = z) :- b  ||
+
+The lambda allows to _index_ tables described by definition.
+the table-taking operation {{{...[index]}}} will, if the value is a lambda operator, just return the right part of the lambda operator !
+
+Here are some expression evaluation to illustrate
+|| {{{(\/x x :- x*2) = 5 || 5 :- 10 || Because  {{{ (x :- ...) = 5 }}} is equivalent to {{{ (x=5):- ... }}}||
+|| {{{ {\/x x :- x*2}[5] || 10 || Because the _take_ operation returns only the right part of the lambda operator ||
