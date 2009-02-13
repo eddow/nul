@@ -1,0 +1,7 @@
+Like the GreedyMetaOR, the _content_ meta-or will express that the value taken can be one of the ones given in the {{{or}}}.
+
+{{{ (a=5) : (a=6) : (a=7) }}} can lead to the tree results where {{{a}}} is five, six or seven.
+
+The _content_ means that the *first non-failing* result will be taken and the *following* results willbe discarded.
+
+The expression {{{ 5 : 6 : 7 }}} will have the value {{{ 5 }}} !
