@@ -1,0 +1,9 @@
+In C-like notation, to write "if a then b else c endif " or to write " if( a ) b; else c;" has, basically, the same meaning.
+
+NUL doesn't intend to bring a new syntax. The C-descendants proved more than once the worth of C concision (using accolades " { } ", the semicolon " ; " to separate sentences in sequence, ... ). But anything is possible to use, even the last PYTHON syntax, resumed by BOO, using indentation as block mark.
+Whatever which syntax is used, it's only a "flavour". Like chocolate and ice-cream, they can have the vanilla or strawberries flavour - chocolate and icecream are dreadfully different.
+As NUL doesn't focus on the flavour, there is now a C-like flavour implemented. One of the point of NUL is to implement a supple compiler that can take any flavour - because this really depends of the taste - while from chocolate to ice-cream, even the body's needs are fullfilled differently.
+
+NUL is a kernel that can manage with unification, sets, predicates ... in whatever syntax they are written in.
+
+The whole wiki will be written using the native notation - I hope some thread will open with different syntax compiler. NUL even intend to have one syntax compiler able to understand C/C++ programs, and another synta compiler able to understand PROLOG or SQL "programs"
