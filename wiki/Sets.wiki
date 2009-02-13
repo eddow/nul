@@ -1,0 +1,11 @@
+A set is a way to transform a fuzzy epression into a "set containing all the values this fuzzy expression can take". It is ment by writing {{{ { ... } }}} around the fuzzy expression.
+
+===== Examples =====
+
+{{{ 5, _ }}} means *a* pair begining by 5.
+
+{{{ { 5, _ } }}} means *a set containing all the* pairs begining by 5.
+
+{{{ 2 [] 3 }}} means either two, either three.
+
+{{{ { 2 [] 3 } }}} means the set containing two and three.
