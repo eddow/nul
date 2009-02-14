@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link href="nulDbg.css" rel="stylesheet" type="text/css"></link>
+<link href="../lng/null.css" rel="stylesheet" type="text/css"></link>
+<script type="text/javascript" src="nulDbg.js"></script>
+<script type="text/javascript" src="../prototype.js"></script>
+
+<script type="text/javascript" src="../lng/null.std.js"></script>
+<script type="text/javascript" src="../lng/null.debug.js"></script>
+<script type="text/javascript" src="../lng/null.compile.js"></script>
+<script type="text/javascript" src="../lng/null.tokenizer.js"></script>
+<script type="text/javascript" src="../lng/null.exception.js"></script>
+<script type="text/javascript" src="../lng/null.understand.js"></script>
+<script type="text/javascript" src="../lng/null.execution.js"></script>
+<script type="text/javascript" src="../lng/null.helper.js"></script>
+<script type="text/javascript" src="../lng/null.actx.js"></script>
+<script type="text/javascript" src="../lng/null.ctxd.js"></script>
+<script type="text/javascript" src="../lng/null.eval.js"></script>
+<script type="text/javascript" src="../lng/null.unify.js"></script>
+<script type="text/javascript" src="../lng/null.lcl.js"></script>
+<script type="text/javascript" src="../lng/null.kb.js"></script>
+<script type="text/javascript" src="../lng/null.natives.js"></script>
+</head>
+<body onload="init();">
+	<div id="dbgOptions">
+		<input id="catch" type="checkbox" checked="checked" />Internal catch<br />
+		<input id="shwLevels" type="checkbox" checked="checked" />Levels check<br />
+		<input id="shwAssert" type="checkbox" checked="checked" />Asserts<br />
+		<input id="shwLogging" type="checkbox" checked="checked" />Logging<br />
+		<input id="shwWatches" type="checkbox" />Watches<br />
+		<input id="shwActLog" type="checkbox" onclick="sortLogs();" />Actions<br />
+	</div>
+	
+	<textarea cols="80" rows="7" id="source"></textarea>
+	<input type="button" onclick="testEvaluation();" value="eval"></input>
+	<div id="evaled"></div>
+	<div id="recur"></div>
+	<div id="info">
+		<input type="hidden" id="infoTS" value="values" />
+		<div>
+			<a class="msTab" onclick="tabSelect(this);" name="values">Values</a>
+			<a class="msTab" onclick="tabSelect(this);" name="runtime">Run-time</a>
+			<a class="msTab" onclick="tabSelect(this);" name="logs">Logs</a>
+		</div>
+		<div>
+			<div class="msTab" name="values">
+				<div id="sandBox"><b>yh</b><i>oo</i></div>
+				<div id="parsed"></div>
+				<fieldset><legend>Knowledge evolution</legend><table id="kevol"></table></fieldset>
+			</div>
+			<div class="msTab" name="runtime">
+				<fieldset><legend>Call stack</legend><table id="callStack"></table></fieldset>
+				<fieldset><legend>Knowledge base</legend><table id="kbase"></table></fieldset>
+			</div>
+			<div class="msTab" name="logs">
+				<table>
+				<thead>
+					<th>#</th>
+					<th>While ...</th>
+					<th colspan="2">happend ...</th>
+				</thead>
+				<tbody id="logs"></tbody>
+				</table>
+			</div>
+		<div>
+	<div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+a.collapser {
+	text-decoration: none;
+	cursor: pointer;
+	background-color: white;
+	border: 1px solid black;
+	font-size: 0.6em;
+}
+tr.collapsed {
+	display: none;
+}
+
+tr span.collapser { display: inline; }
+tr span.uncollapser { display: none; }
+tr.uncollapsing span.collapser { display: none; }
+tr.uncollapsing span.uncollapser { display: inline; }
+
+ul.tableContent {
+	padding-left: 1em;
+	margin: 0;
+	display: inline-block;
+}
+
+span.op {
+	color: #400000;
+	font-weight: bolder;
+}
+.xpr {
+	border: 1px blue dotted;
+	display: inline-block;
+	margin: 3px;
+	position: relative;
+}
+.xpr.lined {
+	border: 2px blue solid;
+	margin: 2px;
+}
+
+span.local {
+	font-size: large;
+	color: #004000;
+}
+span.global {
+	font-size: large;
+	color: #600060;
+}
+
+span.local .desc {
+	font-size: xx-small;
+	color: #004040;
+	vertical-align: top;
+}
+
+span.local .desc  .sup {
+	vertical-align: top;
+	display: table-row;
+}
+
+span.local .desc  .sub {
+	vertical-align: bottom;
+	display: table-row;
+}
+
+a.shortStr, a.locals, a.dependances, a.flags, a.attributes {
+	display: table-cell;
+	font-size: 4px;
+	cursor: none;
+	height: 3px;
+	position: absolute;
+	z-index: 500;
+	width: 3px;
+	border-width: 1px;
+	border-style: solid;
+	vertical-align: top;
+}
+
+div.shortStr, div.locals, div.dependances, div.flags, div.attributes {
+	cursor: default;
+	font-size: 1em;
+	position: absolute;
+	padding: 0.5em;
+	top: -2em;
+	left: -1px;
+	border-width: 1px;
+	border-style: solid;
+	white-space: nowrap;
+}
+
+a.flags div {
+	width: 3px;
+	height: 1px;
+}
+
+.flags .failable { background-color: red; }
+.flags .extractible { background-color: green; }
+.flags .dirty { background-color: blue; }
+
+.flags {
+	border-color: lightgrey;
+	background-color: ivory;
+}
+
+.shortStr {
+	border-color: blue;
+	background-color: lightblue;
+}
+
+.locals {
+	border-color: red;
+	background-color: orange;
+}
+
+.attributes {
+	border-color: firebrick;
+	background-color: plum;
+}
+div.attributes {
+	top: 0;
+	padding-top: 2em;
+}
+
+.dependances {
+	border-color: darkgreen;
+	background-color: lightgreen;
+}
+
+.dependances table {
+	empty-cells: show;
+}
+.dependances th {
+	border-right: 1px solid black;
+}
+div.shortStr.level {
+	left: -1.3em;
+	padding: 2px;
+}
