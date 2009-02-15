@@ -1,3 +1,5 @@
+#summary Theory: The characteristics of affirmative languages
+
 Affirmative languages have been rarely used till now. Few "alife and kicking" example are LOGO, PROLOG and SQL.
 
 In affirmative languages, you cannot "unset what you set before".
