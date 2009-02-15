@@ -1,9 +1,32 @@
-Expressions are the main items of NUL.
+= TODO =
+{{{
+\/ c 
+{ \/a \/b (a, b)
+::rl a.
+::img b.
+::sq rl*rl+img*img.
+}[c];
+c = (2,3);
+c->sq
+}}}
 
-Expressions are always known in a tree-shape.
-An expression can be a leave : an atom (number, string, boolean) or another expression : an operator and components.
+= Working =
 
-Anexpression can have locals and attributes.
-Locals are just a bunch of place holders for values
-For instance : \/x \/y (x, y) is an expression, a pair, having two place holders (one for "x" and one for "y") (read more about localising)
-Attributes are on their way to be implemented (77% done) and are the root of the OO side of NUL.
+== Factorial ==
+{{{
+[f { 1 [] ( \/x x>1?x:- x * f[x-1]) }] [3]
+}}}
+
+== Fibonacci ==
+=== quick & dirty ===
+{{{
+[fib {1 [] 2:-1 [] \/x x>2?x:- fib[x-1] + fib[x-2] }] [10]
+}}}
+
+=== optimised (accmlation) ===
+{{{
+[fib 
+{ \/x x, _, 1 :- x
+[] \/x \/y \/z z > 1 ? (x, y, z) :- fib[y, y+x, z-1]
+}][1, 1, 10]
+}}}
