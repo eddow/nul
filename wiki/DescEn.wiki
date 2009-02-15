@@ -1,0 +1,39 @@
+#summary Presentation, purposes and means.
+
+Declarative programation and imperative one are, on the roots, straightfuly different.
+
+As the imperative programation is perhaps the more intuitive one but anyway the major one used nowadays (most programers only now declarative programation theorically), as the declarative programation produce brief texts and less time to write a program.
+
+Given the few researchs about declarative languages when compared to researchs about imperative ones (these last ten years, at least one imperative language was created a year : java, javascript, python, C#, as others less famous like BOO, ...), the declarative languages we can use now are outdated. The main reference of declarative language is PROLOG, created in 1972 !
+
+On one side, this language use some workarounds making programing more perilous (like the cut, major element of PROLOG), on another side, these languages allow to interface a shell (to read a line, to write a line, ...) what is not the nowadays pragmatical need.
+Also, as they were developped within a purely logic research purpose, they miss some technical elements like types or other used more recently like "object orientation".
+
+Nowadays, about what are used often as data sources (RSS stream, databases, XML, ...), it is nearly needed to master one language for each kind of data to work on.
+
+The only language light enough to be executed anywhere without compilation is JavaScript. This language, to achive  ----  une souplesse suffisante applique beaucoup de laxisme ! ---- (For example, not to end a sentence by a semi-colon is _sometime_ an error) This is a major issue when it comes to development of important project : debugging and maintanance of large programs are realy harsh - or even impossible.
+
+Dernièrement, le JavaScript n'est pas intrinsèquement prévu pour gérer des données à la volée. L'implémentatation d'une routine de traitement dynamique (lorsque l'utilisateur demande un traitement pariculier sur une page) demande une transaction AJAX qui utilise déjà une vingtaine de lignes de code pour pourvoir aux défauts de compatibilité de JavaScript : Il est déjà largement standard mais chaque implémentation a quand-même ses petites nuances qui augmentent très vite la taille d'un programme qui se veut être opérationnel sur n'importe quelle machine, sur n'importe quel navigateur.
+
+Malgré tous ses défauts, le JavaScript prend une énorme ampleur suite à la nouvelle tendance consistant à traiter la plupart des données chez le client. Il suffit de regarder les derniers google gadgets, équivalents Yahoo ou autres pour voir que les applications se dirigent énormément vers les interfaces Web dont les pages sont dynamiques et pilotées par un script local - et accèdent directement aux données.
+
+
+Une lacune dans nos languages contemporains est que la plupart de ceux ci sont des amas de cas particulier. Que ce soit des cas particuliers de niveau comme dans le C++ où le système des templates est une programmation assez similaire à la programmation C++ mais, relevant d'un autre niveau, se retrouve très vite dépassée quand les besoins sont particuliers. Que ce soit en JavaScript où les tableaux, les associations et les tableaux d'arguments sont des objets à traiter différemment ... alors qu'il s'agit dans le fond d'ensembles de données référencées.
+
+The NUL language aims then to be a language:
+
+ * Déclarative. It allows, from knowledge and not recipes :
+
+ - To translate datas (example: a line of database into a line of HTML table)
+ 
+ - To translate custom operations (ex.: "users.add(email)") in atomic operations (express in terms of select, update, insert, delete, ...). These operations are intended to be translated and executed by any target operator (local or remote database, RSS stream production, XML/HTML content modification, ...) within a transaction.
+ 
+ * Object Oriented and typing.
+
+ * Interpreted by a JavaScript script, to alrady have a good useability range.
+
+ * Code optimisation : to use an optimised algorithm even when the programer described it on a quick and dirty way.
+
+ * Functional: functions are objects like others (even like tables indeed)
+
+ * Standardised : With a minimum of concepts that allow to efficiently and quickly describe any kind of object the programer need.
