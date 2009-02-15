@@ -1,3 +1,5 @@
+#summary Expression refering themselves
+
 Some time, an expression has to refer itself - especially in recursion expression.
 
 Let's build the factorial here.
@@ -19,8 +21,13 @@ One intuitive way is to write {{{\/f f = { 1 [] \/n n > 1 ? n :- n * f[n-1] } }}
 
 This way works, but there is a shortcut :
 
-{{{ [f { 1 [] \/n n > 1 ? n :- n * f[n-1] }] }}}
+{{{
+[f { 1 [] \/n n > 1 ? n :- n * f[n-1] }]
+}}}
 
 So basically, {{{ [f ...] }}} means that  {{{"..."}}} is an expression where {{{f}}} is the whole expression itself.
 
 Note: Again, outside of {{{"..."}}}, {{{f}}} is not defined.
+
+===== For fun =====
+Which famous greek name does this "e" stands for ? {{{ [e!e] }}}
