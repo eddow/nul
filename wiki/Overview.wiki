@@ -1,3 +1,5 @@
+#summary Why, what, for who, ... at a glance
+
 NUL intend to be a language able to express anything another language can express.
 NUL is an assertive or an affirmative language and not an imperative language. This means that the work done is made by writing the knowledge we have of a situation more than the steps needed to solve a problem. People used to PROLOG, LOGO or even SQL languages will find in NUL something they know, while the syntax now used will allow C/C++, Java and Javascript programmers to step easily in it.
 
