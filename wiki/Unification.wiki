@@ -1,3 +1,5 @@
+#summary Affirmative equality operation
+
 The unification is the main point of NUL.
 
 Unification is _associative_ and _commutative_ .
