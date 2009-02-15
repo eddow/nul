@@ -1,3 +1,5 @@
+#summary Finite and infinite sets construction
+
 A set is a way to transform a fuzzy epression into a "set containing all the values this fuzzy expression can take". It is ment by writing {{{ { ... } }}} around the fuzzy expression.
 
 ===== Examples =====
