@@ -30,4 +30,4 @@ So basically, {{{ [f ...] }}} means that  {{{"..."}}} is an expression where {{{
 Note: Again, outside of {{{"..."}}}, {{{f}}} is not defined.
 
 ===== For fun =====
-Which famous greek name does this "e" stands for ? {{{ [e!e] }}}
+{{{ [e!e] }}} : Which famous greek name does this "e" stands for ?
