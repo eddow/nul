@@ -17,7 +17,7 @@
 || & | ^ || atom and, or, xor ||
 
 Other structures are :
-|| \/local ... || [FuzzyExpressions Fuzzy expressions] ||
-|| `[`local ... `]` || [AutoReferences Auto-references] ||
-|| { ... } || [Sets] ||
-|| ...`[`...`]` || [TakeExpression Token expressions] ||
+|| {{{\/local ...}}} || [FuzzyExpressions Fuzzy expressions] ||
+|| {{{[local ... ]}}} || [AutoReferences Auto-references] ||
+|| {{{{ ... } }}} || [Sets] ||
+|| {{{...[...]}}} || [TakeExpression Token expressions] ||
