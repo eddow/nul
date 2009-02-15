@@ -1,3 +1,5 @@
+#summary From boolean value to control-flow
+
 The assertion is mainly a preceder :
 {{{ ? a }}} will :
 * have the value {{{true}}} if {{{a}}} has the value {{{true}}}
@@ -8,4 +10,3 @@ There is also a binary {{{?}}} that is a shortcut.
 {{{ a ? b }}} is equivalent to {{{ ( ? a ) : b }}}
 
 {{{ a ? b }}} means "If {{{a}}} then the value is {{{b}}}. If not, fail..."
-
