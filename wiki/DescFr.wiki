@@ -35,6 +35,6 @@ Le langage NUL se veut donc un langage :
 
  * Optimisant le code : qui puisse exécuter de manière optimale un algorithme même si l'utilisateur l'a décrit de manière simpliste.
 
- * Fonctionnel et souple : les fonctions sont des objets.
+ * Fonctionnel : les fonctions sont des objets.
 
  * Standardisé : avec un minimum de concepts de base qui permettent d'exprimer succintement tous les objets dont le programmeur a besoin.
