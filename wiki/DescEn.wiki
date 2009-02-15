@@ -1,4 +1,5 @@
 #summary Presentation, purposes and means.
+#labels Featured,Phase-Requirements
 
 Declarative programation and imperative one are, on the roots, straightfuly different.
 
