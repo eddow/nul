@@ -1,4 +1,4 @@
-#summary Flow-control _OR_ stopping on first success
+#summary Flow-control OR stopping on first success
 
 Like the [GreedyMetaOr greedy meta-or], the _content_ meta-or will express that the value taken can be one of the ones given in the {{{or}}}.
 
