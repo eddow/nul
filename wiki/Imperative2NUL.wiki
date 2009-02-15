@@ -1,3 +1,5 @@
+#summary The NUL language for those who already know imperative languages
+
 Imperative languages often have two logic level. For instance, there are two "and"s : " & " and " && ".
 Affirmative languages have a third logic level; Called here a "meta-level"
 
