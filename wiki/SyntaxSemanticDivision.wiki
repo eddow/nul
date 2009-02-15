@@ -1,3 +1,5 @@
+#summary Theory: NUL compiler idealisation
+
 In C-like notation, to write "if a then b else c endif " or to write " if( a ) b; else c;" has, basically, the same meaning.
 
 NUL doesn't intend to bring a new syntax. The C-descendants proved more than once the worth of C concision (using accolades " { } ", the semicolon " ; " to separate sentences in sequence, ... ). But anything is possible to use, even the last PYTHON syntax, resumed by BOO, using indentation as block mark.
