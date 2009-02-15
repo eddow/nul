@@ -1,1 +1,3 @@
+#summary Operation to take an element of a set
+
 If {{{S}}} is a [Sets set], then {{{ S[x] }}} is the value of an element of {{{S}}} unified to {{{x}}}
