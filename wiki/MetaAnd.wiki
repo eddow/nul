@@ -1,3 +1,5 @@
+#summary Sequence equivalence, sentence grouping
+
 The meta-and is a list of expressions that have to succeed (ie. not to fail).
 The right-most expression is the one that will be taken as value.
 
