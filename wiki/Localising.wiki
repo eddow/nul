@@ -1,8 +1,0 @@
-For instance : \/x \/y (x, y) is an expression, a pair, having two place holders (one for "x" and one for "y")
-This expression, in escence, is different from (\/x  x), (\/y  y)  . Which is an expression with no place holder. But each element of the pair is an expression with one placeholder !
-Notice that this expression is equivalent to (\/x  x), (\/z  z)  : "upsilon for any upsilon" means exactly the same than "zed for any zed" or "alpha for any alpha" or even ... "ix for any ix" ... This expression is equivalent to (\/x  x), (\/x  x)  .
-
-The way to use syntax is just the "for each" (back-slash, slash) sign followed by an identifier; the whole followed by an expression now allowed to use this identifier as a value.
-For example,   \/blah ...
-Where "..." can be any expression refering to 'blah' as a value (like " blah + 5 ", ...)
-Note: "blah" is, of course, not defined anywhere beside "..."
