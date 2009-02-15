@@ -1,3 +1,5 @@
+#summary Expressions that are not completely specified but on which we have a piece of knowledge
+
 Fuzzy expressions can be defined in _extension_ - with the [GreedyMetaOr greedy meta-or].
 
 Sometimes, it is still nice to define a fuzzy expression by definition.
