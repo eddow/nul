@@ -15,7 +15,7 @@ NUL also intend to know fuzzy expressions. For example, a pair of two identic el
 
 If you give him "a pair of two similar element that is also a pair whose first element is five" : ∀x ( x, x ) = ( 5, _anything_ )
 The NUL engine will give as a result  ( 5, 5 ) , of course.
-In the native syntax, the last expression is written :  \/x ( x, x ) = ( 5, `_` )
+In the native syntax, the last expression is written :  {{{ \/x ( x, x ) = ( 5, _ ) }}}
 
 Shape : For now, NUL comes as a Javascript interpreter. This means that you just have to create a web page, include the NUL javascript references and then make a call to NUL; to which you give a string : a NUL source code, and that gives you a NUL evaluated epression.
 It is more like the javascript "eval" function, except that the awaited language is NUL and not javascript; but basically, if you give them the string "5 + 7", they both give you back the number 12 (knowing that NUL returns an object specifying "number" and such, without going through the javascript "typeof" system by instance).
