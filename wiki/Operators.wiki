@@ -1,4 +1,5 @@
 #summary List of operators and expression builders
+#labels Featured
 
 ||  !  || (up-to come) executor ||
 || []  || [GreedyMetaOr Greedy meta-or] ||
