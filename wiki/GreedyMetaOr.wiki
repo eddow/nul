@@ -1,3 +1,5 @@
+#summary Flow-control OR gathering all possible success
+
 The greedy meta-or can express a list of acceptable value.
 Don't forget that there is no difference between _the code_ and _the data_ here,
 s, basically {{{ x = (5 [] 6) }}} , is equivalent to {{{ (x = 5) [] (x = 6) }}}
