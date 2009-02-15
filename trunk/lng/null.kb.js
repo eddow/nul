@@ -1,6 +1,16 @@
+/*  NUL language JavaScript framework
+ *  (c) 2009 François Marie De Mey
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+ 
 nul.kb = function(knowledge) {
 	return {
-		//The effective data : a list of  contexts where the last one is the root context
+		//The effective data : a list of contexts where
+		// the last one is the root context, the first specified
+		// the first one knowledg[0] is the crrent-level context
 		knowledge: knowledge || [],
 		
 		emptyCtx : function(entr) {

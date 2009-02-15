@@ -1,5 +1,11 @@
-//TODO: copy attributes
-
+/*  NUL language JavaScript framework
+ *  (c) 2009 François Marie De Mey
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+ 
 //<us>[...] appear in an expression like 'a = b' where they are both un-wrapped
 // <us>s locals are distinct
 //returns ctxd or nothing if unification unchanged 

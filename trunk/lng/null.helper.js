@@ -1,3 +1,11 @@
+/*  NUL language JavaScript framework
+ *  (c) 2009 François Marie De Mey
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+ 
 //Gets weither this object is an array [] and not an object {}
 function isArray(itm) {
 	return typeof(itm) == 'object' && typeof itm.length === 'number' && !itm.propertyIsEnumerable('length') && typeof itm.splice === 'function';
