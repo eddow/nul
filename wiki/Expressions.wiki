@@ -26,9 +26,10 @@ c->sq
 === optimised (accmlation) ===
 {{{
 { \/n n:-
-[fib 
-{ \/x x, _, 1 :- x
-[] \/x \/y \/z z > 1 ? (x, y, z) :- fib[y, y+x, z-1]
-}][1, 1, n]}
-[10]
+ [fib 
+ { \/x x, _, 1 :- x
+ [] \/x \/y \/z z > 1 ? (x, y, z) :- fib[y, y+x, z-1]
+ }]
+ [1, 1, n]
+}[10]
 }}}
