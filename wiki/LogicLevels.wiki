@@ -1,4 +1,4 @@
-#summary Theory: Ovrview of bit/boolean/control logic levels
+#summary Theory: Overview of bit/boolean/control logic levels
 
 There are, globally, three logic levels.
 People used to C-like languages are used to the two first logic levels and know a bit of the third one as "flow control"
