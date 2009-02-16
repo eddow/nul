@@ -12,6 +12,7 @@ Also, as they were developped within a purely logic research purpose, they miss 
 
 Nowadays, about what are used often as data sources (RSS stream, databases, XML, ...), it is nearly needed to master one language for each kind of data to work on.
 
+<wiki:comment>
 The only language light enough to be executed anywhere without compilation is !JavaScript. This language, to achive  ----  une souplesse suffisante applique beaucoup de laxisme ! ---- (For example, not to end a sentence by a semi-colon is _sometime_ an error) This is a major issue when it comes to development of important project : debugging and maintanance of large programs are realy harsh - or even impossible.
 
 Dernièrement, le !JavaScript n'est pas intrinsèquement prévu pour gérer des données à la volée. L'implémentatation d'une routine de traitement dynamique (lorsque l'utilisateur demande un traitement pariculier sur une page) demande une transaction AJAX qui utilise déjà une vingtaine de lignes de code pour pourvoir aux défauts de compatibilité de !JavaScript : Il est déjà largement standard mais chaque implémentation a quand-même ses petites nuances qui augmentent très vite la taille d'un programme qui se veut être opérationnel sur n'importe quelle machine, sur n'importe quel navigateur.
@@ -20,6 +21,8 @@ Malgré tous ses défauts, le !JavaScript prend une énorme ampleur suite à la 
 
 
 Une lacune dans nos languages contemporains est que la plupart de ceux ci sont des amas de cas particulier. Que ce soit des cas particuliers de niveau comme dans le C++ où le système des templates est une programmation assez similaire à la programmation C++ mais, relevant d'un autre niveau, se retrouve très vite dépassée quand les besoins sont particuliers. Que ce soit en !JavaScript où les tableaux, les associations et les tableaux d'arguments sont des objets à traiter différemment ... alors qu'il s'agit dans le fond d'ensembles de données référencées.
+
+</wiki:comment>
 
 The NUL language aims then to be a language:
 
