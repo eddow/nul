@@ -1,0 +1,64 @@
+#summary Traditional Lewis Carol' zebra puzzle
+= Introduction =
+
+Enigma (from [http://en.wikipedia.org/wiki/Zebra_Puzzle wikipedia])
+ # There are five houses.
+ # The Englishman lives in the red house.
+ # The Spaniard owns the dog.
+ # Coffee is drunk in the green house.
+ # The Ukrainian drinks tea.
+ # The green house is immediately to the right of the ivory house.
+ # The Old Gold smoker owns snails.
+ # Kools are smoked in the yellow house.
+ # Milk is drunk in the middle house.
+ # The Norwegian lives in the first house.
+ # The man who smokes Chesterfields lives in a house next to the man with the fox.
+ # Kools are smoked in a house next to the house where the horse is kept.
+ # The Lucky Strike smoker drinks orange juice.
+ # The Japanese smokes Parliaments.
+ # The Norwegian lives next to the blue house.
+Now, who drinks water? Who owns the zebra?
+
+This enigma is especially the kindof problems that declarative languages aim to resolve : knowledge is described, a snap-shot situation is given (no evolution, affectaion, ...).
+
+= NUL zebra =
+{{{
+\/num1 \/clr1 \/nat1 \/smk1 \/anm1 \/drn1
+\/num2 \/clr2 \/nat2 \/smk2 \/anm2 \/drn2
+\/num3 \/clr3 \/nat3 \/smk3 \/anm3 \/drn3
+\/num4 \/clr4 \/nat4 \/smk4 \/anm4 \/drn4
+\/num5 \/clr5 \/nat5 \/smk5 \/anm5 \/drn5
+
+{  (num1, clr1, nat1, smk1, anm1, drn1)
+[] (num2, clr2, nat2, smk2, anm2, drn2)
+[] (num3, clr3, nat3, smk3, anm3, drn3)
+[] (num4, clr4, nat4, smk4, anm4, drn4)
+[] (num5, clr5, nat5, smk5, anm5, drn5)
+} S
+
+S[_,"red","english",_,_,_];
+S[_,_,"spain",_,"dog",_];
+S[_,"green",_,_,_,"coffee"]
+S[_,_,"ukrain",_,_,"tea"];
+(N n S[n+1,"green",_,_,_,_]; S[n, "ivory",_,_,_,_]);
+S[_,_,_,"Old Gold","snails",_];
+S[_,"yellow",_,"Kools",_,_];
+S[3,_,_,_,_,"milk"];
+S[1,_,"norwegia",_,_,_];
+(N n S[n,_,_,"Chesterfields",_,_]; S[n-1[]n+1,_,_,_,"fox",_]);
+(N n S[n,_,_,"Kools",_,_]; S[n-1[]n+1,_,_,_,"horse",_]);
+S[_,_,_,"Lucky Strike",_,"Orange juice"];
+S[_,_,"japanese","Parliaments",_,_];
+(N n S[n,_,"norwegia",_,_,_]; S[n-1[]n+1,"blue",_,_,_,_]);
+S
+
+}}}
+= Description =
+
+The first two blocks just create the variables (I just noticed it would be nice to have a way to declare anonymous variables : these blocs can be drastically variables)
+
+= Progress =
+
+Are not present here :
+ * The house have five different numbers from 1 to 5
+ * nations, smokings, animals, colors and drinks are all different
