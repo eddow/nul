@@ -1,0 +1,72 @@
+#summary Partition algorithm
+#labels program
+
+= Introduction =
+
+<wiki:comment> TODO: describe the algo </wiki:comment>
+
+
+= NUL partitions =
+
+{{{
+//(i,j), x, ( (a,b), (c,d) ) :- ( i,j,(x,a,b),(c,d) ), ( i,j,(a,b),(x,c,d) )
+{
+	[pa
+		{  _, _, {} :- {}
+		[] {_}x, p, a, b  p, x, (a,.. b) :- (p+(( x,.. a ),.. b)),.. pa[p+{a}, x, b]
+	}]
+} pPolyAdd
+}}}
+Let "pPolyAdd" be the recursive definition of "pa" of the set that contains :
+ * to the list anything, anything and empty list gives empty list
+ * for any "x", "p", "a" and "b" to the list "p", "x" and "a" followed by "b" gives (concatenation of "p" and ("x" followed by "a") followed by "b") followed by the application of the list concatenation of "p" and the singleton containing "a", "x" and "b" to "pa"
+
+{{{
+// x, ( (a,b),(c,d) ) :- ({x},(a,b),(c,d)), ((x,a,b),(c,d)), ((a,b),(x,c,d))
+{{
+	{_}x, p  x, p :- ( {x},.. p ),.. pPolyAdd[{}, x, p]
+}} multPart
+}}}
+Let "multPart" be the set that contains for any "x" and "p" to the list "x" and "p" gives (the singleton containing "x" followed by "p") followed by the application of the list empty list, "x" and "p" to "pPolyAdd".
+
+{{{
+{
+	[mps
+		{  _, {} :- {}
+		[] {_}x, p, ps  x, (p,.. ps) :- multPart[x, p] + mps[x, ps]
+	}]
+} multParts
+}}}
+Let "multParts" be the recursive definition of "mps" of the set that contains :
+ * to the list anything and empty list gives empty list
+ * for any "x", "p" and "ps" to the list "x" and ("p" followed by "ps") gives the concatenation of the application of the list "x" and "p" to "multPart" and the application of the list "x" and "ps" to "mps"
+
+{{{
+{
+	[p
+		{  {_}a {a} :- { { { a } } }
+		[] {_}a, b  a,.. b :- multParts[a, p[b]]
+	}]
+} partitions
+}}}
+Let "partitions" be the recursive definition of "p" of the set that contains :
+ * for any "a" to the singleton containing "a" gives the singleton containing the singleton containing the singleton containing "a"
+ * for any "a" and "b" to "a" followed by "b" gives the application of the list "a" and the application of "b" to "p" to "multparts"
+
+--------------------------
+{{{
+{
+[p
+	{  {_}a {a} :- { { { a } } }
+	[] {_}a, b		a,.. b :- [multParts
+		{  _, {} :- {}
+		[] {_}x, p, ps	x, (p,.. ps) :- {
+			{_}x, p			x, p :- ( {x},.. p ),.. [pPolyAdd
+				{  _, _, {} :- {}
+				[] {_}x, p, a, b	p, x, (a,.. b) :- (p+(( x,.. a ),.. b)),.. pPolyAdd[p+{a}, x, b]
+			}][{}, x, p]
+		}[x, p] + multParts[x, ps]
+	}][a, p[b]]
+}]
+} partitions
+}}}
