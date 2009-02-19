@@ -58,12 +58,12 @@ Let "partitions" be the recursive definition of "p" of the set that contains :
 {
 [p
 	{  {_}a {a} :- { { { a } } }
-	[] {_}a, b		a,.. b :- [multParts
+	[] {_}a, b  a,.. b :- [multParts
 		{  _, {} :- {}
 		[] {_}x, p, ps	x, (p,.. ps) :- {
-			{_}x, p			x, p :- ( {x},.. p ),.. [pPolyAdd
+			{_}x, p  x, p :- ( {x},.. p ),.. [pPolyAdd
 				{  _, _, {} :- {}
-				[] {_}x, p, a, b	p, x, (a,.. b) :- (p+(( x,.. a ),.. b)),.. pPolyAdd[p+{a}, x, b]
+				[] {_}x, p, a, b  p, x, (a,.. b) :- (p+(( x,.. a ),.. b)),.. pPolyAdd[p+{a}, x, b]
 			}][{}, x, p]
 		}[x, p] + multParts[x, ps]
 	}][a, p[b]]
