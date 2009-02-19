@@ -29,7 +29,7 @@ This enigma is especially the kindof problems that declarative languages aim to 
 \/num4 \/clr4 \/nat4 \/smk4 \/anm4 \/drn4
 \/num5 \/clr5 \/nat5 \/smk5 \/anm5 \/drn5
 
-{{  (num1, clr1, nat1, smk1, anm1, drn1)
+{{ (num1, clr1, nat1, smk1, anm1, drn1)
 [] (num2, clr2, nat2, smk2, anm2, drn2)
 [] (num3, clr3, nat3, smk3, anm3, drn3)
 [] (num4, clr4, nat4, smk4, anm4, drn4)
