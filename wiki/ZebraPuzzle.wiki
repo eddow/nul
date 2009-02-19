@@ -1,4 +1,4 @@
-#summary Traditional Lewis Carol' zebra puzzle
+#summary Traditional Lewis Carol's zebra puzzle
 = Introduction =
 
 Enigma (from [http://en.wikipedia.org/wiki/Zebra_Puzzle wikipedia])
@@ -57,8 +57,17 @@ S
 
 The first two blocks just create the variables (I just noticed it would be nice to have a way to declare anonymous variables : these blocs can be drastically variables)
 
+The variable S is the "solution" : it contains five 6-uples. Each 6-uples is " number, colour, nationality, smoked, animal, drunk "
+The set S contains the five entities.
+
+The remaining lines are the clues.
+
+The first can be red as _The solution set S contains an entity where nationality is "english" and colour is "red"_.
+
+Some clues speak about house proximity. It then specifies a number ({{{N}}} stands for "natural") {{{n}}} and its neighbour, either {{{n+1}}} for "the house at the right" or {{{n+1 [] n-1}}} for "a neighbour".
+
 = Progress =
 
-Are not present here :
+Are not expressed here :
  * The house have five different numbers from 1 to 5
  * nations, smokings, animals, colors and drinks are all different
