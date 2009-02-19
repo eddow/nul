@@ -1,4 +1,5 @@
 #summary Traditional Lewis Carol's zebra puzzle
+#labels program
 = Introduction =
 
 Enigma (from [http://en.wikipedia.org/wiki/Zebra_Puzzle wikipedia])
