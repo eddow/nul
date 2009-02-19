@@ -38,21 +38,21 @@ This enigma is especially the kindof problems that declarative languages aim to 
 
 S[_,"red","english",_,_,_];
 S[_,_,"spain",_,"dog",_];
-S[_,"green",_,_,_,"coffee"]
+S[_,"green",_,_,_,"coffee"];
 S[_,_,"ukrain",_,_,"tea"];
 (N n S[n+1,"green",_,_,_,_]; S[n, "ivory",_,_,_,_]);
 S[_,_,_,"Old Gold","snails",_];
 S[_,"yellow",_,"Kools",_,_];
 S[3,_,_,_,_,"milk"];
 S[1,_,"norwegia",_,_,_];
-(N n S[n,_,_,"Chesterfields",_,_]; S[n-1[]n+1,_,_,_,"fox",_]);
-(N n S[n,_,_,"Kools",_,_]; S[n-1[]n+1,_,_,_,"horse",_]);
+(N n S[n,_,_,"Chesterfields",_,_]; S[(n-1[]n+1),_,_,_,"fox",_]);
+(N n S[n,_,_,"Kools",_,_]; S[(n-1[]n+1),_,_,_,"horse",_]);
 S[_,_,_,"Lucky Strike",_,"Orange juice"];
 S[_,_,"japanese","Parliaments",_,_];
-(N n S[n,_,"norwegia",_,_,_]; S[n-1[]n+1,"blue",_,_,_,_]);
+(N n S[n,_,"norwegia",_,_,_]; S[(n-1[]n+1),"blue",_,_,_,_]);
 S
-
 }}}
+
 = Description =
 
 The first two blocks just create the variables (I just noticed it would be nice to have a way to declare anonymous variables : these blocs can be drastically variables)
