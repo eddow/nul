@@ -37,7 +37,7 @@ nul.unify = {
 	level: function(a, b, kb) {	//don't touch A & B; gather their ctx0 locals
 		var rv = nul.unify.chewed(a, b, kb);
 		if(rv) return rv;
-		return nul.actx.unification([a.wrap(kb),b.wrap(kb)]).ctxd().numerise(a.locals.prnt);
+		return nul.actx.unification([a.wrap(kb),b.wrap(kb)]).numerise(a.locals.prnt);
 	},
 	
 	//<a> and <b> are on the same level, one more down than <kb>
@@ -68,7 +68,7 @@ nul.unify = {
 		if(nul.actx.isC(a,';')) {
 			var cs = clone1(a.components);
 			cs.push(nul.unify.sub1(cs.pop(), b, kb));
-			return a.clone(cs).ctxd(true).clean();
+			return a.clone(cs).summarised().clean();
 		}
 	
 		if(nul.actx.isC(a,'[]')) return nul.unify.orDist(a.components, a.locals, b, kb);
@@ -77,7 +77,7 @@ nul.unify = {
 			return a.clone({
 				parms: nul.unify.sub1(a.components.parms, b, kb),
 				value: a.components.value
-			}).ctxd(true);
+			}).summarised();
 		}
 		
 		if(kb.affectable(a)) return kb.affect(a,
@@ -100,16 +100,16 @@ nul.unify = {
 			var rv = [];
 			for(var i=0; i<a.components.length; ++i)
 				rv.push(nul.unify.sub(a, b, i, kb));
-			return a.modify(rv).ctxd(true);
+			return a.modify(rv).summarised();
 		}
 		if(nul.actx.isC(a,':-') && nul.actx.isC(b,':-') ) {
 			return a.modify({
 					parms: nul.unify.sub(a, b, 'parms', kb),
 					value: nul.unify.sub(a, b, 'value', kb)
-				}).withLocals(a.locals).ctxd(true);
+				}).withLocals(a.locals).summarised();
 		}
 		if(nul.actx.isC(a,'{}') && nul.actx.isC(b,'{}') )
-			return a.modify([nul.unify.sub(a, b, 0, kb)]).withLocals(a.locals).ctxd(true);
+			return a.modify([nul.unify.sub(a, b, 0, kb)]).withLocals(a.locals).summarised();
 		return 'unk';
 	},
 	
@@ -163,7 +163,7 @@ nul.unify = {
 			function(c, kb) { return nul.unify.sub1(c, b, kb); });
 		if(nul.debug.assert) assert(rv, 'orDist use')
 		if(!isArray(rv)) return rv;
-		return nul.actx.or3(rv).ctxd().withLocals(alcls).clean();
+		return nul.actx.or3(rv).withLocals(alcls).clean();
 	},
 	
 	//unification of <b> with each member of table <as>
@@ -185,6 +185,6 @@ nul.unify = {
 			return as;
 		}
 
-		return nul.actx.unification(as).ctxd().withLocals(alcls);
+		return nul.actx.unification(as).withLocals(alcls);
 	}
 };

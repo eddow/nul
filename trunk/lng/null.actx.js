@@ -98,10 +98,6 @@ nul.actx = {
 
 	std: {
 		item: function(itm, ops) {
-			if(!itm.ctxd) itm.ctxd = function(force) {
-				if(!this.deps || force) nul.ctxd.stdRecurs(this);
-				return this;
-			};
 			if(!itm.attributes) itm.attributes = {};
 			if(!itm.locals) itm.locals = [];
 			itm.toHTML = function() {
@@ -149,6 +145,8 @@ nul.actx = {
 			};
 			
 			itm.components = ops;
+			for(var i in nul.ctxd.itf) if(!itm[i]) itm[i] = nul.ctxd.itf[i];
+			itm.summarised()
 			return itm;
 		},
 		listOp: function(itm, chrct, ops, strC) {
@@ -246,7 +244,7 @@ nul.actx = {
 				var comps = nul.html(this.element.innerHTML);
 				var rv = [];
 				for(var i=0; i<comps.length; ++i)
-					try { rv.push(cb(comps[i].ctxd())); }
+					try { rv.push(cb(comps[i])); }
 					catch(err) { if(nul.failure!= err) throw err; }
 				return rv;
 			},
@@ -283,12 +281,7 @@ nul.actx = {
 			toString: function() {
 				return (this.dbgName?this.dbgName:'')+ '['+this.lindx+'|'+this.ctxDelta+']';
 			},
-			ctxd: function(force) {
-				if(this.deps && !force) return this;
-				this.deps = nul.lcl.dep.dep(this.ctxDelta, this.lindx);
-				nul.ctxd.std(this);
-				return this;
-			},
+			makeDeps: function() { return nul.lcl.dep.dep(this.ctxDelta, this.lindx); },
 			browse: function(behav) { return nul.ctxd.flatBrowse(behav, this, 'local'); }
 		});
 	},
@@ -312,7 +305,7 @@ nul.actx = {
 		nul.actx.std.tabular(nul.actx.std.srndd({
 			evaluation:nul.eval.set,
 			take: function(apl, kb, lcls) {
-				var rcr = nul.actx.local(1, nul.lcl.rcr).ctxd();
+				var rcr = nul.actx.local(1, nul.lcl.rcr);
 				var unf = this.components[0];
 				var tlcls = clone1(this.locals);
 				//TODO: remplacer rcr AVANT unification ?
@@ -453,7 +446,7 @@ a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 					var rv = kb.knowing([this, apl], function(kb) {
 						var rv = tnf.callback(apl, kb);
 						if(!rv) return;
-						return rv.ctxd().numerise(tnf).stpUp(clone1(tnf.locals), kb);
+						return rv.numerise(tnf).stpUp(clone1(tnf.locals), kb);
 					});
 					if(rv) return rv.stpUp(lcls, kb);
 				}

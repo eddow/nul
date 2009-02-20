@@ -22,7 +22,7 @@ nul.eval = {
 			}
 			else cdp.push(c[i]);
 		if(cdp.length >= c.length-1) return;
-		accum = solvedActx(accum).ctxd();
+		accum = solvedActx(accum);
 		if(0>= cdp.length) return accum;
 		cdp.push(accum);
 		return partialActx(cdp);			
@@ -61,7 +61,7 @@ nul.eval = {
 							rv = ctxd.evaluation.evaluated(ctxd, this.kb);
 							if(rv) { chgd = true; ctxd = rv; }
 						}
-						if(!rv && chgd) ctxd = ctxd.ctxd(true).clean();
+						if(!rv && chgd) ctxd = ctxd.summarised().clean();
 					} catch(err) { this.abort(ctxd); throw err; }
 					//TODO: commenter ce bloc
 					if(!chgd && ctxd.deps[0]) for(var d in ctxd.deps[0])
@@ -121,8 +121,7 @@ nul.eval = {
 			return nul.actx.atom(eval('' +
 				nul.asJs(ctxd.components[0], ctxd.charact) +
 				ctxd.charact +
-				nul.asJs(ctxd.components[1], ctxd.charact) ))
-				.ctxd().withLocals(ctxd.locals);
+				nul.asJs(ctxd.components[1], ctxd.charact) )).withLocals(ctxd.locals);
 		}
 	},
 	cumulExpr: {
@@ -132,9 +131,8 @@ nul.eval = {
 				ctxd.components,
 				function(o) { return nul.asJs(o,ctxd.charact); },
 				function(a,b) { return eval( ''+a + ctxd.charact + b ); },
-				function(v) { return nul.actx.atom(v).ctxd().withLocals(ctxd.locals); },
-				function(ops) { return nul.actx.cumulExpr(ctxd.charact, ops)
-										.ctxd().numerise(ctxd.locals.lvl); },
+				function(v) { return nul.actx.atom(v).withLocals(ctxd.locals); },
+				function(ops) { return nul.actx.cumulExpr(ctxd.charact, ops).numerise(ctxd.locals.lvl); },
 				function(o) { return !o.flags.fuzzy && o.free(); }
 			);
 			if(rv) return rv.clean();
@@ -148,7 +146,7 @@ nul.eval = {
 		evaluated: function(ctxd, kb)
 		{
 			return nul.actx.atom(eval( ctxd.charact + nul.asJs(ctxd.components[0],ctxd.charact) ))
-				.ctxd().withLocals(ctxd.locals);
+				.withLocals(ctxd.locals);
 		}
 	},
 	assert: {

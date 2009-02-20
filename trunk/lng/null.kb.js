@@ -242,15 +242,15 @@ nul.kb = function(knowledge) {
 				var vals = [];
 				if(kbs[i]) for(var d=0; d<kbs[i].length; ++d)
 					for(var v=0; v<kbs[i][d].length; ++v) if(kbs[i][d][v]) {
-						lcls.push(nul.actx.local(d+4, v,'-').ctxd());
+						lcls.push(nul.actx.local(d+4, v,'-'));
 						vals.push(kbs[i][d][v].localise(d+4));
 					}
 				if(0< lcls.length) {
-					lcls = nul.actx.staticExpr(lcls).ctxd();
-					vals = nul.actx.staticExpr(vals).ctxd();
-					var prem = nul.actx.unification([lcls, vals]).ctxd();
+					lcls = nul.actx.staticExpr(lcls);
+					vals = nul.actx.staticExpr(vals);
+					var prem = nul.actx.unification([lcls, vals]);
 					if(nul.actx.isC(c,';')) c = c.modify(unshifted(prem,c.components));
-					else c = nul.actx.and3([prem,c.wrap()]).ctxd();
+					else c = nul.actx.and3([prem,c.wrap()]);
 				}
 				return c;
 			});

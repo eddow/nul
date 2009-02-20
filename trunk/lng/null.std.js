@@ -30,15 +30,14 @@ var nul = {
 		var fb = nul.understanding.emptyBase();
 		for(var p in nul.globals) {
 			fb.createFreedom(p, null, true);
-			nul.globals[p].ctxd();
+			nul.globals[p];
 		}
 		return fb;
 	},
 	expression: function(txt)
 	{
 		nul.erroneus = false;
-		return nul.understanding.understand(nul.compile(txt), nul.firstUnderstandBase())
-			.ctxd().numerise();
+		return nul.understanding.understand(nul.compile(txt), nul.firstUnderstandBase()).numerise();
 	},
 	html: function(txt)
 	{

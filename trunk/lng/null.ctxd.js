@@ -29,6 +29,44 @@ nul.ctxd = {
 	*/
 	noBrowse: 'stopBrowsingPlease',
 	itf: {	//Main interface implemented by all ctxd
+/* Makes a summary of components and characteristics :
+ *  Fix flags, dependances, ...
+ */
+		summarised: function() {
+			var dps = [];
+			var flags = {};
+			if(this.components) map(this.components, function(o) {
+				if(nul.debug.assert) assert(o.deps,'Subs summarised.'); 
+				dps.push(nul.lcl.dep.stdDec(o.deps));
+				for(var f in o.flags) flags[f] = true;
+			});
+			map(this.attributes, function(o) {
+				if(nul.debug.assert) assert(o.deps,'Subs summarised.');
+				dps.push(nul.lcl.dep.stdDec(o.deps));
+				for(var f in o.flags) flags[f] = true;
+			});
+
+			if(['=','?','[-]'].contains(this.charact)) flags.failable = true;
+			else if(this.isFailable && this.isFailable()) flags.failable = true;
+			if('{}'== this.charact) delete flags.fuzzy;
+			if(['[-]','[]',':'].contains(this.charact)) flags.fuzzy = true;
+			
+			if(this.makeDeps) dps.push(this.makeDeps());
+			this.deps = nul.lcl.dep.mix(dps);
+			if(this.deps[0]) flags.fuzzy = true;
+			this.flags = flags;
+	
+			//Remove locals declarations if no dependance
+			var rmningLcls = {};
+			if(this.deps[0]) for(var i in this.deps[0]) rmningLcls[i] = true;
+			for(var i=0; i<this.locals.length; ++i) if(!rmningLcls[i]) delete this.locals[i];
+			
+			//TODO: really needed ?
+			this.modify(this.components, this.attributes);
+			if(this.evaluable()) this.flags.dirty = true;
+					
+			return this;
+		},
 		browse: function(behav) {
 			var assertKbLen, assertLc;
 			if(nul.debug.assert && behav.kb) {
@@ -100,7 +138,7 @@ nul.ctxd = {
 			seConcat(lcls, this.locals);
 			var rv = this.browse(nul.ctxd.lclShft(lcls.length-this.locals.length, act));
 			if(!rv) return this;
-			return rv.ctxd(true);
+			return rv.summarised();
 		},
 		//When this expression's locals are moved from (0..#) to (<n>..<n>+#)
 		//<lcls> was the added locals and becomes the whole ones.
@@ -155,7 +193,7 @@ nul.ctxd = {
 		
 		//Transform an expression from kb local-space to expression local-space and vice versa
 		localise: function(inc) {
-			return (this.browse(nul.ctxd.localise(inc||0)) || this.clone()).ctxd(true);
+			return (this.browse(nul.ctxd.localise(inc||0)) || this.clone()).summarised();
 		},
 
 		numerise: function(prnt) {
@@ -212,8 +250,7 @@ nul.ctxd = {
 					if(nul.actx.isC(nComps.parms,':-')) {
 						var flmbd = nComps.parms.stpUp(this.locals);
 						//TODO: use a KB to nul.unify.level() when flattening :- ?
-						var eq = nul.actx.unification([flmbd.components.value, nComps.value])
-							.ctxd().wrap();
+						var eq = nul.actx.unification([flmbd.components.value, nComps.value]).wrap();
 						nComps = {parms: flmbd.components.parms, value: eq};
 					}
 				}
@@ -234,7 +271,7 @@ nul.ctxd = {
 						attr[an],
 						arguments[i].attributes[an], kb);
 				}
-			return this.clone().attributed(attr).ctxd(true);
+			return this.clone().attributed(attr).summarised();
 		},
 		
 		withLocals: function(lcls) {
@@ -251,19 +288,6 @@ nul.ctxd = {
 			return rv;
 		},
 	},
-	std: function(actx) {	//TODO: différencier l'ajout d'interface et la computation des deps/flags
-		for(var i in nul.ctxd.itf) if(!actx[i]) actx[i] = nul.ctxd.itf[i];
-		
-		var dps = [actx.deps];
-		if(!actx.flags) actx.flags = {};
-		map(actx.attributes, function(o) {
-			o.ctxd();
-			dps.push(nul.lcl.dep.stdDec(o.deps));
-			for(var f in o.flags) actx.flags[f] = true;
-		});
-		actx.deps = nul.lcl.dep.mix(dps);
-		return actx.modify(actx.components, actx.attributes);
-	},
 
 	parentise: function(prnt) {
 		return function(c) {
@@ -271,30 +295,6 @@ nul.ctxd = {
 		};
 	},
 
-	stdRecurs: function(actx) {
-		actx.deps = nul.lcl.dep.empty;
-		var dps = [actx.deps];
-		actx.flags = {};
-		if(actx.components) map(actx.components, function(o) {
-			o.ctxd();
-			dps.push(nul.lcl.dep.stdDec(o.deps));
-			for(var f in o.flags) actx.flags[f] = true;
-		});
-
-		if(['=','?','[-]'].contains(actx.charact)) actx.flags.failable = true;
-		else if(actx.isFailable && actx.isFailable()) actx.flags.failable = true;
-		if('{}'== actx.charact) delete actx.flags.fuzzy;
-		if(actx.deps[0]) actx.flags.fuzzy = true;
-		if(['[-]','[]',':'].contains(actx.charact)) actx.flags.fuzzy = true;
-		
-		actx.deps = nul.lcl.dep.mix(dps);
-		var rmningLcls = clone1(actx.locals);
-		for(var i=0; i<rmningLcls.length; ++i) rmningLcls[i] =  undefined;
-		if(actx.deps[0]) for(var i in actx.deps[0]) rmningLcls[i] = actx.locals[i];
-		actx.locals = rmningLcls;
-		nul.ctxd.std(actx);
-		if(actx.evaluable()) actx.flags.dirty = true;
-	},
 	flatBrowse: function(behav, ctxd, cbn) {
 		var assertKbLen, assertLc;
 		if(nul.debug.assert && behav.kb) {
@@ -310,7 +310,7 @@ nul.ctxd = {
 						chg |= !!co;
 						return co||o;
 					});
-				if(chg) ctxd = ctxd.cloneUnsure(null,ats).ctxd(true);
+				if(chg) ctxd = ctxd.cloneUnsure(null,ats).summarised();
 				if(behav[cbn]) ctxd = behav[cbn](ctxd) || ctxd;
 				chg = ctxd!==orig;
 			} catch(err) {
@@ -339,7 +339,7 @@ nul.ctxd = {
 			abort: function() { --this.ctxDelta; },
 			finish: function(ctxd, chgd) {
 				--this.ctxDelta;
-				if(chgd) return ctxd.ctxd(true);
+				if(chgd) return ctxd.summarised();
 			},
 			local: function(ctxd) {
 				var ctxNdx = ctxd.ctxDelta-this.ctxDelta;
@@ -373,7 +373,7 @@ nul.ctxd = {
 			before: function() { ++this.ctxDelta; },
 			finish: function(ctxd, chgd) {
 				--this.ctxDelta;
-				if(chgd) return ctxd.ctxd(true);
+				if(chgd) return ctxd.summarised();
 			},
 			local: function(ctxd) {
 				var rv = ctxd.clone();
@@ -388,7 +388,7 @@ nul.ctxd = {
 				} else if('sup'== act && rv.ctxDelta>this.ctxDelta) --rv.ctxDelta;
 				else if(inOr(act, 'sdn', 'wrp') && rv.ctxDelta>this.ctxDelta) ++rv.ctxDelta;
 				else return;
-				return rv.ctxd(true);
+				return rv.summarised();
 			}
 		};
 	},
@@ -399,7 +399,7 @@ nul.ctxd = {
 			before: function() { ++this.ctxDelta; },
 			finish: function(ctxd, chgd) {
 				--this.ctxDelta;
-				if(chgd) return ctxd.ctxd(true);
+				if(chgd) return ctxd.summarised();
 			},
 			local: function(ctxd) {
 				var rv = ctxd.clone();
@@ -411,7 +411,7 @@ nul.ctxd = {
 				//From expression local-space to kb local-space 
 				else if(rDelta <= rv.ctxDelta) rv.ctxDelta = rDelta-1-rv.ctxDelta;
 				else throw nul.unlocalisable;
-				return rv.ctxd(true);
+				return rv.summarised();
 			}
 		};
 	},
