@@ -32,10 +32,13 @@ nul.kb = function(knowledge) {
 				if(nul.debug.watches) {
 					nul.debug.kevol.log(_lcl, _xpr);
 					if(!this.protectedKb)	//TODO: afficher plusieurs KB, le protégé et l'actuel en colonnes ?
-					//TODO: standrdiser le "context change debug"
+					//TODO: standardiser le "context change debug"
 						nul.debug.kbase.item(lcl.ctxDelta).set(nul.debug.ctxTable(this.knowledge[lcl.ctxDelta]));
 				}
 			}
+			if(this.protectedKb &&
+				this.protectedKb.knowledge.length+lcl.ctxDelta > this.knowledge.length)
+					return lcl;	//if xpr is not fuzzy, returns xpr */
 			return xpr;	
 		},
 		
@@ -202,8 +205,10 @@ nul.kb = function(knowledge) {
 					
 					var trv = cb(cs[i], tmpKb);
 					if(trv) {
-						var strv = trv.known(tmpKb.knowledge, 1);
-						trv = strv?strv.evaluate(tmpKb):trv;
+						//No contextualisation ! Locals from protected knowledge base remains as
+						// they are : they can be precised "afterward" in protected knowledge base. 
+						//TODO: dirty? need to evaluate ?
+						trv = trv.evaluate(tmpKb) || trv;
 						chg = true;
 					} else {
 						trv = cs[i];
@@ -235,10 +240,11 @@ nul.kb = function(knowledge) {
 			return map(rv, function(c, i) {
 				var lcls = [];
 				var vals = [];
-				if(kbs[i]) for(var d=0; d<kbs[i].length; ++d) for(var v=0; v<kbs[i][d].length; ++v) {
-					lcls.push(nul.actx.local(d+4, v,'-').ctxd());
-					vals.push(kbs[i][d][v].localise(d+4));
-				}
+				if(kbs[i]) for(var d=0; d<kbs[i].length; ++d)
+					for(var v=0; v<kbs[i][d].length; ++v) if(kbs[i][d][v]) {
+						lcls.push(nul.actx.local(d+4, v,'-').ctxd());
+						vals.push(kbs[i][d][v].localise(d+4));
+					}
 				if(0< lcls.length) {
 					lcls = nul.actx.staticExpr(lcls).ctxd();
 					vals = nul.actx.staticExpr(vals).ctxd();

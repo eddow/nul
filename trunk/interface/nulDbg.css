@@ -14,6 +14,10 @@ div#evaled {
 	border: 1px black solid;
 }
 
+table#solved td {
+	border: 2px black solid;
+}
+
 a.msTab {
 	padding: 0 1em;
 	border: 0;

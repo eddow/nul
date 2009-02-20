@@ -15,8 +15,7 @@ function isToBrowse(behav, cb, ctxd)
 			!!behav.browse );
 }
 nul.ctxd = {
-	/*
-	browse behaviour defines:
+	/* browse behaviour defines:
 	- browse
 	- browseAttributes(ctxd) : not to browse attributes
 	- browseComponents(ctxd) : not to browse components
@@ -71,6 +70,10 @@ nul.ctxd = {
 					'Knowledge enter/leave paired while browsing ['+assertLc+']'); }
 
 			if(ctxd && ctxd!= this) return ctxd;
+		},
+		//Get a list of non-fuzzy expressions
+		solve: function() {
+			return nul.solve.solve(this);
 		},
 		//Gets the value of this expression after operations effect (unifications, '+',  ...)
 		evaluate: function(kb) {
@@ -248,7 +251,7 @@ nul.ctxd = {
 			return rv;
 		},
 	},
-	std: function(actx) {	//TODO: différencier l'ajout d'interface et la computation des depx/flags
+	std: function(actx) {	//TODO: différencier l'ajout d'interface et la computation des deps/flags
 		for(var i in nul.ctxd.itf) if(!actx[i]) actx[i] = nul.ctxd.itf[i];
 		
 		var dps = [actx.deps];
@@ -256,7 +259,7 @@ nul.ctxd = {
 		map(actx.attributes, function(o) {
 			o.ctxd();
 			dps.push(nul.lcl.dep.stdDec(o.deps));
-			if(o.flags.dirty) actx.flags.dirty = true;
+			for(var f in o.flags) actx.flags[f] = true;
 		});
 		actx.deps = nul.lcl.dep.mix(dps);
 		return actx.modify(actx.components, actx.attributes);
@@ -279,8 +282,10 @@ nul.ctxd = {
 		});
 
 		if(['=','?','[-]'].contains(actx.charact)) actx.flags.failable = true;
-		else if(actx.isFailable) actx.flags.failable = actx.isFailable();
-		if(['<<='].contains(actx.charact)) actx.flags.extractible = true;
+		else if(actx.isFailable && actx.isFailable()) actx.flags.failable = true;
+		if('{}'== actx.charact) delete actx.flags.fuzzy;
+		if(actx.deps[0]) actx.flags.fuzzy = true;
+		if(['[-]','[]',':'].contains(actx.charact)) actx.flags.fuzzy = true;
 		
 		actx.deps = nul.lcl.dep.mix(dps);
 		var rmningLcls = clone1(actx.locals);

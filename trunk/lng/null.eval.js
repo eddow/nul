@@ -53,15 +53,17 @@ nul.eval = {
 				if(nul.debug.levels) assert(ctxd.locals.lvl == this.kb.knowledge.length-1, 'Evaluation level');
 				try {
 					try {
+						var rv;
 						if(ctxd.evaluation && (
 							!ctxd.evaluation.evaluable ||
 							ctxd.evaluation.evaluable(ctxd)
 						) ) {
-							var rv = ctxd.evaluation.evaluated(ctxd, this.kb);
+							rv = ctxd.evaluation.evaluated(ctxd, this.kb);
 							if(rv) { chgd = true; ctxd = rv; }
 						}
-						else ctxd = ctxd.ctxd(true);
+						if(!rv && chgd) ctxd = ctxd.ctxd(true).clean();
 					} catch(err) { this.abort(ctxd); throw err; }
+					//TODO: commenter ce bloc
 					if(!chgd && ctxd.deps[0]) for(var d in ctxd.deps[0])
 						if(nul.lcl.slf!= d && 'number'!= typeof d)
 							{ chgd = true; break; }
@@ -94,9 +96,7 @@ nul.eval = {
 					try {
 						rv = kb.leave(rv)
 							.rDevelop(obj, 0, nul.lcl.rcr)
-							//.numerise(ctxd.locals.lvl+1)
 							.evaluate(kb);
-							//.numerise(ctxd.locals.lvl);
 					} finally { kb.enter(rv); }
 				}
 						
@@ -135,7 +135,7 @@ nul.eval = {
 				function(v) { return nul.actx.atom(v).ctxd().withLocals(ctxd.locals); },
 				function(ops) { return nul.actx.cumulExpr(ctxd.charact, ops)
 										.ctxd().numerise(ctxd.locals.lvl); },
-				function(o) { return !!o.free(); }
+				function(o) { return !o.flags.fuzzy && o.free(); }
 			);
 			if(rv) return rv.clean();
 		}
@@ -143,7 +143,7 @@ nul.eval = {
 	preceded: {
 		evaluable: function(ctxd)
 		{
-			return ctxd.free();
+			return ctxd.free() && !ctxd.flags.fuzzy;
 		},
 		evaluated: function(ctxd, kb)
 		{
@@ -193,7 +193,7 @@ nul.eval = {
 					cdp.push(ctxd.components[i]);
 			if(0== cdp.length) return ctxd.components[i].stpUp(ctxd.locals, kb);
 			cdp.push(ctxd.components[i]);
-			if(cdp.length < ctxd.components.length) return ctxd.modify(cdp).clean();
+			if(cdp.length < ctxd.components.length) return ctxd.clone(cdp).clean();
 		}
 	},
 	or3: {
@@ -203,7 +203,7 @@ nul.eval = {
 			var rv = kb.trys(
 				'OR3', ctxd.components, ctxd.locals,
 				function(c, kb) { return c.browse(nul.eval.evaluate(kb)); });
-			if(rv && isArray(rv)) rv = ctxd.modify(rv);
+			if(rv && isArray(rv)) rv = ctxd.clone(rv);
 			return rv;
 		}
 	},
@@ -221,7 +221,7 @@ nul.eval = {
 						if(!cs[i].flags.failable && d>=kbs[i].length) return cs.splice(0,i+1);
 					}
 				});
-			if(rv && isArray(rv)) rv = ctxd.modify(rv);
+			if(rv && isArray(rv)) rv = ctxd.clone(rv);
 			return rv;
 		}
 	},

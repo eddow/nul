@@ -25,9 +25,9 @@ nul.understanding = {
 			createFreedom: function(name, type, stringed)
 			{
 				if(this.parms[name]) throw nul.semanticException('Freedom declared twice: '+name);
-				this.parms[name] = stringed?
-					{ lindx: name, type: type }:
-					{ lindx: this.nbrI++, type: type };
+				var lindx = stringed?name:this.nbrI++;
+				this.parms[name] = { lindx: lindx, type: type };
+				return lindx;
 			},
 			setSelf: function(name)
 			{
@@ -121,9 +121,19 @@ nul.understanding = {
 	},
 	
 	definition: function(ctxtl, ub, locals) {
-		ub.createFreedom(ctxtl.decl, ctxtl.type?
-			nul.understanding.understand(ctxtl.type, ub):null);
-		return nul.actx.definition(ctxtl.decl, nul.understanding.understand(ctxtl.value, ub, 'noub'));
+		if(ctxtl.type) {
+			var lindx = ub.createFreedom(ctxtl.decl);
+			var val = nul.understanding.understand(ctxtl.value, ub);
+			ub = nul.understanding.emptyBase(ub);
+			var tp = nul.understanding.understand(ctxtl.type, ub);
+			var lcl = nul.actx.local(2, lindx, ctxtl.decl);
+			return nul.actx.and3([
+				nul.actx.application(tp, lcl),
+				val]);
+		} else {
+			ub.createFreedom(ctxtl.decl);
+			return nul.actx.definition(ctxtl.decl, nul.understanding.understand(ctxtl.value, ub, 'noub'));
+		}
 	},
 	selfed: function(ctxtl, ub, locals) {
 		ub.setSelf(ctxtl.decl);

@@ -28,6 +28,7 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 <script type="text/javascript" src="../lng/null.lcl.js"></script>
 <script type="text/javascript" src="../lng/null.kb.js"></script>
 <script type="text/javascript" src="../lng/null.natives.js"></script>
+<script type="text/javascript" src="../lng/null.solve.js"></script>
 </head>
 <body onload="init();">
 	<div id="dbgOptions">
@@ -42,6 +43,7 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 	<textarea cols="80" rows="7" id="source"></textarea>
 	<input type="button" onclick="testEvaluation();" value="eval"></input>
 	<div id="evaled"></div>
+	<table id="solved"></table>
 	<div id="recur"></div>
 	<div id="info">
 		<input type="hidden" id="infoTS" value="values" />

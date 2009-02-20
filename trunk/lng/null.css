@@ -99,7 +99,7 @@ a.flags div {
 }
 
 .flags .failable { background-color: red; }
-.flags .extractible { background-color: green; }
+.flags .fuzzy { background-color: turquoise; }
 .flags .dirty { background-color: blue; }
 
 .flags {

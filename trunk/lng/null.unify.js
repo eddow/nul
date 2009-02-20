@@ -113,6 +113,17 @@ nul.unify = {
 		return 'unk';
 	},
 	
+	digg: function(a, b, kb) {
+		var rv = nul.unify.subs(a, b, kb);
+		if('unk'!== rv) return rv?rv.addAttr(kb, a, b):rv;
+
+		rv = nul.unify.vcvs(a, b, kb);
+		if('unk'!== rv) return rv?rv.addAttr(kb, a, b):rv;
+		rv = nul.unify.vcvs(b, a, kb);
+		if('unk'!== rv) return rv?rv.addAttr(kb, a, b):rv;
+		return 'unk';
+	},
+	
 	//<a> and <b> are on the same level
 	//<a> and <b> have distinct locals
 	//returns ctxd or nothing if unification unchanged 
@@ -120,23 +131,20 @@ nul.unify = {
 		if(nul.debug.levels) assert(a.locals.lvl==b.locals.lvl, 'Unification levels : '+a.locals.lvl+' and '+b.locals.lvl)
 	
 		try {
-			var rv = nul.unify.subs(a, b, kb);
-			if('unk'!== rv) return rv?rv.addAttr(kb, a, b):rv;
-			
-			var t = a;
-			var ar = a.deps[0] && a.deps[0][nul.lcl.slf];
-			var br = b.deps[0] && b.deps[0][nul.lcl.slf];
-			if(ar && !br) t = a.rDevelop(b);
-			if(br && !ar) b = b.rDevelop(a);
-			a = t;
-	
-			rv = nul.unify.vcvs(a, b, kb);
-			if('unk'!== rv) return rv?rv.addAttr(kb, a, b):rv;
-			rv = nul.unify.vcvs(b, a, kb);
-			if('unk'!== rv) return rv?rv.addAttr(kb, a, b):rv;
-			
-			if(!a.free() || !b.free()) return;
-			nul.fail('Unification failure');
+			var rv = nul.unify.digg(a, b, kb);
+			if('unk'== rv) {
+				var ar = !!(a.deps[0] && a.deps[0][nul.lcl.slf]);
+				var br = !!(b.deps[0] && b.deps[0][nul.lcl.slf]);
+				if(ar ^ br) {
+					var fa = a;
+					if(ar) a = a.rDevelop(b).numerise(a).evaluate(kb);
+					if(br) b = b.rDevelop(fa).numerise(b).evaluate(kb);
+					rv = nul.unify.digg(a, b, kb);
+				}
+			}
+			if('unk'!= rv) return rv;
+
+			if(a.free() && b.free()) nul.fail('Unification failure');
 		} catch(err) {
 			//Localisation failure means a localcannot be affected because of context position
 			//  (see ctxd.localise throwing nul.unlocalisable)
