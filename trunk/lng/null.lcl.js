@@ -20,10 +20,11 @@ nul.lcl = {
 			return true;
 		},
 		//Create a one-local dependance
-		dep: function(delta, lndx) {
+		//A dependance toward ctxDelta <delta>, lindx <lndx> and depending <cnt> times
+		dep: function(delta, lndx, cnt) {
 			var rv = {};
 			rv[delta] = {};
-			rv[delta][lndx] = true;
+			rv[delta][lndx] = cnt||1;
 			return rv;
 		},
 		//mix the dependances <d1> and <d2>
@@ -35,7 +36,9 @@ nul.lcl = {
 				for(var d in d1[dn])
 				{
 					if(!rv[d]) rv[d] = {};
-					for(var l in d1[dn][d]) rv[d][l] = d1[dn][d][l];
+					for(var l in d1[dn][d])
+						if(!rv[d][l]) rv[d][l] = d1[dn][d][l];
+						else rv[d][l] += d1[dn][d][l];
 				}
 			return rv;
 		},

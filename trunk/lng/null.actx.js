@@ -110,8 +110,11 @@ nul.actx = {
 					keys(this.flags));
 				if(this.deps && !is_empty(this.deps)) {
 					for(var i in this.deps) {
-						aDeps += '<tr><th>'+i+'</th><td>'+keys(this.deps[i]).join('</td><td>')+'</td></tr>';
-						aDepsTtl += i+'['+keys(this.deps[i]).join(',')+']';
+						var ds = [];
+						for(var j in this.deps[i])
+							ds.push(j+':'+this.deps[i][j]);
+						aDeps += '<tr><th>'+i+'</th><td>'+ds.join('</td><td>')+'</td></tr>';
+						aDepsTtl += i+'['+ds.join(',')+']';
 					}
 					aDeps = nul.actx.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
 				}
@@ -144,9 +147,9 @@ nul.actx = {
 				return 'span'==brn?('<span class="xpr">'+str+'</span>'):str;
 			};
 			
-			itm.components = ops;
 			for(var i in nul.ctxd.itf) if(!itm[i]) itm[i] = nul.ctxd.itf[i];
-			itm.summarised()
+			itm.modify(ops);
+			itm.summarised(true);
 			return itm;
 		},
 		listOp: function(itm, chrct, ops, strC) {

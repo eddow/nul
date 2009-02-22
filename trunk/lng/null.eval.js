@@ -30,14 +30,15 @@ nul.eval = {
 
 	evaluate: function(kb) {
 		return {
+			name: 'evaluation',
 			kb: kb,
 			newComponent: function(ctxd, oldComp, newComp) {
-				if(oldComp!= newComp) return newComp.numerise(ctxd);
+				if(oldComp!= newComp) return newComp.numerise(ctxd).clean();
 				else return newComp.clean();
 			},
 			newAttribute: function(ctxd, name, oldAttr, newAttr) {
 				this.kb.know(name, newAttr, 1);
-				if(oldAttr!= newAttr) return newAttr.numerise(ctxd);
+				if(oldAttr!= newAttr) return newAttr.numerise(ctxd).clean();
 				else return newAttr.clean();
 			},
 			browse: function(ctxd) {
@@ -63,10 +64,6 @@ nul.eval = {
 						}
 						if(!rv && chgd) ctxd = ctxd.summarised().clean();
 					} catch(err) { this.abort(ctxd); throw err; }
-					//TODO: commenter ce bloc
-					if(!chgd && ctxd.deps[0]) for(var d in ctxd.deps[0])
-						if(nul.lcl.slf!= d && 'number'!= typeof d)
-							{ chgd = true; break; }
 					
 					return this.kb.leave(chgd?ctxd:undefined);
 				} finally { if(nul.debug.assert) assert(assertKbLen== this.kb.knowledge.length+1,
@@ -89,16 +86,8 @@ nul.eval = {
 					var rv = obj.take(apl, kb, ctxd.locals);
 				//});
 				if(!rv) return rv;
-				if(rv.deps[0] && rv.deps[0][nul.lcl.rcr]) {
-					
-				//TODO: optimise :)
-				//TODO: workaround with leave/enter
-					try {
-						rv = kb.leave(rv)
-							.rDevelop(obj, 0, nul.lcl.rcr)
-							.evaluate(kb);
-					} finally { kb.enter(rv); }
-				}
+				if(rv.deps[0] && rv.deps[0][nul.lcl.rcr])	//TODO: optimise :)
+					rv = rv.rDevelop(obj, 0, nul.lcl.rcr).dirty();
 						
 				return rv;
 			}
@@ -125,6 +114,13 @@ nul.eval = {
 		}
 	},
 	cumulExpr: {
+		evaluable: function(ctxd)
+		{
+			var nbrCumulable = 0;
+			for(var i=0; i<ctxd.components.length; ++i)
+				if(ctxd.components[i].free() && !ctxd.components.fuzzy
+					&& 1< ++nbrCumulable) return true;
+		},
 		evaluated: function(ctxd, kb)
 		{
 			var rv = nul.eval.cumul(
@@ -172,13 +168,9 @@ nul.eval = {
 		{
 			var rv = nul.unify.multiple(ctxd.components, kb, ctxd.locals)
 			if(!rv) return;
-			if(1== rv.length) {
-				rv = rv[0].stpUp(ctxd.locals, kb);
-				//TODO: workaround with leave/enter
-				try { rv = kb.leave(rv).evaluate(kb); }
-				finally { kb.enter(rv); }
-				return rv;
-			}
+			if(1== rv.length)
+				return rv[0].stpUp(ctxd.locals, kb);
+
 			return ctxd.clone(rv);
 		}
 	},
@@ -201,7 +193,7 @@ nul.eval = {
 			var rv = kb.trys(
 				'OR3', ctxd.components, ctxd.locals,
 				function(c, kb) { return c.browse(nul.eval.evaluate(kb)); });
-			if(rv && isArray(rv)) rv = ctxd.clone(rv);
+			if(rv && isArray(rv)) rv = ctxd.clone(rv).summarised().clean();
 			return rv;
 		}
 	},
@@ -213,7 +205,7 @@ nul.eval = {
 				'XOR3', ctxd.components, ctxd.locals,
 				function(c, kb) { return c.browse(nul.eval.evaluate(kb)); },
 				function(cs, kbs) {
-					for(var i=0; i<cs.length; ++i) {
+					for(var i=0; i<cs.length-1; ++i) {
 						var d=0;
 						while(d<kbs[i].length && 0>=kbs[i][d].length) ++d;
 						if(!cs[i].flags.failable && d>=kbs[i].length) return cs.splice(0,i+1);

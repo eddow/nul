@@ -11,7 +11,7 @@
 //returns ctxd or nothing if unification unchanged 
 nul.unify = {
 	multiple: function(us, kb, lcls) {
-		//us = map(us, function(u) { return u.lclsUpg(lcls, kb) });
+		us = map(us, function(u) { return u.lclsUpg(lcls, kb) });
 		us = clone1(us);
 		return kb.knowing(us, function(kb) {
 			var ununified, rv = [], unifion, fUsLn = us.length;
@@ -37,7 +37,7 @@ nul.unify = {
 	level: function(a, b, kb) {	//don't touch A & B; gather their ctx0 locals
 		var rv = nul.unify.chewed(a, b, kb);
 		if(rv) return rv;
-		return nul.actx.unification([a.wrap(kb),b.wrap(kb)]).numerise(a.locals.prnt);
+		return nul.actx.unification([a.wrap(kb),b.wrap(kb)]).numerise(a.locals.prnt).clean();
 	},
 	
 	//<a> and <b> are on the same level, one more down than <kb>
@@ -67,8 +67,8 @@ nul.unify = {
 	vcvs: function(a, b, kb) {
 		if(nul.actx.isC(a,';')) {
 			var cs = clone1(a.components);
-			cs.push(nul.unify.sub1(cs.pop(), b, kb));
-			return a.clone(cs).summarised().clean();
+			cs.push(nul.unify.sub1(cs.pop(), b, kb)/*.dirty()*/);
+			return a.clone(cs).summarised();
 		}
 	
 		if(nul.actx.isC(a,'[]')) return nul.unify.orDist(a.components, a.locals, b, kb);
@@ -76,7 +76,7 @@ nul.unify = {
 		if(nul.actx.isC(a,':-')) {
 			return a.clone({
 				parms: nul.unify.sub1(a.components.parms, b, kb),
-				value: a.components.value
+				value: a.components.value/*.dirty()*/
 			}).summarised();
 		}
 		
@@ -158,6 +158,7 @@ nul.unify = {
 	//<b> and <alcls>(<as>' parent locals) are distinct
 	//always returns ctxd 
 	orDist: function(as, alcls, b, kb) {
+		//TODO: as.evaluated (if dirty || common deps) ??
 		var rv = kb.trys(
 			'OR distribution', as, alcls,
 			function(c, kb) { return nul.unify.sub1(c, b, kb); });
@@ -179,9 +180,6 @@ nul.unify = {
 
 		if(1== as.length) {
 			as = as[0].stpUp(alcls, kb);
-			//TODO: workaround with leave/enter ?
-			//try { as = kb.leave(as).evaluate(kb); }
-			//finally { kb.enter(as); }
 			return as;
 		}
 

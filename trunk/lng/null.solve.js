@@ -23,6 +23,7 @@ nul.solve = {
 	},
 	tryed: function(ctxd, cn) {
 		return ctxd.browse({
+			name: 'solve try',
 			browse: true,
 			cn: cn,
 			before: function(ctxd) {

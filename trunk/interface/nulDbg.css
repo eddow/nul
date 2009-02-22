@@ -73,18 +73,9 @@ td.ke.c0 {
 	border-right: 1px solid black;
 }
 
-#logs .actionLog {
-	background-color: lightgreen;
-}
-#logs .knowledgeLog {
-	background-color: pink;
-}
-#logs .leaveLog {
-	background-color: lightblue;
-}
-#logs .errorLog {
-	background-color: red;
-}
-#logs .failLog {
-	background-color: pink;
-}
+#logs .actionLog { background-color: lightgreen; }
+#logs .knowledgeLog { background-color: pink; }
+#logs .leaveLog { background-color: lightblue; }
+#logs .errorLog { background-color: red; }
+#logs .failLog { background-color: pink; }
+#logs .infoLog { background-color: papayawhip; }

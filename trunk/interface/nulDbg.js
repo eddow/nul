@@ -24,6 +24,7 @@ function init()
 
 function evaluate()
 {
+	while(0< svd.rows.length) svd.deleteRow(0);
 	rcr.innerHTML = '';
 	prd.innerHTML = 'parsing...';
 	evd.innerHTML = '';
@@ -33,8 +34,8 @@ function evaluate()
 	v = v.evaluate();
 	evd.innerHTML = v.toHTML();
 	
-	while(0< svd.rows.length) svd.deleteRow(0);
 	svd.insertRow(0).insertCell(0).innerHTML = 'solving...';
+	nul.debug.log('infoLog')('Solving');
 	v = v.solve();
 	while(0< svd.rows.length) svd.deleteRow(0);
 	for(var i=0; i<v.length; ++i)

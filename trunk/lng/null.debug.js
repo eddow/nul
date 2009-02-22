@@ -100,9 +100,14 @@ nul.debug = {
 	assert: true,
 	logging: false,
 	watches: false,
+	lcLimit: 1000,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
 		return nul.debug.callStack.item().get()[0];
+	},
+	logCount: function() {
+		if(nul.debug.lcLimit< nul.debug.lc) throw nul.internalException('LOG limit exceeded');
+		return nul.debug.lc++;
 	},
 	log: function(tp) {
 		return nul.debug.logging ? function(v) {
@@ -110,9 +115,9 @@ nul.debug = {
 			v.unshift(nul.debug.action());
 			if(nul.debug.watches) v.push(nul.debug.kbase.length());
 			else v.push();
-			v.unshift(nul.debug.lc++);
+			v.unshift(nul.debug.logCount());
 			return nul.debug.logs.log(v).addClassName(tp);
-		} : function(v) { ++nul.debug.lc; };
+		} : function(v) { nul.debug.logCount(); };
 	},
 	warnRecursion: function(v)
 	{

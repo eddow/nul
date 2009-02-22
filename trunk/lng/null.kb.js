@@ -36,9 +36,10 @@ nul.kb = function(knowledge) {
 						nul.debug.kbase.item(lcl.ctxDelta).set(nul.debug.ctxTable(this.knowledge[lcl.ctxDelta]));
 				}
 			}
-			if(this.protectedKb &&
-				this.protectedKb.knowledge.length+lcl.ctxDelta > this.knowledge.length)
-					return lcl;	//if xpr is not fuzzy, returns xpr */
+//			if(this.protectedKb &&
+//				this.protectedKb.knowledge.length+lcl.ctxDelta > this.knowledge.length)
+				//If lcl is a "try" local, then let it 'lcl' because it can be fixed "by after"
+					return xpr.flags.fuzzy?lcl:xpr;
 			return xpr;	
 		},
 		
@@ -82,7 +83,7 @@ nul.kb = function(knowledge) {
 			xpr = xpr.contextualize(
 				nul.lcl.selfCtx(lcl.dbgName, lcl.lindx),
 				lcl.ctxDelta) || xpr;
-			if(this.isKnown(lcl)) xpr = nul.unify.level(xpr, this.known(lcl), this);	//TODO: workaround with leave/enter
+			if(this.isKnown(lcl)) xpr = nul.unify.level(xpr, this.known(lcl), this);
 			if(nul.lcl.slf!= lcl.lindx) return this.know(lcl, xpr);
 			this.know(lcl, xpr);
 			return lcl;
@@ -117,19 +118,27 @@ nul.kb = function(knowledge) {
 		// This means that the local variables remembered by this left context will be replaced in <ctxd>.
 		//Returns the contextualised <ctxd>
 		leave: function(ctxd) {
+			var cmplKnlg = clone1(this.knowledge);
 			var ctx = this.knowledge.shift();
-			if(nul.debug.assert) {
-				assert(ctx, 'Knowledge coherence');
-				assert('function'== typeof ctx['+entrHTML'], 'Valid context');
-				if(nul.debug.watches)
-					assert(nul.debug.kbase.length()==this.knowledge.length+1, 'Leaving debug level');
-			}
 			var tkb = this;
 			if(nul.debug) {
+				if(nul.debug.assert) {
+					assert(ctx, 'Knowledge coherence');
+					assert('function'== typeof ctx['+entrHTML'], 'Valid context');
+					if(nul.debug.watches)
+						assert(nul.debug.kbase.length()==this.knowledge.length+1, 'Leaving debug level');
+				}
 				nul.debug.log('leaveLog')(nul.debug.endCollapser('Leave', 'Produce'),
 					(ctxd?(nul.actx.tblHTML(ctxd)+ ' after '):'') + ctx['+entrHTML']());
 				if(nul.debug.watches) nul.debug.kbase.pop();
 				if(nul.debug.logging) if(ctx['+ll'] == nul.debug.logs.length()) nul.debug.logs.unlog();
+				if(nul.debug.assert && ctxd) {
+					var cctxd = isArray(ctxd)?ctxd:[ctxd];
+					if(cctxd.length == ctx['+entr'].length) {
+						for(var i=0; i<cctxd.length; ++i) if(!cctxd[i].cmp(ctx['+entr'][i])) break;
+						assert(i<cctxd.length, 'Never produce duplicata');
+					}
+				}
 				if(nul.debug.levels) {
 					map(ctx['+entr'], function(c) {
 						assert(c.locals.lvl == tkb.knowledge.length, 'Leaving level entry preservation');
@@ -141,11 +150,20 @@ nul.kb = function(knowledge) {
 			}
 			if(ctxd) {
 				if(ctx[nul.lcl.slf]) delete ctx[nul.lcl.slf];
+				//If the expression depends only once of a local
+				//Even if this local is known to have a fuzzy value,
+				//Replace the value when contextualising
+				//note: forcing is made by removing the fuzzy flag that'll be added on
+				// contextualise::local summarised
+				var deps = isArray(ctxd)?ctxd[0].deps:ctxd.deps;
+				if(deps[0]) for(var d in deps[0]) if(1==deps[0][d] && ctx[d] && ctx[d].flags.fuzzy)
+					delete ctx[d].flags.fuzzy; 
 				ctxd = m1a(ctxd, function(c) {
-						var sc = c.contextualize(ctx);
+						var sc = c.known(cmplKnlg);
 						//TODO: add this line and be optimised !
-						//if(c.flags.dirty) sc = (sc||c);
-						return sc?(sc.evaluate(tkb) || sc):c;
+						if(c.flags.dirty) sc = (sc||c);
+						sc = sc?(sc.evaluate(tkb) || sc):c;
+						return sc.fuzzyPremiced([ctx]);
 					});
 			} else if(nul.debug.assert)
 				assert(!ctx[nul.lcl.slf],'ar-developement need means changement');
@@ -205,10 +223,12 @@ nul.kb = function(knowledge) {
 					
 					var trv = cb(cs[i], tmpKb);
 					if(trv) {
+						var strv = trv.known(tmpKb.knowledge, 1);
+						trv = strv?strv.evaluate(tmpKb):trv;
 						//No contextualisation ! Locals from protected knowledge base remains as
 						// they are : they can be precised "afterward" in protected knowledge base. 
 						//TODO: dirty? need to evaluate ?
-						trv = trv.evaluate(tmpKb) || trv;
+						//trv = trv.evaluate(tmpKb) || trv;
 						chg = true;
 					} else {
 						trv = cs[i];
@@ -223,10 +243,10 @@ nul.kb = function(knowledge) {
 				}
 			if(!chg) {
 				if(!scb) return;
-				rv = clone1(cs);
+				rv = scb(clone1(cs), kbs);
+				if(!rv) return;
 			}
-			if(scb) rv = scb(rv, kbs) || rv;
-			if(rv == cs) return;
+			else if(scb) rv = scb(rv, kbs) || rv;
 			switch(rv.length)
 			{
 				case 0: nul.fail('No valid case in '+dsc);
@@ -238,20 +258,7 @@ nul.kb = function(knowledge) {
 				return rv[0].stpUp(lcls, this);
 			}
 			return map(rv, function(c, i) {
-				var lcls = [];
-				var vals = [];
-				if(kbs[i]) for(var d=0; d<kbs[i].length; ++d)
-					for(var v=0; v<kbs[i][d].length; ++v) if(kbs[i][d][v]) {
-						lcls.push(nul.actx.local(d+4, v,'-'));
-						vals.push(kbs[i][d][v].localise(d+4));
-					}
-				if(0< lcls.length) {
-					lcls = nul.actx.staticExpr(lcls);
-					vals = nul.actx.staticExpr(vals);
-					var prem = nul.actx.unification([lcls, vals]);
-					if(nul.actx.isC(c,';')) c = c.modify(unshifted(prem,c.components));
-					else c = nul.actx.and3([prem,c.wrap()]);
-				}
+				if(kbs[i]) return c.fuzzyPremiced(kbs[i]);
 				return c;
 			});
 		}
