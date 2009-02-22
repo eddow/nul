@@ -20,7 +20,7 @@ nul.solve = {
 		} catch(err) { if(nul.failure!= err) throw err; }
 		if(0== cn) return [ctxd]
 		return rv;
-	},
+	}.describe(function(ctxd) { return 'Solve '+ctxd.toHTML(); }),
 	tryed: function(ctxd, cn) {
 		return ctxd.browse({
 			name: 'solve try',
@@ -36,7 +36,7 @@ nul.solve = {
 				} 
 			},
 			finish: function(ctxd, chgd) {
-				if(chgd) return ctxd;
+				if(chgd) return ctxd.summarised();
 			}
 		});
 	}

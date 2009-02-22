@@ -8,15 +8,16 @@
  
 nul.exception = function(type, msg, chrct)
 {
-	nul.debug.log('errorLog')('Error: '+type, msg);
 	var err = { nul: true, type: type, message: msg,
 		callStack: nul.debug.watches? nul.debug.callStack.value():null,
 		kb: nul.debug.watches? nul.debug.kbase.value():null,
 		chrct: chrct };
 	if(!nul.erroneus) nul.erroneus = err;
 	else nul.erroneus.follow = err;
+	nul.debug.log('errorLog')('Error: '+type, msg);
 	return nul.erroneus;
 };
+
 nul.exception.notice = function(err)
 {
 	if(err.fileName && err.stack && !nul.erroneus) {

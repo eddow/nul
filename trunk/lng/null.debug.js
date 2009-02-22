@@ -100,13 +100,16 @@ nul.debug = {
 	assert: true,
 	logging: false,
 	watches: false,
-	lcLimit: 1000,
+	lcLimit: /*1000*/0,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
 		return nul.debug.callStack.item().get()[0];
 	},
 	logCount: function() {
-		if(nul.debug.lcLimit< nul.debug.lc) throw nul.internalException('LOG limit exceeded');
+		if(0< nul.debug.lcLimit && nul.debug.lcNextLimit< nul.debug.lc) {
+			nul.debug.warnRecursion();
+			nul.debug.lcNextLimit += nul.debug.lcLimit;
+		}
 		return nul.debug.lc++;
 	},
 	log: function(tp) {
@@ -121,8 +124,10 @@ nul.debug = {
 	},
 	warnRecursion: function(v)
 	{
-		nul.debug.watch(v);
-		if(!confirm('Keep on recursion?')) nul.fail('Broken by debugger');
+		if(nul.erroneus) return;
+		if(v) nul.debug.watch(v);
+		nul.debug.applyTables();
+		if(!confirm('Keep on recursion?')) throw nul.internalException('Broken by debugger');
 	},
 	watch: function(v)
 	{
@@ -161,6 +166,7 @@ nul.debug = {
 		nul.debug.lc = 0;
 		nul.debug.collapsing = {};
 		nul.debug.toPair = [];
+		nul.debug.lcNextLimit = nul.debug.lcLimit;
 	},
 	collapser: function(html) {
 		nul.debug.toPair.push(this.lc);

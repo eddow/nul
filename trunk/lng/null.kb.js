@@ -36,11 +36,10 @@ nul.kb = function(knowledge) {
 						nul.debug.kbase.item(lcl.ctxDelta).set(nul.debug.ctxTable(this.knowledge[lcl.ctxDelta]));
 				}
 			}
-//			if(this.protectedKb &&
-//				this.protectedKb.knowledge.length+lcl.ctxDelta > this.knowledge.length)
-				//If lcl is a "try" local, then let it 'lcl' because it can be fixed "by after"
-					return xpr.flags.fuzzy?lcl:xpr;
-			return xpr;	
+			//if(this.protectedKb &&
+				//this.protectedKb.knowledge.length+lcl.ctxDelta > this.knowledge.length)
+				//If lcl is a "try" local, ..;
+			return xpr.flags.fuzzy?lcl:xpr;
 		},
 		
 		protectedKnowledge: function(lcl, fct) {
@@ -157,7 +156,8 @@ nul.kb = function(knowledge) {
 				// contextualise::local summarised
 				var deps = isArray(ctxd)?ctxd[0].deps:ctxd.deps;
 				if(deps[0]) for(var d in deps[0]) if(1==deps[0][d] && ctx[d] && ctx[d].flags.fuzzy)
-					delete ctx[d].flags.fuzzy; 
+					delete ctx[d].flags.fuzzy;
+				//TODO: bouger la réévaluation dans une boucle dans 'knowing'
 				ctxd = m1a(ctxd, function(c) {
 						var sc = c.known(cmplKnlg);
 						//TODO: add this line and be optimised !

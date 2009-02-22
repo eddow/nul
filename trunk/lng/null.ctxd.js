@@ -142,19 +142,21 @@ nul.ctxd = {
 						vals.push(knwldg[d][v].localise(d+3));
 					}
 			if(0>= lcls.length) return this;
-			if(1==lcls.length && this.lindx == lcls[0].lindx) {
-				if(0== this.ctxDelta) return knwldg[0][this.lindx].localise(0);
+			if(1==lcls.length && (
+					this.lindx == lcls[0].lindx ||
+					this.cmp(vals[0]) /*TODO: compare within another ctxDelta*/)) {
+				if(3== lcls[0].ctxDelta) return knwldg[0][lcls[0].lindx].localise(0);
 				return nul.actx.unification([
-					nul.actx.local(d+2, v,'-'),
-					knwldg[d][v].localise(d+2)]);
+					nul.actx.local(lcls[0].ctxDelta-1, lcls[0].lindx,'-'),
+					knwldg[lcls[0].ctxDelta-3][lcls[0].lindx].localise(lcls[0].ctxDelta-1)]);
 			}
 			var xpr = this;
 			for(var i=0; i<vals.length; ++i) {
 				var prem = nul.actx.unification([lcls[i], vals[i]]);
 				if(nul.actx.isC(xpr,';')) xpr = xpr.modify(unshifted(prem,xpr.components));
 				else {
-					var lcls = [];
-					xpr = nul.actx.and3([prem,xpr.stpDn(lcls)]).withLocals(lcls);
+					var rlcls = [];
+					xpr = nul.actx.and3([prem,xpr.stpDn(rlcls)]).withLocals(rlcls);
 				}
 			}
 			return xpr.summarised()

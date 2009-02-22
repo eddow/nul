@@ -314,8 +314,10 @@ nul.actx = {
 				//TODO: remplacer rcr AVANT unification ?
 				var rv = kb.knowing([this, apl], function(kb) {
 					var rv = nul.unify.sub1(unf, apl, kb);
-					return (rv.rDevelop(rcr, 1) || rv).stpUp(tlcls, kb);
-				}).stpUp(lcls, kb);
+					//if(rv) rv = rv.stpUp(tlcls, kb).clean();
+					//return rv.rDevelop(rcr, 0) || rv;
+					return (rv.rDevelop(rcr, 1) || rv).stpUp(tlcls, kb).clean();
+				}).stpUp(lcls, kb).clean();
 				if(!nul.actx.isC(rv,':-') || nul.actx.isC(apl,':-')) return rv;
 				return rv.components.value.stpUp(lcls, kb);
 			}
