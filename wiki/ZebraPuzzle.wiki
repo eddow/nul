@@ -72,3 +72,43 @@ Some clues speak about house proximity. It then specifies a number ({{{N}}} stan
 Are not expressed here :
  * The house have five different numbers from 1 to 5
  * nations, smokings, animals, colors and drinks are all different
+Indeed, these specifications are not needed.
+
+Now, this program solves but this NUL-optimised program :
+{{{
+\/clr1 \/nat1 \/smk1 \/anm1 \/drn1
+\/clr2 \/nat2 \/smk2 \/anm2 \/drn2
+\/clr3 \/nat3 \/smk3 \/anm3 \/drn3
+\/clr4 \/nat4 \/smk4 \/anm4 \/drn4
+\/clr5 \/nat5 \/smk5 \/anm5 \/drn5
+
+{{ (1, clr1, nat1, smk1, anm1, drn1)
+[] (2, clr2, nat2, smk2, anm2, drn2)
+[] (3, clr3, nat3, smk3, anm3, drn3)
+[] (4, clr4, nat4, smk4, anm4, drn4)
+[] (5, clr5, nat5, smk5, anm5, drn5)
+}} S
+
+S[1,_,"norwegian",_,_,_];
+S[3,_,_,_,_,"milk"];
+S[_,"red","english",_,_,_];
+S[_,_,"spainyard",_,"dog",_];
+S[_,"green",_,_,_,"coffee"];
+S[_,_,"ukrainian",_,_,"tea"];
+(N n S[n+1,"green",_,_,_,_]; S[n, "ivory",_,_,_,_]);
+(N n S[n,_,"norwegian",_,_,_]; S[(n-1[]n+1),"blue",_,_,_,_]);
+
+S[_,_,"japanese","Parliaments",_,_];
+S[_,"yellow",_,"Kools",_,_];
+S[_,_,_,"Lucky Strike",_,"Orange juice"];
+
+S[_,_,_,"Old Gold","snails",_];
+(N n S[n,_,_,"Chesterfields",_,_]; S[(n-1[]n+1),_,_,_,"fox",_]);
+(N n S[n,_,_,"Kools",_,_]; S[(n-1[]n+1),_,_,_,"horse",_]);
+
+\/zebraOwner S[_,_,zebraOwner,_,"zebra",_];
+\/waterDrinker S[_,_,waterDrinker,_,"water",_];
+"Zebra is owned by the " + zebraOwner + "and water is drunk by the " + waterDrinker
+}}}
+ * another step will be to optimise it even if the zebra program is not given optimised : this is about choosing another algorithm for the SolvingEngine
+ * it computes within 8 minutes on a 1.5GHz CPU. Some optimisations remains feasible but !JavaScript and its distance to the CPU will not allow a C/C++ interpreter performances
