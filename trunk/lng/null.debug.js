@@ -120,7 +120,7 @@ nul.debug = {
 			else v.push();
 			v.unshift(nul.debug.logCount());
 			return nul.debug.logs.log(v).addClassName(tp);
-		} : function(v) { nul.debug.logCount(); };
+		} : function() { nul.debug.logCount(); };
 	},
 	warnRecursion: function(v)
 	{
@@ -136,7 +136,8 @@ nul.debug = {
 	makeCall: function(ftc, dscr, obj, cargs) {
 		var d;
 		try {
-			d = dscr.apply(obj, cargs);
+			if(nul.debug.actionLog || nul.debug.watches)
+				d = dscr.apply(obj, cargs);
 			if(nul.debug.actionLog) {
 				nul.debug.log('actionLog')('Begin',d);
 				if(nul.debug.logging) ll = nul.debug.logs.length();

@@ -58,3 +58,18 @@ if(!nul.debug) {
 	Function.prototype.describe = function(dscr) { return this; };
 }
 new Event.observe(window, 'load', nul.onload);
+/* To ease debugging, just add a slash in the begining of this line
+Function.prototype.perform = function(name) { return this; };
+/*/
+Function.prototype.perform = function(name) {
+	var ftc = this;
+	return function() {
+		var cargs = arrg(arguments);
+		var obj = this;
+		if('function'== typeof name) name = name.apply(obj, cargs);
+		nul.execution.benchmark.enter(name);
+		try { return ftc.apply(obj, cargs); }
+		finally { nul.execution.benchmark.leave(name); }
+	};
+};
+//*/

@@ -26,8 +26,12 @@ nul.kb = function(knowledge) {
 			this.knowledge[lcl.ctxDelta][lcl.lindx] =
 				xpr.localise(lcl.ctxDelta+(vDelta||0)).numerise();
 			if(nul.debug) {
-				var _lcl = nul.actx.local('+'+(this.knowledge.length-lcl.ctxDelta), lcl.lindx, lcl.dbgName||'').toHTML();
-				var _xpr = this.knowledge[lcl.ctxDelta][lcl.lindx].toHTML();
+				var _lcl;
+				var _xpr;
+				if(nul.debug.logging || nul.debug.watches) {
+					_lcl = nul.actx.local('+'+(this.knowledge.length-lcl.ctxDelta), lcl.lindx, lcl.dbgName||'').toHTML();
+					_xpr = this.knowledge[lcl.ctxDelta][lcl.lindx].toHTML();
+				}
 				nul.debug.log('knowledgeLog')('Know', _lcl + ' as ' + _xpr);
 				if(nul.debug.watches) {
 					nul.debug.kevol.log(_lcl, _xpr);
@@ -40,7 +44,7 @@ nul.kb = function(knowledge) {
 				//this.protectedKb.knowledge.length+lcl.ctxDelta > this.knowledge.length)
 				//If lcl is a "try" local, ..;
 			return xpr.flags.fuzzy?lcl:xpr;
-		},
+		}.perform('nul.kb->know'),
 		
 		protectedKnowledge: function(lcl, fct) {
 			if(nul.debug.assert) assert(this.protectedKb,'Verify before !');
@@ -58,14 +62,14 @@ nul.kb = function(knowledge) {
 			if(!this.knowledge[lcl.ctxDelta]) return;
 			return !!this.knowledge[lcl.ctxDelta][lcl.lindx] ||
 				(this.protectedKb && this.protectedKnowledge(lcl,'isKnown'));
-		},
+		}.perform('nul.kb->isKnown'),
 		known: function(lcl) {
 			if('string'== typeof lcl) lcl = {ctxDelta: 0, lindx: lcl};
 			if(!this.knowledge[lcl.ctxDelta]) return;
 			var rv = this.knowledge[lcl.ctxDelta][lcl.lindx];
 			if(rv) return rv.localise(lcl.ctxDelta).numerise(lcl.locals.lvl);
 			if(this.protectedKb) return this.protectedKnowledge(lcl,'known');
-		},
+		}.perform('nul.kb->known'),
 		//Affect an expression to a local variable.
 		//<lcl> and <xpr> are both actx-s.
 		affect: function(lcl, xpr) {
@@ -88,20 +92,20 @@ nul.kb = function(knowledge) {
 			return lcl;
 		}.describe(function(lcl, xpr) {
 			return 'Affecting to '+lcl.toHTML()+' the value '+xpr.toHTML();
-		}),
+		}).perform('nul.kb->affect'),
 		//Determine if the expression <xpr> can simply be affected a value for this knowledge base.
 		affectable: function(xpr) {
 			return ('undefined'!= typeof xpr.lindx) &&
 				0<=xpr.ctxDelta &&
 				''!==this.knowledge[xpr.ctxDelta];
-		},
+		}.perform('nul.kb->affectable'),
 		//Enter a sub context. <ctx> is the context (as "lindx => actx"
 		enter: function(ctxd) {
 			if(!ctxd) ctxd = [];
 			else if(!isArray(ctxd)) ctxd = [ctxd];
 			var ctx = this.emptyCtx(ctxd);
 			if(nul.debug) {
-				nul.debug.log('leaveLog')(nul.debug.collapser('Entering'),ctx['+entrHTML']());
+				nul.debug.log('leaveLog')(nul.debug.collapser('Entering'),nul.debug.logging?ctx['+entrHTML']():'');
 				if(nul.debug.logging) ctx['+ll'] = nul.debug.logs.length();
 				if(nul.debug.watches) nul.debug.kbase.push(nul.debug.ctxTable(ctx));
 			}
@@ -112,7 +116,7 @@ nul.kb = function(knowledge) {
 			if(nul.debug.levels) map(ctxd, function(c) {
 				assert(c.locals.lvl == knwldgL, 'Entering level');
 			});
-		},
+		}.perform('nul.kb->enter'),
 		//Leave the context for the expression <ctxd>. Contextualisation occurs.
 		// This means that the local variables remembered by this left context will be replaced in <ctxd>.
 		//Returns the contextualised <ctxd>
@@ -128,7 +132,8 @@ nul.kb = function(knowledge) {
 						assert(nul.debug.kbase.length()==this.knowledge.length+1, 'Leaving debug level');
 				}
 				nul.debug.log('leaveLog')(nul.debug.endCollapser('Leave', 'Produce'),
-					(ctxd?(nul.actx.tblHTML(ctxd)+ ' after '):'') + ctx['+entrHTML']());
+					nul.debug.logging?(
+						(ctxd?(nul.actx.tblHTML(ctxd)+ ' after '):'') + ctx['+entrHTML']()):'');
 				if(nul.debug.watches) nul.debug.kbase.pop();
 				if(nul.debug.logging) if(ctx['+ll'] == nul.debug.logs.length()) nul.debug.logs.unlog();
 				if(nul.debug.assert && ctxd) {
@@ -168,7 +173,7 @@ nul.kb = function(knowledge) {
 			} else if(nul.debug.assert)
 				assert(!ctx[nul.lcl.slf],'ar-developement need means changement');
 			return ctxd;
-		},
+		}.perform('nul.kb->leave'),
 		//Abort a context (for failure).
 		//Just returns <ctxd>
 		abort: function(ctxd, orig) {
@@ -180,15 +185,15 @@ nul.kb = function(knowledge) {
 					if(nul.debug.watches)
 						assert(nul.debug.kbase.length()==this.knowledge.length+1, 'Aborting debug level');
 				}
-				nul.debug.log('leaveLog')(nul.debug.endCollapser('Abort', 'Fail'),
-					(ctxd?(nul.actx.tblHTML(ctxd)+ ' after '):'') + ctx['+entrHTML']());
+				nul.debug.log('leaveLog')(nul.debug.endCollapser('Abort', 'Fail'), nul.debug.logging?(
+					(ctxd?(nul.actx.tblHTML(ctxd)+ ' after '):'') + ctx['+entrHTML']()):'');
 				if(nul.debug.watches) { 
 					nul.debug.kbase.pop();
 					if(ctx['+ll'] == nul.debug.logs.length()) nul.debug.logs.unlog();
 				}
 			}
 			return ctxd;
-		},
+		}.perform('nul.kb->abort'),
 		//Call cb under the context <ctx>
 		// shortcut to enter-anonymous function-leave
 		knowing: function(ctxd, cb) {
@@ -203,7 +208,7 @@ nul.kb = function(knowledge) {
 				return this.leave(rv);
 			} finally { if(nul.debug.assert) assert(assertKbLen== this.knowledge.length,
 				'Knowledge enter/leave paired while knowing ['+assertLc+']'); }
-		},
+		}.perform('nul.kb->knowing'),
 
 		//<dsc> string desc (for failure desc)
 		//<cs> components
@@ -261,7 +266,7 @@ nul.kb = function(knowledge) {
 				if(kbs[i]) return c.fuzzyPremiced(kbs[i]);
 				return c;
 			});
-		}
+		}.perform('nul.kb->trys')
 
 	};
 };

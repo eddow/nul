@@ -125,7 +125,7 @@ function doTest(tn) {
 	var v;
 	nul.debug.levels = nul.debug.assert = !$('qndTst').checked;
 	try {
-		nul.debug.reset();
+		nul.execution.reset();
 		v = nul.expression(tests[tn].xpr).evaluate().toString();
 	} catch(err) {
 		nul.exception.notice(err);

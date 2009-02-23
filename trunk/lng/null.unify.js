@@ -29,7 +29,7 @@ nul.unify = {
 			if(fUsLn== rv.length) return;
 			return rv;
 		});
-	},
+	}.perform('nul.unify.multiple'),
 	
 	//<a> and <b> are on the same level
 	//locals are distinct
@@ -38,19 +38,19 @@ nul.unify = {
 		var rv = nul.unify.chewed(a, b, kb);
 		if(rv) return rv;
 		return nul.actx.unification([a.wrap(kb),b.wrap(kb)]).numerise(a.locals.prnt).clean();
-	},
+	}.perform('nul.unify.level'),
 	
 	//<a> and <b> are on the same level, one more down than <kb>
 	subd: function(a, b, kb) {	//Do this in a lower context
 		return kb.knowing([a, b], function(kb) { return nul.unify.level(a, b, kb); });
-	},
+	}.perform('nul.unify.subd'),
 	
 	//<a> and <b> are on the same level. Only unify component <c>
 	//locals are the same but component locals are distinct
 	//always returns ctxd 
 	sub: function(a, b, c, kb) {	//Do this in a lower context
 		return nul.unify.subd(a.components[c], b.components[c], kb);
-	},
+	}.perform('nul.unify.sub'),
 	
 	//<a> is a level lower than <b> and <b> need to get down to unify in a sub-context
 	//locals are distinct
@@ -58,7 +58,7 @@ nul.unify = {
 	//always returns ctxd
 	sub1: function(a, b, kb) {	//Do this in a lower context
 		return nul.unify.subd(a, b.wrap(kb), kb);
-	},
+	}.perform('nul.unify.sub1'),
 	
 	//Used vice versa
 	//<a> and <b> are on the same level
@@ -83,7 +83,7 @@ nul.unify = {
 		if(kb.affectable(a)) return kb.affect(a,
 			b/*.lclShft(clone1(a.locals))*/);		//x=...
 		return 'unk';
-	},
+	}.perform('nul.unify.vcvs'),
 	
 	//<a> and <b> are on the same level
 	//Try to make a components to components unification
@@ -109,9 +109,10 @@ nul.unify = {
 				}).withLocals(a.locals).summarised();
 		}
 		if(nul.actx.isC(a,'{}') && nul.actx.isC(b,'{}') )
+			//TODO: {1 [] 2 [] 3} = {3 [] 4 [] 5} vaut ? (fail indeed) 
 			return a.modify([nul.unify.sub(a, b, 0, kb)]).withLocals(a.locals).summarised();
 		return 'unk';
-	},
+	}.perform('nul.unify.subs'),
 	
 	digg: function(a, b, kb) {
 		var rv = nul.unify.subs(a, b, kb);
@@ -122,7 +123,7 @@ nul.unify = {
 		rv = nul.unify.vcvs(b, a, kb);
 		if('unk'!== rv) return rv?rv.addAttr(kb, a, b):rv;
 		return 'unk';
-	},
+	}.perform('nul.unify.digg'),
 	
 	//<a> and <b> are on the same level
 	//<a> and <b> have distinct locals
@@ -152,7 +153,8 @@ nul.unify = {
 			// In this case, just returns the unification as it is first expressed
 			if(err!=nul.unlocalisable) throw err;
 		}
-	}.describe(function(a, b, kb) { return 'Unifying '+a.toHTML()+' and '+b.toHTML(); }),
+	}.describe(function(a, b, kb) { return 'Unifying '+a.toHTML()+' and '+b.toHTML(); })
+	.perform('nul.unify.chewed'),
 	
 	//unification of <b> with one member of table <as>
 	//<b> and <alcls>(<as>' parent locals) are distinct
@@ -165,7 +167,7 @@ nul.unify = {
 		if(nul.debug.assert) assert(rv, 'orDist use')
 		if(!isArray(rv)) return rv;
 		return nul.actx.or3(rv).withLocals(alcls).clean();
-	},
+	}.perform('nul.unify.orDist'),
 	
 	//unification of <b> with each member of table <as>
 	//<b> and <alcls>(<as>' parent locals) are distinct
@@ -184,5 +186,5 @@ nul.unify = {
 		}
 
 		return nul.actx.unification(as).withLocals(alcls);
-	}
+	}.perform('nul.unify.andDist')
 };

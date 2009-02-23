@@ -70,8 +70,8 @@ nul.ctxd = {
 					'Knowledge enter/leave paired while browsing ['+assertLc+']'); }
 
 			if(ctxd && ctxd!= this) return ctxd;
-			nul.debug.log('infoLog')('Useless browse for '+behav.name,this.toHTML());			
-		},
+			nul.debug.log('infoLog')('Useless browse for '+behav.name,nul.debug.logging?this.toHTML():'');			
+		}.perform(function(behav) { return 'nul.ctxd->browse/'+behav.name; }),
 		//Just compare : returns true or false
 		cmp: function(ctxd) {
 			//TODO: locals mapping
@@ -92,7 +92,7 @@ nul.ctxd = {
 					(this.lindx != ctxd.lindx) || (this.ctxDelta != ctxd.ctxDelta) )
 				return false;
 			return true;
-		},
+		}.perform('nul.ctxd->cmp'),
 /* Makes a summary of components and characteristics :
  *  Fix flags, dependances, ...
  */
@@ -130,7 +130,7 @@ nul.ctxd = {
 			if(first && !this.flags.dirty && this.evaluable()) this.flags.dirty = true;
 					
 			return this;
-		},
+		}.perform('nul.ctxd->summarised'),
 		//Get ctxd premiced with the fuzzy knowledge of <knwldg>
 		fuzzyPremiced: function(knwldg) {
 			var lcls = [];
@@ -160,38 +160,38 @@ nul.ctxd = {
 				}
 			}
 			return xpr.summarised()
-		},		
+		}.perform('nul.ctxd->fuzzyPremiced'),		
 		//Get a list of non-fuzzy expressions
 		solve: function() {
 			return nul.solve.solve(this);
-		},
+		}.perform('nul.ctxd->solve'),
 		//Gets the value of this expression after operations effect (unifications, '+',  ...)
 		evaluate: function(kb) {
 			var x = kb?this:(this.contextualize(nul.globals, 1) || this);
 			return x.browse(nul.eval.evaluate(kb||nul.kb())) || x.clean();
-		},
+		}.perform('nul.ctxd->evaluate'),
 		//Replace this context's locals according to association/table <ctx>
 		contextualize: function(ctx, dlt) {
 			if(!dlt) dlt=0;
 			if(this.deps[dlt]) for(var d in this.deps[dlt]) if(ctx[d])
 			return this.browse(nul.ctxd.contextualize([ctx], dlt));
-		},
+		}.perform('nul.ctxd->contextualize'),
 		known: function(knwldg, dlt) {
 			if(!dlt) dlt=0;
 			//TODO: verify intersection between kb and this.deps
 			return this.browse(nul.ctxd.contextualize(knwldg, dlt));
-		},
+		}.perform('nul.ctxd->known'),
 		//Take the side-effected value of this expression
 		extraction: function() {
 			return this.browse(nul.ctxd.extraction) || this.cloneUnsure();
-		},
+		}.perform('nul.ctxd->extraction'),
 		
 		brws_lclShft: function(lcls, act) {
 			seConcat(lcls, this.locals);
 			var rv = this.browse(nul.ctxd.lclShft(lcls.length-this.locals.length, act));
 			if(!rv) return this;
 			return rv;
-		},
+		}.perform('nul.ctxd->brws_lclShft'),
 		//When this expression's locals are moved from (0..#) to (<n>..<n>+#)
 		//<lcls> was the added locals and becomes the whole ones.
 		//ctxDelta-s are unchanged
@@ -202,19 +202,19 @@ nul.ctxd = {
 			}
 			if(0== lcls.length) return this;
 			return this.brws_lclShft(lcls,'sft').withLocals(lcls);
-		},
+		}.perform('nul.ctxd->lclShft'),
 		//This expression wrapped. Locals are given to parent.
 		//<lcls> is the new parent's already locals and becomes new parent's whole locals
 		//ctxDelta-s of these locals and outer locals are incremented
 		stpDn: function(lcls) {	//Note: never used .... debug me !
 			return this.brws_lclShft(lcls,'sdn').withoutLocals();
-		},
+		}.perform('nul.ctxd->stpDn'),
 		//This expression wrapped. Locals are unchanged.
 		//<lcls> is the new parent's already locals and becomes new parent's whole locals
 		//ctxDelta-s of outer locals are incremented
 		wrap: function(kb) {
 			return this.brws_lclShft([],'wrp').numerise(nul.debug.levels?this.locals.lvl+1:null);
-		},
+		}.perform('nul.ctxd->wrap'),
 		//This expression climbed.
 		//<lcls> is the old parent's locals and becomes common locals.
 		//ctxDelta-s of outer locals are decremented
@@ -223,7 +223,7 @@ nul.ctxd = {
 			//this.locals are the unknown of kb[-1]
 			if(nul.debug.levels && kb) assert(this.locals.lvl == kb.knowledge.length, 'StepUp predicate');
 			return this.brws_lclShft(lcls,'sup').withLocals(lcls);
-		},
+		}.perform('nul.ctxd->stpUp'),
 		//Extract locals and says <this> we gonna give them to his parent
 		//<lcls> are the destination parent's locals
 		//ctxDelta-s are unchanged
@@ -231,7 +231,7 @@ nul.ctxd = {
 			if(nul.debug.levels && kb) assert(this.locals.lvl == kb.knowledge.length, 'LocalsUpgrade predicate');
 			if(0>= this.locals.length) return this;
 			return this.brws_lclShft(lcls,'upg').withoutLocals();
-		},
+		}.perform('nul.ctxd->lclsUpg'),
 		//Insert locals from his parent
 		//<lcls> are the emptied source parent's locals
 		//ctxDelta-s are unchanged
@@ -241,12 +241,12 @@ nul.ctxd = {
 			var _lcls = clone1(lcls);
 			seEmpty(lcls);
 			return this.brws_lclShft(_lcls,'dng').withLocals(_lcls);
-		},
+		}.perform('nul.ctxd->lclsDng'),
 		
 		//Transform an expression from kb local-space to expression local-space and vice versa
 		localise: function(inc) {
 			return (this.browse(nul.ctxd.localise(inc||0)) || this.clone()).summarised();
-		},
+		}.perform('nul.ctxd->localise'),
 
 		numerise: function(prnt) {
 			var lvl;
@@ -261,26 +261,30 @@ nul.ctxd = {
 				),'No useless numerisation.')
 			if(nul.debug.levels) return this.browse(nul.ctxd.numerise(prnt, lvl)) || this;
 			return this;
-		},
+		}.perform('nul.ctxd->numerise'),
 		rDevelop: function(v, inc, lcl) {
 			var ctx = [];
 			ctx[lcl || nul.lcl.slf] = v.localise();
 			return this.contextualize(ctx, inc);
-		},
+		}.perform('nul.ctxd->rDevelop'),
 		//Shortcut: Weither this epression is free of dependance toward external locals
-		free: function(beside) { return nul.lcl.dep.free(this.deps, beside); },
+		free: function(beside) { return nul.lcl.dep.free(this.deps, beside); }.perform('nul.ctxd->free'),
 		//Shortcut: Is evaluable ?
-		evaluable: function() { return this.evaluation &&
-			(!this.evaluation.evaluable || this.evaluation.evaluable(this)); },
+		evaluable: function() {
+			return this.evaluation &&
+				(!this.evaluation.evaluable || this.evaluation.evaluable(this));
+		}.perform('nul.ctxd->evaluable'),
 		//Shortcut: Clean !
 		clean: function() { delete this.flags.dirty; return this; },
 		dirty: function() { this.flags.dirty = true; return this; },
 		
 		clone: function(nComps, nAttrs) {
 			var rv = {};
-			for(var i in this) rv[i] = clone1(this[i]);
+			for(var i in this) if(['locals'].contains(i))
+				rv[i] = clone1(this[i]);
+			else rv[i] = this[i];
 			return rv.modify(nComps, nAttrs);
-		},
+		}.perform('nul.ctxd->clone'),
 		cloneUnsure: function(nComps, nAttrs) { return this.clone(nComps, nAttrs); },
 		//TOMAINTAIN
 		//If 'truc.cloneUnsure' is called, try to replace it with 'truc.modify'.
@@ -309,11 +313,11 @@ nul.ctxd = {
 				this.components = map(nComps,nul.ctxd.parentise(this));
 			}
 			return this.attributed(nAttrs);
-		},
+		}.perform('nul.ctxd->modify'),
 		attributed: function(nAttrs) {
 			if(nAttrs) this.attributes = map(nAttrs,nul.ctxd.parentise(this));
 			return this;
-		},
+		}.perform('nul.ctxd->attributed'),
 		addAttr: function(kb) {
 			var attr = clone1(this.attributes);
 			for(var i=1; i<arguments.length; ++i)
@@ -324,7 +328,7 @@ nul.ctxd = {
 						arguments[i].attributes[an], kb);
 				}
 			return this.clone().attributed(attr);//.summarised();
-		},
+		}.perform('nul.ctxd->addAttr'),
 		
 		withLocals: function(lcls) {
 			var rv = this;
@@ -332,13 +336,13 @@ nul.ctxd = {
 				rv = rv.numerise(lcls.prnt || lcls.lvl);
 			rv.locals = clone1(lcls);
 			return rv;
-		},
+		}.perform('nul.ctxd->withLocals'),
 		withoutLocals: function() {
 			var lcls = [], rv = this.clone();
 			map(rv.locals, function(v, i) { if('number'!= typeof i) lcls[i] = v; });
 			rv.locals = lcls;
 			return rv;
-		},
+		}.perform('nul.ctxd->withLocals'),
 	},
 
 	parentise: function(prnt) {
@@ -362,7 +366,7 @@ nul.ctxd = {
 						chg |= !!co;
 						return co||o;
 					});
-				if(chg) ctxd = ctxd.cloneUnsure(null,ats).summarised();
+				if(chg) ctxd = ctxd.clone(null,ats).summarised();
 				if(behav[cbn]) ctxd = behav[cbn](ctxd) || ctxd;
 				chg = ctxd!==orig;
 			} catch(err) {
@@ -376,7 +380,7 @@ nul.ctxd = {
 				'Knowledge enter/leave paired while browsing ['+assertLc+']'); }
 		
 		if(orig!= ctxd) return ctxd;
-	},
+	}.perform(function(behav) { return 'nul.ctxd.flatBrowse/'+behav.name; }),
 	contextualize: function(knwldg, dlt) {
 		return {
 			name: 'contextualisation',
@@ -429,12 +433,12 @@ nul.ctxd = {
 			before: function(ctxd) {
 				if(is_empty(ctxd.deps)) throw nul.ctxd.noBrowse;	//TODO: détecter *TOUS* les inutiles: deps vide et deps non-fit
 				++this.ctxDelta;
-			},
+			}.perform('nul.lclShft->before'),
 			finish: function(ctxd, chgd) {
 				--this.ctxDelta;
 				if(chgd && 'undefined'!= typeof ctxd.lindx) return ctxd.summarised();
 				if(chgd) return ctxd.summarised().dirty();
-			},
+			}.perform('nul.lclShft->finish'),
 			local: function(ctxd) {
 				var rv = ctxd.clone();
 				if('dng'== act && rv.ctxDelta==this.ctxDelta+1) --rv.ctxDelta;
@@ -449,7 +453,7 @@ nul.ctxd = {
 				else if(inOr(act, 'sdn', 'wrp') && rv.ctxDelta>this.ctxDelta) ++rv.ctxDelta;
 				else return;
 				return rv.summarised();
-			}
+			}.perform('nul.lclShft->local')
 		};
 	},
 	localise: function(inc) {

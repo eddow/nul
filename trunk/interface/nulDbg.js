@@ -31,14 +31,19 @@ function evaluate()
 	var v = nul.expression(src.value);
 	prd.innerHTML = v.toHTML();
 	evd.innerHTML = 'evaluating...';
-	v = v.evaluate();
+	nul.execution.benchmark.measure('*evaluation',function(){
+		v = v.evaluate();
+	});
 	evd.innerHTML = v.toHTML();
 	
 	svd.insertRow(0).insertCell(0).innerHTML = 'solving...';
 	nul.debug.log('infoLog')('Solving');
-	v = v.solve();
+	nul.execution.benchmark.measure('*resolution',function(){
+		v = v.solve();
+	});
 	while(0< svd.rows.length) svd.deleteRow(0);
-	for(var i=0; i<v.length; ++i)
+	svd.insertRow(-1).insertCell(0).innerHTML = v.length+' possibilities';
+	for(var i=0; i<v.length && i < 10; ++i)
 		svd.insertRow(-1).insertCell(0).innerHTML = v[i].toHTML();
 	sortLogs();
 }
@@ -53,9 +58,8 @@ function testEvaluation()
 		nul.debug.assert = $('shwAssert').checked;
 		nul.debug.logging = $('shwLogging').checked;
 		nul.debug.watches = $('shwWatches').checked;
-		
-		nul.debug.reset();
 	}
+	nul.execution.reset();
 	
 	window.setTimeout('nul.debug.applyTables();', 100);
 	
@@ -70,7 +74,10 @@ function testEvaluation()
 			if(nul.erroneusJS) throw nul.erroneusJS;
 			//Forward JS errors to Firebug
 		}
-	} finally { nul.debug.applyTables(); }
+	} finally {
+		nul.debug.applyTables();
+		nul.execution.benchmark.draw($('benchmark'));
+	}
 }
 
 function selectNamedTab(elm, tnm) {

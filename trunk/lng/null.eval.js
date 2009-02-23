@@ -26,7 +26,7 @@ nul.eval = {
 		if(0>= cdp.length) return accum;
 		cdp.push(accum);
 		return partialActx(cdp);			
-	},
+	}.perform('nul.eval.cumul'),
 
 	evaluate: function(kb) {
 		return {
@@ -98,7 +98,7 @@ nul.eval = {
 			return ''+
 				'Applying '+ctxd.components.applied.toHTML()+
 				' to '+ctxd.components.object.toHTML();
-		})
+		}).perform('nul.eval.application.evaluated')
 	},
 	biExpr: {
 		evaluable: function(ctxd)
@@ -111,7 +111,7 @@ nul.eval = {
 				nul.asJs(ctxd.components[0], ctxd.charact) +
 				ctxd.charact +
 				nul.asJs(ctxd.components[1], ctxd.charact) )).withLocals(ctxd.locals);
-		}
+		}.perform('nul.eval.biExpr.evaluated')
 	},
 	cumulExpr: {
 		evaluable: function(ctxd)
@@ -120,7 +120,7 @@ nul.eval = {
 			for(var i=0; i<ctxd.components.length; ++i)
 				if(ctxd.components[i].free() && !ctxd.components.fuzzy
 					&& 1< ++nbrCumulable) return true;
-		},
+		}.perform('nul.eval.cumulExpr.evaluable'),
 		evaluated: function(ctxd, kb)
 		{
 			var rv = nul.eval.cumul(
@@ -132,7 +132,7 @@ nul.eval = {
 				function(o) { return !o.flags.fuzzy && o.free(); }
 			);
 			if(rv) return rv.clean();
-		}
+		}.perform('nul.eval.cumulExpr.evaluated')
 	},
 	preceded: {
 		evaluable: function(ctxd)
@@ -143,7 +143,7 @@ nul.eval = {
 		{
 			return nul.actx.atom(eval( ctxd.charact + nul.asJs(ctxd.components[0],ctxd.charact) ))
 				.withLocals(ctxd.locals);
-		}
+		}.perform('nul.eval.preceded.evaluated')
 	},
 	assert: {
 		evaluable: function(ctxd)
@@ -158,7 +158,7 @@ nul.eval = {
 					ctxd.components[0].toString());
 			if(v) return ctxd.components[0].withLocals(ctxd.locals);
 			nul.fail('Assertion not provided');
-		}
+		}.perform('nul.eval.assert.evaluated')
 	},
 	extraction: {
 		//TODO: nul.eval.extraction
@@ -172,7 +172,7 @@ nul.eval = {
 				return rv[0].stpUp(ctxd.locals, kb);
 
 			return ctxd.clone(rv);
-		}
+		}.perform('nul.eval.unification.evaluated')
 	},
 	and3: {
 		evaluated: function(ctxd, kb)
@@ -184,7 +184,7 @@ nul.eval = {
 			if(0== cdp.length) return ctxd.components[i].stpUp(ctxd.locals, kb);
 			cdp.push(ctxd.components[i]);
 			if(cdp.length < ctxd.components.length) return ctxd.clone(cdp).clean();
-		}
+		}.perform('nul.eval.and3.evaluated')
 	},
 	or3: {
 		management: true,
@@ -195,7 +195,7 @@ nul.eval = {
 				function(c, kb) { return c.browse(nul.eval.evaluate(kb)); });
 			if(rv && isArray(rv)) rv = ctxd.clone(rv).summarised().clean();
 			return rv;
-		}
+		}.perform('nul.eval.or3.evaluated')
 	},
 	xor3: {
 		management: true,
@@ -213,7 +213,7 @@ nul.eval = {
 				});
 			if(rv && isArray(rv)) rv = ctxd.clone(rv);
 			return rv;
-		}
+		}.perform('nul.eval.xor3.evaluated')
 	},
 	objectivity: {
 		evaluated: function(ctxd, kb)
@@ -225,6 +225,6 @@ nul.eval = {
 			if(is_empty(itm.deps[1])) return (itm.evaluate(kb) || itm).stpUp(ctxd.locals, kb);
 			throw nul.semanticException(
 				'No such attribute declared : '+keys(itm.deps[1]).join(', '));
-		}
+		}.perform('nul.eval.objectivity.evaluated')
 	}
 };

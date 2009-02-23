@@ -72,17 +72,6 @@ nul.actx = {
 	isC: function(actx, charact) {
 		return actx.charact && charact == actx.charact;	
 	},
-	objectSubCtx: function(attributes) {
-		var rv = keys(attributes);
-		rv.push('@');
-		return rv;
-	},
-	isBrowsable: function(t) {
-		return t.isBrowsable?t.isBrowsable():!!t.foreach;
-	},
-	assertBrowsable: function(t) {
-		if(!nul.actx.isBrowsable(t)) throw nul.unbrowsableException(t);
-	},
 	expressionHTML: function(oprtr, oprnds) {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
@@ -145,13 +134,13 @@ nul.actx = {
 				var brn = ('<ul'== es.substr(0,3) || '<table'== es.substr(0,6)) ? 'div' : 'span';
 				str += es;
 				return 'span'==brn?('<span class="xpr">'+str+'</span>'):str;
-			};
+			}.perform('nul.actx.std.item->toHTML');
 			
 			for(var i in nul.ctxd.itf) if(!itm[i]) itm[i] = nul.ctxd.itf[i];
 			itm.modify(ops);
 			itm.summarised(true);
 			return itm;
-		},
+		}.perform('nul.actx.std.item'),
 		listOp: function(itm, chrct, ops, strC) {
 			if(!strC) strC = chrct;
 			itm.charact = chrct;
@@ -168,31 +157,31 @@ nul.actx = {
 				itm.toString = strC[1];
 			}
 			return nul.actx.std.item(itm, ops);
-		},
+		}.perform('nul.actx.std.listOp'),
 		ceded: function(itm, chrct, oprnd, strC) {
 			itm.charact = chrct;
 			itm.expressionHTML = strC[0];
 			itm.toString = strC[1];
 			return nul.actx.std.item(itm, [oprnd]);
-		},
+		}.perform('nul.actx.std.ceded'),
 		prec: function(itm, chrct, oprnd, strC) {
 			if(!strC) strC = chrct;
 			return nul.actx.std.ceded(itm, chrct, oprnd, typeof(strC) == 'string' ?
 				[function() { return '<span class="op">'+strC+'</span>'+this.components[0].toHTML(); },
 				function() { return strC+this.components[0].toString(); }] : strC);
-		},
+		}.perform('nul.actx.std.prec'),
 		post: function(itm, chrct, oprnd, strC) {
 			if(!strC) strC = chrct;
 			return nul.actx.std.ceded(itm, chrct, oprnd, typeof(strC) == 'string' ?
 				[function() { return this.components[0].toHTML()+'<span class="op">'+strC+'</span>'; },
 				function() { return this.components[0].toString()+strC; }] : strC);
-		},
+		}.perform('nul.actx.std.post'),
 		srndd: function(itm, chrct, oprnd, strCA, strCZ) {
 			if(!strCA) strCA = strCZ = chrct;
 			return nul.actx.std.ceded(itm, chrct, oprnd, typeof(strCA) == 'string' ?
 				[function() { return '<span class="op">'+strCA+'</span>'+this.components[0].toHTML()+'<span class="op">'+strCZ+'</span>'; },
 				function() { return strCA+this.components[0].toString()+strCZ; }] : strCA);
-		},
+		}.perform('nul.actx.std.srndd'),
 		nmdOp: function(itm, chrct, ops, strC) {
 			if(!strC) strC = chrct;
 
@@ -213,7 +202,7 @@ nul.actx = {
 				itm.toString = strC[1];
 			}
 			return nul.actx.std.item(itm, ops);
-		},
+		}.perform('nul.actx.std.nmdOp'),
 			
 		tabular: function(itm, name) {
 			if(!itm.take && !itm.foreach) throw nul.internalException('What do you wanna do without "take" neither "foreach" ?');
@@ -226,7 +215,7 @@ nul.actx = {
 			if(!itm.foreach) itm.foreach = function() { throw nul.semanticException('Cannot exhaustively list "'+name+'"'); };
 			if(!itm.append) itm.append = function() { throw nul.semanticException('Cannot modify "'+name+'"'); };
 			return itm;
-		},
+		}.perform('nul.actx.std.tabular'),
 		sideEffect: function(itm, xtract) {
 			itm.extract = xtract;
 			return itm;
@@ -320,7 +309,7 @@ nul.actx = {
 				}).stpUp(lcls, kb).clean();
 				if(!nul.actx.isC(rv,':-') || nul.actx.isC(apl,':-')) return rv;
 				return rv.components.value.stpUp(lcls, kb);
-			}
+			}.perform('nul.actx.set.take')
 		},'{}', content,'{','}'))
 		:
 		nul.actx.std.tabular(nul.actx.std.item({
@@ -330,31 +319,11 @@ nul.actx = {
 			take: function() { nul.fail('Taking from empty set.'); }
 		}));
 	},
-	lm_table: function(rows) {
-		return nul.actx.std.tabular(nul.actx.std.listOp({
-			foreach: function(cb) {
-				return cb(this.components[i]);
-			}
-		},'{}', rows, 
-		[function() {
-			return 0>= this.components.length ? '&phi;' : 
-				'<ul class="tableContent"><li>' +
-				nul.actx.expressionHTML('</li><li>', this.components) +
-				'</li></ul>'; 
-		}, function() {
-			return 0>= this.components.length ? '&phi;' : 
-				'{{' +
-				nul.actx.toString('\n', this.components) +
-				'}}'
-		}]));
-	},
 	seAppend: function(dst, itms) {
 		return nul.actx.std.sideEffect(
 			nul.actx.std.nmdOp({},'<<=', { effected: dst, appended: itms }),
 			function() {
-				nul.actx.assertBrowsable(this.components.effected);
-				this.components.effected.append(this.components.appended);
-				return this.components.effected;
+				//TODO: side effect
 			});
 	},
 	lambda: function(parms, value) {
@@ -411,7 +380,7 @@ a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 	xml: function(node, attrs, content) {
 		var rv = nul.actx.lambda(
 				nul.actx.atom(node),
-				nul.actx.lm_table(content)
+				nul.actx.staticExpr(content)
 			);
 		rv.attributes = attrs;
 		rv.toXML = function() {
@@ -454,7 +423,7 @@ a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 						return rv.numerise(tnf).stpUp(clone1(tnf.locals), kb);
 					});
 					if(rv) return rv.stpUp(lcls, kb);
-				}
+				}.perform('nul.actx.nativeFunction->take')
 			})
 		, name);
 	},
