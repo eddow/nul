@@ -107,8 +107,8 @@ S[_,_,_,"Old Gold","snails",_];
 (N n S[n,_,_,"Kools",_,_]; S[(n-1[]n+1),_,_,_,"horse",_]);
 
 \/zebraOwner S[_,_,zebraOwner,_,"zebra",_];
-\/waterDrinker S[_,_,waterDrinker,_,"water",_];
-"Zebra is owned by the " + zebraOwner + "and water is drunk by the " + waterDrinker
+\/waterDrinker S[_,_,waterDrinker,_,_,"water"];
+"The zebra belongs to the " + zebraOwner + " and water is drunk by the " + waterDrinker
 }}}
  * another step will be to optimise it even if the zebra program is not given optimised : this is about choosing another algorithm for the SolvingEngine
  * it computes within 8 minutes on a 1.5GHz CPU. Some optimisations remains feasible but !JavaScript and its distance to the CPU will not allow a C/C++ interpreter performances
