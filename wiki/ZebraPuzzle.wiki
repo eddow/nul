@@ -38,19 +38,19 @@ This enigma is especially the kindof problems that declarative languages aim to 
 }} S
 
 S[_,"red","english",_,_,_];
-S[_,_,"spain",_,"dog",_];
+S[_,_,"spaniard",_,"dog",_];
 S[_,"green",_,_,_,"coffee"];
-S[_,_,"ukrain",_,_,"tea"];
+S[_,_,"ukrainian",_,_,"tea"];
 (N n S[n+1,"green",_,_,_,_]; S[n, "ivory",_,_,_,_]);
 S[_,_,_,"Old Gold","snails",_];
 S[_,"yellow",_,"Kools",_,_];
 S[3,_,_,_,_,"milk"];
-S[1,_,"norwegia",_,_,_];
+S[1,_,"norwegian",_,_,_];
 (N n S[n,_,_,"Chesterfields",_,_]; S[(n-1[]n+1),_,_,_,"fox",_]);
 (N n S[n,_,_,"Kools",_,_]; S[(n-1[]n+1),_,_,_,"horse",_]);
 S[_,_,_,"Lucky Strike",_,"Orange juice"];
 S[_,_,"japanese","Parliaments",_,_];
-(N n S[n,_,"norwegia",_,_,_]; S[(n-1[]n+1),"blue",_,_,_,_]);
+(N n S[n,_,"norwegian",_,_,_]; S[(n-1[]n+1),"blue",_,_,_,_]);
 S
 }}}
 
@@ -92,7 +92,7 @@ Now, this program solves but this NUL-optimised program :
 S[1,_,"norwegian",_,_,_];
 S[3,_,_,_,_,"milk"];
 S[_,"red","english",_,_,_];
-S[_,_,"spainyard",_,"dog",_];
+S[_,_,"spaniard",_,"dog",_];
 S[_,"green",_,_,_,"coffee"];
 S[_,_,"ukrainian",_,_,"tea"];
 (N n S[n+1,"green",_,_,_,_]; S[n, "ivory",_,_,_,_]);
