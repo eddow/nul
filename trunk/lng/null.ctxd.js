@@ -122,11 +122,12 @@ nul.ctxd = {
 			{ flags.fuzzy = true; break; }
 			this.flags = flags;
 	
-			//Remove locals declarations if no dependance
-			var rmningLcls = {};
-			if(this.deps[0]) for(var i in this.deps[0]) rmningLcls[i] = true;
-			for(var i=0; i<this.locals.length; ++i) if(!rmningLcls[i]) delete this.locals[i];
-			
+			if(!nul.understanding.phase) {
+				//Remove locals declarations if no dependance
+				var rmningLcls = {};
+				if(this.deps[0]) for(var i in this.deps[0]) rmningLcls[i] = true;
+				for(var i=0; i<this.locals.length; ++i) if(!rmningLcls[i]) delete this.locals[i];
+			}
 			if(first && !this.flags.dirty && this.evaluable()) this.flags.dirty = true;
 					
 			return this;
@@ -160,7 +161,11 @@ nul.ctxd = {
 				}
 			}
 			return xpr.summarised()
-		}.perform('nul.ctxd->fuzzyPremiced'),		
+		}.perform('nul.ctxd->fuzzyPremiced'),
+		//Have the expressions touched out of understanding		
+		touch: function() {	//TODO: on devrait pouvoir enlever le 'touch' sans bug MAIS bug dans unittest
+			return this.browse(nul.ctxd.touch) || this;
+		}.perform('nul.ctxd->touch'),
 		//Get a list of non-fuzzy expressions
 		solve: function() {
 			return nul.solve.solve(this);
@@ -186,9 +191,11 @@ nul.ctxd = {
 			return this.browse(nul.ctxd.extraction) || this.cloneUnsure();
 		}.perform('nul.ctxd->extraction'),
 		
-		brws_lclShft: function(lcls, act) {
+		brws_lclShft: function(lcls, act, plcls) {
 			seConcat(lcls, this.locals);
-			var rv = this.browse(nul.ctxd.lclShft(lcls.length-this.locals.length, act));
+			var n = lcls.length-this.locals.length;
+			if(plcls) this.locals = plcls;
+			var rv = this.browse(nul.ctxd.lclShft(n, act));
 			if(!rv) return this;
 			return rv;
 		}.perform('nul.ctxd->brws_lclShft'),
@@ -222,7 +229,7 @@ nul.ctxd = {
 		stpUp: function(lcls, kb) {
 			//this.locals are the unknown of kb[-1]
 			if(nul.debug.levels && kb) assert(this.locals.lvl == kb.knowledge.length, 'StepUp predicate');
-			return this.brws_lclShft(lcls,'sup').withLocals(lcls);
+			return this.brws_lclShft(lcls,'sup',lcls);
 		}.perform('nul.ctxd->stpUp'),
 		//Extract locals and says <this> we gonna give them to his parent
 		//<lcls> are the destination parent's locals
@@ -292,22 +299,24 @@ nul.ctxd = {
 		// If not, replace 'modify' call if possible
 		modify: function(nComps, nAttrs) {
 			if(nComps) {
-				if([';','[]',':','=','&','|','^','+','*','&&','||'].contains(this.charact)) {
-					var nc = [];
-					while(0<nComps.length) {
-						var tc = nComps.pop();
-						if(nul.actx.isC(tc, this.charact)) {
-							tc = tc.stpUp(this.locals);
-							nComps = nComps.concat(tc.components);
-						} else nc.unshift(tc);
-					}
-					nComps = nc;
-				} else if(':-'==this.charact) {
-					//(a :- b) :- c ===> a :- (b = c)
-					if(nul.actx.isC(nComps.parms,':-')) {
-						var flmbd = nComps.parms.stpUp(this.locals);
-						var eq = nul.actx.unification([flmbd.components.value, nComps.value]).wrap();
-						nComps = {parms: flmbd.components.parms, value: eq};
+				if(!nul.understanding.phase) {
+					if([';','[]',':','=','&','|','^','+','*','&&','||'].contains(this.charact)) {
+						var nc = [];
+						while(0<nComps.length) {
+							var tc = nComps.pop();
+							if(nul.actx.isC(tc, this.charact)) {
+								tc = tc.stpUp(this.locals);
+								nComps = nComps.concat(tc.components);
+							} else nc.unshift(tc);
+						}
+						nComps = nc;
+					} else if(':-'==this.charact) {
+						//(a :- b) :- c ===> a :- (b = c)
+						if(nul.actx.isC(nComps.parms,':-')) {
+							var flmbd = nComps.parms.stpUp(this.locals);
+							var eq = nul.actx.unification([flmbd.components.value, nComps.value]).wrap();
+							nComps = {parms: flmbd.components.parms, value: eq};
+						}
 					}
 				}
 				this.components = map(nComps,nul.ctxd.parentise(this));
@@ -423,6 +432,12 @@ nul.ctxd = {
 		finish: function(ctxd, chgd) {
 			if(ctxd.extract) return ctxd.extract();
 			if(chgd) return ctxd;
+		}
+	},
+	touch: {
+		name: 'touch',
+		finish: function(ctxd, chgd) {
+			return ctxd.modify(ctxd.components, ctxd.attributes);
 		}
 	},
 	lclShft: function(n, act) {

@@ -116,17 +116,18 @@ nul.eval = {
 	cumulExpr: {
 		evaluable: function(ctxd)
 		{
-			var nbrCumulable = 0;
+			return ctxd.free();	//TODO: manage: numbers commutatives but not strings!
+			/*var nbrCumulable = 0;
 			for(var i=0; i<ctxd.components.length; ++i)
 				if(ctxd.components[i].free() && !ctxd.components.fuzzy
-					&& 1< ++nbrCumulable) return true;
+					&& 1< ++nbrCumulable) return true;*/
 		}.perform('nul.eval.cumulExpr.evaluable'),
 		evaluated: function(ctxd, kb)
 		{
 			var rv = nul.eval.cumul(
 				ctxd.components,
 				function(o) { return nul.asJs(o,ctxd.charact); },
-				function(a,b) { return eval( ''+a + ctxd.charact + b ); },
+				function(a,b) { return eval( ''+nul.jsVal(a) + ctxd.charact + nul.jsVal(b) ); },
 				function(v) { return nul.actx.atom(v).withLocals(ctxd.locals); },
 				function(ops) { return nul.actx.cumulExpr(ctxd.charact, ops).numerise(ctxd.locals.lvl); },
 				function(o) { return !o.flags.fuzzy && o.free(); }
@@ -181,7 +182,8 @@ nul.eval = {
 			for(i=0; i<ctxd.components.length-1; ++i)
 				if(ctxd.components[i].flags.failable)
 					cdp.push(ctxd.components[i]);
-			if(0== cdp.length) return ctxd.components[i].stpUp(ctxd.locals, kb);
+			if(0== cdp.length)
+				return ctxd.components[i].stpUp(ctxd.locals, kb);
 			cdp.push(ctxd.components[i]);
 			if(cdp.length < ctxd.components.length) return ctxd.clone(cdp).clean();
 		}.perform('nul.eval.and3.evaluated')
@@ -193,7 +195,7 @@ nul.eval = {
 			var rv = kb.trys(
 				'OR3', ctxd.components, ctxd.locals,
 				function(c, kb) { return c.browse(nul.eval.evaluate(kb)); });
-			if(rv && isArray(rv)) rv = ctxd.clone(rv).summarised().clean();
+			if(rv && isArray(rv)) return nul.actx.or3(rv).withLocals(ctxd.locals).clean();
 			return rv;
 		}.perform('nul.eval.or3.evaluated')
 	},

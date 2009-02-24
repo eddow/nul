@@ -21,6 +21,9 @@ var nul = {
 			throw nul.semanticException("Cannot operate '"+oprtr+"' with: "+o.toHTML());
 		return o.value;
 	},
+	jsVal: function(v) {
+		return ('string'== typeof v)?('"'+v+'"'):v;
+	},
 	asBoolean: function(v)
 	{
 		if('undefined'== typeof v.value) throw nul.semanticException('Boolean expected: '+v.toHTML());
@@ -37,7 +40,7 @@ var nul = {
 	expression: function(txt)
 	{
 		nul.erroneus = false;
-		return nul.understanding.understand(nul.compile(txt), nul.firstUnderstandBase()).numerise();
+		return nul.understanding.understand(nul.compile(txt), nul.firstUnderstandBase()).touch().numerise();
 	},
 	html: function(txt)
 	{

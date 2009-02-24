@@ -48,7 +48,7 @@ nul.kb = function(knowledge) {
 		
 		protectedKnowledge: function(lcl, fct) {
 			if(nul.debug.assert) assert(this.protectedKb,'Verify before !');
-			var pCtxDelta = this.knowledge.length + this.protectedKb.knowledge.length;
+			var pCtxDelta = this.knowledge.length - this.protectedKb.knowledge.length;
 			if(lcl.ctxDelta < pCtxDelta) return;
 			lcl.ctxDelta -= pCtxDelta;
 			var rv = this.protectedKb[fct](lcl);
@@ -259,7 +259,8 @@ nul.kb = function(knowledge) {
 				if(kbs[0])	//Validate knowledge in this kb
 					for(var d=0; d<kbs[0].length; ++d)
 						for(var v=0; v<kbs[0][d].length; ++v)
-							this.knowledge[d][v] = kbs[0][d][v];
+							if(kbs[0][d][v])
+								this.knowledge[d][v] = kbs[0][d][v];
 				return rv[0].stpUp(lcls, this);
 			}
 			return map(rv, function(c, i) {

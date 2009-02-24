@@ -7,6 +7,7 @@
  *--------------------------------------------------------------------------*/
  
 nul.understanding = {
+	phase: 0,
 	emptyBase: function(prntUb) {
 		return { 
 			nbrI : 0,
@@ -38,8 +39,10 @@ nul.understanding = {
 	},
 
 	understand: function(operand, ub, locals) {
+		++nul.understanding.phase;
 		if('noub'!= locals) ub = nul.understanding.emptyBase(ub);
-		return operand.understand(operand, ub);
+		try { return operand.understand(operand, ub); }
+		finally { --nul.understanding.phase; }
 	},
 	understandOperands: function(operands, ub) {
 		var rv = []
@@ -60,7 +63,7 @@ nul.understanding = {
 		var ops = nul.understanding.understandOperands(xpr.operands, ub);
 		if(['&&', '||', '+' ,'-' ,'*' ,'/' ,'%' ,'&' ,'|' ,'^' ,'&&' ,'||'].contains(xpr.operator))
 			return nul.actx.cumulExpr(xpr.operator, ops);
-		if(-1< ' == < > <= >= '.indexOf(' '+xpr.operator+' '))
+		if(['<','>','<=','>='].contains(xpr.operator))
 			return nul.actx.biExpr(xpr.operator, ops);
 		switch(xpr.operator)
 		{
@@ -127,9 +130,11 @@ nul.understanding = {
 			ub = nul.understanding.emptyBase(ub);
 			var tp = nul.understanding.understand(ctxtl.type, ub);
 			var lcl = nul.actx.local(2, lindx, ctxtl.decl);
-			return nul.actx.and3([
+			
+			var rv = nul.actx.definition(ctxtl.decl, nul.actx.and3());
+			return rv.modify([
 				nul.actx.application(tp, lcl),
-				val]);
+				val]).summarised();
 		} else {
 			ub.createFreedom(ctxtl.decl);
 			return nul.actx.definition(ctxtl.decl, nul.understanding.understand(ctxtl.value, ub, 'noub'));
