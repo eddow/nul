@@ -96,11 +96,13 @@ div.shortStr, div.locals, div.dependances, div.flags, div.attributes {
 a.flags div {
 	width: 3px;
 	height: 1px;
+	border: 0;
 }
 
 .flags .failable { background-color: red; }
 .flags .fuzzy { background-color: turquoise; }
 .flags .dirty { background-color: blue; }
+.flags .extractible { background-color: orange; }
 
 .flags {
 	border-color: lightgrey;

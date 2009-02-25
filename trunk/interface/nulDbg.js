@@ -16,7 +16,6 @@ function init()
 	src = document.getElementById('source');
 	prd = document.getElementById('parsed');
 	evd = document.getElementById('evaled');
-	svd = document.getElementById('solved');
 	rcr = document.getElementById('recur');
 	sbx = document.getElementById('sandBox');
 	nul.globals.sandBox = nul.actx.html_place(sbx);
@@ -24,7 +23,6 @@ function init()
 
 function evaluate()
 {
-	while(0< svd.rows.length) svd.deleteRow(0);
 	rcr.innerHTML = '';
 	prd.innerHTML = 'parsing...';
 	evd.innerHTML = '';
@@ -35,16 +33,7 @@ function evaluate()
 		v = v.evaluate();
 	});
 	evd.innerHTML = v.toHTML();
-	
-	svd.insertRow(0).insertCell(0).innerHTML = 'solving...';
-	nul.debug.log('infoLog')('Solving');
-	nul.execution.benchmark.measure('*resolution',function(){
-		v = v.solve();
-	});
-	while(0< svd.rows.length) svd.deleteRow(0);
-	svd.insertRow(-1).insertCell(0).innerHTML = v.length+' possibilities';
-	for(var i=0; i<v.length && i < 10; ++i)
-		svd.insertRow(-1).insertCell(0).innerHTML = v[i].toHTML();
+
 	sortLogs();
 }
 

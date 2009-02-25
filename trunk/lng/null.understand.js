@@ -146,7 +146,7 @@ nul.understanding = {
 	},
 	prototype: function(o, ub) {
 		var decls = {};
-		var applied = o.applied ? nul.understanding.understand(o.applied, ub, 'noub') : nul.actx.atom(null);
+		var applied = nul.understanding.understand(o.applied, ub, 'noub');
 		var rv = nul.actx.prototype(applied, o.name, nul.understanding.understand(o.value, ub));
 		ub.createFreedom(o.name, null, true)
 		return rv;

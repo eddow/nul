@@ -133,9 +133,7 @@ nul.eval = {
 			var obj = ctxd.components.object.evaluate(kb) || ctxd.components.object;
 			var apl = ctxd.components.applied.evaluate(kb) || ctxd.components.applied;
 			if(obj.take) {
-				//var rv = kb.knowing([obj, apl], function(kb) {
-					var rv = obj.take(apl, kb, ctxd.locals);
-				//});
+				var rv = obj.take(apl, kb, ctxd.locals);
 				if(!rv) return rv;
 				if(rv.deps[0] && rv.deps[0][nul.lcl.rcr])	//TODO: optimise :)
 					rv = rv.rDevelop(obj, 0, nul.lcl.rcr).dirty();
@@ -213,7 +211,14 @@ nul.eval = {
 		}.perform('nul.eval.assert.evaluated')
 	},
 	extraction: {
-		//TODO: nul.eval.extraction
+		evaluable: function(ctxd) {
+			return ctxd.free();
+		},
+		evaluated: function(ctxd, kb)
+		{
+			var rv = ctxd.components[0].extraction();
+			if(rv) return rv.stpUp(ctxd.locals, kb).finalize(kb);
+		}.perform('nul.eval.unification.evaluated')
 	},
 	unification: {
 		evaluated: function(ctxd, kb)

@@ -18,7 +18,7 @@ nul.solve = {
 		for(var cn=0; tryed=nul.solve.tryed(ctxd, cn); ++cn) try {
 			rv = rv.concat(nul.solve.solve(tryed.evaluate()||tryed));
 		} catch(err) { if(nul.failure!= err) throw err; }
-		if(0== cn) return [ctxd]
+		assert(0!= cn, 'Solutions');
 		return rv;
 	}.describe(function(ctxd) { return 'Solve '+ctxd.toHTML(); }),
 	tryed: function(ctxd, cn) {

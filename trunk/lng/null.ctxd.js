@@ -117,6 +117,7 @@ nul.ctxd = {
 			else if(this.isFailable && this.isFailable()) flags.failable = true;
 			if('{}'== this.charact) delete flags.fuzzy;
 			if(['[-]','[]',':'].contains(this.charact)) flags.fuzzy = true;
+//			if(['<<=', '{}'].contains(this.charact)) flags.extractible = true;
 			
 			if(this.makeDeps) dps.push(this.makeDeps());
 			this.deps = nul.lcl.dep.mix(dps);
@@ -132,9 +133,8 @@ nul.ctxd = {
 				for(var i=0; i<this.locals.length; ++i) if(!rmningLcls[i]) delete this.locals[i];
 			}
 			if(first && !this.flags.dirty && this.evaluable()) this.flags.dirty = true;
-					
 			return this;
-		}.perform('nul.ctxd->summarised'),
+		}.perform('nl.ctxd->summarised'),
 		//Get ctxd premiced with the fuzzy knowledge of <knwldg>
 		fuzzyPremiced: function(knwldg) {
 			var lcls = [];
@@ -195,7 +195,7 @@ nul.ctxd = {
 		}.perform('nul.ctxd->known'),
 		//Take the side-effected value of this expression
 		extraction: function() {
-			return this.browse(nul.ctxd.extraction) || this.cloneUnsure();
+			return this.browse(nul.ctxd.extraction);
 		}.perform('nul.ctxd->extraction'),
 		
 		brws_lclShft: function(lcls, act, plcls) {
@@ -419,7 +419,11 @@ nul.ctxd = {
 			abort: function() { --this.ctxDelta; },
 			finish: function(ctxd, chgd) {
 				--this.ctxDelta;
-				if(chgd) return ctxd.summarised().dirty();
+				if(chgd) {
+					ctxd = ctxd.summarised();
+					if(ctxd.components) ctxd.dirty();
+					return ctxd;
+				}
 			},
 			itmCtxlsz: function(ctxNdx, lindx) {
 				return 0<= ctxNdx && ctxNdx<this.knwldg.length && 
@@ -448,8 +452,8 @@ nul.ctxd = {
 			return !ctxd.extract;
 		},
 		finish: function(ctxd, chgd) {
-			if(ctxd.extract) return ctxd.extract();
-			if(chgd) return ctxd;
+			if(ctxd.extract) return ctxd.extract().numerise(ctxd.locals.prnt || ctxd.locals.lvl);
+			if(chgd) return ctxd.summarised().dirty();
 		}
 	},
 	touch: {

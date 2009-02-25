@@ -181,7 +181,6 @@ nul.compiler = function(txt)
 				if(this.tknzr.take('}')) return nul.compiled.set();
 				return this.tknzr.expect('}', nul.compiled.set(this.expression()));
 			}
-			if(this.tknzr.take('::')) return this.prototype();
 			if(this.tknzr.take('<')) return this.xml();
 			if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 			if(this.tknzr.take(']')) return nul.compiled.exists(this.alphanum(), this.applied());

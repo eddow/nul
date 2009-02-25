@@ -203,47 +203,31 @@ nul.actx = {
 			}
 			return nul.actx.std.item(itm, ops);
 		}.perform('nul.actx.std.nmdOp'),
-			
-		tabular: function(itm, name) {
-			if(!itm.take && !itm.foreach) throw nul.internalException('What do you wanna do without "take" neither "foreach" ?');
-			if(!itm.take) itm.take = function(apl, kb, lcls) {
-				throw nul.internalException('Not implemented');
-				return itm.foreach(function (o, kb) {
-					//TODO: generic ::take
-				}, kb);
-			};
-			if(!itm.foreach) itm.foreach = function() { throw nul.semanticException('Cannot exhaustively list "'+name+'"'); };
-			if(!itm.append) itm.append = function() { throw nul.semanticException('Cannot modify "'+name+'"'); };
-			return itm;
-		}.perform('nul.actx.std.tabular'),
-		sideEffect: function(itm, xtract) {
-			itm.extract = xtract;
-			return itm;
-		}
 	},
 
 	html_place: function(htmlElement) {
-		return nul.actx.std.tabular(nul.actx.std.item({
+		return nul.actx.std.item({
 			charact: '<html>',
 			element: htmlElement,
-			append: function(itm) {
-				if(itm.toXML) this.element.innerHTML += itm.toXML();
-				else if(itm.value) this.element.innerHTML += itm.value;
-				else throw nul.semanticException('XML element expected for appending');
-				
+			take: function() {},
+			extract: function() {
+				return nul.actx.staticExpr(nul.html(this.element.innerHTML));
 			},
-			foreach: function(cb) {
-				var comps = nul.html(this.element.innerHTML);
-				var rv = [];
-				for(var i=0; i<comps.length; ++i)
-					try { rv.push(cb(comps[i])); }
-					catch(err) { if(nul.failure!= err) throw err; }
-				return rv;
+			append: function(itm) {
+				if(itm.toXML) {
+					this.element.innerHTML += itm.toXML();
+					return itm.components.parms;
+				}
+				if(itm.value) {
+					this.element.innerHTML += itm.value;
+					return nul.actx.atom('#text');
+				}
+				throw nul.semanticException('XML element expected for appending');
 			},
 			expressionHTML: function() {
 				return '&lt;Element&gt;';
 			}
-		}), 'html element');
+		});
 	},
 
 	atom: function(value) {
@@ -294,37 +278,45 @@ nul.actx = {
 	},
 	set: function(content) {
 		return content?
-		nul.actx.std.tabular(nul.actx.std.srndd({
-			evaluation:nul.eval.set,
-			take: function(apl, kb, lcls) {
-				var rcr = nul.actx.local(1, nul.lcl.rcr);
-				var unf = this.components[0];
-				var tlcls = clone1(this.locals);
-				//TODO: remplacer rcr AVANT unification ?
-				var rv = kb.knowing([this, apl], function(kb) {
-					var rv = nul.unify.sub1(unf, apl, kb);
-					//if(rv) rv = rv.stpUp(tlcls, kb).clean();
-					//return rv.rDevelop(rcr, 0) || rv;
-					return (rv.rDevelop(rcr, 1) || rv).stpUp(tlcls, kb).clean();
-				}).stpUp(lcls, kb).clean();
-				if(!nul.actx.isC(rv,':-') || nul.actx.isC(apl,':-')) return rv;
-				return rv.components.value.stpUp(lcls, kb);
-			}.perform('nul.actx.set.take')
-		},'{}', content,'{','}'))
+			nul.actx.std.srndd({
+				evaluation:nul.eval.set,
+				take: function(apl, kb, lcls) {
+					var rcr = nul.actx.local(1, nul.lcl.rcr);
+					var unf = this.components[0];
+					var tlcls = clone1(this.locals);
+					//TODO: remplacer rcr AVANT unification ?
+					var rv = kb.knowing([this, apl], function(kb) {
+						var rv = nul.unify.sub1(unf, apl, kb);
+						//if(rv) rv = rv.stpUp(tlcls, kb).clean();
+						//return rv.rDevelop(rcr, 0) || rv;
+						return (rv.rDevelop(rcr, 1) || rv).stpUp(tlcls, kb).clean();
+					}).stpUp(lcls, kb).clean();
+					if(!nul.actx.isC(rv,':-') || nul.actx.isC(apl,':-')) return rv;
+					return rv.components.value.stpUp(lcls, kb);
+				}.perform('nul.actx.set->take'),
+				extract: function() {
+					//TODO: remember extraction and use it instead from now on
+					return nul.actx.staticExpr(this.components[0].solve());
+				}.perform('nul.actx.set->extract')
+			},'{}', content,'{','}')
 		:
-		nul.actx.std.tabular(nul.actx.std.item({
-			charact: '{}',
-			expressionHTML: function() { return '&phi;'; },
-			toString: function() { return '&phi;'; },
-			take: function() { nul.fail('Taking from empty set.'); }
-		}));
+			nul.actx.std.item({
+				charact: '{}',
+				expressionHTML: function() { return '&phi;'; },
+				toString: function() { return '&phi;'; },
+				take: function() { nul.fail('Taking from empty set.'); }
+			});
 	},
 	seAppend: function(dst, itms) {
-		return nul.actx.std.sideEffect(
-			nul.actx.std.nmdOp({},'<<=', { effected: dst, appended: itms }),
-			function() {
-				//TODO: side effect
-			});
+		return nul.actx.std.nmdOp({
+			extract: function() {
+				if(!this.components.effected.append)
+					throw nul.semanticException('Expected appendable : ',
+						this.components.effected.toString());
+				return this.components.effected.append(this.components.appended)
+					.numerise(this.locals.prnt || this.locals.lvl);
+			}			
+		},'<<=', { effected: dst, appended: itms });
 	},
 	lambda: function(parms, value) {
 		/*
@@ -342,7 +334,11 @@ a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 		return nul.actx.std.listOp({evaluation:nul.eval.biExpr},oprtr, oprnds, mathSymbol(oprtr));
 	},
 	staticExpr: function(oprnds) {
-		return nul.actx.std.listOp({},',', oprnds);
+		return nul.actx.std.listOp({
+			take: function(apl, kb, lcls) {
+				return nul.unify.orDist(this.components, lcls, apl, kb);
+			}.perform('nul.actx.staticExpr->take')
+		},',', oprnds);
 	},
 	preceded: function(oprtr, oprnd) {
 		return nul.actx.std.prec({evaluation:nul.eval.preceded},oprtr, oprnd);
@@ -351,7 +347,10 @@ a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 		return nul.actx.std.prec({evaluation:nul.eval.assert},'?', oprnd, '?');
 	},
 	extraction: function(oprnd) {
-		return nul.actx.std.post({evaluation:nul.eval.extraction},'-!', oprnd, '!');
+		return nul.actx.std.post({
+			extract: function() {},	//Must avoid sub-expr extraction
+			evaluation:nul.eval.extraction
+		},' !', oprnd, '!');
 	},
 	unification: function(ops) {
 		return nul.actx.std.listOp({evaluation:nul.eval.unification},'=', ops);
@@ -384,17 +383,17 @@ a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 			);
 		rv.attributes = attrs;
 		rv.toXML = function() {
-			var opn = '&lt;' + this.components.parms.value;
+			var opn = '<' + this.components.parms.value;
 			for(var a in this.attributes) opn += ' ' + a + '=' + this.attributes[a].toHTML();
 			var itms = this.components.value.components;
-			if(0>= itms.length) return opn + ' /&gt;';
+			if(0>= itms.length) return opn + ' />';
 			var insd = '';
 			for(var i=0; i<itms.length; ++i) {
 				if(itms[i].value) insd += itms[i].value;
 				else if(itms[i].toXML) insd += itms[i].toXML();
 				else throw nul.semanticException('XML element is still context dependant.');
 			}
-			return opn+gt+insd+'&lt;/'+this.components.parms.value+'&gt;';
+			return opn+'>'+insd+'</'+this.components.parms.value+'>';
 		};
 		return rv;
 	},
@@ -408,24 +407,22 @@ a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 		return val;
 	},
 	nativeFunction: function(name, fct, dom, img) {
-		return nul.actx.std.tabular(
-			nul.actx.std.item({
-				callback: fct,
-				charact: 'native',
-				name: name,
-				expressionHTML: function() { return '<span class="global">'+this.name+'</span>'; },
-				toString: function() { return this.name; },
-				take: function(apl, kb, lcls) {
-					var tnf = this;
-					var rv = kb.knowing([this, apl], function(kb) {
-						var rv = tnf.callback(apl, kb);
-						if(!rv) return;
-						return rv.numerise(tnf).stpUp(clone1(tnf.locals), kb);
-					});
-					if(rv) return rv.stpUp(lcls, kb);
-				}.perform('nul.actx.nativeFunction->take')
-			})
-		, name);
+		return nul.actx.std.item({
+			callback: fct,
+			charact: 'native',
+			name: name,
+			expressionHTML: function() { return '<span class="global">'+this.name+'</span>'; },
+			toString: function() { return this.name; },
+			take: function(apl, kb, lcls) {
+				var tnf = this;
+				var rv = kb.knowing([this, apl], function(kb) {
+					var rv = tnf.callback(apl, kb);
+					if(!rv) return;
+					return rv.numerise(tnf).stpUp(clone1(tnf.locals), kb);
+				});
+				if(rv) return rv.stpUp(lcls, kb);
+			}.perform('nul.actx.nativeFunction->take')
+		});
 	},
 	objectivity: function(obj, itm) {
 		return nul.actx.std.nmdOp({
