@@ -1,0 +1,50 @@
+#summary Attributes and Object Oriented writing.
+#labels Language
+
+= Introduction =
+
+Values can be given attributes to access some of their characteristics.
+
+A lot of imperative object-oriented programming concepts have to be reviewed though. For instance, from the "unification" point of view, getters and setters are the same. Beside it, the "length computation" is not anymore a method : if a string has a value, it won't change and the length is a value ... and can even be a setter.
+
+= Syntax =
+
+{{{[expression]}}} *::*_name_ {{{[attribute]}}} *.*
+
+Where items between brackets are standard NUL expressions.
+
+If an expression has a named attribute, it can be used with the {{{->}}} operator as in most languages (the right operand must therefore be an identificator).
+
+== Example ==
+
+{{{
+N x x ::double x*2.
+}}}
+This is just like another natural number. Now, you can access {{{x->double}}} to get the doubled value.
+
+= Object-oriented programming =
+
+NUL really separate internal representation and interface. Once choosen the interface, the internal representation still has to be choosen - while it will be most of the time just a tuple.
+
+There is no such things as the "this" keyword : the attributes declarations access directly the values used in the internal represention. Beside it, when an attribute is defined, it can access to any attributes already defined (and only these, it cannot even access itself)
+
+This is not a limitation, this have been choosen this way! If it is needed to access attributes declared after, this means there is recursivity. It has therefore to be written this way, as an [AutoReferences auto-reference].
+
+== Example ==
+
+The set of complex numbers can be described as this :
+{{{
+{ Q a Q b (a, b)
+::rl a.
+::img b.
+::sq rl*rl+img*img.
+}
+}}}
+Note: {{{sq}}} stands for "square modulo" while there is no math library implemented to take the square root yet.
+
+This means, in english that,
+ * for any rational numbers {{{a}}} and {{{b}}},
+ * a complex number is a pair {{{( a, b )}}}, from which
+  * the real part {{{rl}}} is {{{a}}},
+  * the imaginary part {{{img}}} is {{{b}}} and
+  * the square modulo is the sum of the square of the real part and the square of the imaginary part.
