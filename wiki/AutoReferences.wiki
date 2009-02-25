@@ -1,4 +1,5 @@
 #summary Expression refering themselves
+#labels Language
 
 Some time, an expression has to refer itself - especially in recursion expression.
 
