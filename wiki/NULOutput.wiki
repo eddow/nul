@@ -1,0 +1,18 @@
+#summary NUL expression output format.
+
+= Introduction =
+
+As there is a lot to show about an expression, information is condensed and first only the main information is shown. Some little accessers, though, allow the user to gather much (like flags, dependancies, ...) about expressions.
+
+Each single node of the expression tree is surrounded by a blue border to identify it and has several dots in the top-left corner. The only interraction these dots offer is to pop-up information on mouse over.
+If !JavaScript is disabled (because being debugged by instance), the information still popup as a tool-tip-text.
+
+= Detail dots =
+
+ * The <font color="blue">blue dot</font> gives a string-representation of the expression (useful for copy/pasting, ...) as well as the level of this expression if the "levels check" option is checked.
+
+ * The white-striped dot gives the flags of an expression. The <font color="red">red</font> stripe stands for "Failable", the <font color="turquoise">turquoise</font> stripe stands for "Fuzzy" and the <font color="blue">blue</font> stripe stands for "Dirty"
+
+ * The <font color="darkgreen">green dot</font> gives information about dependance. If this expression refers a local of a higher-expression, an entry will be added here. !dependances are drawn in lines. Each line specifies a context-delta (0 means "from this expression", 1 means "from the parent expression", ...) and then follows the list of local indexes in their context and their reference count.
+
+" *1*  0:3 " specifies that the expression refers three times the locals of index zero in the parent's context
