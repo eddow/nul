@@ -83,10 +83,11 @@ nul.kb = function(knowledge) {
 					{ var tmp = xpr; xpr = lcl; lcl = tmp; }
 			} 
  			if(nul.debug.assert) assert('undefined'!= typeof lcl.lindx, 'Some condition should be verified before')
+			if(this.isKnown(lcl)) xpr = nul.unify.level(xpr, this.known(lcl), this);
+			xpr = xpr.finalize(this);
 			xpr = xpr.contextualize(
 				nul.lcl.selfCtx(lcl.dbgName, lcl.lindx),
 				lcl.ctxDelta) || xpr;
-			if(this.isKnown(lcl)) xpr = nul.unify.level(xpr, this.known(lcl), this);
 			if(nul.lcl.slf!= lcl.lindx) return this.know(lcl, xpr);
 			this.know(lcl, xpr);
 			return lcl;
@@ -95,9 +96,7 @@ nul.kb = function(knowledge) {
 		}).perform('nul.kb->affect'),
 		//Determine if the expression <xpr> can simply be affected a value for this knowledge base.
 		affectable: function(xpr) {
-			return ('undefined'!= typeof xpr.lindx) &&
-				0<=xpr.ctxDelta &&
-				''!==this.knowledge[xpr.ctxDelta];
+			return 'undefined'!= typeof xpr.lindx;
 		}.perform('nul.kb->affectable'),
 		//Enter a sub context. <ctx> is the context (as "lindx => actx"
 		enter: function(ctxd) {
@@ -139,7 +138,21 @@ nul.kb = function(knowledge) {
 				if(nul.debug.assert && ctxd) {
 					var cctxd = isArray(ctxd)?ctxd:[ctxd];
 					if(cctxd.length == ctx['+entr'].length) {
-						for(var i=0; i<cctxd.length; ++i) if(!cctxd[i].cmp(ctx['+entr'][i])) break;
+						for(var i=0; i<cctxd.length; ++i) {
+							if(!cctxd[i].cmp(ctx['+entr'][i])) break;
+							//Check special case (z=1 [] z=2) ==> (-=1 [] -=2)
+							//Where fuzzyPremice re-produce the original expression
+							if([':','[]'].contains(cctxd[i].charact)) {
+								for(var j=0; j<cctxd[i].components.length; ++j)
+							  		if(
+										'='== cctxd[i].components[j].charact &&
+										2== cctxd[i].components[j].components.length && (
+											cctxd[i].components[j].components[0].ctxDelta ||
+											cctxd[i].components[j].components[1].ctxDelta
+									)) break;
+								if(j<cctxd[i].components.length) break;
+							}
+						}
 						assert(i<cctxd.length, 'Never produce duplicata');
 					}
 				}
@@ -162,10 +175,9 @@ nul.kb = function(knowledge) {
 				var deps = isArray(ctxd)?ctxd[0].deps:ctxd.deps;
 				if(deps[0]) for(var d in deps[0]) if(1==deps[0][d] && ctx[d] && ctx[d].flags.fuzzy)
 					delete ctx[d].flags.fuzzy;
-				//TODO: bouger la réévaluation dans une boucle dans 'knowing'
+				//TODO: UTILISER .finalize !!!
 				ctxd = m1a(ctxd, function(c) {
 						var sc = c.known(cmplKnlg);
-						//TODO: add this line and be optimised !
 						if(c.flags.dirty) sc = (sc||c);
 						sc = sc?(sc.evaluate(tkb) || sc):c;
 						return sc.fuzzyPremiced([ctx]);
@@ -230,14 +242,8 @@ nul.kb = function(knowledge) {
 					if(trv) {
 						var strv = trv.known(tmpKb.knowledge, 1);
 						trv = strv?strv.evaluate(tmpKb):trv;
-						//No contextualisation ! Locals from protected knowledge base remains as
-						// they are : they can be precised "afterward" in protected knowledge base. 
-						//TODO: dirty? need to evaluate ?
-						//trv = trv.evaluate(tmpKb) || trv;
 						chg = true;
-					} else {
-						trv = cs[i];
-					}
+					} else trv = cs[i];
 					kbs.push(tmpKb.knowledge);
 					rv.push(trv);
 				} catch(err) {
@@ -268,6 +274,5 @@ nul.kb = function(knowledge) {
 				return c;
 			});
 		}.perform('nul.kb->trys')
-
 	};
 };

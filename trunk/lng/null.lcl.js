@@ -48,7 +48,8 @@ nul.lcl = {
 			for(var d in deps) 
 			{
 				d = reTyped(d);
-				if(0< d) nDeps[d-1] = deps[d];
+				//Negative deltas are used in internal-local representation
+				if(0!= d) nDeps[d-1] = deps[d];
 			}
 			return nDeps;
 		}

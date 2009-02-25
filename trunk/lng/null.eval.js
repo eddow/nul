@@ -7,6 +7,52 @@
  *--------------------------------------------------------------------------*/
  
 nul.eval = {
+	finalize: function(ctxd, kb) {
+		var assertKbLen, assertLc;
+		if(nul.debug.assert) {
+			assertKbLen = kb.knowledge.length; assertLc = nul.debug.lc; } 
+
+		ctxd = ctxd.known(kb.knowledge) || ctxd;
+		while(ctxd.flags.dirty) {
+			try {
+				var chg = false;
+				if(!ctxd.evaluation || !ctxd.evaluation.management) {
+					var cps, ats;
+					cps = map(ctxd.components, function(o) {
+						if(o.dirty) {
+							o = o.evaluate(kb).numerise(ctxd).clean();
+							chg = true;
+						}
+						return o;
+					});
+					ats = map(ctxd.attributes, function(o, ky) {
+						if(o.dirty) {
+							o = o.evaluate(kb).numerise(ctxd).clean();
+							if(ctxd.deps[0]&&ctxd.deps[0][ky]) kb.know(ky, o, 1);
+							chg = true;
+						}
+						return o;
+					});
+					ctxd = chg?ctxd.clone(cps, ats):ctxd;
+				}
+	
+				var rv;
+				if(ctxd.evaluation && (
+					!ctxd.evaluation.evaluable ||
+					ctxd.evaluation.evaluable(ctxd)
+				) ) {
+					rv = ctxd.evaluation.evaluated(ctxd, kb);
+					if(rv) { chg = true; ctxd = rv; }
+				}
+				if(!rv) ctxd = ctxd.summarised().clean();
+			} finally { if(nul.debug.assert)
+				assert(assertKbLen== kb.knowledge.length,
+					'Knowledge enter/leave paired while finalizing ['+assertLc+']'); }
+			ctxd = ctxd.known(kb.knowledge) || ctxd;
+		}
+		return ctxd;
+	}.describe(function(ctxd, kb) { return 'Finalizing '+ctxd.toHTML(); })
+	.perform('nul.eval.finish'),
 	/*TODO: type expectations
 	 * &&, || expect boolean
 	 * &, |, ^ expect numbers or booleans
@@ -33,13 +79,13 @@ nul.eval = {
 			name: 'evaluation',
 			kb: kb,
 			newComponent: function(ctxd, oldComp, newComp) {
-				if(oldComp!= newComp) return newComp.numerise(ctxd).clean();
-				else return newComp.clean();
+				if(oldComp!= newComp) newComp = newComp.numerise(ctxd);
+				return newComp.clean();
 			},
 			newAttribute: function(ctxd, name, oldAttr, newAttr) {
-				this.kb.know(name, newAttr, 1);
-				if(oldAttr!= newAttr) return newAttr.numerise(ctxd).clean();
-				else return newAttr.clean();
+				if(ctxd.deps[0]&&ctxd.deps[0][name]) this.kb.know(name, newAttr, 1);
+				if(oldAttr!= newAttr) newAttr = newAttr.numerise(ctxd);
+				return newAttr.clean();
 			},
 			browse: function(ctxd) {
 				return !ctxd.evaluation || !ctxd.evaluation.management;
@@ -78,6 +124,11 @@ nul.eval = {
 
 	application: {
 		management: true,
+		evaluable: function(ctxd) {
+			return (ctxd.components.applied.free() && !ctxd.components.applied.flags.fuzzy)
+				|| !ctxd.components.object.deps[0]
+				|| !ctxd.components.object.deps[0][nul.lcl.slf];
+		},
 		evaluated: function(ctxd, kb) {
 			var obj = ctxd.components.object.evaluate(kb) || ctxd.components.object;
 			var apl = ctxd.components.applied.evaluate(kb) || ctxd.components.applied;
@@ -220,11 +271,12 @@ nul.eval = {
 	objectivity: {
 		evaluated: function(ctxd, kb)
 		{
-			if(!ctxd.components.object.free()) return;
-			var itm =
-				ctxd.components.item.contextualize(ctxd.components.object.attributes, 1) ||
-				ctxd.components.item;
-			if(is_empty(itm.deps[1])) return (itm.evaluate(kb) || itm).stpUp(ctxd.locals, kb);
+			var itm = ctxd.components.item.contextualize(ctxd.components.object.attributes, 1);
+			if(itm) return (itm.evaluate(kb) || itm).stpUp(ctxd.locals, kb);
+			return;
+			//TODO: once locals get down to more specific,
+			//  if a specific local don't give an attribute, we can consider the attribute is
+			//  absent and throw an error. Beside, the value can still be modified beside.
 			throw nul.semanticException(
 				'No such attribute declared : '+keys(itm.deps[1]).join(', '));
 		}.perform('nul.eval.objectivity.evaluated')

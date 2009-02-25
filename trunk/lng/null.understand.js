@@ -134,7 +134,7 @@ nul.understanding = {
 			var rv = nul.actx.definition(ctxtl.decl, nul.actx.and3());
 			return rv.modify([
 				nul.actx.application(tp, lcl),
-				val]).summarised();
+				val]).summarised(true);
 		} else {
 			ub.createFreedom(ctxtl.decl);
 			return nul.actx.definition(ctxtl.decl, nul.understanding.understand(ctxtl.value, ub, 'noub'));

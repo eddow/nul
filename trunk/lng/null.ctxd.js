@@ -74,7 +74,6 @@ nul.ctxd = {
 		}.perform(function(behav) { return 'nul.ctxd->browse/'+behav.name; }),
 		//Just compare : returns true or false
 		cmp: function(ctxd) {
-			//TODO: locals mapping
 			if(ctxd.charact != this.charact) return false;
 			if( this.components || ctxd.components ) {
 				if(!this.components || !ctxd.components || this.components.length != ctxd.components.length)
@@ -83,6 +82,10 @@ nul.ctxd = {
 				map(this.components, function(c,i) {
 					if(allSim && !c.cmp(ctxd.components[i])) allSim = false;
 				});
+				map(this.attributes, function(c,i) {
+					if(allSim && !c.cmp(ctxd.attributes[i])) allSim = false;
+				});
+				if(allSim) for(var an in ctxd.attributes) if(!this.attributes[an]) return false;
 				return allSim;
 			}
 			if( ('undefined'!= typeof this.value || 'undefined'!= typeof ctxd.value) &&
@@ -102,12 +105,12 @@ nul.ctxd = {
 			if(this.components) map(this.components, function(o) {
 				if(nul.debug.assert) assert(o.deps,'Subs summarised.'); 
 				dps.push(nul.lcl.dep.stdDec(o.deps));
-				for(var f in o.flags) flags[f] = true;
+				for(var f in o.flags) if(first || 'dirty'!=f) flags[f] = true;
 			});
 			map(this.attributes, function(o) {
 				if(nul.debug.assert) assert(o.deps,'Subs summarised.');
 				dps.push(nul.lcl.dep.stdDec(o.deps));
-				for(var f in o.flags) flags[f] = true;
+				for(var f in o.flags) if(first || 'dirty'!=f) flags[f] = true;
 			});
 
 			if(['=','?','[-]'].contains(this.charact)) flags.failable = true;
@@ -166,6 +169,10 @@ nul.ctxd = {
 		touch: function() {	//TODO: on devrait pouvoir enlever le 'touch' sans bug MAIS bug dans unittest
 			return this.browse(nul.ctxd.touch) || this;
 		}.perform('nul.ctxd->touch'),
+		//Be sure the expression is evaluated until it's not dirty anymore		
+		finalize: function(kb) {
+			return nul.eval.finalize(this, kb);
+		}.perform('nul.ctxd->finalize'),
 		//Get a list of non-fuzzy expressions
 		solve: function() {
 			return nul.solve.solve(this);
@@ -182,6 +189,7 @@ nul.ctxd = {
 			return this.browse(nul.ctxd.contextualize([ctx], dlt));
 		}.perform('nul.ctxd->contextualize'),
 		known: function(knwldg, dlt) {
+			if(nul.debug.assert) assert(!knwldg.knowledge, '"ctxd->known" Needs a knowledge, not a knowledge base!');
 			if(!dlt) dlt=0;
 			//TODO: verify intersection between kb and this.deps
 			return this.browse(nul.ctxd.contextualize(knwldg, dlt));
@@ -229,7 +237,7 @@ nul.ctxd = {
 		stpUp: function(lcls, kb) {
 			//this.locals are the unknown of kb[-1]
 			if(nul.debug.levels && kb) assert(this.locals.lvl == kb.knowledge.length, 'StepUp predicate');
-			return this.brws_lclShft(lcls,'sup',lcls);
+			return this.brws_lclShft(lcls,'sup',lcls).numerise(lcls.prnt || lcls.lvl);
 		}.perform('nul.ctxd->stpUp'),
 		//Extract locals and says <this> we gonna give them to his parent
 		//<lcls> are the destination parent's locals
@@ -336,7 +344,9 @@ nul.ctxd = {
 						attr[an],
 						arguments[i].attributes[an], kb);
 				}
-			return this.clone().attributed(attr);//.summarised();
+			var rv = this.clone().attributed(attr).summarised();
+			rv = rv.known(kb.knowledge) || rv;
+			return rv.contextualize(rv.attributes) || rv;
 		}.perform('nul.ctxd->addAttr'),
 		
 		withLocals: function(lcls) {
@@ -397,9 +407,13 @@ nul.ctxd = {
 			knwldg: knwldg,
 			before: function(ctxd) {
 				++this.ctxDelta;
-				if(1<this.knwldg.length) return;	//TODO: calculate intersection
-				if(ctxd.deps[this.ctxDelta]) for(var d in ctxd.deps[this.ctxDelta])
-					if(this.knwldg[0][d]) return;
+				for(var cd in ctxd.deps) {
+					cd = reTyped(cd);
+					if(this.ctxDelta<= cd && cd <this.ctxDelta+this.knwldg.length)
+						for(var li in ctxd.deps[cd])
+							if(this.itmCtxlsz(cd-this.ctxDelta, li))
+								return;
+				}
 				throw nul.ctxd.noBrowse;
 			},
 			abort: function() { --this.ctxDelta; },
@@ -407,12 +421,15 @@ nul.ctxd = {
 				--this.ctxDelta;
 				if(chgd) return ctxd.summarised().dirty();
 			},
+			itmCtxlsz: function(ctxNdx, lindx) {
+				return 0<= ctxNdx && ctxNdx<this.knwldg.length && 
+					this.knwldg[ctxNdx][lindx] &&
+					!this.knwldg[ctxNdx][lindx].flags.fuzzy &&
+					(nul.lcl.slf!= lindx || 0== ctxNdx)
+			},
 			local: function(ctxd) {
 				var ctxNdx = ctxd.ctxDelta-this.ctxDelta;
-				if( 0<= ctxNdx && ctxNdx<this.knwldg.length && 
-					this.knwldg[ctxNdx][ctxd.lindx] &&
-					!this.knwldg[ctxNdx][ctxd.lindx].flags.fuzzy &&
-						(nul.lcl.slf!= ctxd.lindx || 0== ctxNdx)) {
+				if( this.itmCtxlsz(ctxNdx, ctxd.lindx)) {
 					var rv = this
 						.knwldg[ctxNdx][ctxd.lindx]
 						.localise(ctxd.ctxDelta-(dlt||0))
@@ -476,7 +493,10 @@ nul.ctxd = {
 			name: 'localisation',
 			inc: inc,
 			ctxDelta: -1,
-			before: function() { ++this.ctxDelta; },
+			before: function(ctxd) {
+				if(is_empty(ctxd.deps)) throw nul.ctxd.noBrowse;
+				++this.ctxDelta;
+			},
 			finish: function(ctxd, chgd) {
 				--this.ctxDelta;
 				if(chgd) return ctxd.summarised();

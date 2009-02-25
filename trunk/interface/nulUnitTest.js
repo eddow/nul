@@ -45,8 +45,13 @@ tests = [
 	rslt: '(((-[0|3] = 5) &#9633; (-[1|3] = 5)) , a[0|1] , b[1|1])'},
 	{xpr: '\\/c {{1, c}} S N n S[n+1,"str"]',
 	rslt: '(&#x2115;[n[2|2]] ; ((1 = (n[2|4] + 1)) , "str"))'},
+	{xpr: '{ \\/n n:- { \\/x \\/y  (x, y) :- x+y }[1, n] }[10]',
+	rslt: '11'},
 	{xpr: '[f{ 1 [] (\\/x x>1?x:- x * f[x-1]) }][4]',
 	rslt: '24'},
+	{xpr: '{ \\/n n:- [fib { \\/x x, _, 1 :- x [] \\/x \\/y \\/z z > 1 ? (x, y, z) :- fib[y, y+x, z-1] }][1, 1, n] }[10]',
+	desc: 'Accumulated Fibbonacci on 10',
+	rslt: '55'},
 ];
 
 function rsltDiv(rslt) {
@@ -74,7 +79,7 @@ function init() {
 		var t = tests[i];
 		rw = tbody.insertRow(-1);
 		//Expression
-		rw.insertCell(-1).innerHTML = escapeHTML(t.xpr);
+		rw.insertCell(-1).innerHTML = t.desc || escapeHTML(t.xpr);
 		//Test?
 		rw.insertCell(-1).innerHTML = 
 			'<input type="checkbox" checked="checked" id="t'+i+'" />'+

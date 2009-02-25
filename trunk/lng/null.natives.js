@@ -10,7 +10,7 @@ nul.natives = {
 	Q: nul.actx.nativeFunction('&#x211a;',
 		function(xpr) {
 			if('number'== typeof xpr.value) return xpr;
-			if(xpr.free()) nul.fail('Not a number');
+			if(xpr.free() && !xpr.flags.fuzzy) nul.fail('Not a number');
 			return;
 		},
 		this.Q
@@ -33,4 +33,12 @@ nul.natives = {
 	),
 	'true': nul.actx.atom(true),
 	'false': nul.actx.atom(false),
+	str: nul.actx.nativeFunction('str',
+		function(xpr) {
+			if('string'== typeof xpr.value) return xpr;
+			if(xpr.free() && !xpr.flags.fuzzy) nul.fail('Not a string');
+			return;
+		},
+		this.str
+	),
 };

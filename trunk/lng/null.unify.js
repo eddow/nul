@@ -20,7 +20,14 @@ nul.unify = {
 				ununified = [];
 				for(var i=0; i<us.length; ++i) {
 					var trv = nul.unify.chewed(us[i], unifion, kb);
-					if(trv) unifion = trv;
+					//if(trv) unifion = trv;
+					if(trv) {
+						unifion = trv;
+						us = map(us.concat(ununified), function(o) {
+							return o.finalize(kb);
+						});
+						ununified = [];
+					}
 					else ununified.push(us[i]);
 				}
 				us = ununified;
@@ -79,9 +86,6 @@ nul.unify = {
 				value: a.components.value/*.dirty()*/
 			}).summarised();
 		}
-		
-		if(kb.affectable(a)) return kb.affect(a,
-			b/*.lclShft(clone1(a.locals))*/);		//x=...
 		return 'unk';
 	}.perform('nul.unify.vcvs'),
 	
@@ -122,6 +126,10 @@ nul.unify = {
 		if('unk'!== rv) return rv?rv.addAttr(kb, a, b):rv;
 		rv = nul.unify.vcvs(b, a, kb);
 		if('unk'!== rv) return rv?rv.addAttr(kb, a, b):rv;
+
+		if(kb.affectable(a)) return kb.affect(a, b);
+		if(kb.affectable(b)) return kb.affect(b, a);
+		
 		return 'unk';
 	}.perform('nul.unify.digg'),
 	
@@ -160,7 +168,6 @@ nul.unify = {
 	//<b> and <alcls>(<as>' parent locals) are distinct
 	//always returns ctxd 
 	orDist: function(as, alcls, b, kb) {
-		//TODO: as.evaluated (if dirty || common deps) ??
 		var rv = kb.trys(
 			'OR distribution', as, alcls,
 			function(c, kb) { return nul.unify.sub1(c, b, kb); });
