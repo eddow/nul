@@ -1,5 +1,5 @@
 #summary List of operators and expression builders
-#labels Featured
+#labels Featured,Language
 
 ||  !  || (up-to come) executor ||
 || []  || [GreedyMetaOr Greedy meta-or] ||
