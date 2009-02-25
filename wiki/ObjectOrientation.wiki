@@ -48,3 +48,11 @@ This means, in english that,
   * the real part {{{rl}}} is {{{a}}},
   * the imaginary part {{{img}}} is {{{b}}} and
   * the square modulo is the sum of the square of the real part and the square of the imaginary part.
+
+= Classes and instances =
+
+As most of the concepts, classes in NUL are just _sets_ of values. The object-orientation comes from the fact that _the unification of several values unify their attributes too_.
+
+Therefore, if {{{c}}} is known as belonging to the set of complex, writing {{{c= 2,3}}} will lead its _internal representation_ to be fixed to the pair {{{2, 3}}} . It will therefore lead its {{{rl}}} attribute to be fixed to {{{2}}}, its {{{img}}} attribute to be fixed to {{{3}}} and its its {{{sq}}} attribute to be fixed to {{{13}}} .
+
+The same effect can be achieved by writing {{{c->rl = 2; c->img = 3}}}
