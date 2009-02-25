@@ -1,4 +1,5 @@
 #summary From boolean value to control-flow
+#labels Language
 
 The assertion is mainly a preceder :
 {{{ ? a }}} will :
