@@ -1,7 +1,7 @@
 #summary Expressions that are not completely specified but on which we have a piece of knowledge
 #labels Language
 
-== untyped fuzzy expressions ==
+= Untyped fuzzy expressions =
 
 Fuzzy expressions can be defined in _extension_ - with the [GreedyMetaOr greedy meta-or] by example.
 
@@ -12,7 +12,7 @@ Note: this identifier will never change its value, it has one and, even if we do
 It is like when you try to guess the age of your neighbour. You can get closer and closer but (since you don't take years to find it out), it doesn't change : this is the main difference between imperative languages using affectation and assertive languages using unification.
 Note: the local declared will be useable only in the place of the "..." of course.
 
-===== Example =====
+== Example ==
 
 {{{ \/x  x=(5,_) ; x=(_,3) }}} will give the result (5,3)
 
@@ -20,10 +20,17 @@ Note: the local declared will be useable only in the place of the "..." of cours
 
 {{{(\/x (x, x+1)) = (5, _) }}} will give the result (5, 6)
 
-== Pre-typed fuzzy expressions ==
+= Pre-typed fuzzy expressions =
 
 As a shortcut, some wants to specify a set of values while declaring a fuzzy local. This is done by using the set instead of {{{ \/ }}}.
 
 {{{ { 1 [] 2 } x x+1 }}} is therefore the equivalent of {{{ \/x { 1 [] 2 }[x]; x+1 }}}
 
 When declaring a local like this, the local is then asserted to be in the input domain of the set.
+
+= Joker shortcut =
+
+The joker is the underscore char ( {{{_}}} ).
+This character can be used in two cases :
+ * To specify "any value" when used like this. It is then just replaced by {{{ \/x x }}} .
+ * To specify "any element" when used as a pre-typed fuzzy : {{{ set _ }}} is then just replaced by {{{ set x x }}} (in english : {{{x}}} as {{{x}}} is an element of {{{set}}})
