@@ -1,6 +1,8 @@
 #summary Expressions that are not completely specified but on which we have a piece of knowledge
 
-Fuzzy expressions can be defined in _extension_ - with the [GreedyMetaOr greedy meta-or].
+== untyped fuzzy expressions ==
+
+Fuzzy expressions can be defined in _extension_ - with the [GreedyMetaOr greedy meta-or] by example.
 
 Sometimes, it is still nice to define a fuzzy expression by definition.
 
@@ -16,3 +18,11 @@ Note: the local declared will be useable only in the place of the "..." of cours
 {{{\/x (x, x+1) }}} will remain like this, a fuzzy expression meaning " a pair of numbers, where the second one is the first one incremented "
 
 {{{(\/x (x, x+1)) = (5, _) }}} will give the result (5, 6)
+
+== Pre-typed fuzzy expressions ==
+
+As a shortcut, some wants to specify a set of values while declaring a fuzzy local. This is done by using the set instead of {{{ \/ }}}.
+
+{{{ { 1 [] 2 } x x+1 }}} is therefore the equivalent of {{{ \/x { 1 [] 2 }[x]; x+1 }}}
+
+When declaring a local like this, the local is then asserted to be in the input domain of the set.
