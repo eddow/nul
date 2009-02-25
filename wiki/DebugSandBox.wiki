@@ -1,0 +1,61 @@
+#summary Detailed NUL debugging page.
+
+= Introduction =
+
+This page were ment to debug NUL programs as, of course, to debug the NUL interpreter as well.
+You can access it with your browser (note: now only firefox is supported) if you downloaded the project at {{{file:///[path]/interface/nulDbj.html}}} .
+
+
+= Details =
+
+The page contains an input text box, the evaluation command button, several debugging options, the output placeholders and a tab-view of several result-details.
+
+The main way to use it is to write a NUL sentence in the text-box and click the "eval" button.
+
+Note: It is ment to be used confortably with "!FireBug" so every bug can be tracked down.
+
+== Result pane ==
+
+Once an expression is evaluated, just under the input text box appears :
+ * The evaluated result (or the error text)
+ * The resolution of this result : the several values this expression can take.
+
+=== The "Values" tab ===
+
+ * HTML sand-box (initially containing 'yhoo') allows for NUL-code interaction with HTML. (up to come)
+ * The un-evaluated expression; as it was understood, just before evaluation.
+ * "Knowledge evolution" list all knowledge consideration taken while evaluation if the "Watches" debug-option was checked.
+
+=== The "Run-time" tab ===
+
+This should be always empty. While evaluation, this contains the evaluation engine status if the "Watches" debug-options was checked.
+
+=== The "Logs" tab ===
+
+If the "Logs" debug-option was checked, this contains after evaluation all the actions taken by the interpreter. Each enter/leave pair of the log is collapsable.
+
+=== The "Benchmark" tab ===
+
+If benchmark is enabled, this contains the list of the ten more costly engine-function called and their running-time (in milliseconds) as some other timings.
+
+Note: Benchmark is enabled by default. To disable it, the page need to be accessed wwith "noperf" in the url : this can be done by accessing "nulDbj.html#noperf"
+
+== Debugging options ==
+
+Most debugging options are there for vintage reasons and just left in case of serious low-level bugs.
+
+ * "Internal catch" specifies if the main evaluation command is surrounded by try/catch. If unchecked, a NUL error will end up in a !JavaScript error.
+It should be checked all the time and it doesn't cost time if it is checked.
+
+ * "Level checks" specifies weither NUL keep track of "who's parent expression of who". Usually, expressions don't need to reference their parents or to know in which level of the root expression they appear. It can be handy for debugging reasons though.
+If this option is checked then, the expressions will appear with a level indicator (their level in the root expression).
+To check this option _does consume_ computation time, it can take roughly twice the time to compute an expression.
+
+ * "Asserts" specifies weither the in-code assertions are triggered. (for interpreter-purpose only). To check this option _does consume_ computation time.
+
+ * "Logging" allows the interpreter to keep track of any evaluation done and action taken. It can be really handy to debug NUL programs.
+Thisoption is _really time consuming_. Beside it, it can generate megabytes of logs for a simple expression, firefox can end up frozen just trying to display it.
+
+ * "Watches" is an interpreter-debugging options that draw the state (call-stack & such) of the interpreter while interpreting, in the case of FireBug-debugging the evaluation process. To check this option _does consume_ many computation time.
+
+ * "Actions" in conjunction with "Logs" display info of any little boring hick-up of the interpreter. It triples the size of the logs and shouldn't be tryed with something more complex than an addition.
