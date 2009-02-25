@@ -1,4 +1,5 @@
 #summary Expressions that are not completely specified but on which we have a piece of knowledge
+#labels Language
 
 == untyped fuzzy expressions ==
 
