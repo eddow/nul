@@ -1,4 +1,5 @@
 #summary Value association, input parametrisation elimination
+#labels Language
 
 The lambda operator act usually as a regular pair builder.
 Some of its properties anyway makes it different, Here is a _equivalence_ table that shows the properties of this operator
