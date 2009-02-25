@@ -1,4 +1,5 @@
 #summary Affirmative equality operation
+#labels Language
 
 The unification is the main point of NUL.
 
