@@ -9,10 +9,14 @@ If !JavaScript is disabled (because being debugged by instance), the information
 
 = Detail dots =
 
- * The <font color="blue">blue dot</font> gives a string-representation of the expression (useful for copy/pasting, ...) as well as the level of this expression if the "levels check" option is checked.
+ * The *<font color="blue">blue dot</font>* gives a string-representation of the expression (useful for copy/pasting, ...) as well as the level of this expression if the "levels check" option is checked.
 
- * The white-striped dot gives the flags of an expression. The <font color="red">red</font> stripe stands for "Failable", the <font color="turquoise">turquoise</font> stripe stands for "Fuzzy" and the <font color="blue">blue</font> stripe stands for "Dirty"
+ * The white-striped dot gives the flags of an expression. The *<font color="red">red</font>* stripe stands for _Failable_, the *<font color="turquoise">turquoise</font>* stripe stands for _Fuzzy_ and the *<font color="blue">blue</font>* stripe stands for _Dirty_
 
- * The <font color="darkgreen">green dot</font> gives information about dependance. If this expression refers a local of a higher-expression, an entry will be added here. !dependances are drawn in lines. Each line specifies a context-delta (0 means "from this expression", 1 means "from the parent expression", ...) and then follows the list of local indexes in their context and their reference count.
+ * The *<font color="darkgreen">green dot</font>* gives information about dependance. If this expression refers a local of a higher-expression, an entry will be added here. !dependances are drawn in lines. Each line specifies a context-delta (0 means "from this expression", 1 means "from the parent expression", ...) and then follows the list of local indexes in their context and their reference count.
 
 " *1*  0:3 " specifies that the expression refers three times the locals of index zero in the parent's context
+
+ * The *<font color="orange">orange dot</font>* list the names of the locals still active in this context (a local stop to be active once not referenced anymore)
+
+ * The *<font color="plum">plum dot</font>* shows a list of the attributes of the expression as well as their value (note: in string format only)
