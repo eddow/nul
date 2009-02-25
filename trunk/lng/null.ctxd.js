@@ -188,11 +188,10 @@ nul.ctxd = {
 			if(this.deps[dlt]) for(var d in this.deps[dlt]) if(ctx[d])
 			return this.browse(nul.ctxd.contextualize([ctx], dlt));
 		}.perform('nul.ctxd->contextualize'),
-		known: function(knwldg, dlt) {
-			if(nul.debug.assert) assert(!knwldg.knowledge, '"ctxd->known" Needs a knowledge, not a knowledge base!');
+		known: function(kb, dlt) {
 			if(!dlt) dlt=0;
 			//TODO: verify intersection between kb and this.deps
-			return this.browse(nul.ctxd.contextualize(knwldg, dlt));
+			return this.browse(nul.ctxd.contextualize(kb.knowledge, dlt, kb));
 		}.perform('nul.ctxd->known'),
 		//Take the side-effected value of this expression
 		extraction: function() {
@@ -340,12 +339,12 @@ nul.ctxd = {
 			for(var i=1; i<arguments.length; ++i)
 				for(an in arguments[i].attributes) {
 					if(!attr[an]) attr[an] = arguments[i].attributes[an];
-					else attr[an] = nul.unify.level(
+					else attr[an] = nul.unify.subd(
 						attr[an],
 						arguments[i].attributes[an], kb);
 				}
 			var rv = this.clone().attributed(attr).summarised();
-			rv = rv.known(kb.knowledge) || rv;
+			rv = rv.known(kb) || rv;
 			return rv.contextualize(rv.attributes) || rv;
 		}.perform('nul.ctxd->addAttr'),
 		
@@ -400,11 +399,12 @@ nul.ctxd = {
 		
 		if(orig!= ctxd) return ctxd;
 	}.perform(function(behav) { return 'nul.ctxd.flatBrowse/'+behav.name; }),
-	contextualize: function(knwldg, dlt) {
+	contextualize: function(knwldg, dlt, kb) {
 		return {
 			name: 'contextualisation',
 			ctxDelta: (dlt||0)-1,
 			knwldg: knwldg,
+			kb: kb,
 			before: function(ctxd) {
 				++this.ctxDelta;
 				for(var cd in ctxd.deps) {
@@ -434,8 +434,9 @@ nul.ctxd = {
 						.knwldg[ctxNdx][ctxd.lindx]
 						.localise(ctxd.ctxDelta-(dlt||0))
 						.numerise(ctxd.locals.prnt);
+					if(nul.debug.assert) assert(this.kb || is_empty(ctxd.attributes));
 					if(!rv.dbgName) rv.dbgName = ctxd.dbgName;
-					return rv;
+					return kb?rv.addAttr(this.kb,ctxd):rv;
 				}
 			}
 		};

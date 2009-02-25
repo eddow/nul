@@ -12,7 +12,7 @@ nul.eval = {
 		if(nul.debug.assert) {
 			assertKbLen = kb.knowledge.length; assertLc = nul.debug.lc; } 
 
-		ctxd = ctxd.known(kb.knowledge) || ctxd;
+		ctxd = ctxd.known(kb) || ctxd;
 		while(ctxd.flags.dirty) {
 			try {
 				var chg = false;
@@ -48,7 +48,7 @@ nul.eval = {
 			} finally { if(nul.debug.assert)
 				assert(assertKbLen== kb.knowledge.length,
 					'Knowledge enter/leave paired while finalizing ['+assertLc+']'); }
-			ctxd = ctxd.known(kb.knowledge) || ctxd;
+			ctxd = ctxd.known(kb) || ctxd;
 		}
 		return ctxd;
 	}.describe(function(ctxd, kb) { return 'Finalizing '+ctxd.toHTML(); })

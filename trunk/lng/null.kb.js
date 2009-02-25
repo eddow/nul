@@ -120,20 +120,39 @@ nul.kb = function(knowledge) {
 		// This means that the local variables remembered by this left context will be replaced in <ctxd>.
 		//Returns the contextualised <ctxd>
 		leave: function(ctxd) {
-			var cmplKnlg = clone1(this.knowledge);
-			var ctx = this.knowledge.shift();
-			var tkb = this;
+			var tkb = this, ctx = this.knowledge[0];
+			if(nul.debug.assert) {
+				assert(ctx, 'Knowledge coherence');
+				assert('function'== typeof ctx['+entrHTML'], 'Valid context');
+				if(nul.debug.watches)
+					assert(nul.debug.kbase.length()==this.knowledge.length, 'Leaving debug level');
+			}
+			try {
+				if(ctxd) {
+					if(ctx[nul.lcl.slf]) delete ctx[nul.lcl.slf];
+					//If the expression depends only once of a local
+					//Even if this local is known to have a fuzzy value,
+					//Replace the value when contextualising
+					//note: forcing is made by removing the fuzzy flag that'll be added on
+					// contextualise::local summarised
+					var deps = isArray(ctxd)?ctxd[0].deps:ctxd.deps;
+					if(deps[0]) for(var d in deps[0])
+						if(1==deps[0][d] && ctx[d] && ctx[d].flags.fuzzy)
+							delete ctx[d].flags.fuzzy;
+					ctxd = m1a(ctxd, function(c) {
+							return c.finalize(tkb).fuzzyPremiced([ctx]);
+						});
+				} else if(nul.debug.assert)
+					assert(!ctx[nul.lcl.slf],'ar-developement need means changement');
+			}
+			finally {
+				this.knowledge.shift();
+				if(nul.debug.watches) nul.debug.kbase.pop();
+			}
 			if(nul.debug) {
-				if(nul.debug.assert) {
-					assert(ctx, 'Knowledge coherence');
-					assert('function'== typeof ctx['+entrHTML'], 'Valid context');
-					if(nul.debug.watches)
-						assert(nul.debug.kbase.length()==this.knowledge.length+1, 'Leaving debug level');
-				}
 				nul.debug.log('leaveLog')(nul.debug.endCollapser('Leave', 'Produce'),
 					nul.debug.logging?(
 						(ctxd?(nul.actx.tblHTML(ctxd)+ ' after '):'') + ctx['+entrHTML']()):'');
-				if(nul.debug.watches) nul.debug.kbase.pop();
 				if(nul.debug.logging) if(ctx['+ll'] == nul.debug.logs.length()) nul.debug.logs.unlog();
 				if(nul.debug.assert && ctxd) {
 					var cctxd = isArray(ctxd)?ctxd:[ctxd];
@@ -165,25 +184,6 @@ nul.kb = function(knowledge) {
 					});
 				}
 			}
-			if(ctxd) {
-				if(ctx[nul.lcl.slf]) delete ctx[nul.lcl.slf];
-				//If the expression depends only once of a local
-				//Even if this local is known to have a fuzzy value,
-				//Replace the value when contextualising
-				//note: forcing is made by removing the fuzzy flag that'll be added on
-				// contextualise::local summarised
-				var deps = isArray(ctxd)?ctxd[0].deps:ctxd.deps;
-				if(deps[0]) for(var d in deps[0]) if(1==deps[0][d] && ctx[d] && ctx[d].flags.fuzzy)
-					delete ctx[d].flags.fuzzy;
-				//TODO: UTILISER .finalize !!!
-				ctxd = m1a(ctxd, function(c) {
-						var sc = c.known(cmplKnlg);
-						if(c.flags.dirty) sc = (sc||c);
-						sc = sc?(sc.evaluate(tkb) || sc):c;
-						return sc.fuzzyPremiced([ctx]);
-					});
-			} else if(nul.debug.assert)
-				assert(!ctx[nul.lcl.slf],'ar-developement need means changement');
 			return ctxd;
 		}.perform('nul.kb->leave'),
 		//Abort a context (for failure).
@@ -240,7 +240,7 @@ nul.kb = function(knowledge) {
 					
 					var trv = cb(cs[i], tmpKb);
 					if(trv) {
-						var strv = trv.known(tmpKb.knowledge, 1);
+						var strv = trv.known(tmpKb, 1);
 						trv = strv?strv.evaluate(tmpKb):trv;
 						chg = true;
 					} else trv = cs[i];
