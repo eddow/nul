@@ -211,7 +211,7 @@ nul.actx = {
 			element: htmlElement,
 			take: function() {},
 			extract: function() {
-				return nul.actx.staticExpr(nul.html(this.element.innerHTML));
+				return nul.actx.list(nul.html(this.element.innerHTML));
 			},
 			append: function(itm) {
 				if(itm.toXML) {
@@ -292,11 +292,11 @@ nul.actx = {
 						return (rv.rDevelop(rcr, 1) || rv).stpUp(tlcls, kb).clean();
 					}).stpUp(lcls, kb).clean();
 					if(!nul.actx.isC(rv,':-') || nul.actx.isC(apl,':-')) return rv;
-					return rv.components.value.stpUp(lcls, kb);
+					return rv.components.value.levelise(this).stpUp(lcls, kb);
 				}.perform('nul.actx.set->take'),
 				extract: function() {
 					//TODO: remember extraction and use it instead from now on
-					return nul.actx.staticExpr(this.components[0].solve());
+					return nul.actx.list(this.components[0].solve());
 				}.perform('nul.actx.set->extract')
 			},'{}', content,'{','}')
 		:
@@ -313,10 +313,9 @@ nul.actx = {
 				if(!this.components.effected.append)
 					throw nul.semanticException('Expected appendable : ',
 						this.components.effected.toString());
-				return this.components.effected.append(this.components.appended)
-					.numerise(this.locals.prnt || this.locals.lvl);
+				return this.components.effected.append(this.components.appended).levelise(this);
 			}			
-		},'<<=', { effected: dst, appended: itms });
+		},'<<=', { effected: dst, appended: itms }, '&lt;&lt;=');
 	},
 	lambda: function(parms, value) {
 		/*
@@ -333,11 +332,18 @@ a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 	biExpr: function(oprtr, oprnds) {
 		return nul.actx.std.listOp({evaluation:nul.eval.biExpr},oprtr, oprnds, mathSymbol(oprtr));
 	},
-	staticExpr: function(oprnds) {
+	list: function(oprnds) {
+		//TODO: Les valeurs floues donnent lieu à une variable déclarée en ctxDelta=0
+		// D'où la liste est candidate à être utilisée comme contextualisation
 		return nul.actx.std.listOp({
 			take: function(apl, kb, lcls) {
-				return nul.unify.orDist(this.components, lcls, apl, kb);
-			}.perform('nul.actx.staticExpr->take')
+				var cs = this.components;
+				var rv = kb.knowing([this, apl], function(kb) {
+					var rv = nul.unify.orDist(cs, lcls, apl, kb);
+					return rv.levelise(apl);				
+				});
+				return rv?rv.stpUp(lcls, kb):rv;	//TODO: vérifier que les <lcls> doivent bien être repassés			
+			}.perform('nul.actx.list->take')
 		},',', oprnds);
 	},
 	preceded: function(oprtr, oprnd) {
@@ -379,7 +385,7 @@ a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 	xml: function(node, attrs, content) {
 		var rv = nul.actx.lambda(
 				nul.actx.atom(node),
-				nul.actx.staticExpr(content)
+				nul.actx.list(content)
 			);
 		rv.attributes = attrs;
 		rv.toXML = function() {

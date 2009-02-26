@@ -100,7 +100,7 @@ nul.debug = {
 	assert: true,
 	logging: false,
 	watches: false,
-	lcLimit: /*1000*/0,
+	lcLimit: 0,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
 		return nul.debug.callStack.item().get()[0];

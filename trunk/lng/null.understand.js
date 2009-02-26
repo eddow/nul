@@ -68,7 +68,7 @@ nul.understanding = {
 		switch(xpr.operator)
 		{
 			case ':-':	return nul.actx.lambda(ops[0], ops[1]);
-			case ',':	return nul.actx.staticExpr(ops);
+			case ',':	return nul.actx.list(ops);
 			case '=':	return nul.actx.unification(ops);
 			case ';':	return nul.actx.and3(ops);
 			case '[]':	return nul.actx.or3(ops);
@@ -80,7 +80,7 @@ nul.understanding = {
 	preceded: function(prc, ub) {
 		var op = nul.understanding.understand(prc.operand, ub);
 		if(prc.operator == '?') return nul.actx.assert(op);
-		if(prc.operator == ',') return nul.actx.staticExpr([op]);
+		if(prc.operator == ',') return nul.actx.list([op]);
 		return nul.actx.preceded(prc.operator,op);
 	},
 	postceded: function(pstc, ub) {

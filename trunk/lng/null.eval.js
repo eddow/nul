@@ -12,21 +12,26 @@ nul.eval = {
 		if(nul.debug.assert) {
 			assertKbLen = kb.knowledge.length; assertLc = nul.debug.lc; } 
 
+		var oldCtxd, rv;
 		ctxd = ctxd.known(kb) || ctxd;
 		while(ctxd.flags.dirty) {
+			if(nul.debug) {
+				nul.debug.log('leaveLog')(nul.debug.collapser('Finalizing'), ctxd.toHTML());
+				oldCtxd = ctxd;
+			}
 			try {
 				var chg = false;
 				if(!ctxd.evaluation || !ctxd.evaluation.management) {
 					var cps, ats;
 					cps = map(ctxd.components, function(o) {
-						if(o.dirty) {
+						if(o.flags.dirty) {
 							o = o.evaluate(kb).numerise(ctxd).clean();
 							chg = true;
 						}
 						return o;
 					});
 					ats = map(ctxd.attributes, function(o, ky) {
-						if(o.dirty) {
+						if(o.flags.dirty) {
 							o = o.evaluate(kb).numerise(ctxd).clean();
 							if(ctxd.deps[0]&&ctxd.deps[0][ky]) kb.know(ky, o, 1);
 							chg = true;
@@ -36,7 +41,7 @@ nul.eval = {
 					ctxd = chg?ctxd.clone(cps, ats):ctxd;
 				}
 	
-				var rv;
+				rv = null;
 				if(ctxd.evaluation && (
 					!ctxd.evaluation.evaluable ||
 					ctxd.evaluation.evaluable(ctxd)
@@ -49,6 +54,12 @@ nul.eval = {
 				assert(assertKbLen== kb.knowledge.length,
 					'Knowledge enter/leave paired while finalizing ['+assertLc+']'); }
 			ctxd = ctxd.known(kb) || ctxd;
+			if(nul.debug) {
+				nul.debug.log('leaveLog')(nul.debug.endCollapser('Iterated', 'Finalized'),
+					ctxd.toHTML() + ' after ' + oldCtxd.toHTML());
+				if(nul.debug.assert) assert(!ctxd.flags.dirty || !ctxd.cmp(oldCtxd),
+					'Finalization process should stop');
+			}
 		}
 		return ctxd;
 	}.describe(function(ctxd, kb) { return 'Finalizing '+ctxd.toHTML(); })
@@ -285,5 +296,11 @@ nul.eval = {
 			throw nul.semanticException(
 				'No such attribute declared : '+keys(itm.deps[1]).join(', '));
 		}.perform('nul.eval.objectivity.evaluated')
+	},
+	set: {
+		evaluated: function(ctxd, kb)
+		{
+			//TODO: if can enumarate, just enumerate in a list
+		}.perform('nul.eval.set.evaluated')
 	}
 };

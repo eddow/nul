@@ -113,7 +113,7 @@ nul.ctxd = {
 				for(var f in o.flags) if(first || 'dirty'!=f) flags[f] = true;
 			});
 
-			if(['=','?','[-]'].contains(this.charact)) flags.failable = true;
+			if(['<<=','=','?','[-]'].contains(this.charact)) flags.failable = true;
 			else if(this.isFailable && this.isFailable()) flags.failable = true;
 			if('{}'== this.charact) delete flags.fuzzy;
 			if(['[-]','[]',':'].contains(this.charact)) flags.fuzzy = true;
@@ -152,7 +152,8 @@ nul.ctxd = {
 				if(3== lcls[0].ctxDelta) return knwldg[0][lcls[0].lindx].localise(0);
 				return nul.actx.unification([
 					nul.actx.local(lcls[0].ctxDelta-1, lcls[0].lindx,'-'),
-					knwldg[lcls[0].ctxDelta-3][lcls[0].lindx].localise(lcls[0].ctxDelta-1)]);
+					knwldg[lcls[0].ctxDelta-3][lcls[0].lindx].localise(lcls[0].ctxDelta-1)])
+					.levelise(this);
 			}
 			var xpr = this;
 			for(var i=0; i<vals.length; ++i) {
@@ -163,7 +164,7 @@ nul.ctxd = {
 					xpr = nul.actx.and3([prem,xpr.stpDn(rlcls)]).withLocals(rlcls);
 				}
 			}
-			return xpr.summarised()
+			return xpr.levelise(this).summarised();
 		}.perform('nul.ctxd->fuzzyPremiced'),
 		//Have the expressions touched out of understanding		
 		touch: function() {	//TODO: on devrait pouvoir enlever le 'touch' sans bug MAIS bug dans unittest
@@ -236,7 +237,7 @@ nul.ctxd = {
 		stpUp: function(lcls, kb) {
 			//this.locals are the unknown of kb[-1]
 			if(nul.debug.levels && kb) assert(this.locals.lvl == kb.knowledge.length, 'StepUp predicate');
-			return this.brws_lclShft(lcls,'sup',lcls).numerise(lcls.prnt || lcls.lvl);
+			return this.brws_lclShft(lcls,'sup',lcls).levelise(lcls);
 		}.perform('nul.ctxd->stpUp'),
 		//Extract locals and says <this> we gonna give them to his parent
 		//<lcls> are the destination parent's locals
@@ -259,10 +260,12 @@ nul.ctxd = {
 		
 		//Transform an expression from kb local-space to expression local-space and vice versa
 		localise: function(inc) {
+			//TODO: optimise: throw nul.unlocalisable en fonction des dépendances
 			return (this.browse(nul.ctxd.localise(inc||0)) || this.clone()).summarised();
 		}.perform('nul.ctxd->localise'),
 
 		numerise: function(prnt) {
+			if(!nul.debug.levels) return this;
 			var lvl;
 			if(prnt) {
 				if(('number'==typeof prnt)) { lvl=prnt; prnt = undefined; }
@@ -273,9 +276,13 @@ nul.ctxd = {
 				) || (
 					prnt && this.locals.lvl == prnt.locals.lvl+1
 				),'No useless numerisation.')
-			if(nul.debug.levels) return this.browse(nul.ctxd.numerise(prnt, lvl)) || this;
-			return this;
+			return this.browse(nul.ctxd.numerise(prnt, lvl)) || this;
 		}.perform('nul.ctxd->numerise'),
+		levelise: function(sl) {
+			if(!nul.debug.levels) return this;
+			if(sl.locals) sl = sl.locals;
+			return this.numerise(sl.prnt || sl.lvl);
+		},
 		rDevelop: function(v, inc, lcl) {
 			var ctx = [];
 			ctx[lcl || nul.lcl.slf] = v.localise();
@@ -351,7 +358,7 @@ nul.ctxd = {
 		withLocals: function(lcls) {
 			var rv = this;
 			if(nul.debug.levels && (lcls.prnt || 'undefined'!= typeof lcls.lvl))
-				rv = rv.numerise(lcls.prnt || lcls.lvl);
+				rv = rv.levelise(lcls);
 			rv.locals = clone1(lcls);
 			return rv;
 		}.perform('nul.ctxd->withLocals'),
@@ -452,7 +459,7 @@ nul.ctxd = {
 			return !ctxd.extract;
 		},
 		finish: function(ctxd, chgd) {
-			if(ctxd.extract) return ctxd.extract().numerise(ctxd.locals.prnt || ctxd.locals.lvl);
+			if(ctxd.extract) return ctxd.extract().levelise(ctxd);
 			if(chgd) return ctxd.summarised().dirty();
 		}
 	},
@@ -527,11 +534,12 @@ nul.ctxd = {
 			prnts: prnt?[prnt]:[],
 			before: function(ctxd) {
 				ctxd = ctxd.clone();
-				if('undefined'!= typeof this.sLvl) {
-					ctxd.locals.lvl = this.prnts.length+this.sLvl;
-					if(nul.debug.assert) assert(!isNaN(ctxd.locals.lvl), 'levels computation');
-				}
-				if(0<this.prnts.length) ctxd.locals.prnt = this.prnts[0];
+				var mblvl = this.prnts.length+this.sLvl;
+				var mbprnt = 0<this.prnts.length?this.prnts[0]:null;
+				if(ctxd.locals.lvl == mblvl && ctxd.locals.prnt == mbprnt) throw nul.ctxd.noBrowse;
+				ctxd.locals.lvl = mblvl;
+				if(nul.debug.assert) assert(!isNaN(ctxd.locals.lvl), 'levels computation');
+				if(mbprnt) ctxd.locals.prnt = mbprnt;
 				else delete ctxd.locals.prnt;
 				this.prnts.unshift(ctxd);
 				return ctxd;

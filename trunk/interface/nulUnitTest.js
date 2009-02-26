@@ -53,9 +53,9 @@ tests = [
 	rslt: '4'},
 	{xpr: '[f{ 1 [] (\\/x x>1?x:- x * f[x-1]) }][4]',
 	rslt: '24'},
-	{xpr: '{ \\/n n:- [fib { \\/x x, _, 1 :- x [] \\/x \\/y \\/z z > 1 ? (x, y, z) :- fib[y, y+x, z-1] }][1, 1, n] }[10]',
-	desc: 'Accumulated Fibbonacci on 10',
-	rslt: '55'},
+	{xpr: '{ \\/n n:- [fib { \\/x x, _, 1 :- x [] \\/x \\/y \\/z z > 1 ? (x, y, z) :- fib[y, y+x, z-1] }][1, 1, n] }[4]',
+	desc: 'Accumulated Fibbonacci on 4',
+	rslt: '3'},
 ];
 
 function rsltDiv(rslt) {
