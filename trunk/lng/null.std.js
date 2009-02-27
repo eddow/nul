@@ -40,7 +40,10 @@ var nul = {
 	expression: function(txt)
 	{
 		nul.erroneus = false;
-		return nul.understanding.understand(nul.compile(txt), nul.firstUnderstandBase()).touch().numerise();
+		return nul.understanding.understand(nul.compile(txt), nul.firstUnderstandBase()).numerise();
+	},
+	globalized: function(xpr) {
+		return xpr.contextualize(nul.globals, 1) || xpr;	//TODO: || xpr.touch() ?
 	},
 	html: function(txt)
 	{

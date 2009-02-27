@@ -11,11 +11,14 @@ function isArray(itm) {
 	return typeof(itm) == 'object' && typeof itm.length === 'number' && !itm.propertyIsEnumerable('length') && typeof itm.splice === 'function';
 }
 
-
+var cloneStack = [];
 //Duplicate <myObj> and its components
 function clone(myObj) {
 	if(null== myObj || typeof(myObj) != 'object') return myObj;
-	return map(myObj, clone);
+	if(nul.debug.assert) assert(!cloneStack.contains(myObj), 'Clone not re-entrant'); 
+	cloneStack.push(myObj);
+	try { return map(myObj, clone); }
+	finally { cloneStack.pop(myObj); }
 }
 
 //Duplicate <myObj> ut components are just references
@@ -25,7 +28,7 @@ function clone1(myObj) {
 }
 
 cloneUnsure = clone;
-cloneUnsure1 = clone1;
+cloneUnsure1 = function(c) { return c; };
 
 //If <a> then <a> else <b>
 function iif(a, b) {
@@ -95,7 +98,7 @@ function keys(ass) {
 }
 
 //Get <arr> shifted with <itm> but don't modify <arr>
-function unshifted(itm, arr) {
+function unshifted(itm, arr) {	//TODO: virer les unshifted inutiles (après les clones)
 	arr = clone1(arr);
 	arr.unshift(itm);
 	return arr;
@@ -118,14 +121,9 @@ function arrCmp(a, b) {
 	return true;
 }
 
-//Weither <ndl> is one of the following arguments
-function inOr(ndl) {
-	for(var i=1; i<arguments.length; ++i) if(ndl == arguments[i]) return true;
-	return false;
-}
-
 //a = a.concat(o) : side-effect
 function seConcat(a, o) {
+	if(a===o) throw nul.internalException('seConcatening self')
 	for(var i=0; i<o.length; ++i) a.push(o[i]);
 	return a;
 }

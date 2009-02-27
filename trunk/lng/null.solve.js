@@ -12,31 +12,31 @@
  *  - 'AI' choice ?
  */ 
 nul.solve = {
-	solve: function(ctxd) {
-		if(!ctxd.flags.fuzzy) return [ctxd];
+	solve: function(xpr) {
+		if(!xpr.flags.fuzzy) return [xpr];
 		var rv = [], tryed;
-		for(var cn=0; tryed=nul.solve.tryed(ctxd, cn); ++cn) try {
+		for(var cn=0; tryed=nul.solve.tryed(xpr, cn); ++cn) try {
 			rv = rv.concat(nul.solve.solve(tryed.evaluate()||tryed));
-		} catch(err) { if(nul.failure!= err) throw err; }
+		} catch(err) { nul.exception.notice(err); if(nul.failure!= err) throw err; }
 		assert(0!= cn, 'Solutions');
 		return rv;
-	}.describe(function(ctxd) { return 'Solve '+ctxd.toHTML(); }),
-	tryed: function(ctxd, cn) {
-		return ctxd.browse({
+	}.describe(function(xpr) { return 'Solve '+xpr.toHTML(); }),
+	tryed: function(xpr, cn) {
+		return xpr.browse({
 			name: 'solve try',
 			browse: true,
 			cn: cn,
-			before: function(ctxd) {
+			before: function(xpr) {
 				if(!this.browse ||
-					nul.actx.isC(ctxd,'{}')) throw nul.ctxd.noBrowse;
-				if([':','[]'].contains(ctxd.charact)) {
+					'{}'==xpr.charact) throw nul.browse.abort;
+				if([':','[]'].contains(xpr.charact)) {
 					this.browse = false;
-					if(this.cn < ctxd.components.length)
-						return ctxd.components[this.cn].stpUp(clone1(ctxd.locals));
+					if(this.cn < xpr.components.length)
+						return xpr.components[this.cn].stpUp(clone1(xpr.locals));
 				} 
 			},
-			finish: function(ctxd, chgd) {
-				if(chgd) return ctxd.summarised();
+			finish: function(xpr, chgd) {
+				if(chgd) return xpr.summarised();
 			}
 		});
 	}

@@ -58,7 +58,7 @@ nul.lcl = {
 	//<lindx> is the local-index of variable becoming 'self'
 	selfCtx: function(dbgName, lindx, ctx) {
 		var rv = ctx?clone1(ctx):[];
-		rv[lindx] = nul.actx.local(-1, nul.lcl.slf, dbgName||'');
+		rv[lindx] = nul.build().local(-1, nul.lcl.slf, dbgName||'');
 		return rv;
 	}
 };

@@ -15,8 +15,10 @@ nul.kb = function(knowledge) {
 		
 		emptyCtx : function(entr) {
 			var ctx=[];
-			ctx['+entr'] = clone1(entr);
-			ctx['+entrHTML'] = function(glue) { return nul.actx.tblHTML(this['+entr'], glue); };
+			if(nul.debug.levels || nul.debug.logging || nul.debug.assert) {
+				ctx['+entr'] = map(entr, function(o) { return o.clone(); });
+				ctx['+entrHTML'] = function(glue) { return nul.text.tblHTML(this['+entr'], glue); };
+			}
 			return ctx;
 		},
 		//Add knowledge to this knowledge base.
@@ -29,7 +31,9 @@ nul.kb = function(knowledge) {
 				var _lcl;
 				var _xpr;
 				if(nul.debug.logging || nul.debug.watches) {
-					_lcl = nul.actx.local('+'+(this.knowledge.length-lcl.ctxDelta), lcl.lindx, lcl.dbgName||'').toHTML();
+					_lcl = nul.build().local(
+						'+'+(this.knowledge.length-lcl.ctxDelta), lcl.lindx, lcl.dbgName||'')
+						.toHTML();
 					_xpr = this.knowledge[lcl.ctxDelta][lcl.lindx].toHTML();
 				}
 				nul.debug.log('knowledgeLog')('Know', _lcl + ' as ' + _xpr);
@@ -71,20 +75,20 @@ nul.kb = function(knowledge) {
 			if(this.protectedKb) return this.protectedKnowledge(lcl,'known');
 		}.perform('nul.kb->known'),
 		//Affect an expression to a local variable.
-		//<lcl> and <xpr> are both actx-s.
+		//<lcl> and <xpr> are both expressions.
 		affect: function(lcl, xpr) {
 			if(this.affectable(xpr)) {
 				if(xpr.ctxDelta == lcl.ctxDelta && xpr.lindx == lcl.lindx) return lcl;
 				//Always affect to the lowest ctxDelta : the lower in the xpr hyerarchi
 				//Only affect once : circle references kills
 				if( lcl.ctxDelta > xpr.ctxDelta ||
-					(lcl.ctxDelta < xpr.ctxDelta && (
+					(lcl.ctxDelta == xpr.ctxDelta && (
 						lcl.lindx < xpr.lindx || nul.lcl.slf== xpr.lindx)))
 					{ var tmp = xpr; xpr = lcl; lcl = tmp; }
 			} 
  			if(nul.debug.assert) assert('undefined'!= typeof lcl.lindx, 'Some condition should be verified before')
 			if(this.isKnown(lcl)) xpr = nul.unify.level(xpr, this.known(lcl), this);
-			xpr = xpr.finalize(this);
+			xpr = xpr.finalize(this) || xpr;
 			xpr = xpr.contextualize(
 				nul.lcl.selfCtx(lcl.dbgName, lcl.lindx),
 				lcl.ctxDelta) || xpr;
@@ -98,11 +102,11 @@ nul.kb = function(knowledge) {
 		affectable: function(xpr) {
 			return 'undefined'!= typeof xpr.lindx;
 		}.perform('nul.kb->affectable'),
-		//Enter a sub context. <ctx> is the context (as "lindx => actx"
-		enter: function(ctxd) {
-			if(!ctxd) ctxd = [];
-			else if(!isArray(ctxd)) ctxd = [ctxd];
-			var ctx = this.emptyCtx(ctxd);
+		//Enter a sub context. <ctx> is the context
+		enter: function(xpr) {
+			if(!xpr) xpr = [];
+			else if(!isArray(xpr)) xpr = [xpr];
+			var ctx = this.emptyCtx(xpr);
 			if(nul.debug) {
 				nul.debug.log('leaveLog')(nul.debug.collapser('Entering'),nul.debug.logging?ctx['+entrHTML']():'');
 				if(nul.debug.logging) ctx['+ll'] = nul.debug.logs.length();
@@ -112,14 +116,14 @@ nul.kb = function(knowledge) {
 			this.knowledge.unshift(ctx);
 			if(nul.debug.watches && nul.debug.assert)
 				assert(nul.debug.kbase.length()==this.knowledge.length, 'Entering debug level');
-			if(nul.debug.levels) map(ctxd, function(c) {
+			if(nul.debug.levels) map(xpr, function(c) {
 				assert(c.locals.lvl == knwldgL, 'Entering level');
 			});
 		}.perform('nul.kb->enter'),
-		//Leave the context for the expression <ctxd>. Contextualisation occurs.
-		// This means that the local variables remembered by this left context will be replaced in <ctxd>.
-		//Returns the contextualised <ctxd>
-		leave: function(ctxd) {
+		//Leave the context for the expression <xpr>. Contextualisation occurs.
+		// This means that the local variables remembered by this left context will be replaced in <xpr>.
+		//Returns the contextualised <xpr>
+		leave: function(xpr) {
 			var tkb = this, ctx = this.knowledge[0];
 			if(nul.debug.assert) {
 				assert(ctx, 'Knowledge coherence');
@@ -128,20 +132,21 @@ nul.kb = function(knowledge) {
 					assert(nul.debug.kbase.length()==this.knowledge.length, 'Leaving debug level');
 			}
 			try {
-				if(ctxd) {
+				if(xpr) {
 					if(ctx[nul.lcl.slf]) delete ctx[nul.lcl.slf];
 					//If the expression depends only once of a local
 					//Even if this local is known to have a fuzzy value,
 					//Replace the value when contextualising
 					//note: forcing is made by removing the fuzzy flag that'll be added on
 					// contextualise::local summarised
-					var deps = isArray(ctxd)?ctxd[0].deps:ctxd.deps;
+					var deps = isArray(xpr)?xpr[0].deps:xpr.deps;
 					if(deps[0]) for(var d in deps[0])
 						if(1==deps[0][d] && ctx[d] && ctx[d].flags.fuzzy)
 							delete ctx[d].flags.fuzzy;
-					ctxd = m1a(ctxd, function(c) {
-							return c.finalize(tkb).fuzzyPremiced([ctx]);
-						});
+					xpr = m1a(xpr, function(c) {
+						c = c.finalize(tkb) || c;
+						return c.fuzzyPremiced([ctx]);
+					});
 				} else if(nul.debug.assert)
 					assert(!ctx[nul.lcl.slf],'ar-developement need means changement');
 			}
@@ -152,10 +157,10 @@ nul.kb = function(knowledge) {
 			if(nul.debug) {
 				nul.debug.log('leaveLog')(nul.debug.endCollapser('Leave', 'Produce'),
 					nul.debug.logging?(
-						(ctxd?(nul.actx.tblHTML(ctxd)+ ' after '):'') + ctx['+entrHTML']()):'');
+						(xpr?(nul.text.tblHTML(xpr)+ ' after '):'') + ctx['+entrHTML']()):'');
 				if(nul.debug.logging) if(ctx['+ll'] == nul.debug.logs.length()) nul.debug.logs.unlog();
-				if(nul.debug.assert && ctxd) {
-					var cctxd = isArray(ctxd)?ctxd:[ctxd];
+				if(nul.debug.assert && xpr) {
+					var cctxd = isArray(xpr)?xpr:[xpr];
 					if(cctxd.length == ctx['+entr'].length) {
 						for(var i=0; i<cctxd.length; ++i) {
 							if(!cctxd[i].cmp(ctx['+entr'][i])) break;
@@ -176,19 +181,19 @@ nul.kb = function(knowledge) {
 					}
 				}
 				if(nul.debug.levels) {
-					map(ctx['+entr'], function(c) {
+					/*map(ctx['+entr'], function(c) {
 						assert(c.locals.lvl == tkb.knowledge.length, 'Leaving level entry preservation');
-					});
-					if(ctxd) m1a(ctxd, function(c) {
+					});*/
+					if(xpr) m1a(xpr, function(c) {
 						return assert(c.locals.lvl == tkb.knowledge.length, 'Leaving level return value');
 					});
 				}
 			}
-			return ctxd;
+			return xpr;
 		}.perform('nul.kb->leave'),
 		//Abort a context (for failure).
-		//Just returns <ctxd>
-		abort: function(ctxd, orig) {
+		//Just returns <xpr>
+		abort: function(xpr) {
 			var ctx = this.knowledge.shift();
 			if(nul.debug) { 
 				if(nul.debug.assert) {
@@ -198,25 +203,25 @@ nul.kb = function(knowledge) {
 						assert(nul.debug.kbase.length()==this.knowledge.length+1, 'Aborting debug level');
 				}
 				nul.debug.log('leaveLog')(nul.debug.endCollapser('Abort', 'Fail'), nul.debug.logging?(
-					(ctxd?(nul.actx.tblHTML(ctxd)+ ' after '):'') + ctx['+entrHTML']()):'');
+					(xpr?(nul.text.tblHTML(xpr)+ ' after '):'') + ctx['+entrHTML']()):'');
 				if(nul.debug.watches) { 
 					nul.debug.kbase.pop();
 					if(ctx['+ll'] == nul.debug.logs.length()) nul.debug.logs.unlog();
 				}
 			}
-			return ctxd;
+			return xpr;
 		}.perform('nul.kb->abort'),
 		//Call cb under the context <ctx>
 		// shortcut to enter-anonymous function-leave
-		knowing: function(ctxd, cb) {
+		knowing: function(xpr, cb) {
 			var assertKbLen, assertLc;
 			if(nul.debug.assert) { assertKbLen = this.knowledge.length; assertLc = nul.debug.lc; } 
 			try {
 				var rv;
 				try {
-					this.enter(ctxd);
+					this.enter(xpr);
 					rv = cb(this);
-				} catch(err) { this.abort(rv, ctxd); throw err; }
+				} catch(err) { nul.exception.notice(err); this.abort(rv); throw err; }
 				return this.leave(rv);
 			} finally { if(nul.debug.assert) assert(assertKbLen== this.knowledge.length,
 				'Knowledge enter/leave paired while knowing ['+assertLc+']'); }
@@ -247,6 +252,7 @@ nul.kb = function(knowledge) {
 					kbs.push(tmpKb.knowledge);
 					rv.push(trv);
 				} catch(err) {
+					nul.exception.notice(err);
 					if(nul.debug.assert)
 						assert(tmpKb.knowledge.length==this.knowledge.length, 'Context-less temp KB')
 					if(nul.failure!= err) throw err;
@@ -254,7 +260,7 @@ nul.kb = function(knowledge) {
 				}
 			if(!chg) {
 				if(!scb) return;
-				rv = scb(clone1(cs), kbs);
+				rv = scb(cs, kbs);
 				if(!rv) return;
 			}
 			else if(scb) rv = scb(rv, kbs) || rv;

@@ -18,7 +18,7 @@ function init()
 	evd = document.getElementById('evaled');
 	rcr = document.getElementById('recur');
 	sbx = document.getElementById('sandBox');
-	nul.globals.sandBox = nul.actx.html_place(sbx);
+	nul.globals.sandBox = nul.build().html_place(sbx);
 }
 
 function evaluate()
@@ -27,6 +27,8 @@ function evaluate()
 	prd.innerHTML = 'parsing...';
 	evd.innerHTML = '';
 	var v = nul.expression(src.value);
+	prd.innerHTML = v.toHTML();
+	v = nul.globalized(v);
 	prd.innerHTML = v.toHTML();
 	evd.innerHTML = 'evaluating...';
 	nul.execution.benchmark.measure('*evaluation',function(){
