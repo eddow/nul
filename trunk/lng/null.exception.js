@@ -24,6 +24,7 @@ nul.exception.notice = function(err)
 		nul.internalException('Javascript error : '+err.message);
 		nul.erroneusJS = err;
 	}
+	return err;
 };
 
 nul.semanticException = function(msg, chrct)

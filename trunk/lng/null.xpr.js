@@ -14,7 +14,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 		rv.components = map(this.components, function(o) { return o.clone(rv); });
 		rv.attributes = map(this.attributes, function(o) { return o.clone(rv); });
 		return rv;
-	},
+	}.perform('nul.xpr->clone'),
 	toHTML: nul.text.toHTML,
 	browse: nul.browse.recursion,
 	//Just compare : returns true or false
@@ -124,7 +124,20 @@ nul.xpr = {	//Main interface implemented by all expressions
 	}.perform('nul.xpr->finalize'),
 	//Get a list of non-fuzzy expressions
 	solve: function() {
-		return nul.solve.solve(this);
+		if(nul.debug) nul.debug.log('leaveLog')(
+			nul.debug.lcs.collapser('Solving'), nul.debug.logging?this.toHTML():'');
+		var sltn;
+		try {
+			sltn = nul.solve.solve(this);
+		} finally {
+			if(nul.debug) {
+				if(sltn) nul.debug.log('leaveLog')(
+					nul.debug.lcs.endCollapser('Solved', 'Solved'), sltn.length + ' possibiliti(es)');
+				else nul.debug.log('leaveLog')(
+					nul.debug.lcs.endCollapser('Aborted', 'Unsolvable'), nul.debug.logging?this.toHTML():'');
+			}			
+		}
+		return sltn;
 	}.perform('nul.xpr->solve'),
 	//Gets the value of this expression after operations effect (unifications, '+',  ...)
 	evaluate: function(kb, entrance) {
@@ -264,6 +277,24 @@ nul.xpr = {	//Main interface implemented by all expressions
 						.unification([flmbd.components.value, nComps.value]).wrap();
 					nComps = {parms: flmbd.components.parms, value: eq};
 				}
+			} else if(','==this.charact) {
+				while(nComps.follow && ','== nComps.follow.charact) {
+					var flw = nComps.follow.stpUp(this.locals);
+					seConcat(nComps, flw.components);
+					nComps.follow = flw.components.follow;
+				}
+				if(nComps.follow && '{}'== nComps.follow.charact && !nComps.follow.components)
+					delete nComps.follow;
+				if(0== nComps.length) return nComps.follow || nul.build().set();
+			} else if('?'==this.charact) {
+				var uc;
+				if(['||','&&'].contains(nComps[0].charact)) {
+					uc = nComps[0].stpUp(this.locals);
+					switch(nComps[0].charact) {
+						case '&&': return nul.build(this).and3(uc.components);
+						case '||': return nul.build(this).or3(uc.components);
+					}
+				}
 			}
 			this.subbed('components', nComps);
 		}
@@ -279,12 +310,15 @@ nul.xpr = {	//Main interface implemented by all expressions
 	}.perform('nul.xpr->attributed'),
 	addAttr: function(kb) {
 		for(var i=1; i<arguments.length; ++i)
-			for(an in arguments[i].attributes) {
+			for(an in arguments[i].attributes)
 				if(!this.attributes[an]) this.attributes[an] = arguments[i].attributes[an];
-				else this.attributes[an] = nul.unify.subd(
-					this.attributes[an],
-					arguments[i].attributes[an], kb);
-			}
+				else this.attributes[an] = kb?
+					nul.unify.subd(
+						this.attributes[an],
+						arguments[i].attributes[an], kb) :
+					nul.build().unification(
+						this.attributes[an],
+						arguments[i].attributes[an], kb) ;
 		var rv = this.summarised();
 		//TODO: on n'ajouterais pas simplement les attributs au KB ? quels sont les effets secondaires?
 		rv = rv.known(kb) || rv;

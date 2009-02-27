@@ -35,14 +35,13 @@ nul.kb = function(knowledge) {
 						'+'+(this.knowledge.length-lcl.ctxDelta), lcl.lindx, lcl.dbgName||'')
 						.toHTML();
 					_xpr = this.knowledge[lcl.ctxDelta][lcl.lindx].toHTML();
+					nul.debug.kevol.log(_lcl, _xpr);
 				}
 				nul.debug.log('knowledgeLog')('Know', _lcl + ' as ' + _xpr);
-				if(nul.debug.watches) {
-					nul.debug.kevol.log(_lcl, _xpr);
+				if(nul.debug.watches)
 					if(!this.protectedKb)	//TODO: afficher plusieurs KB, le protégé et l'actuel en colonnes ?
 					//TODO: standardiser le "context change debug"
 						nul.debug.kbase.item(lcl.ctxDelta).set(nul.debug.ctxTable(this.knowledge[lcl.ctxDelta]));
-				}
 			}
 			//if(this.protectedKb &&
 				//this.protectedKb.knowledge.length+lcl.ctxDelta > this.knowledge.length)
@@ -108,7 +107,7 @@ nul.kb = function(knowledge) {
 			else if(!isArray(xpr)) xpr = [xpr];
 			var ctx = this.emptyCtx(xpr);
 			if(nul.debug) {
-				nul.debug.log('leaveLog')(nul.debug.collapser('Entering'),nul.debug.logging?ctx['+entrHTML']():'');
+				nul.debug.log('leaveLog')(nul.debug.lcs.collapser('Entering'),nul.debug.logging?ctx['+entrHTML']():'');
 				if(nul.debug.logging) ctx['+ll'] = nul.debug.logs.length();
 				if(nul.debug.watches) nul.debug.kbase.push(nul.debug.ctxTable(ctx));
 			}
@@ -155,7 +154,7 @@ nul.kb = function(knowledge) {
 				if(nul.debug.watches) nul.debug.kbase.pop();
 			}
 			if(nul.debug) {
-				nul.debug.log('leaveLog')(nul.debug.endCollapser('Leave', 'Produce'),
+				nul.debug.log('leaveLog')(nul.debug.lcs.endCollapser('Leave', 'Produce'),
 					nul.debug.logging?(
 						(xpr?(nul.text.tblHTML(xpr)+ ' after '):'') + ctx['+entrHTML']()):'');
 				if(nul.debug.logging) if(ctx['+ll'] == nul.debug.logs.length()) nul.debug.logs.unlog();
@@ -202,7 +201,7 @@ nul.kb = function(knowledge) {
 					if(nul.debug.watches)
 						assert(nul.debug.kbase.length()==this.knowledge.length+1, 'Aborting debug level');
 				}
-				nul.debug.log('leaveLog')(nul.debug.endCollapser('Abort', 'Fail'), nul.debug.logging?(
+				nul.debug.log('leaveLog')(nul.debug.lcs.endCollapser('Abort', 'Fail'), nul.debug.logging?(
 					(xpr?(nul.text.tblHTML(xpr)+ ' after '):'') + ctx['+entrHTML']()):'');
 				if(nul.debug.watches) { 
 					nul.debug.kbase.pop();
@@ -221,7 +220,7 @@ nul.kb = function(knowledge) {
 				try {
 					this.enter(xpr);
 					rv = cb(this);
-				} catch(err) { nul.exception.notice(err); this.abort(rv); throw err; }
+				} catch(err) { this.abort(rv); throw nul.exception.notice(err); }
 				return this.leave(rv);
 			} finally { if(nul.debug.assert) assert(assertKbLen== this.knowledge.length,
 				'Knowledge enter/leave paired while knowing ['+assertLc+']'); }
@@ -252,10 +251,9 @@ nul.kb = function(knowledge) {
 					kbs.push(tmpKb.knowledge);
 					rv.push(trv);
 				} catch(err) {
-					nul.exception.notice(err);
 					if(nul.debug.assert)
 						assert(tmpKb.knowledge.length==this.knowledge.length, 'Context-less temp KB')
-					if(nul.failure!= err) throw err;
+					if(nul.failure!= err) throw nul.exception.notice(err);
 					chg=true;
 				}
 			if(!chg) {

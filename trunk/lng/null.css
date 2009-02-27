@@ -19,8 +19,10 @@ tr.collapsed {
 
 tr span.collapser { display: inline; }
 tr span.uncollapser { display: none; }
-tr.uncollapsing span.collapser { display: none; }
-tr.uncollapsing span.uncollapser { display: inline; }
+tr.uncollapsing span.collapser.end { display: none; }
+tr.uncollapsing span.uncollapser.end { display: inline; }
+tr.unsubcollapsing span.collapser.start { display: none; }
+tr.unsubcollapsing span.uncollapser.start { display: inline; }
 
 ul.tableContent {
 	padding-left: 1em;

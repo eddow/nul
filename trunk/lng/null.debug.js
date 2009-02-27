@@ -145,7 +145,7 @@ nul.debug = {
 			}
 			if(nul.debug.watches) nul.debug.callStack.push(d);
 			return ftc.apply(obj, cargs);
-		} catch(err) { nul.exception.notice(err); throw err;
+		} catch(err) { throw nul.exception.notice(err);
 		} finally {
 			if(!nul.erroneus) {
 				if(nul.debug.watches) nul.debug.callStack.pop();
@@ -166,50 +166,18 @@ nul.debug = {
 		nul.debug.kbase.clear();
 		nul.debug.kevol.clear();
 		nul.debug.lc = 0;
-		nul.debug.collapsing = {};
-		nul.debug.toPair = [];
+		nul.debug.lcs = nul.text.clpsSstm(this.logs.table, 'dn', function() { return nul.debug.lc; });
 		nul.debug.lcNextLimit = nul.debug.lcLimit;
 	},
-	collapser: function(html) {
-		nul.debug.toPair.push(this.lc);
-		return '<a class="collapser" ' +
-			'onclick="nul.debug.collapse(this, '+this.lc+');">&darr;</a>'+html;
-	},
-	endCollapser: function(opnd, clsd) {
-		var plc = nul.debug.toPair.pop();
-		this.collapsing[plc] = this.lc;
-		return '<span class="collapser">' +
-			'<a class="collapser" ' +
-			'onclick="nul.debug.collapse(this, '+plc+');">&uarr;</a>' + opnd +
-			'</span><span class="uncollapser">' +
-			'<a class="collapser" ' +
-			'onclick="nul.debug.uncollapse(this, '+plc+');">+</a>' + clsd +
-			'</span>';
-	},
-	//'collapsed' class name is added once for each collapsement : this is not a bug if it appears
-	// several time on an item
-	collapse: function(tbl, lc) {
-		while('table'!= tbl.tagName.toLowerCase()) tbl = tbl.parentNode;
-		assert(this.collapsing[lc] && 'topair'!= this.collapsing[lc], 'Collapsing pairs coherence.');
-		var r;
-		for(r=lc; r<this.collapsing[lc]; ++r)
-			$(tbl.rows[r]).className = 'collapsed ' + $(tbl.rows[r]).className;
-		tbl.rows[r].addClassName('uncollapsing')
-	},
-	uncollapse: function(tbl, lc) {
-		while('table'!= tbl.tagName.toLowerCase()) tbl = tbl.parentNode;
-		assert(this.collapsing[lc] && 'topair'!= this.collapsing[lc], 'Collapsing pairs coherence.');
-		var r;
-		for(r=lc; r<this.collapsing[lc]; ++r)
-			$(tbl.rows[r]).className = $(tbl.rows[r]).className.substr('collapsed '.length);
-		tbl.rows[r].removeClassName('uncollapsing')
-	},
+	
 	applyTables: function() {
-		if(nul.debug.logging) nul.debug.logs.apply();
+		if(nul.debug.logging) {
+			nul.debug.logs.apply();
+			nul.debug.kevol.apply();
+		}
 		if(nul.debug.watches) {
 			nul.debug.callStack.apply();
 			nul.debug.kbase.apply();
-			nul.debug.kevol.apply();
 		}
 	},
 	ctxTable: function(ctx) {

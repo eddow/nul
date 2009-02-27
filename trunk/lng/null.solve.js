@@ -13,12 +13,14 @@
  */ 
 nul.solve = {
 	solve: function(xpr) {
-		if(!xpr.flags.fuzzy) return [xpr];
-		var rv = [], tryed;
-		for(var cn=0; tryed=nul.solve.tryed(xpr, cn); ++cn) try {
-			rv = rv.concat(nul.solve.solve(tryed.evaluate()||tryed));
-		} catch(err) { nul.exception.notice(err); if(nul.failure!= err) throw err; }
-		assert(0!= cn, 'Solutions');
+		if(!xpr.flags.fuzzy) return {solved:[xpr], fuzzy:[]};
+		var rv = {solved:[], fuzzy:[]}, tryed, cn;
+		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn); ++cn) try {
+			var ss = nul.solve.solve(tryed.evaluate()||tryed);
+			rv.solved = rv.solved.concat(ss.solved);
+			rv.fuzzy = rv.fuzzy.concat(ss.fuzzy);
+		} catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
+		if(0== cn) rv.fuzzy.push(xpr);
 		return rv;
 	}.describe(function(xpr) { return 'Solve '+xpr.toHTML(); }),
 	tryed: function(xpr, cn) {

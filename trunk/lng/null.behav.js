@@ -63,7 +63,18 @@ nul.behav = {
 		}.perform('set->take'),
 		extract: function() {
 			//TODO: remember extraction and use it instead from now on
-			return nul.build(this).list(this.components[0].solve());
+			var sltns = this.components[0].solve();
+			return nul.build(this).atom(
+				'Solved: '+sltns.solved.length+
+				'\nFuzzies: '+sltns.fuzzy.length);
+			if(sltns.solved.length) {
+				if(0<sltns.fuzzy.length)
+					sltns.solved.follow = nul.build().set(nul.build().or3(sltns.fuzzy));
+				return nul.build(this).list(sltns.solved);
+			}
+			if(sltns.fuzzy.length)
+				return nul.build(this).set(nul.build().or3(sltns.fuzzy));
+			return nul.build(this).set();
 		}.perform('set->extract')
 	},
 	seAppend: {
@@ -85,25 +96,25 @@ nul.behav = {
 		}.perform('cumulExpr->operable'),
 		operate: function(kb)
 		{
-			var cps = clone1(this.components), ncps = [];
-			while(0< cps.length) {
-				var c = cps.pop();
+			var cps = clone1(this.components), ncps = [], o;
+			while(o || 0< cps.length) {
+				var c = o || cps.pop();
 				var clcls = c.locals;
 				if(!c.flags.fuzzy && c.free()) {
 					c = nul.asJs(c, this.charact);
-					var o = cps.pop();
+					o = cps.pop();
 					while(o && !o.flags.fuzzy && o.free()) {
 						seConcat(clcls, o.locals);
 						o = nul.asJs(o, this.charact);
 						c = eval( ''+nul.jsVal(o) + this.charact + nul.jsVal(c) );
 						o = cps.pop();
 					}
-					c = nul.build(clcls).atom(c);
-				}
+					c = nul.build(clcls, kb).atom(c);
+				} else o = null;
 				ncps.unshift(c);
 			}
 			if(1==ncps.length) return ncps[0].stpUp(this.locals, kb);
-			return nul.build(this.locals).cumulExpr(this.charact, ncps).clean();
+			return nul.build(this, kb).cumulExpr(this.charact, ncps).clean();
 		}.perform('cumulExpr->operate')
 	},
 	biExpr: {
@@ -113,7 +124,7 @@ nul.behav = {
 		},
 		operate: function(kb)
 		{
-			return nul.build(this).atom(eval('' +
+			return nul.build(this, kb).atom(eval('' +
 				nul.asJs(this.components[0], this.charact) +
 				this.charact +
 				nul.asJs(this.components[1], this.charact) ));
@@ -123,8 +134,16 @@ nul.behav = {
 		take: function(apl, kb, lcls) {
 			var cs = this.components;
 			var rv = kb.knowing([this, apl], function(kb) {
-				var rv = nul.unify.orDist(cs, lcls, apl, kb);
-				return rv.levelise(apl);				
+				var rvl, rvf;
+				try{ rvl = nul.unify.orDist(cs, lcls, apl, kb); }
+				catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
+				if(cs.follow) {
+					try{ rvf = cs.follow.take(apl,kb,lcls); }
+					catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
+				}
+				if(!rvl && !rvf) nul.fail;
+				if(!rvl ^ !rvf) return rvl || rvf;
+				return nul.build(apl, kb).or3([rvl,rvf])
 			});
 			return rv?rv.stpUp(lcls, kb):rv;	//TODO: vérifier que les <lcls> doivent bien être repassés			
 		}.perform('list->take')		
@@ -136,7 +155,7 @@ nul.behav = {
 		},
 		operate: function(kb)
 		{
-			return nul.build(this)
+			return nul.build(this, kb)
 				.atom(eval( this.charact + nul.asJs(this.components[0],this.charact) ))
 		}.perform('preceded->operate')
 	},

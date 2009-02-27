@@ -118,12 +118,21 @@ nul.unify = {
 	
 		//<a> is choosen abitrarily. Take care here of the attributes. :*
 		if(a.value && b.value && a.value===b.value) return a;
-		if(','== a.charact && ','== b.charact && a.components.length == b.components.length) {
-			b = b.lclShft(a.locals);
-			var rv = [];
-			for(var i=0; i<a.components.length; ++i)
-				rv.push(nul.unify.sub(a, b, i, kb));
-			return a.modify(rv).summarised();
+		if(','== a.charact && ','== b.charact) {
+			if(a.components.length > b.components.length) { var t=a; a=b; b=t; }
+			if(a.components.length== b.components.length || a.components.follow) {
+				b = b.lclShft(a.locals);
+				var rv = [];
+				for(var i=0; i<a.components.length; ++i)
+					rv.push(nul.unify.sub(a, b, i, kb));
+				b.components.splice(0,i);
+				if(0==b.components.length) b = b.components.follow;				
+				if(a.components.follow)
+					rv.follow = nul.unify.sub1(a.components.follow, b, kb)
+				else if(b)
+					rv.follow = nul.unify.sub1(nul.build().set(), b, kb)
+				return a.modify(rv).summarised();
+			}
 		}
 		if(':-'== a.charact && ':-'== b.charact) {
 			b = b.lclShft(a.locals);
@@ -174,15 +183,14 @@ nul.unify = {
 				}
 			}
 			if('unk'!= rv) return rv;
-
+			//TODO: try extraction before fail ?
 			if(a.free() && b.free()) nul.fail('Unification failure');
 		} catch(err) {
-			nul.exception.notice(err);
 			//Localisation failure means a localcannot be affected because of context position
 			//  (see browse.localise throwing nul.unlocalisable)
 			//If localisation failure, then the unification cannot be stored in the KB.
 			// In this case, just returns the unification as it is first expressed
-			if(err!=nul.unlocalisable) throw err;
+			if(err!=nul.unlocalisable) throw nul.exception.notice(err);
 		}
 	}.describe(function(a, b, kb) { return 'Unifying '+a.toHTML()+' and '+b.toHTML(); })
 	.perform('nul.unify.chewed'),
@@ -196,7 +204,7 @@ nul.unify = {
 			function(c, kb) { return nul.unify.sub1(c, b.clone(), kb); });
 		if(nul.debug.assert) assert(rv, 'orDist use')
 		if(!isArray(rv)) return rv;
-		return nul.build(alcls).or3(rv).clean();
+		return nul.build(alcls, kb).or3(rv).clean();
 	}.perform('nul.unify.orDist'),
 	
 	//unification of <b> with each member of table <as>
@@ -215,6 +223,6 @@ nul.unify = {
 			return as;
 		}
 
-		return nul.build(alcls).unification(as);
+		return nul.build(alcls, kb).unification(as);
 	}.perform('nul.unify.andDist')
 };

@@ -53,7 +53,7 @@ nul.browse = {
 						if(behav.newAttribute) co = behav.newAttribute(xpr, ky, o, co) || co;
 						return co;
 					});
-				if(chg) xpr.modify(cps, ats);
+				if(chg) xpr = xpr.modify(cps, ats);
 				if(behav[xpr.charact]) xpr = behav[xpr.charact](xpr) || xpr;
 				chg |= xpr!==this;
 			} catch(err) {
@@ -246,7 +246,7 @@ nul.browse = {
 							if(rv) { chgd = true; xpr = rv; }
 						}
 						if(!rv && chgd) xpr = xpr.summarised().clean();
-					} catch(err) { nul.exception.notice(err); this.abort(xpr); throw err; }
+					} catch(err) { this.abort(xpr); throw nul.exception.notice(err); }
 					if(0>--this.entrance) return chgd?xpr:undefined;
 					return this.kb.leave(chgd?xpr:undefined);
 				} finally { if(nul.debug.assert) assert(

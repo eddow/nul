@@ -20,8 +20,8 @@ nul.compiled = {
 	application: function(item, applied) {
 		return { item: item, applied: applied, understand: nul.understanding.application };
 	},
-	atom: function(token) {
-		return { type: token.type, value: token.value, understand: nul.understanding.atom };
+	atom: function(token, decl) {
+		return { type: token.type, value: token.value, declared: decl, understand: nul.understanding.atom };
 	},
 	definition: function(decl, value, type) {
 		return { type: type, decl: decl, value: value, understand: nul.understanding.definition };
@@ -66,7 +66,7 @@ nul.operators = [
 	['[]','m'],								//booleans:meta OR
 	[';','m'],								//booleans:meta AND
 	[':-','r'],								//lambda
-	[',','m'], [',','p'],					//list
+	[',..','r'], [',','m'],	 				//list
 	['=','m'],								//unify
 	[':','m'],								//booleans:meta XOR
 	['?','l'],								//a?b ==> if(a) then b else fail (shortcut)
@@ -135,11 +135,8 @@ nul.compiler = function(txt)
 				if(this.tknzr.take('[')) rv = nul.compiled.application(rv, this.tknzr.rawExpect(']',this.expression()));
 				else if(this.tknzr.take('::')) rv = this.prototype(rv);
 				else if(this.tknzr.take('->')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
-				else if('_'== this.tknzr.token.value) {
-					var atm = this.alphanum();
-					atm = {type:'alphanum', value:'-'};
-					rv = nul.compiled.definition('-', nul.compiled.atom(atm), rv);
-				}
+				else if(this.tknzr.take('_'))
+					rv = nul.compiled.atom({type:'alphanum', value:'_'}, rv);
 				else if('alphanum'== this.tknzr.token.type)
 					rv = nul.compiled.definition(this.alphanum(), this.expression(), rv);
 				else return rv;

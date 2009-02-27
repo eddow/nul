@@ -43,7 +43,7 @@ var nul = {
 		return nul.understanding.understand(nul.compile(txt), nul.firstUnderstandBase()).numerise();
 	},
 	globalized: function(xpr) {
-		return xpr.contextualize(nul.globals, 1) || xpr;	//TODO: || xpr.touch() ?
+		return xpr.contextualize(nul.globals, 1) || xpr;
 	},
 	html: function(txt)
 	{

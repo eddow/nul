@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.build = function(on) {
+nul.build = function(on, kb) {
 	var sf, lcls
 	if(!on)				{ sf = null;	lcls = [];			}
 	else if(on.locals)	{ sf = on;		lcls = on.locals;	}
@@ -14,6 +14,7 @@ nul.build = function(on) {
 	return {
 		standFor: sf,
 		locals: lcls,
+		kb: kb,
 		item: function(ops) {
 			var itm = {};
 			for(var i=1; i<arguments.length; ++i) map(arguments[i], function(o, i) { itm[i] = o; })
@@ -21,7 +22,8 @@ nul.build = function(on) {
 			for(var i in nul.xpr) if(!itm[i]) itm[i] = nul.xpr[i];
 
 			itm.locals = this.locals;
-			itm.modify(ops);
+			if(this.sf) itm.addAttrs(this.kb, this.sf);
+			itm = itm.modify(ops);
 			itm.summarised(true);
 			return itm;
 		}.perform('nul.build->item'),
@@ -106,7 +108,7 @@ nul.build = function(on) {
 					function() { return escapeHTML('"'+this.value+'"'); }:
 					function() { return ''+this.value; },
 				toString: 'string'==typeof(value)?
-					function() { return '"'+this.value+'"'; }:
+					function() { return escapeHTML('"'+this.value+'"'); }:
 					function() { return ''+this.value; },
 			});
 		},
@@ -175,7 +177,22 @@ nul.build = function(on) {
 		list: function(oprnds) {
 			//TODO: Les valeurs floues donnent lieu à une variable déclarée en ctxDelta=0
 			// D'où la liste est candidate à être utilisée comme contextualisation
-			return this.listOp(nul.behav.list,',', oprnds);
+			return this.listOp(nul.behav.list,',', oprnds,[
+				function() {
+					if(1==this.components.length && !this.components.follow)
+						return '<span class="op">{</span>'+this.components[0].toHTML()+'<span class="op">}</span>';
+					var rv = nul.text.expressionHTML('<span class="op">,</span>', this.components);
+					if(!this.components.follow) return rv;
+					return rv+'<span class="op">,..</span>'+this.components.follow.toHTML();
+				},
+				function() {
+					if(1==this.components.length && !this.components.follow)
+						return '{'+this.components[0].toString()+'}';
+					var rv = nul.text.toString(',', this.components);
+					if(!this.components.follow) return rv;
+					return rv.substr(0,rv.length-1)+' ,.. '+this.components.follow.toString()+')';
+				}			
+			]);
 		},
 		preceded: function(oprtr, oprnd) {
 			return this.prec(nul.behav.preceded,oprtr, oprnd);
@@ -224,9 +241,9 @@ nul.build = function(on) {
 			applied.attributes[name] = value;
 			return applied.summarised(true);
 		},
-		definition: function(lcl, val) {
-			val.locals.unshift(lcl);
-			return val;
+		defined: function(lcl) {
+			this.locals.unshift(lcl);
+			return this;
 		},
 		nativeFunction: function(name, fct, dom, img) {
 			return this.item(null, {
