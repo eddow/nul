@@ -28,7 +28,6 @@ function evaluate()
 	evd.innerHTML = '';
 	var v = nul.expression(src.value);
 	prd.innerHTML = v.toHTML();
-	v = nul.globalized(v);
 	prd.innerHTML = v.toHTML();
 	evd.innerHTML = 'evaluating...';
 	nul.execution.benchmark.measure('*evaluation',function(){
@@ -45,7 +44,6 @@ function testEvaluation()
 		nul.debug.jsDebug = !$('catch').checked;
 		nul.debug.actionLog = $('shwActLog').checked;
 		
-		nul.debug.levels = $('shwLevels').checked;
 		nul.debug.assert = $('shwAssert').checked;
 		nul.debug.logging = $('shwLogging').checked;
 		nul.debug.watches = $('shwWatches').checked;

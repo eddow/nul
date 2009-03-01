@@ -8,10 +8,10 @@
  
 nul.text = {
 	tblHTML: function(tbl, glue) {
-		if(isArray(tbl)) return map(tbl, function(c) {
-			return c.toHTML();
+		if(isArray(tbl)) return map(tbl, function() {
+			return this.dbgHTML();
 		}).join(glue || ' and ');
-		return tbl.toHTML();
+		return tbl.dbgHTML();
 	},
 	js: {
 		tilement: '',
@@ -72,23 +72,31 @@ nul.text = {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
 			strings.push(oprnds[i].toHTML());
-		return strings.join(' '+oprtr+' ');
+		switch(strings.length) {
+			case 0: return oprtr;
+			case 1: return oprtr+' '+strings[0];
+			default: return strings.join(' '+oprtr+' ');
+		}
 	},
 	toString: function(oprtr, oprnds) {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
 			strings.push(oprnds[i].toString());
-		return '('+strings.join(' '+oprtr+' ')+')';
+		switch(strings.length) {
+			case 0: return '('+oprtr+')';
+			case 1: return '('+oprtr+' '+strings[0]+')';
+			default: return '('+strings.join(' '+oprtr+' ')+')';
+		}
 	},
 	toHTML: function() {
 		var aLocals = '', aDeps = '', aDepsTtl = '', aShort = this.toString(),
 			aFlags, aAttr = '', aAttrTtl = '';
 		aShort = nul.text.js.tile('shortStr', this.toString(), 
-			(('undefined'!= typeof this.locals.lvl)?(this.locals.lvl+'] '):'')+this.toString());
+			(('undefined'!= typeof this.x.lvl)?(this.x.lvl+'] '):'')+this.toString());
 		aFlags = nul.text.js.tile('flags',
-			is_empty(this.flags)?'&phi;':keys(this.flags).join(', '),
+			isEmpty(this.flags)?'&phi;':keys(this.flags).join(', '),
 			keys(this.flags));
-		if(this.deps && !is_empty(this.deps)) {
+		if(this.deps && !isEmpty(this.deps)) {
 			for(var i in this.deps) {
 				var ds = [];
 				for(var j in this.deps[i])
@@ -98,29 +106,29 @@ nul.text = {
 			}
 			aDeps = nul.text.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
 		}
-		if((0<this.locals.length) || (this.deps && this.deps[0])) {
+		if(this.locals && 0<this.locals.length) {
 			aLocals = [];
 			if(this.deps && this.deps[0] && this.deps[0][nul.lcl.slf])
 				aLocals.push(nul.lcl.slf);
 			for(var i=0; i<this.locals.length; ++i)
 				if(this.locals[i])
-					aLocals.push(this.locals[i]);
+					aLocals.push(this.locals[i].dbgName);
 			if(0<aLocals.length) aLocals = nul.text.js.tile('locals', aLocals.join(', '));
 			else aLocals = '';
 		}
-		if(!is_empty(this.attributes)) {
+		if(!isEmpty(this.x.attributes)) {
 			aAttrTtl = [];
 			aAttr = [];
-			for(var i in this.attributes) {
-				aAttr.push('<b>'+i+'</b>&nbsp;'+this.attributes[i].toString());
+			for(var i in this.x.attributes) {
+				aAttr.push('<b>'+i+'</b>&nbsp;'+this.x.attributes[i].toString());
 				aAttrTtl.push(i);
 			}
 			aAttr = nul.text.js.tile('attributes', aAttr.join('<hr />'), aAttrTtl.join(','));
 		}
 		var str = aShort+aLocals+aDeps+aFlags+aAttr+nul.text.js.tiled();
-		if('undefined'!= typeof this.locals.lvl)
+		if('undefined'!= typeof this.x.lvl)
 			str += '<div class="shortStr level" style="display: none;" >' +
-				this.locals.lvl + '</div>';
+				this.x.lvl + '</div>';
 		var es = this.expressionHTML();
 		var brn = ('<ul'== es.substr(0,3) || '<table'== es.substr(0,6)) ? 'div' : 'span';
 		str += es;

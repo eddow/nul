@@ -7,39 +7,48 @@
  *--------------------------------------------------------------------------*/
  
 nul.xpr = {	//Main interface implemented by all expressions
+	isXpr: true,
+	premiced: function(prms) {
+		return nul.build().and3([this].concat(prms));
+	},
+	makeCtx: function() {},
+	takeCtx: function() { throw nul.internalException('Any expression cannot take ctx'); },
 	clone: function(prnt) {
 		var rv = clone1(this);
-		rv.locals = clone1(this.locals);
-		if(prnt) rv.locals.prnt = prnt;
-		rv.components = map(this.components, function(o) { return o.clone(rv); });
-		rv.attributes = map(this.attributes, function(o) { return o.clone(rv); });
+		rv.x = this.x.clone();
+		if(this.components) rv.components = map(this.components, function() { return this.clone(rv); });
+		rv.x.attributes = map(this.x.attributes, function() { return this.clone(rv); });
 		return rv;
 	}.perform('nul.xpr->clone'),
 	toHTML: nul.text.toHTML,
+	dbgHTML: function() {
+		var str = this.toString();
+		if(str.length < 50) return this.toHTML();
+		return str;
+	},
 	browse: nul.browse.recursion,
 	//Just compare : returns true or false
 	cmp: function(xpr) {
 		if(xpr.charact != this.charact) return false;
+		var txpr = this;
+		if((trys(xpr.x.attributes, function(c, i) {
+			return !txpr.x.attributes[i];
+		}) || trys(this.x.attributes, function(c,i) {
+			return !c.cmp(xpr.x.attributes[i]);
+		}))) return false;
 		if( this.components || xpr.components ) {
 			if(!this.components || !xpr.components || this.components.length != xpr.components.length)
 				return false;
-			var allSim = true;
-			//TODO: endMap
-			map(this.components, function(c,i) {
-				if(allSim && !c.cmp(xpr.components[i])) allSim = false;
-			});
-			map(this.attributes, function(c,i) {
-				if(allSim && !c.cmp(xpr.attributes[i])) allSim = false;
-			});
-			if(allSim) for(var an in xpr.attributes) if(!this.attributes[an]) return false;
-			return allSim;
+			return !(trys(xpr.components, function(c, i) {
+				return !txpr.components[i];
+			}) || trys(this.components, function(c,i) {
+				return !c.cmp(xpr.components[i]);	
+			}));
 		}
-		if( ('undefined'!= typeof this.value || 'undefined'!= typeof xpr.value) &&
-				this.value != xpr.value)
-			return false;
-		if( ('undefined'!= typeof this.lindx || 'undefined'!= typeof xpr.lindx) &&
-				(this.lindx != xpr.lindx) || (this.ctxDelta != xpr.ctxDelta) )
-			return false;
+		switch(this.charact) {
+			case 'atom': return this.value == xpr.value;
+			case 'local': return this.lindx == xpr.lindx && this.ctxDelta==xpr.ctxDelta;
+		}
 		return true;
 	}.perform('nul.xpr->cmp'),
 /* Makes a summary of components and characteristics :
@@ -49,35 +58,31 @@ nul.xpr = {	//Main interface implemented by all expressions
 		//TODO: vérifier qu'il n'y a pas de redondance
 		var dps = [];
 		var flags = {};
-		if(this.components) map(this.components, function(o) {
-			if(nul.debug.assert) assert(o.deps,'Subs summarised.'); 
-			dps.push(nul.lcl.dep.stdDec(o.deps));
-			for(var f in o.flags) if(first || 'dirty'!=f) flags[f] = true;
+		if(this.components) map(this.components, function() {
+			if(nul.debug.assert) assert(this.deps,'Subs summarised.'); 
+			dps.push(nul.lcl.dep.stdDec(this.deps));
+			for(var f in this.flags) if(first || 'dirty'!=f) flags[f] = true;
 		});
-		map(this.attributes, function(o) {
-			if(nul.debug.assert) assert(o.deps,'Subs summarised.');
-			dps.push(nul.lcl.dep.stdDec(o.deps));
-			for(var f in o.flags) if(first || 'dirty'!=f) flags[f] = true;
+		map(this.x.attributes, function() {
+			if(nul.debug.assert) assert(this.deps,'Subs summarised.');
+			dps.push(nul.lcl.dep.stdDec(this.deps));
+			for(var f in this.flags) if(first || 'dirty'!=f) flags[f] = true;
 		});
 
 		if(['<<=','=','?','[-]'].contains(this.charact)) flags.failable = true;
 		else if(this.isFailable && this.isFailable()) flags.failable = true;
-		if('{}'== this.charact) delete flags.fuzzy;
-		if(['[-]','[]',':'].contains(this.charact)) flags.fuzzy = true;
+		if(['{}'/*,':'*/].contains(this.charact)) delete flags.fuzzy;
+		if(['[-]','[]'].contains(this.charact)) flags.fuzzy = true;
 		
 		if(this.makeDeps) dps.push(this.makeDeps());
 		this.deps = nul.lcl.dep.mix(dps);
-		//It is fuzzy if this describe a var - so if there are depdnances other than 'self'
+		//Attributes unification could fail later
+		if(!this.fixed() && !isEmpty(this.x.attributes)) flags.failable = true;
+		//It is fuzzy if this describe a var - so if there are dependances other than 'self'
 		if(this.deps[0]) for(var d in this.deps[0]) if(nul.lcl.slf!= d)
-		{ flags.fuzzy = true; break; }
+			{ flags.fuzzy = true; break; }
 		this.flags = flags;
 
-		if(!nul.understanding.phase) {
-			//Remove locals declarations if no dependance
-			var rmningLcls = {};
-			if(this.deps[0]) for(var i in this.deps[0]) rmningLcls[i] = true;
-			for(var i=0; i<this.locals.length; ++i) if(!rmningLcls[i]) delete this.locals[i];
-		}
 		if(first && !this.flags.dirty && this.operable()) this.flags.dirty = true;
 		return this;
 	}.perform('nl.xpr->summarised'),
@@ -98,26 +103,19 @@ nul.xpr = {	//Main interface implemented by all expressions
 			if(3== lcls[0].ctxDelta) return knwldg[0][lcls[0].lindx].localise(0);
 			return nul.build().unification([
 				nul.build().local(lcls[0].ctxDelta-1, lcls[0].lindx,'-'),
-				knwldg[lcls[0].ctxDelta-3][lcls[0].lindx].localise(lcls[0].ctxDelta-1)])
-				.levelise(this);
+				knwldg[lcls[0].ctxDelta-3][lcls[0].lindx].localise(lcls[0].ctxDelta-1)]);
 		}
-		var xpr = this;
-		for(var i=0; i<vals.length; ++i) {
-			var prem = nul.build().unification([lcls[i], vals[i]]);
-			if(';'== xpr.charact) xpr = xpr.modify(unshifted(prem,xpr.components));
-			else {
-				var rlcls = [];
-				xpr = nul.build(rlcls).and3([prem,xpr.stpDn(rlcls)]);
-			}
-		}
-		return xpr.levelise(this).summarised();
+		return this.premiced(map(lcls[i], 
+				function(i) { return nul.build().unification([lcls[i], vals[i]]); })
+			).summarised();
 	}.perform('nul.xpr->fuzzyPremiced'),
-	//Be sure the expression is operated until it's not dirty anymore		
+	//Be sure the expression is operated until it's not dirty anymore
+	composed: function() { return this; },	
 	finalize: function(kb) {
 		var xpr = this.known(kb) || this;
 		if(xpr==this && !xpr.flags.dirty) return;	//TODO: if it was replaced ...
 		while(xpr.flags.dirty) {
-			xpr = xpr.evaluate(kb, -1) || xpr;
+			xpr = xpr.evaluate(kb) || xpr;
 			xpr = xpr.known(kb) || xpr;
 		}
 		return xpr;
@@ -125,7 +123,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	//Get a list of non-fuzzy expressions
 	solve: function() {
 		if(nul.debug) nul.debug.log('leaveLog')(
-			nul.debug.lcs.collapser('Solving'), nul.debug.logging?this.toHTML():'');
+			nul.debug.lcs.collapser('Solving'), nul.debug.logging?this.dbgHTML():'');
 		var sltn;
 		try {
 			sltn = nul.solve.solve(this);
@@ -134,19 +132,19 @@ nul.xpr = {	//Main interface implemented by all expressions
 				if(sltn) nul.debug.log('leaveLog')(
 					nul.debug.lcs.endCollapser('Solved', 'Solved'), sltn.length + ' possibiliti(es)');
 				else nul.debug.log('leaveLog')(
-					nul.debug.lcs.endCollapser('Aborted', 'Unsolvable'), nul.debug.logging?this.toHTML():'');
+					nul.debug.lcs.endCollapser('Aborted', 'Unsolvable'), nul.debug.logging?this.dbgHTML():'');
 			}			
 		}
 		return sltn;
 	}.perform('nul.xpr->solve'),
 	//Gets the value of this expression after operations effect (unifications, '+',  ...)
-	evaluate: function(kb, entrance) {
-		return this.browse(nul.browse.evaluate(kb||nul.kb(), entrance)) || this.clean();
+	evaluate: function(kb) {
+		return this.browse(nul.browse.evaluate(kb||nul.kb())) || this.clean();
 	}.perform('nul.xpr->evaluate'),
 	//Replace this context's locals according to association/table <ctx>
 	contextualize: function(ctx, dlt) {
 		if(!dlt) dlt=0;
-		if(this.deps[dlt]) for(var d in this.deps[dlt]) if(ctx[d])
+		//if(this.deps[dlt]) for(var d in this.deps[dlt]) if(ctx[d])
 		return this.browse(nul.browse.contextualize([ctx], dlt));
 	}.perform('nul.xpr->contextualize'),
 	known: function(kb, dlt) {
@@ -159,63 +157,68 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return this.browse(nul.browse.extraction);
 	}.perform('nul.xpr->extraction'),
 	
-	brws_lclShft: function(lcls, act, plcls) {
-		var rv = this.browse(nul.browse.lclShft(lcls.length, act)) || this;
-		if(0<rv.locals.length) seConcat(lcls, rv.locals);
-		if(nul.debug.levels)
-			//TODO: rendre ce dilîte générique : si on l'enlève, unittest foire
-			if(rv.locals.prnt) delete rv.locals.prnt;
-		return rv.withLocals(plcls);
+	brws_lclShft: function(x, act, px, kb) {
+		return this;
+		var rv = this.browse(nul.browse.lclShft(x.locals.length, act)) || this;
+		x.xadd(rv, kb);
+		return rv.withX(px);
 	}.perform('nul.xpr->brws_lclShft'),
 	//When this expression's locals are moved from (0..#) to (<n>..<n>+#)
 	//<lcls> was the added locals and becomes the whole ones.
 	//ctxDelta-s are unchanged
-	lclShft: function(lcls) {
-		if(0== this.locals.length) {
-			this.locals = lcls;
-			return this;
-		}
-		if(0== lcls.length) return this;
-		return this.brws_lclShft(lcls,'sft',lcls);
+	lclShft: function(x, kb) {
+		return this;	//TODO: rewrite
+		if(nul.debug.levels && kb) assert(this.x.lvl == kb.knowledge.length, 'lclShft predicate');
+		if(0== this.x.locals.length || 0== x.locals.length)
+			return this.xadd(x, kb);
+		return this.brws_lclShft(x,'sft',x, kb);
 	}.perform('nul.xpr->lclShft'),
 	//This expression wrapped. Locals are given to parent.
 	//<lcls> is the new parent's already locals and becomes new parent's whole locals
 	//ctxDelta-s of these locals and outer locals are incremented
-	stpDn: function(lcls) {	//Note: never used .... debug me !
-		return this.brws_lclShft(lcls,'sdn',[]);
+	stpDn: function(x, kb) {	//Note: never used .... debug me !
+		return this;	//TODO: rewrite
+		return this.brws_lclShft(x,'sdn',nul.x(), kb);
 	}.perform('nul.xpr->stpDn'),
 	//This expression wrapped. Locals are unchanged.
 	//<lcls> is the new parent's already locals and becomes new parent's whole locals
 	//ctxDelta-s of outer locals are incremented
 	wrap: function(kb) {
-		return this.brws_lclShft([],'wrp', this.locals);
+		return this;	//TODO: rewrite
+		return this.brws_lclShft(nul.x(),'wrp', this.x);
 	}.perform('nul.xpr->wrap'),
 	//This expression climbed.
 	//<lcls> is the old parent's locals and becomes common locals.
 	//ctxDelta-s of outer locals are decremented
 	//<kb> last context knows <lcls>
-	stpUp: function(lcls, kb) {
+	stpUp: function(x, kb) {
+		return this;	//TODO: rewrite
 		//this.locals are the unknown of kb[-1]
-		if(nul.debug.levels && kb) assert(this.locals.lvl == kb.knowledge.length, 'StepUp predicate');
-		return this.brws_lclShft(lcls,'sup', lcls);
+		if(nul.debug.levels && kb) assert(this.x.lvl == kb.knowledge.length, 'StepUp predicate');
+		return this.brws_lclShft(x,'sup', x, kb);
 	}.perform('nul.xpr->stpUp'),
 	//Extract locals and says <this> we gonna give them to his parent
-	//<lcls> are the destination parent's locals
+	//<x> are the destination parent's locals
 	//ctxDelta-s are unchanged
-	lclsUpg: function(lcls, kb) {	//TODO: debug me !
-		if(nul.debug.levels && kb) assert(this.locals.lvl == kb.knowledge.length,
-			'LocalsUpgrade predicate');
-		if(0>= this.locals.length) return this;
-		return this.brws_lclShft(lcls,'upg',[]);
+	lclsUpg: function(x, kb) {	//TODO: debug me !
+		return this;	//TODO: rewrite
+		if(nul.debug.levels && kb) assert(this.x.lvl == kb.knowledge.length-1, 'LocalsUpgrade predicate');
+		//TODO: refaire la condition: cf attr aussi
+		if(0>= this.x.locals.length) {
+			x.xadd(this.x);
+			return this.withX();
+		}
+		return this.brws_lclShft(x,'upg',nul.x());
 	}.perform('nul.xpr->lclsUpg'),
 	//Insert locals from his parent
-	//<lcls> are the emptied source parent's locals
+	//<x> are the emptied source parent's locals
 	//ctxDelta-s are unchanged
-	//<lcls> refer to the last known context
-	lclsDng: function(lcls, kb) {	//TODO: never used .... debug me !
-		if(0>= lcls.length) return this;
-		try { return this.brws_lclShft(lcls,'dng',lcls); }
-		finally { seEmpty(lcls); }
+	//<x> refer to the last known context
+	lclsDng: function(x, kb) {
+		return this;	//TODO: rewrite
+		if(0>= x.locals.length) return this.xadd(x);
+		try { return this.brws_lclShft(x,'dng',x, kb); }
+		finally { x.seEmpty(); }
 	}.perform('nul.xpr->lclsDng'),
 	
 	//Transform an expression from kb local-space to expression local-space and vice versa
@@ -224,113 +227,51 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return this.browse(nul.browse.localise(inc||0));
 	}.perform('nul.xpr->localise'),
 
-	numerise: function(prnt) {
-		if(!nul.debug.levels || nul.understanding.phase) return this;
-		var lvl;
-		if(prnt) {
-			if(('number'==typeof prnt)) { lvl=prnt; prnt = undefined; }
-			else lvl = prnt.locals.lvl;
-		}
-		if(nul.debug.assert && 'undefined'!= typeof lvl) assert(! (
-				!prnt && this.locals.lvl == lvl
-			) || (
-				prnt && this.locals.lvl == prnt.locals.lvl+1
-			),'No useless numerisation.')
-		return this.browse(nul.browse.numerise(prnt, lvl)) || this;
-	}.perform('nul.xpr->numerise'),
-	levelise: function(sl) {
-		if(!nul.debug.levels) return this;
-		if(sl.locals) sl = sl.locals;
-		return this.numerise(sl.prnt || sl.lvl);
-	},
 	rDevelop: function(v, inc, lcl) {
 		var ctx = [];
 		ctx[lcl || nul.lcl.slf] = v.localise();
 		return this.contextualize(ctx, inc);
 	}.perform('nul.xpr->rDevelop'),
 	//Shortcut: Weither this epression is free of dependance toward external locals
-	free: function(beside) { return nul.lcl.dep.free(this.deps, beside); }.perform('nul.xpr->free'),
-	operable: function() {
-		return !!this.operate;
-	},
-	//Shortcut: Clean !
+	free: function() { return nul.lcl.dep.free(this.deps); }.perform('nul.xpr->free'),
+	//If the root expression of this operand will be kept forever
+	finalRoot: function() { return !this.operate && 'local'!= this.charact; },
+	//If this expression is self-refering
+	selfRef: function() { return this.deps[0] && this.deps[0][nul.lcl.slf]; },
+	//If this operand will keep this value forever
+	fixed: function() { return this.free() && this.finalRoot() && !this.selfRef(); },
+	subFixed: function() { return !trys(this.components, function(o) { return !o.fixed(); }) },
+	operable: function() { return !!this.operate; },
 	clean: function() { delete this.flags.dirty; return this; },
 	dirty: function() { this.flags.dirty = true; return this; },
 	
-	modify: function(nComps, nAttrs) {
-		if(nComps) {
-			if([';','[]',':','=','&','|','^','+','*','&&','||'].contains(this.charact)) {
-				var nc = [];
-				while(0<nComps.length) {
-					var tc = nComps.pop();
-					if(tc.charact == this.charact) {
-						tc = tc.stpUp(this.locals);
-						nComps = nComps.concat(tc.components);
-					} else nc.unshift(tc);
-				}
-				nComps = nc;
-			} else if(':-'==this.charact) {
-				//(a :- b) :- c ===> a :- (b = c)
-				if(':-'== nComps.parms.charact) {
-					var flmbd = nComps.parms.stpUp(this.locals);
-					var eq = nul.build()	//TODO:numerise?
-						.unification([flmbd.components.value, nComps.value]).wrap();
-					nComps = {parms: flmbd.components.parms, value: eq};
-				}
-			} else if(','==this.charact) {
-				while(nComps.follow && ','== nComps.follow.charact) {
-					var flw = nComps.follow.stpUp(this.locals);
-					seConcat(nComps, flw.components);
-					nComps.follow = flw.components.follow;
-				}
-				if(nComps.follow && '{}'== nComps.follow.charact && !nComps.follow.components)
-					delete nComps.follow;
-				if(0== nComps.length) return nComps.follow || nul.build().set();
-			} else if('?'==this.charact) {
-				var uc;
-				if(['||','&&'].contains(nComps[0].charact)) {
-					uc = nComps[0].stpUp(this.locals);
-					switch(nComps[0].charact) {
-						case '&&': return nul.build(this).and3(uc.components);
-						case '||': return nul.build(this).or3(uc.components);
-					}
-				}
+	compose: function(nComps) {
+		if([';','[]',':','=','&','|','^','+','*','&&','||'].contains(this.charact)) {
+			var nc = [];
+			while(0<nComps.length) {
+				var tc = nComps.pop();
+				if(tc.charact == this.charact) {
+					tc = tc.stpUp(this.x);
+					nComps = nComps.concat(tc.components);
+				} else nc.unshift(tc);
 			}
-			this.subbed('components', nComps);
+			nComps = nc;
 		}
-		return this.attributed(nAttrs).summarised();
-	}.perform('nul.xpr->modify'),
-	attributed: function(nAttrs) {
-		return this.subbed('attributes', nAttrs);
-	}.perform('nul.xpr->attributed'),
-	subbed: function(subNm, subs) {
-		var prnt = this;
-		if(subs) this[subNm] = map(subs, function(c) { return c.numerise(prnt); });
-		return this;
-	}.perform('nul.xpr->attributed'),
-	addAttr: function(kb) {
-		for(var i=1; i<arguments.length; ++i)
-			for(an in arguments[i].attributes)
-				if(!this.attributes[an]) this.attributes[an] = arguments[i].attributes[an];
-				else this.attributes[an] = kb?
-					nul.unify.subd(
-						this.attributes[an],
-						arguments[i].attributes[an], kb) :
-					nul.build().unification(
-						this.attributes[an],
-						arguments[i].attributes[an], kb) ;
-		var rv = this.summarised();
-		//TODO: on n'ajouterais pas simplement les attributs au KB ? quels sont les effets secondaires?
-		rv = rv.known(kb) || rv;
-		return rv.contextualize(rv.attributes) || rv;
-	}.perform('nul.xpr->addAttr'),
+		this.components = nComps;
+		return this.composed().summarised(true);
+	}.perform('nul.xpr->compose'),
+	xadd: function(x, kb) {
+		var tx = this.x;
+		//This dirty comes from the unification created (just the line under) in the attributes
+		if(!kb && trys(x.attributes, function(o, i) { return !tx.attributes[i]; } )) this.dirty();
+		this.x.xadd(x,kb);
+		return this.summarised();
+	}.perform('nul.xpr->xadd'),
 	
-	withLocals: function(lcls) {
-		if(nul.debug.levels && 'undefined'!= typeof this.locals.lvl) {
-			if('undefined'== typeof lcls.lvl) lcls.lvl = this.locals.lvl;
-			else assert(this.locals.lvl == lcls.lvl, 'Local change doesnt change level');
-		}
-		this.locals = lcls;
+	withX: function(x) {
+		if(!x) x = nul.x();
+		if(nul.debug.assert) assert(x.attributes,'X given');
+		this.x = x;
 		return this;
-	}.perform('nul.xpr->withLocals'),
+	}.perform('nul.xpr->withX'),
 };

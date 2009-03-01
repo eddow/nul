@@ -180,23 +180,24 @@ nul.debug = {
 			nul.debug.kbase.apply();
 		}
 	},
-	ctxTable: function(ctx) {
+	ctxTable: function(ctx, insd) {
 		var rv = '';
-		var prc = ctx['+entrHTML']();
+		var prc = insd.origHTML[0];
 		for(var i=0; i<ctx.length; ++i) if(ctx[i])
-			rv += '<tr><th>'+i+'</th><td>'+ctx[i].toHTML()+'</td></tr>';
+			rv += '<tr><th>'+i+'</th><td>'+ctx[i].dbgHTML()+'</td></tr>';
 		return [prc, '<table class="context">'+rv+'</table>'];
 	}
 };
 
-Function.prototype.describe = function(dscr) {
-	var ftc = this;
-	return function() {
-		var cargs = arrg(arguments);
-		var obj = this;
-		return nul.debug.makeCall(ftc, dscr, obj, cargs);
+if(-1>= window.location.href.indexOf('noperf'))
+	Function.prototype.describe = function(dscr) {
+		var ftc = this;
+		return function() {
+			var cargs = arrg(arguments);
+			var obj = this;
+			return nul.debug.makeCall(ftc, dscr, obj, cargs);
+		};
 	};
-};
 
 function assert(cnd, str) {
 	if(!cnd)

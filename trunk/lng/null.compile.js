@@ -6,6 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
  
+ //TODO: un opérateur qui dit "est spécifié". Style une varialbe laissée libre à jamais renvoie faux ou fail
 nul.compiled = {
 	//Compiled just have pure data: operators, operands, stuffs, ...
 	expression: function(oprtr, oprnds) {
@@ -23,20 +24,8 @@ nul.compiled = {
 	atom: function(token, decl) {
 		return { type: token.type, value: token.value, declared: decl, understand: nul.understanding.atom };
 	},
-	definition: function(decl, value, type) {
-		return { type: type, decl: decl, value: value, understand: nul.understanding.definition };
-	},
-	selfed: function(decl, value) {
-		return { decl: decl, value: value, understand: nul.understanding.selfed };
-	},
-	exists: function(decl, value) {
-		return { decl: decl,
-			value: nul.compiled.expression(
-				';', [
-					value,
-					nul.compiled.atom({type:'alphanum', value: decl})
-				]),
-				understand: nul.understanding.definition };
+	definition: function(decl, type) {
+		return { type: type, decl: decl, understand: nul.understanding.definition };
 	},
 	set: function(content) {
 		return { content: content, understand: nul.understanding.set };
@@ -44,15 +33,11 @@ nul.compiled = {
 	xml: function(node, attrs, content) {
 		return { node: node, attributes: attrs, content: content, understand: nul.understanding.xml };
 	},
-	prototype: function(appl, name, value) {
-		return { applied: appl, name: name, value:value, understand: nul.understanding.prototype };
+	attributed: function(appl, name, value) {
+		return { applied: appl, name: name, value:value, understand: nul.understanding.attributed };
 	},
-	objectivity: function(appl, lcls, value) {
-		if(!value) {
-			value = nul.compiled.atom({value: lcls, type: 'alphanum'});
-			lcls = [lcls];
-		}
-		return { applied: appl, lcls: lcls, value: value, understand: nul.understanding.objectivity };
+	objectivity: function(appl, lcl) {
+		return { applied: appl, lcl: lcl, understand: nul.understanding.objectivity };
 	}
 };
 
@@ -133,17 +118,15 @@ nul.compiler = function(txt)
 			do
 			{
 				if(this.tknzr.take('[')) rv = nul.compiled.application(rv, this.tknzr.rawExpect(']',this.expression()));
-				else if(this.tknzr.take('::')) rv = this.prototype(rv);
+				else if(this.tknzr.take('::')) rv = this.attributed(rv);
 				else if(this.tknzr.take('->')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
-				else if(this.tknzr.take('_'))
-					rv = nul.compiled.atom({type:'alphanum', value:'_'}, rv);
 				else if('alphanum'== this.tknzr.token.type)
-					rv = nul.compiled.definition(this.alphanum(), this.expression(), rv);
+					rv = nul.compiled.definition(this.alphanum(), rv);
 				else return rv;
 			} while(true);
 		},
-		prototype: function(appl) {
-			return nul.compiled.prototype(appl, this.alphanum(), this.tknzr.expect('.', this.expression()));
+		attributed: function(appl) {
+			return nul.compiled.attributed(appl, this.alphanum(), this.tknzr.expect('.', this.expression()));
 		},
 		innerXML: function() {
 			var comps = [];
@@ -172,17 +155,13 @@ nul.compiler = function(txt)
 			return this.tknzr.rawExpect('>', nul.compiled.xml(node, attrs, comps));
 		},
 		item: function() {
-			if(this.tknzr.take('\\/'))
-				return nul.compiled.definition(this.alphanum(), this.expression());
 			if(this.tknzr.take('{')) {
 				if(this.tknzr.take('}')) return nul.compiled.set();
 				return this.tknzr.expect('}', nul.compiled.set(this.expression()));
 			}
 			if(this.tknzr.take('<')) return this.xml();
 			if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
-			if(this.tknzr.take(']')) return nul.compiled.exists(this.alphanum(), this.applied());
-			if(this.tknzr.take('['))
-				return this.tknzr.rawExpect(']', nul.compiled.selfed(this.alphanum(), this.expression()));
+			//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
 			for(var p= 0; p<nul.operators.length; ++p)
 			{
 				var oprtr = nul.operators[p];

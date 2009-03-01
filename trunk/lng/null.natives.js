@@ -10,7 +10,7 @@ nul.natives = {
 	Q: nul.build().nativeFunction('&#x211a;',
 		function(xpr) {
 			if('number'== typeof xpr.value) return xpr;
-			if(xpr.free() && !xpr.flags.fuzzy) nul.fail('Not a number');
+			if(xpr.fixed()) nul.fail('Not a number');
 			return;
 		},
 		this.Q
@@ -36,7 +36,7 @@ nul.natives = {
 	str: nul.build().nativeFunction('str',
 		function(xpr) {
 			if('string'== typeof xpr.value) return xpr;
-			if(xpr.free() && !xpr.flags.fuzzy) nul.fail('Not a string');
+			if(xpr.fixed()) nul.fail('Not a string');
 			return;
 		},
 		this.str

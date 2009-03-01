@@ -17,7 +17,7 @@ var nul = {
 	},
 	asJs: function(o, oprtr)
 	{
-		if('undefined'== typeof o.value)
+		if('atom'!= o.charact)
 			throw nul.semanticException("Cannot operate '"+oprtr+"' with: "+o.toHTML());
 		return o.value;
 	},
@@ -31,26 +31,23 @@ var nul = {
 	},
 	firstUnderstandBase: function() {
 		var fb = nul.understanding.emptyBase();
-		for(var p in nul.globals) {
-			fb.createFreedom(p, null, true);
-			nul.globals[p];
-		}
+		for(var p in nul.globals)
+			fb.createFreedom(p, nul.build().set(nul.globals[p]));
 		return fb;
 	},
 	expression: function(txt)
 	{
 		nul.erroneus = false;
-		return nul.understanding.understand(nul.compile(txt), nul.firstUnderstandBase()).numerise();
-	},
-	globalized: function(xpr) {
-		return xpr.contextualize(nul.globals, 1) || xpr;
+		var ub = nul.firstUnderstandBase();
+		return ub.asSet(nul.compile(txt).understand(ub));
 	},
 	html: function(txt)
 	{
 		nul.erroneus = false;
 		var comps = nul.compiler(txt+' </').innerXML();
+		var ub = nul.firstUnderstandBase();
 		for(var i=0; i<comps.length; ++i)
-			comps[i] = nul.understanding.understand(comps[i], nul.firstUnderstandBase());
+			comps[i] = nul.build().set(comps[i].understand(ub));
 		return comps;
 	},
 	onload: function() {

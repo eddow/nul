@@ -5,26 +5,42 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-
-nul.build = function(on, kb) {
-	var sf, lcls
-	if(!on)				{ sf = null;	lcls = [];			}
-	else if(on.locals)	{ sf = on;		lcls = on.locals;	}
-	else				{ sf = null;	lcls = on;			}
+nul.x = function(x) {
+	rv = {};
+	rv.attributes = x&&x.attributes?clone1(x.attributes):{};
+	rv.clone = function() { return nul.x(this); };
+	rv.seEmpty = function() {
+		for(var i in this.attributes) delete this.attributes[i];
+	};
+	rv.xadd = function(x, kb) {
+		for(an in x.attributes)
+			if(!this.attributes[an]) this.attributes[an] = x.attributes[an];
+			else this.attributes[an] = kb?
+				nul.unify.level(
+					this.attributes[an],
+					x.attributes[an], kb) :
+				nul.build(this.attributes[an].x).unification([
+					this.attributes[an].withX(),
+					x.attributes[an]]).dirty();
+		return this;
+	}.perform('nul.xpr->xadd');
+	return rv;
+};
+nul.build = function(x, kb) {
 	return {
-		standFor: sf,
-		locals: lcls,
+		x: x || nul.x(),
 		kb: kb,
 		item: function(ops) {
 			var itm = {};
-			for(var i=1; i<arguments.length; ++i) map(arguments[i], function(o, i) { itm[i] = o; })
-			if(!itm.attributes) itm.attributes = {};
+			for(var i=1; i<arguments.length; ++i) map(arguments[i],
+				function(i, o) { itm[i] = o; })
+			itm.x = nul.x(this.x);
 			for(var i in nul.xpr) if(!itm[i]) itm[i] = nul.xpr[i];
-
-			itm.locals = this.locals;
-			if(this.sf) itm.addAttrs(this.kb, this.sf);
-			itm = itm.modify(ops);
-			itm.summarised(true);
+			if(nul.debug.assert) assert(
+				'{}'== itm.charact || !this.locals || 0>=this.locals.length,
+				'Locals only defined on sets')
+			if(this.locals) itm.locals = this.locals;
+			itm = itm.compose(ops);
 			return itm;
 		}.perform('nul.build->item'),
 		listOp: function(itm, chrct, ops, strC) {
@@ -34,10 +50,10 @@ nul.build = function(on, kb) {
 				itm.expressionHTML = function() {
 					return nul.text.expressionHTML(
 						'<span class="op">'+strC+'</span>', this.components);
-					};
+				};
 				itm.toString = function() {
 					return nul.text.toString(strC, this.components);
-					};
+				};
 			} else {
 				itm.expressionHTML = strC[0];
 				itm.toString = strC[1];
@@ -94,9 +110,8 @@ nul.build = function(on, kb) {
 			return this.item(null, {
 				charact: '<html>',
 				element: htmlElement,
-				expressionHTML: function() {
-					return '&lt;Element&gt;';
-				}
+				expressionHTML: function() { return '&lt;Element&gt;'; },
+				toString: function() { return '&lt;Element&gt;'; }
 			}, nul.behav.html_place);
 		},
 	
@@ -146,8 +161,20 @@ nul.build = function(on, kb) {
 				}] );
 		},
 		set: function(content) {
+			if(content && !isArray(content)) {
+				 var c = [];
+				 c[nul.lcl.slf] = content;
+				 content = c;
+			}
 			return content?
-				this.srndd(nul.behav.set,'{}', content,'{','}')
+				this.item(content, nul.behav.set, {
+					charact: '{}',
+					expressionHTML: function() { return '' +
+						'<span class="op">{</span>' +
+						this.components[nul.lcl.slf].toHTML() +
+						'<span class="op">}</span>'; },
+					toString: function() { return '{'+this.components[nul.lcl.slf].toString()+'}'; },
+				})
 			:
 				this.item(null, {
 					charact: '{}',
@@ -166,7 +193,7 @@ nul.build = function(on, kb) {
 	(x :- y) = (i :- j) <==> (x = (i :- j)) :- y <==> ((x = i) :- j) :- y <==> (x = i) :- (y = j)
 	a :- (b :- c) =  x :- y   <==> a=x :- (b=y :- c)
 			 */
-			return this.nmdOp({},':-', { parms: parms, value: value }, '&lArr;');
+			return this.nmdOp(nul.behav.lambda,':-', { parms: parms, value: value }, '&lArr;');
 		},
 		cumulExpr: function(oprtr, oprnds) {
 			return this.listOp(nul.behav.cumulExpr,oprtr, oprnds, mathSymbol(oprtr));
@@ -175,8 +202,6 @@ nul.build = function(on, kb) {
 			return this.listOp(nul.behav.biExpr,oprtr, oprnds, mathSymbol(oprtr));
 		},
 		list: function(oprnds) {
-			//TODO: Les valeurs floues donnent lieu à une variable déclarée en ctxDelta=0
-			// D'où la liste est candidate à être utilisée comme contextualisation
 			return this.listOp(nul.behav.list,',', oprnds,[
 				function() {
 					if(1==this.components.length && !this.components.follow)
@@ -220,10 +245,10 @@ nul.build = function(on, kb) {
 					nul.build().atom(node),
 					nul.build().list(content)
 				);
-			rv.attributes = attrs;
+			rv.x.attributes = attrs;
 			rv.toXML = function() {
 				var opn = '<' + this.components.parms.value;
-				for(var a in this.attributes) opn += ' ' + a + '=' + this.attributes[a].toHTML();
+				for(var a in this.x.attributes) opn += ' ' + a + '=' + this.attributes[a].toHTML();
 				var itms = this.components.value.components;
 				if(0>= itms.length) return opn + ' />';
 				var insd = '';
@@ -237,13 +262,9 @@ nul.build = function(on, kb) {
 			return rv;
 		},
 	
-		prototype: function(applied, name, value) {
-			applied.attributes[name] = value;
+		attributed: function(applied, name, value) {
+			applied.x.attributes[name] = value;
 			return applied.summarised(true);
-		},
-		defined: function(lcl) {
-			this.locals.unshift(lcl);
-			return this;
 		},
 		nativeFunction: function(name, fct, dom, img) {
 			return this.item(null, {
@@ -253,9 +274,6 @@ nul.build = function(on, kb) {
 				expressionHTML: function() { return '<span class="global">'+this.name+'</span>'; },
 				toString: function() { return this.name; }
 			}, nul.behav.nativeFunction);
-		},
-		objectivity: function(obj, itm) {
-			return this.nmdOp(nul.behav.objectivity,'->', {object: obj, item: itm}, '&rarr;');
 		}
 	};
 };

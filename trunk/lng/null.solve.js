@@ -34,7 +34,7 @@ nul.solve = {
 				if([':','[]'].contains(xpr.charact)) {
 					this.browse = false;
 					if(this.cn < xpr.components.length)
-						return xpr.components[this.cn].stpUp(clone1(xpr.locals));
+						return xpr.components[this.cn].stpUp(xpr.x.clone());
 				} 
 			},
 			finish: function(xpr, chgd) {

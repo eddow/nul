@@ -37,23 +37,24 @@ nul.browse = {
 				if(behav.before) xpr = behav.before(xpr)||xpr;
 				var cps;
 				if(xpr.components && isToBrowse(behav, behav.browseComponents, xpr))
-					cps = map(xpr.components, function(o) {
-						var co = o.browse(behav);
+					cps = map(xpr.components, function() {
+						assert(this.browse);
+						var co = this.browse(behav);
 						chg |= !!co;
-						co = co||o;
-						if(behav.newComponent) co = behav.newComponent(xpr, o, co) || co;
+						co = co||this;
+						if(behav.newComponent) co = behav.newComponent(xpr, this, co) || co;
 						return co;
 					});
 				var ats;
 				if(isToBrowse(behav, behav.browseAttributes, xpr))
-					ats = map(xpr.attributes, function(o, ky) {
-						var co = o.browse(behav);
+					ats = map(xpr.x.attributes, function(ky) {
+						var co = this.browse(behav);
 						chg |= !!co;
-						co = co||o;
-						if(behav.newAttribute) co = behav.newAttribute(xpr, ky, o, co) || co;
+						co = co||this;
+						if(behav.newAttribute) co = behav.newAttribute(xpr, ky, this, co) || co;
 						return co;
 					});
-				if(chg) xpr = xpr.modify(cps, ats);
+				if(chg) xpr = xpr.compose(cps, ats);
 				if(behav[xpr.charact]) xpr = behav[xpr.charact](xpr) || xpr;
 				chg |= xpr!==this;
 			} catch(err) {
@@ -71,14 +72,15 @@ nul.browse = {
 		if(nul.debug.perf) nul.debug.log('infoLog')('Useless browse for '+behav.name,nul.debug.logging?this.toHTML():'');			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
-	contextualize: function(knwldg, dlt, kb) {
+	contextualize: function(rpl, dlt, kb) {
 		return {
 			name: 'contextualisation',
-			ctxDelta: (dlt||0)-1,
-			knwldg: knwldg,
+			ctxDelta: dlt||0,
+			rpl: rpl,
 			kb: kb,
 			before: function(xpr) {
-				++this.ctxDelta;
+				if(xpr.makeContext) ++this.ctxDelta;
+				/*TODO: avoid useless sub-contextualisation
 				for(var cd in xpr.deps) {
 					cd = reTyped(cd);
 					if(this.ctxDelta<= cd && cd <this.ctxDelta+this.knwldg.length)
@@ -86,11 +88,11 @@ nul.browse = {
 							if(this.itmCtxlsz(cd-this.ctxDelta, li))
 								return;
 				}
-				throw nul.browse.abort;
+				throw nul.browse.abort;*/
 			},
 			abort: function() { --this.ctxDelta; },
 			finish: function(xpr, chgd) {
-				--this.ctxDelta;
+				if(xpr.makeContext) --this.ctxDelta;
 				if(chgd) {
 					xpr = xpr.summarised();
 					if(xpr.components) xpr.dirty();
@@ -98,33 +100,27 @@ nul.browse = {
 				}
 			},
 			itmCtxlsz: function(ctxNdx, lindx) {
-				return 0<= ctxNdx && ctxNdx<this.knwldg.length && 
-					this.knwldg[ctxNdx][lindx] &&
-					!this.knwldg[ctxNdx][lindx].flags.fuzzy &&
-					(nul.lcl.slf!= lindx || 0== ctxNdx)
+				return 0<= ctxNdx && ctxNdx<this.rpl.length && 
+					this.rpl[ctxNdx][lindx];
 			},
 			local: function(xpr) {
 				var ctxNdx = xpr.ctxDelta-this.ctxDelta;
-				if( this.itmCtxlsz(ctxNdx, xpr.lindx)) {
-					var rv = this
-						.knwldg[ctxNdx][xpr.lindx]
-						.localise(xpr.ctxDelta-(dlt||0))
-						.numerise(xpr.locals.prnt);
-					if(nul.debug.assert) assert(this.kb || is_empty(xpr.attributes));
+				if(this.itmCtxlsz(ctxNdx, xpr.lindx)) {
+					var rv = this.rpl[ctxNdx][xpr.lindx]
+						.localise(xpr.ctxDelta-(dlt||0));
 					if(!rv.dbgName) rv.dbgName = xpr.dbgName;
-					return kb?rv.addAttr(this.kb,xpr):rv;
+					return rv.xadd(xpr.x, this.kb);
 				}
 			}
 		};
 	},
-
 	extraction: {
 		name: 'extration',
 		browse: function(xpr) {
 			return !xpr.extract;
 		},
 		finish: function(xpr, chgd) {
-			if(xpr.extract) return xpr.extract().levelise(xpr);
+			if(xpr.extract) return xpr.extract();
 			if(chgd) return xpr.summarised().dirty();
 		}
 	},
@@ -135,21 +131,16 @@ nul.browse = {
 			alc: n,
 			action: act,
 			shifted: function(xpr) {
-				return !is_empty(xpr.deps);	//TODO: sois plus précis. spécifie moins de shifted !
+				return !isEmpty(xpr.deps);	//TODO: sois plus précis. spécifie moins de shifted !
 			},
 			before: function(xpr) {
-				//If nul.debug.levels, all locals.lvl must be changed
 				//if(!nul.debug.levels && !this.shifted(xpr))
 				//	throw nul.browse.abort;
-				// TODO: on ne peut pas abandonner .... il faut summariser ?
+				// TODO: on peut p-e abandonner ....
 				++this.ctxDelta;
 			}.perform('nul.lclShft->before'),
 			finish: function(xpr, chgd) {
 				--this.ctxDelta;
-				if(nul.debug.levels && 'undefined' != typeof xpr.locals.lvl) {
-					if(['sdn','wrp'].contains(this.action)) ++xpr.locals.lvl;
-					else if('sup'== this.action) --xpr.locals.lvl;
-				}
 				xpr.summarised();
 				if('undefined'== typeof xpr.lindx) xpr.dirty();
 			}.perform('nul.lclShft->finish'),
@@ -171,9 +162,9 @@ nul.browse = {
 			inc: inc,
 			ctxDelta: -1,
 			before: function(xpr) {
-				//if(is_empty(xpr.deps)) throw nul.browse.abort;
+				//if(isEmpty(xpr.deps)) throw nul.browse.abort;
 				++this.ctxDelta;
-				return clone1(xpr).withLocals(clone1(xpr.locals));
+				return clone1(xpr).withX(xpr.x.clone());
 			},
 			finish: function(xpr, chgd) {
 				--this.ctxDelta;
@@ -192,39 +183,14 @@ nul.browse = {
 			}
 		};
 	},
-	numerise: function(prnt, lvl) {
-		return {
-			name: 'numerisation',
-			sLvl: lvl?lvl:0,
-			prnts: prnt?[prnt]:[],
-			before: function(xpr) {
-				var mblvl = this.prnts.length+this.sLvl;
-				var mbprnt = 0<this.prnts.length?this.prnts[0]:null;
-				if(xpr.locals.lvl == mblvl && xpr.locals.prnt == mbprnt) throw nul.browse.abort;
-				xpr.locals.lvl = mblvl;
-				if(mbprnt) xpr.locals.prnt = mbprnt;
-				else delete xpr.locals.prnt;
-				this.prnts.unshift(xpr);
-				return xpr;
-			},
-			finish: function(xpr, chgd) {
-				this.prnts.shift();
-				return chgd?xpr:null;
-			}
-		};
-	},	
-	evaluate: function(kb, entrance) {
+	evaluate: function(kb) {
 		return {
 			name: 'evaluation',
 			kb: kb,
-			entrance: entrance||0,
 			newComponent: function(xpr, oldComp, newComp) {
-				if(oldComp!= newComp) newComp = newComp.numerise(xpr);
 				return newComp.clean();
 			},
 			newAttribute: function(xpr, name, oldAttr, newAttr) {
-				if(xpr.deps[0]&&xpr.deps[0][name]) this.kb.know(name, newAttr, 1);
-				if(oldAttr!= newAttr) newAttr = newAttr.numerise(xpr);
 				return newAttr.clean();
 			},
 			browse: function(xpr) {
@@ -232,30 +198,24 @@ nul.browse = {
 			},
 			before: function(xpr) {
 				if(!xpr.flags.dirty) throw nul.browse.abort;
-				if(0<++this.entrance) this.kb.enter(xpr);
+				this.kb.enter([xpr]);
 			},
 			finish: function(xpr, chgd) {
 				var assertKbLen, assertLc;
 				if(nul.debug.assert) { assertKbLen = this.kb.knowledge.length; assertLc = nul.debug.lc; } 
-				if(nul.debug.levels) assert(xpr.locals.lvl == this.kb.knowledge.length-1, 'Evaluation level');
+				xpr.composed(kb);
 				try {
-					try {
-						var rv;
-						if(xpr.operable()) {
-							rv = xpr.operate(this.kb);
-							if(rv) { chgd = true; xpr = rv; }
-						}
-						if(!rv && chgd) xpr = xpr.summarised().clean();
-					} catch(err) { this.abort(xpr); throw nul.exception.notice(err); }
-					if(0>--this.entrance) return chgd?xpr:undefined;
-					return this.kb.leave(chgd?xpr:undefined);
-				} finally { if(nul.debug.assert) assert(
-					(0<=this.entrance && assertKbLen== this.kb.knowledge.length+1) ||
-					(0>this.entrance && assertKbLen== this.kb.knowledge.length),
-					'Knowledge enter/leave paired while evaluation ['+assertLc+']'); }
+					var rv;
+					if(xpr.operable()) {
+						rv = xpr.operate(this.kb);
+						if(rv) { chgd = true; xpr = rv; }
+					}
+					if(!rv && chgd) xpr = xpr.summarised().clean();
+				} catch(err) { this.abort(xpr); throw nul.exception.notice(err); }
+				return this.kb.leave(chgd?xpr:null);
 			}.describe(function(xpr, chgd) { return 'Evaluating '+xpr.toHTML(); }),
 			abort: function(xpr, willed) {
-				if(willed || 0>--this.entrance) return;
+				if(willed) return;
 				return this.kb.abort(xpr);
 			}
 		};

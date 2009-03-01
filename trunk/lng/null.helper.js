@@ -8,7 +8,11 @@
  
 //Gets weither this object is an array [] and not an object {}
 function isArray(itm) {
-	return typeof(itm) == 'object' && typeof itm.length === 'number' && !itm.propertyIsEnumerable('length') && typeof itm.splice === 'function';
+	return itm && null!= itm &&
+		typeof(itm) == 'object' &&
+		typeof itm.length === 'number' &&
+		!itm.propertyIsEnumerable('length') &&
+		typeof itm.splice === 'function';
 }
 
 var cloneStack = [];
@@ -17,44 +21,31 @@ function clone(myObj) {
 	if(null== myObj || typeof(myObj) != 'object') return myObj;
 	if(nul.debug.assert) assert(!cloneStack.contains(myObj), 'Clone not re-entrant'); 
 	cloneStack.push(myObj);
-	try { return map(myObj, clone); }
+	try { return map(myObj, function() { return clone(this); }); }
 	finally { cloneStack.pop(myObj); }
 }
 
 //Duplicate <myObj> ut components are just references
 function clone1(myObj) {
 	if(null== myObj || typeof(myObj) != 'object') return myObj;
-	return map(myObj, idFct);
+	return map(myObj, function(i,o) { return o; });
 }
-
-cloneUnsure = clone;
-cloneUnsure1 = function(c) { return c; };
 
 //If <a> then <a> else <b>
 function iif(a, b) {
 	return ('undefined'== (typeof a) || null=== a)?b:a;
 }
 
+//Returns the first of <itm> for which the function <fct> returned a value evaluated to true
+function trys(itm, fct) {
+	var rv;
+	for(var i in itm) if(itm[i]!= [][i]) if(rv = fct(itm[i], i)) return rv;
+}
 //Returns the same item as <itm> where each member went through <fct>
 function map(itm, fct) {
-	var rv;
-	if(isArray(itm))
-	{
-		rv = [];
-		for(var i in itm) if('undefined'== typeof [][i]) lastmaprv = rv[i] = fct(itm[i], i);
-	}
-	else
-	{
-		rv = {};
-		for(var i in itm) rv[i] = fct(itm[i], i);
-	}
+	var rv = isArray(itm)?[]:{};
+	for(var i in itm) if(itm[i]!= [][i]) rv[i] = fct.apply(itm[i], [i, itm[i]]);
 	return rv;
-}
-
-//Map if itm is an array; just apply if not
-function m1a(itm, fct) {
-	if(isArray(itm)) return map(itm, fct);
-	return fct(itm);
 }
 
 function escapeHTML(str) {
@@ -76,7 +67,7 @@ function mathSymbol(s) {
 }
 
 //Is <o> an empty association ?
-function is_empty(o) {
+function isEmpty(o) {
 	for(var i in o) return false;
 	return true;
 }
@@ -87,8 +78,6 @@ function reTyped(v) {
 	if((new RegExp('^(\\d+)$', 'g')).exec(v)) return parseInt(v);
 	return v;
 }
-
-function idFct(x) { return x; }
 
 //The array of keys of association <ass>
 function keys(ass) {
@@ -127,19 +116,6 @@ function seConcat(a, o) {
 	for(var i=0; i<o.length; ++i) a.push(o[i]);
 	return a;
 }
-//a =[] : side-effect
-function seEmpty(a) {
-	a.splice(0);
-	return a;
-}
-
-//a = b : side-effect
-function seSet(a, b) {
-	seEmpty(a);
-	seConcat(a, b);
-	return a;
-}
-
 //arguments to Array()
 function arrg(args) {
 	var rv = [];

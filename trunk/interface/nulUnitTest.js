@@ -49,7 +49,7 @@ tests = [
 		{xpr: '{ [x _, x] }[5,(5,(5,(5,(5,_))))]',
 		rslt:  '(5 , x[&crarr;|1])'},
 		{xpr: '[b [a (a,_)] = (b,5) ]',
-		rslt: '(b[&crarr;|1] , 5)'},
+		rslt: '(a[&crarr;|1] , 5)'},
 		{xpr: '[e!e] = (1>0 [] 1<0)',
 		rslt: 'Failure'}
 	].named('Auto-reference'),
@@ -60,12 +60,12 @@ tests = [
 		rslt: '4'}
 	].named('Attributes management'),
 	[
-		{xpr: '[f{ 1 [] ({_}x x>1?x:- x * f[x-1]) }][4]',
-		rslt: '24'},
-		{xpr: '{ {_}n n:- [fib { {_}x x, _, 1 :- x [] {_}x {_}y {_}z z > 1 ? (x, y, z) :- fib[y, y+x, z-1] }][1, 1, n] }[4]',
-		desc: 'Accumulated Fibbonacci on 4',
-		rslt: '3'}
-	].named('Complete algorithms'),
+		{xpr: '[f{ 1 [] ({_}x x>1?x:- x * f[x-1]) }][5]',
+		rslt: '120'},
+		{xpr: '{ {_}n n:- [fib { {_}x x, _, 1 :- x [] {_}x {_}y {_}z z > 1 ? (x, y, z) :- fib[y, y+x, z-1] }][1, 1, n] }[5]',
+		desc: 'Accumulated Fibbonacci on 5',
+		rslt: '5'}
+	].named('Recursive algorithms'),
 	[
 		{xpr: '{\\/a \\/b \\/c {{ (1,a) [] (2,b) [] (3,c) }} S S[1,8]; \\/x S[x,9]; x}!',
 		rslt: '{(2 &#9633; 3)}'}
@@ -154,10 +154,10 @@ function prgTest(tn) {
 
 function doTest(tn) {
 	var v, test = tbody.rows[tn].test;
-	nul.debug.levels = nul.debug.assert = !$('qndTst').checked;
+	nul.debug.assert = !$('qndTst').checked;
 	try {
 		nul.execution.reset();
-		v = v = nul.globalized(nul.expression(test.xpr)).evaluate().toString();
+		v = v = nul.expression(test.xpr).evaluate().toString();
 	} catch(err) {
 		nul.exception.notice(err);
 		if(nul.erroneusJS) throw nul.erroneusJS;
@@ -170,7 +170,7 @@ function doTest(tn) {
 
 function prgGrpCheck(c, lc) {
 	for(var l = lc; l<clpsSstm.collapsing[lc]; ++l)
-		map(tbody.rows[l].select('input[type=checkbox]'), function(o) {o.checked = c; });
+		map(tbody.rows[l].select('input[type=checkbox]'), function() { this.checked = c; });
 }
 
 function prgGrpTest(tn) {
