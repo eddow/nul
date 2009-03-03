@@ -7,38 +7,34 @@
  *--------------------------------------------------------------------------*/
  
 nul.natives = {
-	Q: nul.build().nativeFunction('&#x211a;',
+	Q: nul.build.nativeSet('&#x211a;',
 		function(xpr) {
 			if('number'== typeof xpr.value) return xpr;
-			if(xpr.fixed()) nul.fail('Not a number');
+			if(xpr.fixed()) nul.fail('Not a number : '+xpr.dbgHTML());
 			return;
-		},
-		this.Q
+		}
 	),
-	Z: nul.build().nativeFunction('&#x2124;',
+	Z: nul.build.nativeSet('&#x2124;',
 		function(xpr) {
 			xpr = nul.natives.Q.callback(xpr);
-			if(xpr && Math.floor(xpr.value)!= xpr.value) nul.fail('Not an integer');
+			if(xpr && Math.floor(xpr.value)!= xpr.value) nul.fail('Not an integer : '+xpr.dbgHTML());
 			return xpr;
-		},
-		this.Z
+		}
 	),
-	N: nul.build().nativeFunction('&#x2115;',
+	N: nul.build.nativeSet('&#x2115;',
 		function(xpr) {
 			xpr = nul.natives.Z.callback(xpr);
-			if(xpr && 0> xpr.value) nul.fail('Not a positive integer');
+			if(xpr && 0> xpr.value) nul.fail('Not a positive integer : '+xpr.dbgHTML());
 			return xpr;
-		},
-		this.N
+		}
 	),
-	'true': nul.build().atom(true),
-	'false': nul.build().atom(false),
-	str: nul.build().nativeFunction('str',
+	'true': nul.build.atom(true),
+	'false': nul.build.atom(false),
+	str: nul.build.nativeSet('str',
 		function(xpr) {
 			if('string'== typeof xpr.value) return xpr;
-			if(xpr.fixed()) nul.fail('Not a string');
+			if(xpr.fixed()) nul.fail('Not a string : '+xpr.dbgHTML());
 			return;
-		},
-		this.str
+		}
 	),
 };

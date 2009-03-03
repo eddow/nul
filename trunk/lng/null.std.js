@@ -32,7 +32,7 @@ var nul = {
 	firstUnderstandBase: function() {
 		var fb = nul.understanding.emptyBase();
 		for(var p in nul.globals)
-			fb.createFreedom(p, nul.build().set(nul.globals[p]));
+			fb.createFreedom(p, nul.globals[p]);
 		return fb;
 	},
 	expression: function(txt)
@@ -46,8 +46,11 @@ var nul = {
 		nul.erroneus = false;
 		var comps = nul.compiler(txt+' </').innerXML();
 		var ub = nul.firstUnderstandBase();
-		for(var i=0; i<comps.length; ++i)
-			comps[i] = nul.build().set(comps[i].understand(ub));
+		var ubl = ub.length;
+		for(var i=0; i<comps.length; ++i) {
+			comps[i] = ub.asSet(comps[i].understand(ub));
+			ub.splice(ubl);
+		}
 		return comps;
 	},
 	onload: function() {
@@ -56,9 +59,6 @@ var nul = {
 	}
 };
 
-if(!nul.debug) {
-	Function.prototype.describe = function(dscr) { return this; };
-}
 new Event.observe(window, 'load', nul.onload);
 if(-1< window.location.href.indexOf('noperf'))
 	Function.prototype.perform = function(name) { return this; };

@@ -17,12 +17,12 @@ nul.solve = {
 		var rv = {solved:[], fuzzy:[]}, tryed, cn;
 		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn); ++cn) try {
 			var ss = nul.solve.solve(tryed.evaluate()||tryed);
-			rv.solved = rv.solved.concat(ss.solved);
-			rv.fuzzy = rv.fuzzy.concat(ss.fuzzy);
+			rv.solved.pushs(ss.solved);
+			rv.fuzzy.pushs(ss.fuzzy);
 		} catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
 		if(0== cn) rv.fuzzy.push(xpr);
 		return rv;
-	}.describe(function(xpr) { return 'Solve '+xpr.toHTML(); }),
+	},
 	tryed: function(xpr, cn) {
 		return xpr.browse({
 			name: 'solve try',
@@ -34,7 +34,7 @@ nul.solve = {
 				if([':','[]'].contains(xpr.charact)) {
 					this.browse = false;
 					if(this.cn < xpr.components.length)
-						return xpr.components[this.cn].stpUp(xpr.x.clone());
+						return xpr.components[this.cn].xadd(xpr.x);
 				} 
 			},
 			finish: function(xpr, chgd) {

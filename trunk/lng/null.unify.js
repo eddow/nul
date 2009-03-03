@@ -10,9 +10,9 @@
 // <us>s locals are distinct
 //returns an expression or nothing if unification unchanged 
 nul.unify = {
+	/*Commutative algorithm
 	multiple: function(us, kb, x) {
 		return kb.knowing(us, function(kb) {
-//TODO: unify becomes not-commutative ?
 			function moveKnown(lfr, lto, kb) {
 				var trv;
 				for(var i=0; i<lfr.length;) {
@@ -38,8 +38,7 @@ nul.unify = {
 				}
 				if(unirv) {
 					unifion = unirv;
-					seConcat(us, uu);
-					seConcat(us, rv);
+					us.pushs(uu, rv);
 					uu = [];
 					rv = []
 					us = map(us, function() { return this.finalize(kb) || this; });
@@ -54,129 +53,129 @@ nul.unify = {
 			if(fUsLn== rv.length) return;
 			return rv;
 		});
+	}.perform('nul.unify.multiple'),*/
+	//Non-commutatibe algorithm
+	multiple: function(us, kb, x) {
+		var unifion = us.shift();
+		var rv = [];
+		while(0<us.length) {
+			var unitry = nul.unify.chewed(unifion, us[0], kb, 1);
+			if(unitry) {
+				unifion = unitry;
+				us.shift();
+			} else {
+				rv.push(unifion);
+				unifion = us.shift()
+			}
+		}
+		rv.push(unifion);
+		us.pushs(rv);
+		return rv;
 	}.perform('nul.unify.multiple'),
 	
-	//<a> and <b> are on the same level
-	//locals are distinct
+/*ways:
+ *  0: don't care
+ *  1: a = b
+ * -1: b = a 
+*/
+	//<a> and <b> share their locals
 	//always returns an expression 
-	level: function(a, b, kb) {	//don't touch A & B; gather their ctx0 locals
-		var rv = nul.unify.chewed(a, b, kb);
-		if(rv) return rv;
-		return nul.build().unification([a.wrap(kb),b.wrap(kb)]).clean();
+	level: function(a, b, kb, way) {	//don't touch A & B; gather their ctx0 locals
+		if(!a ^ !b) return a||b;
+		way = way||0;
+		if(!kb) return nul.build.unification([a,b], way);
+		return nul.unify.chewed(a, b, kb, way) ||
+			nul.build.unification([a,b], way).clean();
 	}.perform('nul.unify.level'),
-	
-	//<a> and <b> are on the same level, one more down than <kb>
-	subd: function(a, b, kb) {	//Do this in a lower context
-		return kb.knowing([a, b], function(kb) { return nul.unify.level(a, b, kb); });
-	}.perform('nul.unify.subd'),
-	
-	//<a> and <b> are on the same level. Only unify component <c>
-	//locals are the same but component locals are distinct
+
+	//Only unify component <c>
+	//<a> and <b> share their locals
 	//always returns an expression 
-	sub: function(a, b, c, kb) {	//Do this in a lower context
-		return nul.unify.subd(a.components[c], b.components[c], kb);
+	sub: function(a, b, c, kb, way) {	//Do this in a lower context
+		return nul.unify.level(a.components[c], b.components[c], kb, way);
 	}.perform('nul.unify.sub'),
-	
-	//<a> is a level lower than <b> and <b> need to get down to unify in a sub-context
-	//locals are distinct
-	//returns same level than <a>
-	//always returns an expression
-	sub1: function(a, b, kb) {	//Do this in a lower context
-		return nul.unify.subd(a, b.wrap(kb), kb);
-	}.perform('nul.unify.sub1'),
-	
-	//Used vice versa
-	//<a> and <b> are on the same level
-	//locals are distinct
-	//returns an expression or nothing if it is sure nothing is manageable or 'unk' if this function couldn't manage 
-	vcvs: function(a, b, kb) {
-		if(';'== a.charact) {
-			a.components.push(nul.unify.sub1(a.components.pop(), b, kb));
-			return a.summarised();
-		}
-	
-		if('[]'== a.charact) return nul.unify.orDist(a.components, a.x, b, kb);
-		if('='== a.charact) return nul.unify.andDist(a.components, a.x, b, kb);
-		return 'unk';
-	}.perform('nul.unify.vcvs'),
 	
 	//<a> and <b> are on the same level
 	//Try to make a components to components unification
 	//locals are distinct
 	//returns an expression or nothing if it is sure nothing is manageable or 'unk' if this function couldn't manage 
-	subs: function(a, b, kb) {
-		if(a.cmp(b)) return a;	//No need to take care of attribs : they are compared in cmp
+	subs: function(a, b, kb, way) {
 		if(','== a.charact && ','== b.charact) {
 			if(a.components.length > b.components.length) { var t=a; a=b; b=t; }
 			if(a.components.length== b.components.length || a.components.follow) {
-				b = b.lclShft(a.x, kb);
 				var rv = [];
 				for(var i=0; i<a.components.length; ++i)
-					rv.push(nul.unify.sub(a, b, i, kb));
+					rv.push(nul.unify.sub(a, b, i, kb, way));
 				b.components.splice(0,i);
+				var bx = b.x;
 				if(0==b.components.length) b = b.components.follow;				
 				if(a.components.follow)
-					rv.follow = nul.unify.sub1(a.components.follow, b, kb)
+					rv.follow = nul.unify.level(a.components.follow, b, kb, way)
 				else if(b)
-					rv.follow = nul.unify.sub1(nul.build().set(), b, kb)
-				return a.compose(rv).summarised();
+					rv.follow = nul.unify.level(nul.build.set(), b, kb, way)
+				rv = a.compose(rv).summarised().xadd(bx, kb);
+				if(b) rv = rv.xadd(b, kb);
+				return rv;
 			}
 		}
-		if(':-'== a.charact && ':-'== b.charact) {
-			b = b.lclShft(a.x, kb);
-			return a.compose({
-					parms: nul.unify.sub(a, b, 'parms', kb),
-					value: nul.unify.sub(a, b, 'value', kb)
-				}).withX(a.x).summarised();
-		}
-		if('{}'== a.charact && '{}'== b.charact ) {
-			b = b.lclShft(a.x, kb);
-			//TODO: {1 [] 2 [] 3} = {3 [] 4 [] 5} vaut ? (fail indeed) 
-			return a.compose([nul.unify.sub(a, b, 0, kb)]).withX(a.x).summarised();
-		}
+		if('{}'== a.charact && '{}'== b.charact ) return;
 		return 'unk';
 	}.perform('nul.unify.subs'),
 	
-	digg: function(a, b, kb) {
-		var rv = nul.unify.subs(a, b, kb);
-		if('unk'!== rv) return rv;
-
-		rv = nul.unify.vcvs(a, b, kb);
-		if('unk'!== rv) return rv;
-		rv = nul.unify.vcvs(b, a, kb);
-		if('unk'!== rv) return rv;
-
-		//a :- b = o ==> (a=o) :- b
-		//o = a :- b ==> (a=o) :- (b=o)
-		if(':-'== a.charact) {
-			return a.compose({
-				parms: nul.unify.sub1(a.components.parms, b, kb),
-				value: a.components.value
-			}).summarised();
-		}
-		if(':-'== b.charact) {
-			return b.compose({
-				parms: nul.unify.sub1(a, b.components.parms, kb),
-				value: nul.unify.sub1(a, b.components.value, kb)
-			}).summarised();
-		}
-
-		if(kb.affectable(a)) return kb.affect(a, b);
-		if(kb.affectable(b)) return kb.affect(b, a);
-		
-		return 'unk';
-	}.perform('nul.unify.digg'),
-	
+	//Used vice versa
 	//<a> and <b> are on the same level
-	//<a> and <b> have distinct locals
-	//returns an expression or nothing if unification unchanged 
-	chewed: function(a, b, kb) {
+	//locals are distinct
+	//returns an expression or nothing if it is sure nothing is manageable or 'unk' if this function couldn't manage
+	vcvs: function(a, b, kb, way) {
+		if('='== a.charact && 0==way) return nul.unify.andDist(a.components, a.x, b, kb, way);
+
+		if('[-]'== a.charact) {
+			if(!a.components.object.take)
+				throw nul.semanticException('Not a set : '+ a.toHTML());
+			if(0>= way && a.components.object.finalRoot() &&
+			(!a.components.object.selfRef() || b.free())) {
+				//Try to 'take' the opposite way
+				var trtk = a.components.object.take(b, kb, -1);
+				if(trtk) return nul.unify.level(trtk, a.components.applied, kb, 1).dirty();
+			}
+			//if Set doesn't transform, a = Set x  ====>   Set (a=x)
+			if(0<= way && !a.components.object.transform()) {
+				var rv = a.compose({applied: nul.unify.level(a.components.applied, b, kb, way)});
+				return rv.operate(kb)||rv;
+			}
+		}
 	
+		return 'unk';
+	}.perform('nul.unify.vcvs'),
+	
+	//<a> and <b> share their locals
+	//returns an expression or nothing if nothing is possible to do now 
+	chewed: function(a, b, kb, way) {
 		try {
-			var rv = nul.unify.digg(a, b, kb);
-			if('unk'!= rv) return rv;
+			if(a.cmp(b)) return a;
+			if(0>way) {
+				way = 1;
+				var t = a; a = b; b = t;
+			} else way = way||0;
+			
+			if(0< way && a.x.attributes['']) {
+				a.x.attributes[''] = nul.unify.level(a.x.attributes[''], b, kb, way);
+				return a;
+			}
+			
+			var rv = nul.unify.subs(a, b, kb, way);
+			if('unk'!== rv) return rv;
+	
+			rv = nul.unify.vcvs(a, b, kb, way);
+			if('unk'!== rv) return rv;
+			rv = nul.unify.vcvs(b, a, kb, -way);
+			if('unk'!== rv) return rv;
+	
+			if(kb.affectable(a)) return kb.affect(a, b);
+			if(kb.affectable(b)) return kb.affect(b, a);
 			//TODO: try extraction before fail ?
-			if(a.fixed() && b.fixed()) nul.fail('Unification failure');
+			if(a.fixed() && b.fixed())
+				nul.fail('Unification failure : ' + a.dbgHTML() + ' and ' + b.dbgHTML());
 		} catch(err) {
 			//Localisation failure means a localcannot be affected because of context position
 			//  (see browse.localise throwing nul.unlocalisable)
@@ -184,35 +183,35 @@ nul.unify = {
 			// In this case, just returns the unification as it is first expressed
 			if(err!=nul.unlocalisable) throw nul.exception.notice(err);
 		}
-	}.describe(function(a, b, kb) { return 'Unifying '+a.toHTML()+' and '+b.toHTML(); })
-	.perform('nul.unify.chewed'),
+	}.perform('nul.unify.chewed'),
 	
 	//unification of <b> with one member of table <as>
 	//<b> and <ax>(<as>' parent locals) are distinct
 	//always returns an expression 
-	orDist: function(as, ax, b, kb) {
+	orDist: function(as, ax, b, kb, way) {
+		//TODO: if unification not commutative, signal the side of or-dist
 		var rv = kb.trys(
 			'OR distribution', as, ax,
-			function(c, kb) { return nul.unify.sub1(c, b.clone(), kb); });
+			function(c, kb) { return nul.unify.level(c, b.clone(), kb, way); });
 		if(nul.debug.assert) assert(rv, 'orDist use')
 		if(!isArray(rv)) return rv;
-		return nul.build(ax, kb).or3(rv).clean();
+		return nul.build.or3(rv).xed(kb, way, ax, b.x);
 	}.perform('nul.unify.orDist'),
 	
 	//unification of <b> with each member of table <as>
 	//<b> and <ax>(<as>' parent locals) are distinct
-	//always returns an expression 
+	//always returns an expression
+	// way is 0 
 	andDist: function(as, ax, b, kb) {
-		if('='== b.charact) {
-		//optimisation : (a=b=c) = (d=e=f) ==> (a=b=c=d=e=f)
-			b = b.lclShft(ax, kb);
-			as = as.concat(b.components);
-		} else as.push(b.wrap(kb));
+		if('='!= b.charact) as.push(b); else as.pushs(b.components);
+		var fl = as.length;
 		as = nul.unify.multiple(as, kb, ax) || as;
 
 		if(as) switch(as.length) {
-			case 1: return as[0].stpUp(ax, kb);
-			default: return nul.build(ax, kb).unification(as);
+			case 1: return as[0].xed().xed(kb, 0, ax, b.x);
+			case fl: return;
+			default: return nul.build.unification(as, 0).xed(kb, 0, ax, b.x);
 		}
 	}.perform('nul.unify.andDist')
 };
+

@@ -8,54 +8,58 @@
 
 /* browse behaviour defines:
 - browse
-- browseAttributes(xpr) : not to browse attributes
-- browseComponents(xpr) : not to browse components
 - before(xpr) : returns nothing to remain unchanged or something as new value to browse
-- newComponent(xpr, oldComp, newComp) : A new component is produced (oldComp can be == newComp)
+- newSub(xpr, oldSub, newSub) : A new sub-expression is produced (oldSub can be newSub)
 - newAttribute(xpr, name, oldAttr, newAttr) : A new attribute is produced (oldAttr can be == newAttr)
-- finish(xpr, chgd) : returns the final value
+- finish(xpr, chgd, orig) : returns the final value, knowing the expresion, if it changed and the original expression
 - abort(xpr, willed) : returns nothing. Called instead of 'finish' when a problem occured. <willed> specifies if the abortion had been asked by the behaviour.
 - <charact>(xpr) : acts on a specific characterised expression
 */
 nul.browse = {
 	abort: 'stopBrowsingPlease',
-	recursion:  function(behav) {
-		function isToBrowse(behav, cb, xpr) {
-			if('undefined'!= typeof cb) return ('function'== typeof cb) ? cb(xpr) : !!cb;
-			return ('undefined'== typeof behav.browse) || (
-				'function'== typeof behav.browse ?
-					behav.browse(xpr) :
-					!!behav.browse );
-		};
+	subs: function(xpr, cb, dst) {
+		if(!dst) {
+			dst = {};
+			dst.x = {};
+		}
+		if(dst!== xpr) {
+			dst.components = [];
+			dst.x.attributes = {};
+		}
+		if(xpr.components) map(xpr.components, function(i, o) {
+			var rv = o?cb.call(this, i):null;
+			if(nul.debug.assert) assert(xpr!==dst || 'undefined'!= typeof rv, 'No build with undefined');
+			dst.components[i] = rv||null;
+		});
+		map(xpr.x.attributes, function(i) {
+			var rv = cb.call(this, i);
+			if(nul.debug.assert) assert(xpr!==dst || 'undefined'!= typeof rv, 'No build with undefined');
+			dst.x.attributes[i] = rv||null;
+		});
+		return dst;
+	},
+	recursion: function(behav) {
 		var assertKbLen, assertLc;
 		if(nul.debug.assert && behav.kb) {
 			assertKbLen = behav.kb.knowledge.length; assertLc = nul.debug.lc; } 
 
-		var xpr = this, chg = false;
+		var xpr = this.integre(), chg = false;
 		try {
 			try {
-				if(behav.before) xpr = behav.before(xpr)||xpr;
-				var cps;
-				if(xpr.components && isToBrowse(behav, behav.browseComponents, xpr))
-					cps = map(xpr.components, function() {
-						assert(this.browse);
+				if(behav.before) xpr = (behav.before(xpr)||xpr).integre();
+				if('undefined'== typeof behav.browse ||
+						('function'== typeof behav.browse && behav.browse(xpr)) ||
+						behav.browse(xpr))
+					nul.browse.subs(xpr, function(indx) {
+						if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
 						var co = this.browse(behav);
 						chg |= !!co;
 						co = co||this;
 						if(behav.newComponent) co = behav.newComponent(xpr, this, co) || co;
 						return co;
-					});
-				var ats;
-				if(isToBrowse(behav, behav.browseAttributes, xpr))
-					ats = map(xpr.x.attributes, function(ky) {
-						var co = this.browse(behav);
-						chg |= !!co;
-						co = co||this;
-						if(behav.newAttribute) co = behav.newAttribute(xpr, ky, this, co) || co;
-						return co;
-					});
-				if(chg) xpr = xpr.compose(cps, ats);
-				if(behav[xpr.charact]) xpr = behav[xpr.charact](xpr) || xpr;
+					}, xpr);
+				xpr.integre();
+				if(behav[xpr.charact]) xpr = (behav[xpr.charact](xpr) || xpr).integre();
 				chg |= xpr!==this;
 			} catch(err) {
 				nul.exception.notice(err);
@@ -63,23 +67,24 @@ nul.browse = {
 				if(nul.browse.abort== err) return;
 				throw err;
 			}
-			if(behav.finish) { xpr = behav.finish(xpr, chg); chg = true; }
+			if(behav.finish) { xpr = behav.finish(xpr, chg, this); chg = true; }
+		} catch(err) { throw nul.exception.notice(err);
 		} finally { if(nul.debug.assert && behav.kb)
 			assert(assertKbLen== behav.kb.knowledge.length,
 				'Knowledge enter/leave paired while browsing ['+assertLc+']'); }
 
+		if(xpr) xpr.integre();
 		if(chg && xpr) return xpr;
 		if(nul.debug.perf) nul.debug.log('infoLog')('Useless browse for '+behav.name,nul.debug.logging?this.toHTML():'');			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
-	contextualize: function(rpl, dlt, kb) {
+	contextualize: function(rpl, dlt) {
 		return {
 			name: 'contextualisation',
 			ctxDelta: dlt||0,
 			rpl: rpl,
-			kb: kb,
 			before: function(xpr) {
-				if(xpr.makeContext) ++this.ctxDelta;
+				if(xpr.freedom) ++this.ctxDelta;
 				/*TODO: avoid useless sub-contextualisation
 				for(var cd in xpr.deps) {
 					cd = reTyped(cd);
@@ -90,14 +95,10 @@ nul.browse = {
 				}
 				throw nul.browse.abort;*/
 			},
-			abort: function() { --this.ctxDelta; },
-			finish: function(xpr, chgd) {
-				if(xpr.makeContext) --this.ctxDelta;
-				if(chgd) {
-					xpr = xpr.summarised();
-					if(xpr.components) xpr.dirty();
-					return xpr;
-				}
+			abort: function(xpr) { if(xpr.freedom) --this.ctxDelta; },
+			finish: function(xpr, chgd, orig) {
+				if(orig.freedom) --this.ctxDelta;
+				if(chgd) return xpr.summarised().dirty();
 			},
 			itmCtxlsz: function(ctxNdx, lindx) {
 				return 0<= ctxNdx && ctxNdx<this.rpl.length && 
@@ -107,9 +108,9 @@ nul.browse = {
 				var ctxNdx = xpr.ctxDelta-this.ctxDelta;
 				if(this.itmCtxlsz(ctxNdx, xpr.lindx)) {
 					var rv = this.rpl[ctxNdx][xpr.lindx]
-						.localise(xpr.ctxDelta-(dlt||0));
+						.localise(xpr.ctxDelta);
 					if(!rv.dbgName) rv.dbgName = xpr.dbgName;
-					return rv.xadd(xpr.x, this.kb);
+					return rv.xadd(xpr.x);
 				}
 			}
 		};
@@ -124,35 +125,34 @@ nul.browse = {
 			if(chgd) return xpr.summarised().dirty();
 		}
 	},
-	lclShft: function(n, act) {
+	lclShft: function(act, n) {
 		return {
 			name: 'local shifting',
-			ctxDelta: -1,
-			alc: n,
+			ctxDelta: ('undefined'!= typeof n)?-1:0,
+			inc: n||0,
 			action: act,
-			shifted: function(xpr) {
-				return !isEmpty(xpr.deps);	//TODO: sois plus précis. spécifie moins de shifted !
-			},
 			before: function(xpr) {
 				//if(!nul.debug.levels && !this.shifted(xpr))
 				//	throw nul.browse.abort;
 				// TODO: on peut p-e abandonner ....
-				++this.ctxDelta;
+				if(xpr.freedom) ++this.ctxDelta;
 			}.perform('nul.lclShft->before'),
+			abort: function(xpr) {
+				if(xpr.freedom) --this.ctxDelta;
+			},
 			finish: function(xpr, chgd) {
-				--this.ctxDelta;
-				xpr.summarised();
-				if('undefined'== typeof xpr.lindx) xpr.dirty();
+				if(xpr.freedom) --this.ctxDelta;
+				if(chgd) return xpr.summarised();
 			}.perform('nul.lclShft->finish'),
 			local: function(xpr) {
-				if('dng'== this.action && xpr.ctxDelta==this.ctxDelta+1) --xpr.ctxDelta;
-				else if('wrp'!= this.action && xpr.ctxDelta==this.ctxDelta) {
-					if(nul.lcl.slf!= xpr.lindx) {
-						if('number'== typeof xpr.lindx) xpr.lindx += this.alc;
-						if(['upg', 'sdn'].contains(this.action)) ++xpr.ctxDelta;
-					}
+				if('wrp'!= this.action && xpr.ctxDelta==this.ctxDelta) {
+					assert(nul.lcl.slf!= xpr.lindx, 'Dont move self');
+					xpr.lindx += this.inc;
+					if(['upg', 'sdn'].contains(this.action)) ++xpr.ctxDelta;
 				} else if('sup'== this.action && xpr.ctxDelta>this.ctxDelta) --xpr.ctxDelta;
 				else if(['wrp', 'sdn'].contains(this.action) && xpr.ctxDelta>this.ctxDelta) ++xpr.ctxDelta;
+				else return;
+				return xpr;
 			}.perform('nul.lclShft->local')
 		};
 	},
@@ -160,15 +160,17 @@ nul.browse = {
 		return {
 			name: 'localisation',
 			inc: inc,
-			ctxDelta: -1,
+			ctxDelta: 0,
 			before: function(xpr) {
-				//if(isEmpty(xpr.deps)) throw nul.browse.abort;
-				++this.ctxDelta;
-				return clone1(xpr).withX(xpr.x.clone());
+				if(isEmpty(xpr.deps)) throw nul.browse.abort;
+				if(xpr.freedom) ++this.ctxDelta;
 			},
 			finish: function(xpr, chgd) {
-				--this.ctxDelta;
+				if(xpr.freedom) --this.ctxDelta;
 				return xpr.summarised();
+			},
+			abort: function(xpr) {
+				if(xpr.freedom) --this.ctxDelta;
 			},
 			local: function(xpr) {
 				var rDelta = this.ctxDelta + this.inc;
@@ -203,7 +205,7 @@ nul.browse = {
 			finish: function(xpr, chgd) {
 				var assertKbLen, assertLc;
 				if(nul.debug.assert) { assertKbLen = this.kb.knowledge.length; assertLc = nul.debug.lc; } 
-				xpr.composed(kb);
+				xpr.composed();	//warn: if must use KB, the KB is one too much inside here
 				try {
 					var rv;
 					if(xpr.operable()) {
@@ -213,7 +215,7 @@ nul.browse = {
 					if(!rv && chgd) xpr = xpr.summarised().clean();
 				} catch(err) { this.abort(xpr); throw nul.exception.notice(err); }
 				return this.kb.leave(chgd?xpr:null);
-			}.describe(function(xpr, chgd) { return 'Evaluating '+xpr.toHTML(); }),
+			},
 			abort: function(xpr, willed) {
 				if(willed) return;
 				return this.kb.abort(xpr);

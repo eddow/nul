@@ -72,25 +72,17 @@ nul.text = {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
 			strings.push(oprnds[i].toHTML());
-		switch(strings.length) {
-			case 0: return oprtr;
-			case 1: return oprtr+' '+strings[0];
-			default: return strings.join(' '+oprtr+' ');
-		}
+		return strings.join(' '+oprtr+' ');
 	},
 	toString: function(oprtr, oprnds) {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
 			strings.push(oprnds[i].toString());
-		switch(strings.length) {
-			case 0: return '('+oprtr+')';
-			case 1: return '('+oprtr+' '+strings[0]+')';
-			default: return '('+strings.join(' '+oprtr+' ')+')';
-		}
+		return strings.join(' '+oprtr+' ');
 	},
 	toHTML: function() {
 		var aLocals = '', aDeps = '', aDepsTtl = '', aShort = this.toString(),
-			aFlags, aAttr = '', aAttrTtl = '';
+			aFlags, aAttr, aAttrTtl;
 		aShort = nul.text.js.tile('shortStr', this.toString(), 
 			(('undefined'!= typeof this.x.lvl)?(this.x.lvl+'] '):'')+this.toString());
 		aFlags = nul.text.js.tile('flags',
@@ -106,33 +98,30 @@ nul.text = {
 			}
 			aDeps = nul.text.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
 		}
-		if(this.locals && 0<this.locals.length) {
+		if(this.freedom && 0<this.locals.length) {
 			aLocals = [];
 			if(this.deps && this.deps[0] && this.deps[0][nul.lcl.slf])
 				aLocals.push(nul.lcl.slf);
 			for(var i=0; i<this.locals.length; ++i)
-				if(this.locals[i])
-					aLocals.push(this.locals[i].dbgName);
+				aLocals.push(this.locals[i]);
 			if(0<aLocals.length) aLocals = nul.text.js.tile('locals', aLocals.join(', '));
 			else aLocals = '';
 		}
-		if(!isEmpty(this.x.attributes)) {
-			aAttrTtl = [];
-			aAttr = [];
-			for(var i in this.x.attributes) {
-				aAttr.push('<b>'+i+'</b>&nbsp;'+this.x.attributes[i].toString());
-				aAttrTtl.push(i);
-			}
-			aAttr = nul.text.js.tile('attributes', aAttr.join('<hr />'), aAttrTtl.join(','));
+		aAttrTtl = [];
+		aAttr = [];
+		for(var i in this.x.attributes) if(''!=i) {
+			aAttr.push('<b>'+i+'</b>&nbsp;'+this.x.attributes[i].toString());
+			aAttrTtl.push(i);
 		}
-		var str = aShort+aLocals+aDeps+aFlags+aAttr+nul.text.js.tiled();
+		if(0>= aAttr.length) aAttr = '';
+		else aAttr = nul.text.js.tile('attributes', aAttr.join('<hr />'), aAttrTtl.join(','));
+		var rv = aShort+aLocals+aDeps+aFlags+aAttr+nul.text.js.tiled();
 		if('undefined'!= typeof this.x.lvl)
-			str += '<div class="shortStr level" style="display: none;" >' +
+			rv += '<div class="shortStr level" style="display: none;" >' +
 				this.x.lvl + '</div>';
-		var es = this.expressionHTML();
-		var brn = ('<ul'== es.substr(0,3) || '<table'== es.substr(0,6)) ? 'div' : 'span';
-		str += es;
-		return 'span'==brn?('<span class="xpr">'+str+'</span>'):str;
+		if(this.x.attributes['']) rv += this.x.attributes[''].toHTML() + '<span class="op">&lArr;</span>'; 
+		rv += this.expressionHTML();
+		return '<span class="xpr">'+rv+'</span>';
 	}.perform('nul.text->toHTML'),
 	clpsSstm : function(table, uc, lcFct) {
 		return table ? table.clpsSstm = {

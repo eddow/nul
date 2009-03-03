@@ -10,17 +10,19 @@ Array.prototype.named = function(nm) { this.name = nm; return this; };
 
 tests = [
 	[
-		{xpr: '{_}x {55} y _',
-		rslt: '_[2|0]'},
-		{xpr: '{55,2} S (N n n=1); {_}u u; {_}x S = (x,2); x',
-		rslt: '55'},
-		{xpr: '{_}x (({_}y (y, y+1)) = (4, x)), x',
-		rslt: '((4 , 5) , 5)'},
-		{xpr: '{_}a {_}b ({_}z (z+1, z+2)) = (a,b)',
-		rslt: '((z[2|2] + 1) , (z[2|2] + 2))'},
-		{xpr: '{_}a {_}b {_}c {_}z ((a+1)=(b+2))=z, (c+3)=z, a=2',
-		rslt: '((3 = (b[1|3] + 2)) , ((c[2|3] + 3) = (b[1|3] + 2)) , 2)'},
-		{xpr: '{_}x {_}f f={{_}y y:-y+2}, f[1:-x], x, f',
+		{xpr: '{ N x :- 2*x }({4} _)',
+		rslt: '{8}'},
+		{xpr: 'N x; (y, y+1) = (4, x)',
+		rslt: '{5}'},
+		{xpr: '(z+1, z+2) = (N a, N b)',
+		rslt: '{((&#x2115; (z[0|0] + 1)) , (&#x2115; (z[0|0] + 2)))}'},
+		{xpr: '((a+1)=(b+2))= z, (c+3)=z, a=2',
+		rslt: '{((3 = (b[0|0] + 2)) , ((b[0|0] + 2) = (c[1|0] + 3)) , 2)}'},
+		{xpr: '(z+1, z+2) = (N a, N b); z=3',
+		rslt: '{(4 , 5)}'},
+		{xpr: 'd 4; d = { N x :- x * 2 }',
+		rslt: '{8}'}
+		/*{xpr: '{_}x {_}f f={{_}y y:-y+2}, f[1:-x], x, f',
 		rslt: '({(y[0|1] &lArr; (y[0|2] + 2))} , (1 &lArr; 3) , 3 , {(y[0|1] &lArr; (y[0|2] + 2))})'},
 		{xpr: '{{_}a {_}b (a,b) :- a>b? a : b} [(5,4) :- _]',
 		rslt: '((5 , 4) &lArr; 5)'},
@@ -41,34 +43,34 @@ tests = [
 		{xpr: '{_}c {{1, c}} S N n S[n+1,"str"]',
 		rslt: '(&#x2115;[n[2|2]] ; ((1 = (n[2|4] + 1)) , "str"))'},
 		{xpr: '{ {_}n n:- { {_}x {_}y  (x, y) :- x+y }[1, n] }[10]',
-		rslt: '11'}
+		rslt: '11'}*/
 	].named('Local management'),
 	[
-		{xpr: '{_}x (({_}y (y, y+1)) = (x, x)), x',
+		/*{xpr: '{_}x (({_}y (y, y+1)) = (x, x)), x',
 		rslt: '(((x[&crarr;|1] + 1) , (x[&crarr;|1] + 1)) , (x[&crarr;|1] + 1))'},
 		{xpr: '{ [x _, x] }[5,(5,(5,(5,(5,_))))]',
 		rslt:  '(5 , x[&crarr;|1])'},
 		{xpr: '[b [a (a,_)] = (b,5) ]',
 		rslt: '(a[&crarr;|1] , 5)'},
 		{xpr: '[e!e] = (1>0 [] 1<0)',
-		rslt: 'Failure'}
+		rslt: 'Failure'}*/
 	].named('Auto-reference'),
 	[
-		{xpr: '{_}z (1::d 2.)=(1::d z.) ; z',
+		/*{xpr: '{_}z (1::d 2.)=(1::d z.) ; z',
 		rslt: '2'},
 		{xpr: '({1::d 2.} x x::d _. ::q d*2.) -> q',
-		rslt: '4'}
+		rslt: '4'}*/
 	].named('Attributes management'),
 	[
-		{xpr: '[f{ 1 [] ({_}x x>1?x:- x * f[x-1]) }][5]',
+		/*{xpr: '[f{ 1 [] ({_}x x>1?x:- x * f[x-1]) }][5]',
 		rslt: '120'},
 		{xpr: '{ {_}n n:- [fib { {_}x x, _, 1 :- x [] {_}x {_}y {_}z z > 1 ? (x, y, z) :- fib[y, y+x, z-1] }][1, 1, n] }[5]',
 		desc: 'Accumulated Fibbonacci on 5',
-		rslt: '5'}
+		rslt: '5'}*/
 	].named('Recursive algorithms'),
 	[
-		{xpr: '{\\/a \\/b \\/c {{ (1,a) [] (2,b) [] (3,c) }} S S[1,8]; \\/x S[x,9]; x}!',
-		rslt: '{(2 &#9633; 3)}'}
+		/*{xpr: '{\\/a \\/b \\/c {{ (1,a) [] (2,b) [] (3,c) }} S S[1,8]; \\/x S[x,9]; x}!',
+		rslt: '{(2 &#9633; 3)}'}*/
 	].named('Resolutions')
 ].named('Unit testing');
 

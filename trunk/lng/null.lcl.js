@@ -43,7 +43,7 @@ nul.lcl = {
 			return rv;
 		},
 		//Returns the <inc>-times un-wrapped dependances <deps>
-		stdDec: function(deps) {
+		dec: function(deps) {
 			var nDeps = {};
 			for(var d in deps) 
 			{
@@ -58,7 +58,7 @@ nul.lcl = {
 	//<lindx> is the local-index of variable becoming 'self'
 	selfCtx: function(dbgName, lindx, ctx) {
 		var rv = ctx?clone1(ctx):[];
-		rv[lindx] = nul.build().local(-1, nul.lcl.slf, dbgName||'');
+		rv[lindx] = nul.build.local(-1, nul.lcl.slf, dbgName||'');
 		return rv;
 	}
 };

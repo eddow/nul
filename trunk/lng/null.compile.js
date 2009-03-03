@@ -24,8 +24,8 @@ nul.compiled = {
 	atom: function(token, decl) {
 		return { type: token.type, value: token.value, declared: decl, understand: nul.understanding.atom };
 	},
-	definition: function(decl, type) {
-		return { type: type, decl: decl, understand: nul.understanding.definition };
+	definition: function(decl, value) {
+		return { decl: decl, value: value, understand: nul.understanding.definition };
 	},
 	set: function(content) {
 		return { content: content, understand: nul.understanding.set };
@@ -52,7 +52,7 @@ nul.operators = [
 	[';','m'],								//booleans:meta AND
 	[':-','r'],								//lambda
 	[',..','r'], [',','m'],	 				//list
-	['=','m'],								//unify
+	['=','m'], [':=','m'], ['=:','m'],		//unify
 	[':','m'],								//booleans:meta XOR
 	['?','l'],								//a?b ==> if(a) then b else fail (shortcut)
 	['?','p'],								//?b ==> b if b nor false nor null
@@ -114,14 +114,16 @@ nul.compiler = function(txt)
 			return firstOp;
 		},
 		applied: function() {
-			var rv = this.item();
+			var rv = this.item('assert');
 			do
 			{
-				if(this.tknzr.take('[')) rv = nul.compiled.application(rv, this.tknzr.rawExpect(']',this.expression()));
-				else if(this.tknzr.take('::')) rv = this.attributed(rv);
+				var tst;
+/*				if(this.tknzr.take('[')) rv = nul.compiled.application(rv, this.tknzr.rawExpect(']',this.expression()));
+				else*/ if(this.tknzr.take('::')) rv = this.attributed(rv);
 				else if(this.tknzr.take('->')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
-				else if('alphanum'== this.tknzr.token.type)
-					rv = nul.compiled.definition(this.alphanum(), rv);
+/*				else if('alphanum'== this.tknzr.token.type)
+					rv = nul.compiled.definition(this.alphanum(), rv);*/
+				else if(tst = this.item()) rv = nul.compiled.application(rv, tst);
 				else return rv;
 			} while(true);
 		},
@@ -146,7 +148,7 @@ nul.compiler = function(txt)
 			while(attr = this.tknzr.pop(['alphanum']))
 			{
 				this.tknzr.expect('=');
-				attrs[attr.value] = this.item();
+				attrs[attr.value] = this.item('assert');
 			}
 			if(this.tknzr.rawTake('/>')) return nul.compiled.xml(node, attrs, []);
 			this.tknzr.rawExpect('>');
@@ -154,21 +156,26 @@ nul.compiler = function(txt)
 			this.tknzr.expect(node);
 			return this.tknzr.rawExpect('>', nul.compiled.xml(node, attrs, comps));
 		},
-		item: function() {
-			if(this.tknzr.take('{')) {
-				if(this.tknzr.take('}')) return nul.compiled.set();
-				return this.tknzr.expect('}', nul.compiled.set(this.expression()));
+		item: function(asrt) {
+			var rv;
+			if('eof'!= this.tknzr.token.type) {
+				if(this.tknzr.take('\\/')) return nul.compiled.definition(this.alphanum(), this.expression());
+				if(this.tknzr.take('{')) {
+					if(this.tknzr.take('}')) return nul.compiled.set();
+					return this.tknzr.expect('}', nul.compiled.set(this.expression()));
+				}
+				if(this.tknzr.take('<')) return this.xml();
+				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
+				//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
+				for(var p= 0; p<nul.operators.length; ++p) {
+					var oprtr = nul.operators[p];
+					if('p'== oprtr[1] && this.tknzr.take(oprtr[0]))
+						return nul.compiled.preceded(oprtr[0], this.expression(1+p));
+				}
+				rv = this.tknzr.pop(['alphanum', 'number', 'string']);
 			}
-			if(this.tknzr.take('<')) return this.xml();
-			if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
-			//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
-			for(var p= 0; p<nul.operators.length; ++p)
-			{
-				var oprtr = nul.operators[p];
-				if('p'== oprtr[1] && this.tknzr.take(oprtr[0]))
-					return nul.compiled.preceded(oprtr[0], this.expression(1+p));
-			}
-			return nul.compiled.atom(this.tknzr.pop());
+			if(!rv && asrt) throw nul.syntaxException("Item expected");
+			if(rv) return nul.compiled.atom(rv);
 		}
 	};
 }

@@ -95,12 +95,12 @@ nul.debug = {
 	kevol: tableStack('ke'),
 	logs: tableStack('logs'),
 	jsDebug: false,
-	actionLog: false,
 	levels: true,
 	assert: true,
 	logging: false,
 	watches: false,
-	perf: -1>= window.location.href.indexOf('noperf'),
+	perf: 0> window.location.href.indexOf('noperf'),
+	xTest: 0> window.location.href.indexOf('noxtest'),
 	lcLimit: 0,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
@@ -134,32 +134,6 @@ nul.debug = {
 	{
 		rcr.innerHTML = v.toHTML();
 	},
-	makeCall: function(ftc, dscr, obj, cargs) {
-		var d;
-		try {
-			if(nul.debug.actionLog || nul.debug.watches)
-				d = dscr.apply(obj, cargs);
-			if(nul.debug.actionLog) {
-				nul.debug.log('actionLog')('Begin',d);
-				if(nul.debug.logging) ll = nul.debug.logs.length();
-			}
-			if(nul.debug.watches) nul.debug.callStack.push(d);
-			return ftc.apply(obj, cargs);
-		} catch(err) { throw nul.exception.notice(err);
-		} finally {
-			if(!nul.erroneus) {
-				if(nul.debug.watches) nul.debug.callStack.pop();
-				if(nul.debug.actionLog) {
-					if(nul.debug.logging) {
-						var kw='Done';
-						if(ll == nul.debug.logs.length()) nul.debug.logs.unlog();
-						else kw='End';
-					}
-					nul.debug.log('actionLog')(kw,d);
-				}
-			}
-		}
-	},
 	reset: function() {
 		nul.debug.logs.clear();
 		nul.debug.callStack.clear();
@@ -180,34 +154,33 @@ nul.debug = {
 			nul.debug.kbase.apply();
 		}
 	},
-	ctxTable: function(ctx, insd) {
+	ctxTable: function(ctx) {
 		var rv = '';
-		var prc = insd.origHTML[0];
-		for(var i=0; i<ctx.length; ++i) if(ctx[i])
-			rv += '<tr><th>'+i+'</th><td>'+ctx[i].dbgHTML()+'</td></tr>';
+		var prc = ctx.origHTML[0];
+		for(var i=0; i<ctx.length; ++i)
+			rv += '<tr><th>'+i+'</th><td>'+ctx.lvals[i].dbgHTML()+'</td></tr>';
 		return [prc, '<table class="context">'+rv+'</table>'];
 	}
 };
 
-if(-1>= window.location.href.indexOf('noperf'))
-	Function.prototype.describe = function(dscr) {
+if(nul.debug.xTest)
+	Function.prototype.xKeep = function() {
 		var ftc = this;
 		return function() {
-			var cargs = arrg(arguments);
-			var obj = this;
-			return nul.debug.makeCall(ftc, dscr, obj, cargs);
-		};
+			var args = arrg(arguments);
+			var oldX = (this&&this.x)?this.x.dbg:args[0].x.dbg;
+			var rv = ftc.apply(this,args);
+			assert(!rv || rv.x.dbg==oldX, 'X miss-kept');
+			return rv;
+		}
 	};
-
+else Function.prototype.xKeep = function() { return this; };
+	
 function assert(cnd, str) {
 	if(!cnd)
 		throw nul.internalException('Assertion failed : '+str);
 }
 
 //Shortcuts to write in the firebug 'watch' box
-function nw(v) {
-	nul.debug.watch(v);
-}
-function dat() {
-	nul.debug.applyTables();
-}
+function nw(v) { nul.debug.watch(v); }
+function dat() { nul.debug.applyTables(); }

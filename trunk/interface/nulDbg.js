@@ -18,7 +18,8 @@ function init()
 	evd = document.getElementById('evaled');
 	rcr = document.getElementById('recur');
 	sbx = document.getElementById('sandBox');
-	nul.globals.sandBox = nul.build().html_place(sbx);
+	nul.globals.sandBox = nul.build.html_place(sbx);
+	for(var i in this) knGlobs[i] = true;
 }
 
 function evaluate()
@@ -28,21 +29,17 @@ function evaluate()
 	evd.innerHTML = '';
 	var v = nul.expression(src.value);
 	prd.innerHTML = v.toHTML();
-	prd.innerHTML = v.toHTML();
 	evd.innerHTML = 'evaluating...';
 	nul.execution.benchmark.measure('*evaluation',function(){
 		v = v.evaluate();
 	});
 	evd.innerHTML = v.toHTML();
-
-	sortLogs();
 }
 
 function testEvaluation()
 {
 	if(nul.debug) {
 		nul.debug.jsDebug = !$('catch').checked;
-		nul.debug.actionLog = $('shwActLog').checked;
 		
 		nul.debug.assert = $('shwAssert').checked;
 		nul.debug.logging = $('shwLogging').checked;
@@ -66,6 +63,7 @@ function testEvaluation()
 	} finally {
 		nul.debug.applyTables();
 		nul.execution.benchmark.draw($('benchmark'));
+		assertSmGlobals();
 	}
 }
 
@@ -81,6 +79,12 @@ function tabSelect(te) {
 	selectNamedTab(te.parentNode.parentNode, $('infoTS').value = te.attributes.name.value);
 }
 
-function sortLogs() {
-	$$('#logs .actionLog').each($('shwActLog').checked?Element.show:Element.hide)
+var knGlobs = {}, ignGlobs = {};
+function assertSmGlobals() {
+	for(var i in this)
+		if(!knGlobs[i] && !ignGlobs[i] && '_fire'!= i.substr(0,5).toLowerCase()) {
+			alert('Unexpected global created : ' + i); 
+			ignGlobs[i] = true;
+		}
 }
+//TODO: store this.keys to see if no globals are created by mistake

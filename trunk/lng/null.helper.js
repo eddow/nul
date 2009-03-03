@@ -8,7 +8,7 @@
  
 //Gets weither this object is an array [] and not an object {}
 function isArray(itm) {
-	return itm && null!= itm &&
+	return itm &&
 		typeof(itm) == 'object' &&
 		typeof itm.length === 'number' &&
 		!itm.propertyIsEnumerable('length') &&
@@ -21,7 +21,7 @@ function clone(myObj) {
 	if(null== myObj || typeof(myObj) != 'object') return myObj;
 	if(nul.debug.assert) assert(!cloneStack.contains(myObj), 'Clone not re-entrant'); 
 	cloneStack.push(myObj);
-	try { return map(myObj, function() { return clone(this); }); }
+	try { return map(myObj, function(i, o) { return clone(o); }); }
 	finally { cloneStack.pop(myObj); }
 }
 
@@ -39,12 +39,14 @@ function iif(a, b) {
 //Returns the first of <itm> for which the function <fct> returned a value evaluated to true
 function trys(itm, fct) {
 	var rv;
-	for(var i in itm) if(itm[i]!= [][i]) if(rv = fct(itm[i], i)) return rv;
+	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i])
+		if(rv = fct(itm[i], i)) return rv;
 }
 //Returns the same item as <itm> where each member went through <fct>
 function map(itm, fct) {
 	var rv = isArray(itm)?[]:{};
-	for(var i in itm) if(itm[i]!= [][i]) rv[i] = fct.apply(itm[i], [i, itm[i]]);
+	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) 
+		rv[i] = fct.apply('object'== typeof itm[i]?itm[i]:null, [i, itm[i]]);
 	return rv;
 }
 
@@ -110,12 +112,6 @@ function arrCmp(a, b) {
 	return true;
 }
 
-//a = a.concat(o) : side-effect
-function seConcat(a, o) {
-	if(a===o) throw nul.internalException('seConcatening self')
-	for(var i=0; i<o.length; ++i) a.push(o[i]);
-	return a;
-}
 //arguments to Array()
 function arrg(args) {
 	var rv = [];
@@ -129,12 +125,25 @@ function beArrg(args) {
 	return args[0];
 }
 
+function merge(a, b, cb) {
+	for(var i in b) a[i] = cb?cb(a[i],b[i]):b[i];
+	if(cb) for(var i in a) if('undefined'== typeof b[i]) a[i] = cb(a[i]);
+	return a; 
+}
+
 [].indexOf || (Array.prototype.indexOf = function(v){
        for(var i = this.length; i-- && this[i] !== v;);
        return i;
 });
 [].contains || (Array.prototype.contains = function(v){ return -1< this.indexOf(v); });
 
-[].clone || (Object.prototype.clone = function(){ return clone(this); });
+[].pushs || (Array.prototype.pushs = function(){
+	for(var j=0; j<arguments.length; ++j) {
+		var o = arguments[j];
+		if(this===o) throw nul.internalException('Catenating self')
+		for(var i=0; i<o.length; ++i) this.push(o[i]);
+	}
+	return this; 
+});
 //[].clone1 || (Object.prototype.clone1 = function(){ return clone1(this); });	//TODO?
 [].map || (Object.prototype.map = function(f){ return map(this,f); });

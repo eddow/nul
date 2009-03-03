@@ -10,7 +10,6 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 <head>
 <link href="nulDbg.css" rel="stylesheet" type="text/css"></link>
 <link href="../lng/null.css" rel="stylesheet" type="text/css"></link>
-<script type="text/javascript" src="nulDbg.js"></script>
 <script type="text/javascript" src="../prototype.js"></script>
 
 <script type="text/javascript" src="../lng/null.std.js"></script>
@@ -31,6 +30,8 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 <script type="text/javascript" src="../lng/null.kb.js"></script>
 <script type="text/javascript" src="../lng/null.natives.js"></script>
 <script type="text/javascript" src="../lng/null.solve.js"></script>
+
+<script type="text/javascript" src="nulDbg.js"></script>
 </head>
 <body onload="init();">
 	<div id="dbgOptions">
@@ -38,7 +39,6 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 		<input id="shwAssert" type="checkbox" />Asserts<br />
 		<input id="shwLogging" type="checkbox" />Logging<br />
 		<input id="shwWatches" type="checkbox" />Watches<br />
-		<input id="shwActLog" type="checkbox" onclick="sortLogs();" />Actions<br />
 	</div>
 	
 	<textarea cols="80" rows="7" id="source"></textarea>
