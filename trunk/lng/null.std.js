@@ -12,7 +12,7 @@ var nul = {
 	unlocalisable: 'nul.unlocalisable',
 	fail: function(msg)
 	{
-		nul.debug.log('failLog')('Failure', msg || '');		
+		nul.debug.log('fail')('Failure', msg || '');		
 		throw nul.failure;
 	},
 	asJs: function(o, oprtr)

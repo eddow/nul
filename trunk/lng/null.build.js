@@ -24,8 +24,9 @@ if(nul.debug.xTest) nul.x.cpt = 0;
 nul.build = {
 	freedom: function(value, premices, lvals, locals, itm) {
 		itm.freedom = true;
-		itm.f_composed = itm.composed;
-		itm.f_integrity = itm.integrity;
+		
+		map(itm, function(i, o) { if('function'== typeof o && 'f_'!= i.substr(0,2))
+			itm['f_'+i] = o; })
 		for(var i in nul.behav.freedom) itm[i] = nul.behav.freedom[i];
 		itm.locals = locals;
 		lvals.premices = nul.build.and3(premices);
@@ -38,6 +39,8 @@ nul.build = {
 			function(i, o) { itm[i] = o; })
 		itm.x = nul.x();
 		for(var i in nul.xpr) if(!itm[i]) itm[i] = nul.xpr[i];
+		itm.toString = nul.text.toString;
+		
 		if(nul.debug.assert) assert(
 			'{}'== itm.charact || !this.locals || 0>=this.locals.length,
 			'Locals only defined on sets')
@@ -46,7 +49,7 @@ nul.build = {
 			itm.components = isArray(ops)?[]:{};
 			itm = itm.compose(ops);
 		}
-		return itm.summarised(true);
+		return itm.summarised();
 	}.perform('nul.build->item'),
 	listOp: function(itm, chrct, ops, strC) {
 		if(!strC) strC = chrct;
@@ -56,19 +59,19 @@ nul.build = {
 				return nul.text.expressionHTML(
 					'<span class="op">'+strC+'</span>', this.components);
 			};
-			itm.toString = function() {
-				return '('+nul.text.toString(strC, this.components)+')';
+			itm.expressionString = function() {
+				return '('+nul.text.expressionString(strC, this.components)+')';
 			};
 		} else {
 			itm.expressionHTML = strC[0];
-			itm.toString = strC[1];
+			itm.expressionString = strC[1];
 		}
 		return this.item(ops, itm);
 	}.perform('nul.build->listOp'),
 	ceded: function(itm, chrct, oprnd, strC) {
 		itm.charact = chrct;
 		itm.expressionHTML = strC[0];
-		itm.toString = strC[1];
+		itm.expressionString = strC[1];
 		return this.item([oprnd], itm);
 	}.perform('nul.build->ceded'),
 	prec: function(itm, chrct, oprnd, strC) {
@@ -93,14 +96,14 @@ nul.build = {
 				for(var nm in this.components) comps.push(this.components[nm]);
 				return nul.text.expressionHTML('<span class="op">'+strC+'</span>', comps);
 			};
-			itm.toString = function() { 
+			itm.expressionString = function() { 
 				var comps = [];
 				for(var nm in this.components) comps.push(this.components[nm]);
-				return '('+nul.text.toString(strC, comps)+')';
+				return '('+nul.text.expressionString(strC, comps)+')';
 			};
 		} else {
 			itm.expressionHTML = strC[0];
-			itm.toString = strC[1];
+			itm.expressionString = strC[1];
 		}
 		return this.item(ops, itm);
 	}.perform('nul.build->nmdOp'),
@@ -110,7 +113,7 @@ nul.build = {
 			charact: '<html>',
 			element: htmlElement,
 			expressionHTML: function() { return '&lt;Element&gt;'; },
-			toString: function() { return '&lt;Element&gt;'; }
+			expressionString: function() { return '&lt;Element&gt;'; }
 		}, nul.behav.html_place);
 	},
 
@@ -121,7 +124,7 @@ nul.build = {
 			expressionHTML: 'string'==typeof(value)?
 				function() { return escapeHTML('"'+this.value+'"'); }:
 				function() { return ''+this.value; },
-			toString: 'string'==typeof(value)?
+			expressionString: 'string'==typeof(value)?
 				function() { return escapeHTML('"'+this.value+'"'); }:
 				function() { return ''+this.value; },
 		});
@@ -139,7 +142,7 @@ nul.build = {
 					'<span class="local">'+this.lindx+'<span class="desc"><span class="sub">'+this.ctxDelta+'</span></span></span>'
 					);
 			},
-			toString: function() {
+			expressionString: function() {
 				return (this.dbgName?this.dbgName:'')+ '['+this.lindx+'|'+this.ctxDelta+']';
 			},
 			makeDeps: function() { return nul.lcl.dep.dep(this.ctxDelta, this.lindx); },
@@ -150,26 +153,34 @@ nul.build = {
 		return this.nmdOp(
 			nul.behav.application,'[-]', {object: obj, applied: apl},'');
 	},
+	kwFreedom: function(value, premices) {	//Knowledge-wide freedom
+		return this.freedom(value, premices, [], [], this.item([], nul.behav.kwFreedom, {
+			charact: 'kw',
+			expressionHTML: function() { 
+				return this.freedomHTML();
+			},
+			expressionString: function() {
+				return this.freedomString();
+			},
+		}));
+	},
 	set: function(value, premices, lvals, locals) {
 		if(!value) return this.item(null, {
 			charact: '{}',
 			expressionHTML: function() { return '&phi;'; },
-			toString: function() { return '&phi;'; },
+			expressionString: function() { return '&phi;'; },
 			take: function(apl) { nul.fail('Taking from empty set : ' + apl.dbgHTML()); }
 		});
 		return this.freedom(value, premices, lvals, locals, this.item([], nul.behav.set, {
 			charact: '{}',
 			expressionHTML: function() { 
-				var rv = '<span class="op">{</span>' + this.components.value.toHTML();
-				if(0<this.components.premices.components.length)
-					rv += '<hr />' + this.components.premices.toHTML();
-				return rv + '<span class="op">}</span>';
+				return ''+
+					'<span class="big op">{</span>' +
+					this.freedomHTML() +
+					'<span class="big op">}</span>';
 			},
-			toString: function() {
-				var rv = '{'+this.components.value.toString();
-				if(0<this.components.premices.components.length)
-					rv += '; '+this.components.premices.toString();
-				return rv+'}';
+			expressionString: function() {
+				return '{'+this.freedomString()+'}';
 			},
 		}));
 	},
@@ -177,8 +188,8 @@ nul.build = {
 		return this.nmdOp(nul.behav.seAppend,'<<=', { effected: dst, appended: itms }, '&lt;&lt;=');
 	},
 	lambda: function(parms, value) {
-		value.x.attributes[''] = parms;
-		return value;
+		if(value.key()) return nul.build.lambda(parms, value.key());
+		return value.keyed(parms).summarised();
 	},
 	cumulExpr: function(oprtr, oprnds) {
 		return this.listOp(nul.behav.cumulExpr,oprtr, oprnds, mathSymbol(oprtr));
@@ -195,7 +206,7 @@ nul.build = {
 			function() {
 				if(1==this.components.length && !this.components.follow)
 					return '{'+this.components[0].toString()+'}';
-				var rv = nul.text.toString(',', this.components);
+				var rv = nul.text.expressionString(',', this.components);
 				if(!this.components.follow) return rv;
 				return rv.substr(0,rv.length-1)+' ,.. '+this.components.follow.toString()+')';
 			}			
@@ -211,9 +222,10 @@ nul.build = {
 		return this.post(nul.behav.extraction,' !', oprnd, '!');
 	},
 	unification: function(ops, way) {
+		if(1== way) { var t = ops[0]; ops[0] = ops[1]; ops[1] = t; way = -1; }
 		return this.listOp(
 			merge({way:way||0}, nul.behav.unification),
-			['=:','=',':='][(way||0)+1],
+			way==-1?':=':'=',
 			ops);
 	},
 	and3: function(ops) {
@@ -249,7 +261,7 @@ nul.build = {
 
 	attributed: function(applied, name, value) {
 		applied.x.attributes[name] = value;
-		return applied.summarised(true);
+		return applied.summarised();
 	},
 	nativeSet: function(name, fct) {
 		return this.item(null, {
@@ -257,7 +269,7 @@ nul.build = {
 			charact: 'native',
 			name: name,
 			expressionHTML: function() { return '<span class="global">'+this.name+'</span>'; },
-			toString: function() { return this.name; }
+			expressionString: function() { return this.name; }
 		}, nul.behav.nativeSet);
 	}
 };

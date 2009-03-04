@@ -40,13 +40,13 @@ function iif(a, b) {
 function trys(itm, fct) {
 	var rv;
 	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i])
-		if(rv = fct(itm[i], i)) return rv;
+		if(rv = fct.apply('object'== typeof itm[i]?itm[i]:null, [reTyped(i), itm[i]])) return rv;
 }
 //Returns the same item as <itm> where each member went through <fct>
 function map(itm, fct) {
 	var rv = isArray(itm)?[]:{};
 	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) 
-		rv[i] = fct.apply('object'== typeof itm[i]?itm[i]:null, [i, itm[i]]);
+		rv[i] = fct.apply('object'== typeof itm[i]?itm[i]:null, [reTyped(i), itm[i]]);
 	return rv;
 }
 
@@ -68,9 +68,9 @@ function mathSymbol(s) {
 	return s;
 }
 
-//Is <o> an empty association ?
-function isEmpty(o) {
-	for(var i in o) return false;
+//Is <o> an empty association ? (<b>eside the values contained in array <b>) 
+function isEmpty(o, b) {
+	for(var i in o) if(!b || !b.contains(i)) return false;
 	return true;
 }
 

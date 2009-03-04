@@ -42,8 +42,11 @@ function testEvaluation()
 		nul.debug.jsDebug = !$('catch').checked;
 		
 		nul.debug.assert = $('shwAssert').checked;
-		nul.debug.logging = $('shwLogging').checked;
-		nul.debug.watches = $('shwWatches').checked;
+		nul.debug.logging = {};
+		nul.debug.logging.knowledge = nul.debug.watches = $('shwWatches').checked;
+		nul.debug.logging.info = $('shwLoggingInfos').checked;
+		nul.debug.logging.evals = $('shwLoggingEvals').checked;
+		nul.debug.logging.ctxs = $('shwLoggingCtxs').checked;
 	}
 	nul.execution.reset();
 	
@@ -81,10 +84,12 @@ function tabSelect(te) {
 
 var knGlobs = {}, ignGlobs = {};
 function assertSmGlobals() {
+	var nwGlb = [];
 	for(var i in this)
 		if(!knGlobs[i] && !ignGlobs[i] && '_fire'!= i.substr(0,5).toLowerCase()) {
-			alert('Unexpected global created : ' + i); 
+			nwGlb.push(i);
 			ignGlobs[i] = true;
 		}
+	if(0<nwGlb.length) alert('Unexpected global(s) created : ' + nwGlb.join(', ')); 
 }
 //TODO: store this.keys to see if no globals are created by mistake

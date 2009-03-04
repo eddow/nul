@@ -12,7 +12,7 @@
 - newSub(xpr, oldSub, newSub) : A new sub-expression is produced (oldSub can be newSub)
 - newAttribute(xpr, name, oldAttr, newAttr) : A new attribute is produced (oldAttr can be == newAttr)
 - finish(xpr, chgd, orig) : returns the final value, knowing the expresion, if it changed and the original expression
-- abort(xpr, willed) : returns nothing. Called instead of 'finish' when a problem occured. <willed> specifies if the abortion had been asked by the behaviour.
+- abort(xpr, willed, orig) : returns nothing. Called instead of 'finish' when a problem occured. <willed> specifies if the abortion had been asked by the behaviour.
 - <charact>(xpr) : acts on a specific characterised expression
 */
 nul.browse = {
@@ -63,7 +63,7 @@ nul.browse = {
 				chg |= xpr!==this;
 			} catch(err) {
 				nul.exception.notice(err);
-				if(behav.abort) behav.abort(xpr, nul.browse.abort== err);
+				if(behav.abort) behav.abort(xpr, nul.browse.abort== err, this);
 				if(nul.browse.abort== err) return;
 				throw err;
 			}
@@ -75,10 +75,10 @@ nul.browse = {
 
 		if(xpr) xpr.integre();
 		if(chg && xpr) return xpr;
-		if(nul.debug.perf) nul.debug.log('infoLog')('Useless browse for '+behav.name,nul.debug.logging?this.toHTML():'');			
+		nul.debug.log('info')('Useless browse for '+behav.name,this);			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
-	contextualize: function(rpl, dlt) {
+	contextualise: function(rpl, dlt) {
 		return {
 			name: 'contextualisation',
 			ctxDelta: dlt||0,
@@ -98,7 +98,7 @@ nul.browse = {
 			abort: function(xpr) { if(xpr.freedom) --this.ctxDelta; },
 			finish: function(xpr, chgd, orig) {
 				if(orig.freedom) --this.ctxDelta;
-				if(chgd) return xpr.summarised().dirty();
+				if(chgd) return xpr.dirty().summarised();
 			},
 			itmCtxlsz: function(ctxNdx, lindx) {
 				return 0<= ctxNdx && ctxNdx<this.rpl.length && 
@@ -200,25 +200,31 @@ nul.browse = {
 			},
 			before: function(xpr) {
 				if(!xpr.flags.dirty) throw nul.browse.abort;
-				this.kb.enter([xpr]);
+				if(xpr.freedom) this.kb.enter(xpr);
+				nul.debug.log('evals')(nul.debug.lcs.collapser('Entering'),xpr);
 			},
-			finish: function(xpr, chgd) {
+			finish: function(xpr, chgd, orig) {
 				var assertKbLen, assertLc;
 				if(nul.debug.assert) { assertKbLen = this.kb.knowledge.length; assertLc = nul.debug.lc; } 
-				xpr.composed();	//warn: if must use KB, the KB is one too much inside here
+				xpr.summarised().composed();	//warn: if must use KB, the KB is one too much inside here
 				try {
 					var rv;
 					if(xpr.operable()) {
 						rv = xpr.operate(this.kb);
 						if(rv) { chgd = true; xpr = rv; }
 					}
-					if(!rv && chgd) xpr = xpr.summarised().clean();
-				} catch(err) { this.abort(xpr); throw nul.exception.notice(err); }
-				return this.kb.leave(chgd?xpr:null);
+					if(!rv && chgd) xpr = xpr.clean();
+				} catch(err) { this.abort(xpr,false,orig); throw nul.exception.notice(err); }
+				xpr = chgd?xpr:null;
+				nul.debug.log('evals')(nul.debug.lcs.endCollapser('Leave', 'Produce'),
+					xpr?[xpr, 'after', orig]:orig);
+				return orig.freedom?this.kb.leave(xpr):xpr;
 			},
-			abort: function(xpr, willed) {
+			abort: function(xpr, willed, orig) {
 				if(willed) return;
-				return this.kb.abort(xpr);
+				nul.debug.log('evals')(nul.debug.lcs.endCollapser('Abort', 'Fail'),
+					xpr?[xpr, 'after', orig]:orig);
+				return orig.freedom?this.kb.abort(xpr):xpr;
 			}
 		};
 	},

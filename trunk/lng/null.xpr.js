@@ -23,18 +23,18 @@ nul.xpr = {	//Main interface implemented by all expressions
 	cmp: function(xpr) {
 		if(xpr.integre().charact != this.integre().charact) return false;
 		var txpr = this;
-		if((trys(xpr.x.attributes, function(c, i) {
+		if((trys(xpr.x.attributes, function(i) {
 			return !txpr.x.attributes[i];
-		}) || trys(this.x.attributes, function(c,i) {
-			return !c.cmp(xpr.x.attributes[i]);
+		}) || trys(this.x.attributes, function(i) {
+			return !xpr.x.attributes[i] || !this.cmp(xpr.x.attributes[i]);
 		}))) return false;
 		if( this.components || xpr.components ) {
 			if(!this.components || !xpr.components || this.components.length != xpr.components.length)
 				return false;
-			return !(trys(xpr.components, function(c, i) {
+			return !(trys(xpr.components, function(i) {
 				return !txpr.components[i];
-			}) || trys(this.components, function(c,i) {
-				return !c.cmp(xpr.components[i]);	
+			}) || trys(this.components, function(i) {
+				return !xpr.components[i] || !this.cmp(xpr.components[i]);	
 			}));
 		}
 		switch(this.charact) {
@@ -45,6 +45,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	}.perform('nul.xpr->cmp'),
 /* Makes a summary of components and characteristics :
  *  Fix flags, dependances, ...
+ * If First is specified, don't raise 'dirty' automatically
  */
 	summarised: function(first) {
 		//TODO: vérifier qu'il n'y a pas de redondance : NE PAS TROP SUMMARISER
@@ -53,11 +54,9 @@ nul.xpr = {	//Main interface implemented by all expressions
 		nul.browse.subs(this.integre(),function() {
 			if(nul.debug.assert) assert(this.deps,'Subs summarised.'); 
 			dps.push(this.deps);
-			for(var f in this.flags) if(first || 'dirty'!=f) flags[f] = true;
+			for(var f in this.flags) flags[f] = true;
 		});
 
-		if(['<<=','=','?','[-]'].contains(this.charact)) flags.failable = true;
-		else if(this.isFailable && this.isFailable()) flags.failable = true;
 		if(['{}', ';'].contains(this.charact)) delete flags.fuzzy;
 		if(['[-]','[]'].contains(this.charact)) flags.fuzzy = true;
 		
@@ -68,38 +67,39 @@ nul.xpr = {	//Main interface implemented by all expressions
 			this.deps = nul.lcl.dep.dec(this.deps, this.used);
 		}
 		//Attributes unification could fail later
-		if(!this.fixed() && !isEmpty(this.x.attributes)) flags.failable = true;
-		this.flags = flags;
+		if(this.failableNature() || (this.isFailable && this.isFailable())) flags.failable = true;
 
-		if(first && !this.flags.dirty && this.operable()) this.flags.dirty = true;
-		if(this.flags.dirty && !this.operable() && !this.components) delete this.flags.dirty;
+		if((!this.flags || this.flags.dirty) && !flags.dirty && this.operable()) flags.dirty = true;
+		this.flags = flags;
+		
+		
 		return this;
 	}.perform('nl.xpr->summarised').xKeep(),
 	//Be sure the expression is operated until it's not dirty anymore
 	composed: function() { return this.integre(); },	
-	finalize: function(kb) {
+	finalise: function(kb) {
 		var xpr = this.integre().known(kb) || this;
 		var cpt = 20;
 		while(xpr.flags.dirty) {
 			xpr = xpr.evaluate(kb) || xpr;
-			if(0>=--cpt) throw nul.internalException('Too much finalization');
+			if(0>=--cpt) throw nul.internalException('Too much finalisation');
 		}
 		return xpr;
-	}.perform('nul.xpr->finalize').xKeep(),
+	}.perform('nul.xpr->finalise').xKeep(),
 	//Get a list of non-fuzzy expressions
 	solve: function() {
-		if(nul.debug) nul.debug.log('leaveLog')(
-			nul.debug.lcs.collapser('Solving'), nul.debug.logging?this.dbgHTML():'');
+		//if(nul.debug) nul.debug.log('kbLog')(
+		//	nul.debug.lcs.collapser('Solving'), nul.debug.logging?this.dbgHTML():'');
 		var sltn;
 		try {
 			sltn = nul.solve.solve(this.integre());
 		} finally {
-			if(nul.debug) {
-				if(sltn) nul.debug.log('leaveLog')(
+			/*if(nul.debug) {
+				if(sltn) nul.debug.log('kbLog')(
 					nul.debug.lcs.endCollapser('Solved', 'Solved'), sltn.length + ' possibiliti(es)');
-				else nul.debug.log('leaveLog')(
+				else nul.debug.log('kbLog')(
 					nul.debug.lcs.endCollapser('Aborted', 'Unsolvable'), nul.debug.logging?this.dbgHTML():'');
-			}			
+			}*/			
 		}
 		return sltn;
 	}.perform('nul.xpr->solve'),
@@ -108,9 +108,9 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return this.browse(nul.browse.evaluate(kb||nul.kb())) || this.clean();
 	}.perform('nul.xpr->evaluate').xKeep(),
 	//Replace this context's locals according to association/table <ctx>
-	contextualize: function(st) {
-		return this.browse(nul.browse.contextualize([st], -1));
-	}.perform('nul.xpr->contextualize').xKeep(),
+	contextualise: function(st) {
+		return this.browse(nul.browse.contextualise([st], 0));
+	}.perform('nul.xpr->contextualise').xKeep(),
 	known: function(kb) {
 		var sts = [];
 		for(var j = 0; j<kb.knowledge.length; ++j) {
@@ -119,7 +119,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 				if(kb.knowledge[j].lvals[i] && !kb.knowledge[j].lvals[i].flags.fuzzy)
 					sts[j][i] = kb.knowledge[j].lvals[i];
 		}
-		return this.browse(nul.browse.contextualize(sts, 0));
+		return this.browse(nul.browse.contextualise(sts, 0));
 	}.perform('nul.xpr->known').xKeep(),
 	
 	//Take the side-effected value of this expression
@@ -153,7 +153,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	selfRef: function() { return this.deps[0] && this.deps[0][nul.lcl.slf]; },
 	//If this operand will keep this value forever
 	fixed: function() { return this.free() && this.finalRoot() && !this.selfRef(); },
-	subFixed: function() { return !trys(this.components, function(o) { return !o.fixed(); }) },
+	subFixed: function() { return !trys(this.components, function() { return !this.fixed(); }) },
 	operable: function() { return !!this.operate; },
 	clean: function() { delete this.flags.dirty; return this; },
 	dirty: function() {
@@ -162,18 +162,19 @@ nul.xpr = {	//Main interface implemented by all expressions
 	},
 	
 	compose: function(nComps) {
+		//TODO: '[]',':' use sub-components
 		if(['[]',':','=','&','|','^','+','*','&&','||'].contains(this.charact)) {
 			var nc = [];
 			while(0<nComps.length) {
 				var tc = nComps.pop();
-				if(tc.charact == this.charact) nComps.pushs(tc.xadd(this.x).components);
+				if(tc.charact == this.charact) nComps.pushs(tc.xadd(this).components);
 				else nc.unshift(tc);
 			}
 			nComps = nc;
 		}
 		if(isArray(nComps)) this.components.slice(0);
 		merge(this.components, nComps);
-		return this.integre().composed().integre().summarised(true);
+		return this.integre().summarised().composed().integre();
 	}.perform('nul.xpr->compose').xKeep(),
 	xed : function(kb, way, axs) {
 		var i, xpr = this;
@@ -185,14 +186,46 @@ nul.xpr = {	//Main interface implemented by all expressions
 		var tx = this.integre().x;
 		if(x.x) x = x.x;
 		//This dirty comes from the unification created (just the line under) in the attributes
-		if(!kb && trys(x.attributes, function(o, i) { return !tx.attributes[i]; } )) this.dirty();
+		if(!kb && trys(x.attributes, function(i) { return !tx.attributes[i]; } )) this.dirty();
 		this.x.xadd(x,kb);
 		return this.summarised();
 	}.perform('nul.xpr->xadd'),
+	
+////////// Failability management
+	
+	//Gets weither this expresion i failable by itself (cf. attributes, ...)
+	failableNature: function() {
+		return ['<<=','=','?','[-]'].contains(this.charact) ||
+			(!this.fixed() && !isEmpty(this.x.attributes));
+	},
+	//Return the failable parts of this expression in an array
+	// The ones the inner expression doesn't know, depending on attributes and generic props
+	failables: function() {
+		if(this.failableNature()) return [this];
+		var rv = [];
+		if(this.isFailable && this.isFailable()) {
+			if(this.failableSubs) rv = this.failableSubs();
+			else {	//Add 'this' but without the attributes
+				rv = [clone1(this)];
+				rv[0].x = clone1(this.x);
+				rv[0].x.attributes = {};
+			}
+		} else if(!this.isFailable)
+			map(this.components, function() { rv.pushs(this.failables()); });
+		map(this.x.attributes, function() { rv.pushs(this.failables()); });
+
+		return rv;
+	},
+	key: function() { return this.x.attributes['']; },
+	keyed: function(k) {
+		if(k) this.x.attributes[''] = k;
+		else delete this.x.attributes[''];
+		return this;
+	},
 //Debug purpose
 	integre: function() {
 		if(nul.debug.assert && this.integrity) assert(this.integrity(),
 			'Integrity : ' + this.dbgHTML());
 		return this;
-	}
+	}.perform('nul.xpr->integre')
 };

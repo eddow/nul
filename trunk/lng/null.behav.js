@@ -10,9 +10,16 @@ nul.behav = {
 	freedom: {
 		composed: function() {
 			//TODO: stpUp non-dep0 premices (if allowed)
-			this.summarised();	//to have this.used fixed
 			var st = {};
 			var delta = 0;
+			
+			/*Sorting :
+			 * Locals values have to be contextualied before being given as contextualiation value
+			 * There is NO circular references in locals 
+			*/
+			var i, slTbl=[];	//Sorted st : if i < j; st[slTbl[i]] doesn't depends on st[slTbl[j]]
+			var tSrt = [];		//Unsorted array
+			var nSrt = [];		//No need to sort array
 			for(var i=0; i<this.components.length; ++i) {
 				var v = this.components[i];
 				if(!this.used[i+delta] || (v && 1==this.used[i+delta]) || 
@@ -21,11 +28,32 @@ nul.behav = {
 					this.locals.splice(i,1);
 					++delta; --i;
 					st[i+delta] = v;
-				} else if(0< delta) st[i+delta] = nul.build.local(0, i, this.locals[i]);
+					if(v && v.deps[0] && !isEmpty(v.deps[0], [nul.lcl.slf])) tSrt.push(i+delta);
+					else nSrt.push(i+delta);
+				} else {
+					if(0< delta) st[i+delta] = nul.build.local(-1, i, this.locals[i]);
+					nSrt.push(i+delta);
+				}
 			}
-			
-			var rv = (0< delta)?(this.contextualize(st)||this):this;
-			return this.f_composed();
+			///// Sorting the locals table
+			while(0< tSrt.length) {
+				if(i >= tSrt.length) i = 0;
+				if(trys(st[tSrt[i]].deps[0], function(i) { 
+					return !slTbl.contains(i) && !nSrt.contains(i);
+				})) ++i;
+				else slTbl.push(tSrt.splice(i,1)[0]);
+			}
+			///// Now, contextualise the locals the sorted way
+			for(i = 0; i<slTbl.length; ++i) st[slTbl[i]] = 
+				st[slTbl[i]].contextualise(st) || st[slTbl[i]];
+			if(0>= delta) return this.f_composed();
+			//don't contextualise components[0..] (locals) again !
+			//TODO: verify the locals were effectively changed by side-effect
+			this.components.value =
+				this.components.value.contextualise(st)||this.components.value;
+			this.components.premices =
+				this.components.premices.contextualise(st)||this.components.premices;
+			return this.f_composed().summarised();
 		}.perform('freedom->composed').xKeep(),
 		integrity: function() {
 			return this.locals.length == this.components.length &&
@@ -71,7 +99,7 @@ nul.behav = {
 			return {
 				lvals: this.components,
 				locals: this.locals,
-				premices: []
+				premices: this.components.premices.components
 			};
 		},
 		
@@ -91,13 +119,29 @@ nul.behav = {
 			this.components.premices.components.pushs(isArray(premices)?premices:[premices]);
 			this.components.premices.summarised();
 			return this;//.summarised();
+		},
+		freedomHTML: function() {
+			var rv = this.components.value.toHTML();
+			if(0<this.components.premices.components.length) rv =
+				'<table class="xpr freedom"><tr><td class="freedom">' +
+				rv +
+				'</td></tr><tr><th class="freedom">'+
+				this.components.premices.toHTML() +
+				'</th></tr></table>';
+			return rv;
+		},
+		freedomString: function() {
+			var rv = this.components.value.toString();
+			if(0<this.components.premices.components.length)
+				rv += '; '+ this.components.premices.toString();
+			return rv;
 		}
 	},
 	html_place: {
 		transform: function() { return true; },
 		take: function() {},
 		extract: function() {
-			return nul.build.list(nul.html(this.element.innerHTML)).xadd(this.x);
+			return nul.build.list(nul.html(this.element.innerHTML)).xadd(this);
 		}.xKeep(),
 		append: function(itm) {
 			if(itm.toXML) {
@@ -109,7 +153,8 @@ nul.behav = {
 				return nul.build.atom('#text');
 			}
 			throw nul.semanticException('XML element expected for appending');
-		}
+		},
+		isFailable: function() { return false; }
 	},
 	application: {
 		operable: function() {
@@ -120,17 +165,11 @@ nul.behav = {
 			if(!this.components.object.take)
 				throw nul.semanticException('Not a set : '+ this.components.object.toHTML());
 			var rv = this.components.object.take(this.components.applied, kb, 1);
-			if(rv) return rv.xadd(this.x);
-		}.perform('application->operate').xKeep(),
-		composed: function() {
-			if(';'== this.components.applied) {
-				var apl = this.components.applied;
-				this.components.applied = apl.components[0];
-				apl.components[0] = this.composed();
-				return apl.composed();
-			}
-			return this;
-		}.perform('application->composed').xKeep()
+			if(rv) return rv.xadd(this);
+		}.perform('application->operate').xKeep()
+	},
+	kwFreedom: {
+	
 	},
 	set: {
 		composed: function() {
@@ -142,12 +181,7 @@ nul.behav = {
 			return true;
 		},
 		take: function(apl, kb, way) {
-			var inset = this.clone().stpUp(kb);
-			var rv = kb.knowing([inset, apl],
-				function(kb) {
-					return nul.unify.level(inset, apl, kb, way);
-				});
-			return rv;
+			return nul.unify.level(this.clone().stpUp(kb), apl, kb, way);
 		}.perform('set->take'),
 		extract: function() {
 			//TODO: remember extraction and use it instead from now on
@@ -159,13 +193,20 @@ nul.behav = {
 			if(sltns.solved.length) {
 				if(0<sltns.fuzzy.length)
 					sltns.solved.follow = nul.build.set(nul.build.or3(sltns.fuzzy));
-				return nul.build.list(sltns.solved).xadd(this.x);
+				return nul.build.list(sltns.sol.xadd(this)s.x);
 			}
 			if(sltns.fuzzy.length)
-				return nul.build.set(nul.build.or3(sltns.fuzzy)).xadd(this.x);
-			return nul.build.set().xadd(this.x);
+				return nul.build.set(nul.build.or3(sltns.fuz.xadd(this)s.x);
+			return nul.build.s.xadd(this)s.x);
 			*/
-		}.perform('set->extract').xKeep()
+		}.perform('set->extract').xKeep(),
+		//TODO: set failability
+		isFailable: function() {
+			return !isEmpty(this.deps);
+		},
+		/*failableSubs: function() {
+			return [this];
+		}.perform('set->failableSubs')*/
 	},
 	seAppend: {
 		extract: function() {
@@ -173,7 +214,7 @@ nul.behav = {
 				throw nul.semanticException('Expected appendable : ',
 					this.components.effected.toString());
 			return this.components.effected.append(this.components.appended);
-		}			
+		}		
 	},
 	cumulExpr: {
 		//operable: nul.xpr.subFixed,
@@ -194,7 +235,7 @@ nul.behav = {
 				} else o = null;
 				ncps.unshift(c);
 			}
-			if(1==ncps.length) return ncps[0].xadd(this.x);
+			if(1==ncps.length) return ncps[0].xadd(this);
 			if(ncps.length != this.components.length)
 				return this.compose(ncps).clean();
 		}.perform('cumulExpr->operate').xKeep()
@@ -207,7 +248,7 @@ nul.behav = {
 				nul.asJs(this.components[0], this.charact) +
 				this.charact +
 				nul.asJs(this.components[1], this.charact) ))
-				.xadd(this.x);
+				.xadd(this);
 		}.perform('biExpr->operate').xKeep()
 	},
 	list: {
@@ -228,20 +269,17 @@ nul.behav = {
 			return this;
 		}.perform('list->composed').xKeep(),
 		take: function(apl, kb, way) {
-			var cs = this.components;
-			var rv = kb.knowing([this, apl], function(kb) {
-				var rvl, rvf;
-				try{ rvl = nul.unify.orDist(cs, x, apl, kb, way); }
+			var rvl, rvf;
+			try{ rvl = nul.unify.orDist(this.components, this.x, apl, kb, way); }
+			catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
+			if(this.components.follow) {
+				try{ rvf = this.components.follow.take(apl,kb,x); }
 				catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
-				if(cs.follow) {
-					try{ rvf = cs.follow.take(apl,kb,x); }
-					catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
-				}
-				if(!rvl && !rvf) nul.fail;
-				if(!rvl ^ !rvf) return rvl || rvf;
-				return nul.build.or3([rvl,rvf]);
-			});
-			return rv?rv.xadd(x):rv;	//TODO: vérifier que les <x> doivent bien être repassés			
+			}
+			if(!rvl && !rvf) nul.fail;
+			if(!rvl ^ !rvf) return rvl || rvf;
+			rvl = nul.build.or3([rvl,rvf]);
+			return rvl?rv.xadd(x):rvl;			
 		}.perform('list->take')
 	},
 	preceded: {
@@ -250,7 +288,7 @@ nul.behav = {
 		{
 			return nul.build
 				.atom(eval( this.charact + nul.asJs(this.components[0],this.charact) ))
-				.xadd(this.x);
+				.xadd(this);
 		}.perform('preceded->operate').xKeep()
 	},
 	assert: {
@@ -261,16 +299,16 @@ nul.behav = {
 			if('boolean'!= typeof v)
 				throw nul.semanticException('Boolean expected instead of ' +
 					this.components[0].toString());
-			if(v) return this.components[0].xadd(this.x);
+			if(v) return this.components[0].xadd(this);
 			nul.fail('Assertion not provided');
 		}.perform('assert->operate').xKeep(),
 		composed: function() {
-			switch(this.components[0].charact) {
-				//TODO: pase dans le kb ? case '&&': return nul.build.and3(this.components.components).xadd(this.x);
-				case '||': return nul.build.or3(this.components.components).xadd(this.x);
-			}
+			/*switch(this.components[0].charact) {
+				//TODO: passe dans le kb ? case '&&': return nul.build.and3(...);
+				case '||': return nul.build.or3(...);
+			}*/
 			return this;
-		}.perform('assert->composed').xKeep(),
+		}.perform('assert->composed').xKeep()
 	},
 	extraction: {
 		operable: nul.xpr.subFixed,
@@ -282,17 +320,21 @@ nul.behav = {
 	},
 	unification: {
 		composed: function() {
-			return this;	//TODO: wayed unifications go to keys
+			return this;	//TODO: wayed unifications go to keys: bien utile ? fait dans chewed
+			//TODO: wayed, fixed and keyless ... becomes simple unification (way=0) ?
 		},
 		operate: function(kb)
 		{
-			if(2== this.components.length) return nul.unify.chewed(
-				this.components[0], this.components[1], kb, this.way)
+			if(2== this.components.length) {
+				var rv = nul.unify.chewed(
+					this.components[0], this.components[1], kb, this.way);
+				return rv?rv.xadd(this):rv;
+			}
 			if(nul.debug.assert) assert(0== this.way, 'No tree-some with directed unifications')
 			var fl = this.components.length;
 			var rv = nul.unify.multiple(this.components, kb, this.x)
 			if(rv) switch(rv.length) {
-				case 1: return rv[0].xadd(this.x);
+				case 1: return rv[0].xadd(this);
 				case fl: return;
 				default: return this.compose(rv);
 			}
@@ -301,10 +343,8 @@ nul.behav = {
 	and3: {
 		composed: function()
 		{
-			for(var i=0; i<this.components.length;)
-				if(this.components[i].flags.failable) ++i;
-				else this.components.splice(i,1);
-			return this;
+			this.components = this.failables();
+			return this.summarised();
 		}.perform('and3->composed').xKeep(),
 	},
 	or3: {
@@ -346,6 +386,7 @@ nul.behav = {
 		transform: function() { return false; },
 		take: function(apl, kb, way) {
 			return this.callback(apl, kb);
-		}.perform('nativeFunction->take')
+		}.perform('nativeFunction->take'),
+		isFailable: function() { return false; }
 	}
 };

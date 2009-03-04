@@ -9,9 +9,9 @@
 nul.understanding = {
 	phase: 0,
 	unresolvable: 'localNameUnresolvable',
-	emptyBase: function(prntUb) {
+	emptyBase: function(prntUb, alocal) {
 		return {
-			parms: {},
+			parms: alocal?null:{},
 			lvals: [],
 			premices: [],
 			locals: [],
@@ -19,16 +19,20 @@ nul.understanding = {
 			asSet: function(xpr) {
 				return nul.build.set(xpr, this.premices, this.lvals, this.locals);
 			},
+			asKwFrdm: function(xpr) {
+				return nul.build.kwFreedom(xpr, this.premices);
+			},
 			resolve: function(identifier, delta) {
 				if(!delta) delta = 0;
-				if('undefined'!= typeof this.parms[identifier]) {
+				if(this.parms && 'undefined'!= typeof this.parms[identifier]) {
 					var ndx = this.parms[identifier];
 					return nul.build.local(delta, ndx, (identifier!=ndx)?identifier:null);
 				}
-				if(this.prntUb) return this.prntUb.resolve(identifier, 1+delta);
+				if(this.prntUb) return this.prntUb.resolve(identifier, (this.parms?1:0)+delta);
 				throw nul.understanding.unresolvable;
 			},
 			createFreedom: function(name, value) {
+				if(!this.parms) return this.prntUb.createFreedom(name, value);
 				if(this.parms[name]) throw nul.semanticException('Freedom declared twice: '+name);
 				this.locals.push(name);
 				var rv = this.lvals.length;
@@ -36,10 +40,6 @@ nul.understanding = {
 				rv = nul.build.local(0, rv, name)
 				this.lvals.push(value||null);
 				return rv;
-			},
-			setSelf: function(name) {
-				if(this.parms[name]) throw nul.semanticException('Freedom declared twice: '+name);
-				this.parms[name] = '';
 			},
 			know: function(xpr) {
 				this.premices.push(xpr);
@@ -52,30 +52,40 @@ nul.understanding = {
 	},
 
 	expression: function(ub) {
-		var ops = nul.understanding.understandOperands(this.operands, ub);
+		var ops;
+		if(['[]',':'].contains(this.operator)) {
+			var ops = [], sub;
+			for(var i=0; i<this.operands.length; ++i) {
+				sub = nul.understanding.emptyBase(ub,'alocal');
+				ops.push(sub.asKwFrdm(this.operands[i].understand(sub)));
+			}
+		}
+		else ops = nul.understanding.understandOperands(this.operands, ub);
 		if(['&&', '||', '+' ,'-' ,'*' ,'/' ,'%' ,'&' ,'|' ,'^' ,'&&' ,'||'].contains(this.operator))
 			return nul.build.cumulExpr(this.operator, ops);
 		if(['<','>','<=','>='].contains(this.operator))
 			return nul.build.biExpr(this.operator, ops);
 		switch(this.operator)
 		{
+			case ':-':	return nul.build.lambda(ops[0], ops[1]);
+			case ',':	return nul.build.list(ops);
 			case ',..':
 				var lst = (','== ops[0].operator)?ops[0]:[ops[0]];
 				lst.follow = ops[1];
 				return ub.build.list(lst);
-			case ':-':	return nul.build.lambda(ops[0], ops[1]);
-			case ',':	return nul.build.list(ops);
+
 			case '=':	return nul.build.unification(ops, 0);
-			case ':=':	return nul.build.unification(ops, 1);
-			case '=:':	return nul.build.unification(ops, -1);
+			case ':=':	return nul.build.unification(ops, -1);
+
 			case '<<=':	return nul.build.seAppend(ops[0], ops[1]);
+
 			case '?': 
 				ub.know(nul.build.assert(ops[0]));
 				return ops[1];
 			case ';':
 				for(var i=1; i<ops.length; ++i) ub.know(ops[i]);
 				return ops[0];
-			//TODO: freedom providers - cf subOperationManagement
+
 			case '[]':	return nul.build.or3(ops);
 			case ':':	return nul.build.xor3(ops);
 			default:	throw nul.internalException('Unknown operator: "'+this.operator+'"');
@@ -83,7 +93,10 @@ nul.understanding = {
 	},
 	preceded: function(ub) {
 		var op = this.operand.understand(ub);
-		if(this.operator == '?') return nul.build.assert(op);
+		if(this.operator == '?') {
+			ub.know(nul.build.assert(op));
+			return nul.build.set();
+		}
 		return nul.build.preceded(this.operator,op);
 	},
 	postceded: function(ub) {

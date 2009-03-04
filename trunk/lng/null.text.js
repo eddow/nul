@@ -74,11 +74,11 @@ nul.text = {
 			strings.push(oprnds[i].toHTML());
 		return strings.join(' '+oprtr+' ');
 	},
-	toString: function(oprtr, oprnds) {
+	expressionString: function(oprtr, oprnds) {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
 			strings.push(oprnds[i].toString());
-		return strings.join(' '+oprtr+' ');
+		return strings.join(' '+(oprtr?(oprtr+' '):''));
 	},
 	toHTML: function() {
 		var aLocals = '', aDeps = '', aDepsTtl = '', aShort = this.toString(),
@@ -119,10 +119,15 @@ nul.text = {
 		if('undefined'!= typeof this.x.lvl)
 			rv += '<div class="shortStr level" style="display: none;" >' +
 				this.x.lvl + '</div>';
-		if(this.x.attributes['']) rv += this.x.attributes[''].toHTML() + '<span class="op">&lArr;</span>'; 
+		if(this.key()) rv += this.key().toHTML() + '<span class="op">&lArr;</span>'; 
 		rv += this.expressionHTML();
-		return '<span class="xpr">'+rv+'</span>';
+		var cls = this.freedom?' freedom':'';
+		return '<span class="xpr'+cls+'">'+rv+'</span>';
 	}.perform('nul.text->toHTML'),
+	toString: function() {
+		if(!this.key()) return this.expressionString();
+		return this.key().toString() + ' :- ' + this.expressionString();
+	},
 	clpsSstm : function(table, uc, lcFct) {
 		return table ? table.clpsSstm = {
 			table: table,

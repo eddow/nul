@@ -52,7 +52,7 @@ nul.operators = [
 	[';','m'],								//booleans:meta AND
 	[':-','r'],								//lambda
 	[',..','r'], [',','m'],	 				//list
-	['=','m'], [':=','m'], ['=:','m'],		//unify
+	['=','m'], [':=','m'],					//unify
 	[':','m'],								//booleans:meta XOR
 	['?','l'],								//a?b ==> if(a) then b else fail (shortcut)
 	['?','p'],								//?b ==> b if b nor false nor null

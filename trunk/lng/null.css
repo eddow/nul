@@ -33,13 +33,32 @@ ul.tableContent {
 span.op {
 	color: #400000;
 	font-weight: bolder;
+	vertical-align: middle;
+}
+span.op.big {
+	font-weight: 100;
+	font-size: 40px;
 }
 .xpr {
 	border: 1px blue dotted;
 	display: inline-block;
 	margin: 3px;
 	position: relative;
+	vertical-align: middle;
 }
+.xpr.freedom {
+	border: 0;
+	margin: 4px;
+}
+td.freedom {
+	text-align: center;
+	border-bottom: 2px groove;
+}
+th.freedom {
+	text-align: center;
+	font-weight: lighter;
+}
+
 .xpr.lined {
 	border: 2px blue solid;
 	margin: 2px;

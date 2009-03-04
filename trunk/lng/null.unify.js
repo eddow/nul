@@ -10,51 +10,50 @@
 // <us>s locals are distinct
 //returns an expression or nothing if unification unchanged 
 nul.unify = {
-	/*Commutative algorithm
+	//Commutative algorithm
 	multiple: function(us, kb, x) {
-		return kb.knowing(us, function(kb) {
-			function moveKnown(lfr, lto, kb) {
-				var trv;
-				for(var i=0; i<lfr.length;) {
-					trv = lfr[i].finalize(kb);
-					if(trv) { lto.unshift(unirv); lfr.splice(i,1); }
-					else ++i;
-				}
+		function moveKnown(lfr, lto, kb) {
+			var trv;
+			for(var i=0; i<lfr.length;) {
+				trv = lfr[i].finalise(kb);
+				if(trv) { lto.unshift(unirv); lfr.splice(i,1); }
+				else ++i;
 			}
-			
-			//<us> : to try to unify
-			//<uu> : cannot unify with unifion
-			//<rv> : cannot unify with any past unifion
-			//<unifion> : the item trying to unify
-			var rv = [], uu = [], unifion, fUsLn = us.length;
-			unifion = us.pop();
+		}
+		
+		//<us> : to try to unify
+		//<uu> : cannot unify with unifion
+		//<rv> : cannot unify with any past unifion
+		//<unifion> : the item trying to unify
+		var rv = [], uu = [], unifion, fUsLn = us.length;
+		unifion = us.pop();
+		while(0<us.length) {
+			var unirv = null;
 			while(0<us.length) {
-				var unirv = null;
-				while(0<us.length) {
-					var unitry = us.pop();
-					unirv = nul.unify.chewed(unitry, unifion, kb);
-					if(unirv) break;
-					uu.unshift(unitry);
-				}
-				if(unirv) {
-					unifion = unirv;
-					us.pushs(uu, rv);
-					uu = [];
-					rv = []
-					us = map(us, function() { return this.finalize(kb) || this; });
-				} else {
-					rv.unshift(unifion);
-					us = uu;
-					uu = [];
-					unifion = us.pop();
-				}
+				var unitry = us.pop();
+				unirv = nul.unify.chewed(unitry, unifion, kb);
+				if(unirv) break;
+				uu.unshift(unitry);
 			}
-			rv.unshift(unifion);
-			if(fUsLn== rv.length) return;
-			return rv;
-		});
-	}.perform('nul.unify.multiple'),*/
-	//Non-commutatibe algorithm
+			if(unirv) {
+				unifion = unirv;
+				us.pushs(uu, rv);
+				uu = [];
+				rv = []
+				map(us, function(i) { us[i] = us[i].finalise(kb) || us[i]; });
+			} else {
+				rv.unshift(unifion);
+				us.pushs(uu);
+				uu = [];
+				unifion = us.pop();
+			}
+		}
+		rv.unshift(unifion);
+		us.pushs(rv);
+		if(fUsLn== rv.length) return;
+		return rv;
+	}.perform('nul.unify.multiple'),
+	/*Non-commutative algorithm
 	multiple: function(us, kb, x) {
 		var unifion = us.shift();
 		var rv = [];
@@ -72,7 +71,7 @@ nul.unify = {
 		us.pushs(rv);
 		return rv;
 	}.perform('nul.unify.multiple'),
-	
+	*/
 /*ways:
  *  0: don't care
  *  1: a = b
@@ -158,11 +157,14 @@ nul.unify = {
 				var t = a; a = b; b = t;
 			} else way = way||0;
 			
-			if(0< way && a.x.attributes['']) {
-				a.x.attributes[''] = nul.unify.level(a.x.attributes[''], b, kb, way);
-				return a;
+			if(0<way) {
+				var bkey = b.key(); b.keyed();
+				if(a.key()) {
+					kb.premiced([nul.unify.level(a.key(), b, kb, 1)]);
+					return a.keyed(bkey);
+				}
+				if(bkey) return nul.unify.level(a, b, kb, 1).keyed(bkey);
 			}
-			
 			var rv = nul.unify.subs(a, b, kb, way);
 			if('unk'!== rv) return rv;
 	
@@ -189,7 +191,7 @@ nul.unify = {
 	//<b> and <ax>(<as>' parent locals) are distinct
 	//always returns an expression 
 	orDist: function(as, ax, b, kb, way) {
-		//TODO: if unification not commutative, signal the side of or-dist
+		//TODO: enter premiced ctx
 		var rv = kb.trys(
 			'OR distribution', as, ax,
 			function(c, kb) { return nul.unify.level(c, b.clone(), kb, way); });

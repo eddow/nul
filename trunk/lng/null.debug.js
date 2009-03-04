@@ -113,15 +113,24 @@ nul.debug = {
 		}
 		return nul.debug.lc++;
 	},
+	toLogText: function(v) {
+		if(isArray(v)) {
+			for(var i=0; i<v.length; ++i) v[i] = nul.debug.toLogText(v[i]);
+			return v.join(' ');
+		}
+		if(v.dbgHTML) return v.dbgHTML();
+		return v.toString()
+	},
 	log: function(tp) {
-		return nul.debug.logging ? function(v) {
+		return nul.debug.logging && nul.debug.logging[tp] ? function(v) {
 			v = beArrg(arguments);
+			for(var vi = 0; vi<v.length; ++vi) v[vi] = nul.debug.toLogText(v[vi]);
 			v.unshift(nul.debug.action());
 			if(nul.debug.watches) v.push(nul.debug.kbase.length());
 			else v.push();
 			v.unshift(nul.debug.logCount());
-			return nul.debug.logs.log(v).addClassName(tp);
-		} : function() { nul.debug.logCount(); };
+			return nul.debug.logs.log(v).addClassName(tp+' log');
+		} : function() {};
 	},
 	warnRecursion: function(v)
 	{
@@ -156,7 +165,7 @@ nul.debug = {
 	},
 	ctxTable: function(ctx) {
 		var rv = '';
-		var prc = ctx.origHTML[0];
+		var prc = ctx.origHTML;
 		for(var i=0; i<ctx.length; ++i)
 			rv += '<tr><th>'+i+'</th><td>'+ctx.lvals[i].dbgHTML()+'</td></tr>';
 		return [prc, '<table class="context">'+rv+'</table>'];
@@ -168,9 +177,11 @@ if(nul.debug.xTest)
 		var ftc = this;
 		return function() {
 			var args = arrg(arguments);
-			var oldX = (this&&this.x)?this.x.dbg:args[0].x.dbg;
+			var oldX = (this&&this.x)?this.x.dbg:
+				(args[0]&&args[0].x)?args[0].x.dbg:
+				null;
 			var rv = ftc.apply(this,args);
-			assert(!rv || rv.x.dbg==oldX, 'X miss-kept');
+			assert(!rv || !oldX || rv.x.dbg==oldX, 'X miss-kept');
 			return rv;
 		}
 	};
