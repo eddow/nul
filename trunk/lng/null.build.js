@@ -22,8 +22,8 @@ nul.x = function(x) {
 if(nul.debug.xTest) nul.x.cpt = 0;
 
 nul.build = {
-	freedom: function(value, premices, lvals, locals, itm) {
-		itm.freedom = true;
+	freedom: function(tp, value, premices, lvals, locals, itm) {
+		itm.freedom = tp;
 		
 		map(itm, function(i, o) { if('function'== typeof o && 'f_'!= i.substr(0,2))
 			itm['f_'+i] = o; })
@@ -32,6 +32,9 @@ nul.build = {
 		lvals.premices = nul.build.and3(premices);
 		lvals.value = value;
 		return itm.compose(lvals);
+	},
+	ctxFreedom: function(value, premices, lvals, locals, itm) {
+		return this.freedom('ctx', value, premices, lvals, locals, itm);
 	},
 	item: function(ops) {
 		var itm = {};
@@ -154,7 +157,7 @@ nul.build = {
 			nul.behav.application,'[-]', {object: obj, applied: apl},'');
 	},
 	kwFreedom: function(value, premices) {	//Knowledge-wide freedom
-		return this.freedom(value, premices, [], [], this.item([], nul.behav.kwFreedom, {
+		return this.freedom('kw', value, premices, [], [], this.item([], nul.behav.kwFreedom, {
 			charact: 'kw',
 			expressionHTML: function() { 
 				return this.freedomHTML();
@@ -171,7 +174,7 @@ nul.build = {
 			expressionString: function() { return '&phi;'; },
 			take: function(apl) { nul.fail('Taking from empty set : ' + apl.dbgHTML()); }
 		});
-		return this.freedom(value, premices, lvals, locals, this.item([], nul.behav.set, {
+		return this.ctxFreedom(value, premices, lvals, locals, this.item([], nul.behav.set, {
 			charact: '{}',
 			expressionHTML: function() { 
 				return ''+
@@ -194,6 +197,9 @@ nul.build = {
 	cumulExpr: function(oprtr, oprnds) {
 		return this.listOp(nul.behav.cumulExpr,oprtr, oprnds, mathSymbol(oprtr));
 	},
+    biExpr: function(oprtr, oprnds) {
+            return this.listOp(nul.behav.biExpr,oprtr, oprnds, mathSymbol(oprtr));
+    },
 	list: function(oprnds) {
 		return this.listOp(nul.behav.list,',', oprnds,[
 			function() {

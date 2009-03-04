@@ -42,11 +42,14 @@ function testEvaluation()
 		nul.debug.jsDebug = !$('catch').checked;
 		
 		nul.debug.assert = $('shwAssert').checked;
-		nul.debug.logging = {};
-		nul.debug.logging.knowledge = nul.debug.watches = $('shwWatches').checked;
-		nul.debug.logging.info = $('shwLoggingInfos').checked;
-		nul.debug.logging.evals = $('shwLoggingEvals').checked;
-		nul.debug.logging.ctxs = $('shwLoggingCtxs').checked;
+		if($('shwLogging').checked) {
+			nul.debug.logging = {};
+			nul.debug.logging.knowledge = nul.debug.watches = $('shwWatches').checked;
+			nul.debug.logging.evals = $('shwLoggingEvals').checked;
+			nul.debug.logging.ctxs = $('shwLoggingCtxs').checked;
+			nul.debug.logging.info = $('shwLoggingInfos').checked;
+			nul.debug.logging.perf = $('shwLoggingPerfs').checked;
+		} else nul.debug.logging = false;
 	}
 	nul.execution.reset();
 	
@@ -80,6 +83,11 @@ function selectNamedTab(elm, tnm) {
 function tabSelect(te) {
 	if(te.hasClassName('selected')) return;
 	selectNamedTab(te.parentNode.parentNode, $('infoTS').value = te.attributes.name.value);
+}
+
+function shwLoggingClk() {
+	if($('shwLogging').checked) $('loggingChk').show();
+	else $('loggingChk').hide();
 }
 
 var knGlobs = {}, ignGlobs = {};

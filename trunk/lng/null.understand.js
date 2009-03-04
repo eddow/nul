@@ -80,8 +80,8 @@ nul.understanding = {
 			case '<<=':	return nul.build.seAppend(ops[0], ops[1]);
 
 			case '?': 
-				ub.know(nul.build.assert(ops[0]));
-				return ops[1];
+				ub.know(nul.build.assert(ops[1]));
+				return ops[0];
 			case ';':
 				for(var i=1; i<ops.length; ++i) ub.know(ops[i]);
 				return ops[0];

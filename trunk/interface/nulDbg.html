@@ -38,9 +38,18 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 		<input id="catch" type="checkbox" checked="checked" />Internal catch<br />
 		<input id="shwAssert" type="checkbox" />Asserts<br />
 		<input id="shwWatches" type="checkbox" />Watches<br />
+		<fieldset>
+		<legend>
+			<input id="shwLogging" type="checkbox" onclick="shwLoggingClk();" checked="checked"/>
+			Logging
+		</legend>
+		<div id="loggingChk">
 		<input id="shwLoggingCtxs" type="checkbox" />Contexts<br />
 		<input id="shwLoggingEvals" type="checkbox" />Evals<br />
 		<input id="shwLoggingInfos" type="checkbox" />Infos<br />
+		<input id="shwLoggingPerfs" type="checkbox" />Perfs<br />
+		</div>
+		</fieldset>
 	</div>
 	
 	<textarea cols="80" rows="7" id="source"></textarea>

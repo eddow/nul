@@ -114,7 +114,7 @@ nul.compiler = function(txt)
 			return firstOp;
 		},
 		applied: function() {
-			var rv = this.item('assert');
+			var rv = this.item();
 			do
 			{
 				var tst;
@@ -123,7 +123,7 @@ nul.compiler = function(txt)
 				else if(this.tknzr.take('->')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
 /*				else if('alphanum'== this.tknzr.token.type)
 					rv = nul.compiled.definition(this.alphanum(), rv);*/
-				else if(tst = this.item()) rv = nul.compiled.application(rv, tst);
+				else if(tst = this.item('lax')) rv = nul.compiled.application(rv, tst);
 				else return rv;
 			} while(true);
 		},
@@ -148,7 +148,7 @@ nul.compiler = function(txt)
 			while(attr = this.tknzr.pop(['alphanum']))
 			{
 				this.tknzr.expect('=');
-				attrs[attr.value] = this.item('assert');
+				attrs[attr.value] = this.item();
 			}
 			if(this.tknzr.rawTake('/>')) return nul.compiled.xml(node, attrs, []);
 			this.tknzr.rawExpect('>');
@@ -156,7 +156,7 @@ nul.compiler = function(txt)
 			this.tknzr.expect(node);
 			return this.tknzr.rawExpect('>', nul.compiled.xml(node, attrs, comps));
 		},
-		item: function(asrt) {
+		item: function(lax) {
 			var rv;
 			if('eof'!= this.tknzr.token.type) {
 				if(this.tknzr.take('\\/')) return nul.compiled.definition(this.alphanum(), this.expression());
@@ -167,14 +167,14 @@ nul.compiler = function(txt)
 				if(this.tknzr.take('<')) return this.xml();
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 				//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
-				for(var p= 0; p<nul.operators.length; ++p) {
+				if(!lax) for(var p= 0; p<nul.operators.length; ++p) {
 					var oprtr = nul.operators[p];
 					if('p'== oprtr[1] && this.tknzr.take(oprtr[0]))
 						return nul.compiled.preceded(oprtr[0], this.expression(1+p));
 				}
 				rv = this.tknzr.pop(['alphanum', 'number', 'string']);
 			}
-			if(!rv && asrt) throw nul.syntaxException("Item expected");
+			if(!rv && !lax) throw nul.syntaxException("Item expected");
 			if(rv) return nul.compiled.atom(rv);
 		}
 	};
