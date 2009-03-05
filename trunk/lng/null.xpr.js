@@ -101,7 +101,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	}.perform('nul.xpr->evaluate').xKeep(),
 	//Replace this context's locals according to association/table <ctx>
 	contextualise: function(st, sub) {
-		return this.browse(nul.browse.contextualise([st], sub?0:-1));
+		return this.browse(nul.browse.contextualise(isArray(st)?st:[st], sub?0:-1));
 	}.perform('nul.xpr->contextualise').xKeep(),
 	known: function(kb) {
 		var sts = [];
@@ -111,7 +111,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 				if(kb.knowledge[j].lvals[i] && !kb.knowledge[j].lvals[i].flags.fuzzy)
 					sts[j][i] = kb.knowledge[j].lvals[i];
 		}
-		return this.browse(nul.browse.contextualise(sts, 0));
+		return this.contextualise(sts, 'sub');
 	}.perform('nul.xpr->known').xKeep(),
 	
 	//Take the side-effected value of this expression

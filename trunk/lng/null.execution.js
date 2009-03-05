@@ -51,7 +51,7 @@ nul.execution = {
 			var cs = [];
 			for(var c in this.computed) cs.push([c, this.computed[c]]);
 			cs.sort(function(a, b){ return b[1]-a[1]; });
-			for(var i=0; i<cs.length && i < 20; ++i) {
+			for(var i=0; i<cs.length && i < 7; ++i) {
 				var rw = tbd.insertRow(-1);
 				rw.insertCell(0).innerHTML = cs[i][0];
 				rw.insertCell(1).innerHTML = cs[i][1];

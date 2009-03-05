@@ -112,12 +112,8 @@ nul.browse = {
 			},
 			local: function(xpr) {
 				var ctxNdx = xpr.ctxDelta-this.ctxDelta;
-				if(this.itmCtxlsz(ctxNdx, xpr.lindx)) {
-					var rv = this.rpl[ctxNdx][xpr.lindx]
-						.localise(xpr.ctxDelta);
-					if(!rv.dbgName) rv.dbgName = xpr.dbgName;
-					return rv.xadd(xpr.x);
-				}
+				if(this.itmCtxlsz(ctxNdx, xpr.lindx))
+					return this.rpl[ctxNdx][xpr.lindx].localise(xpr.ctxDelta).xadd(xpr.x);
 			}
 		};
 	},
@@ -183,7 +179,7 @@ nul.browse = {
 				//From kb local-space to expression local-space 
 				if(0>xpr.ctxDelta) xpr.ctxDelta = rDelta-1-xpr.ctxDelta;
 				//The same in any local-space 
-				else if(this.ctxDelta >= xpr.ctxDelta) return;
+				else if(this.ctxDelta > xpr.ctxDelta) return;
 				//From expression local-space to kb local-space 
 				else if(rDelta <= xpr.ctxDelta) xpr.ctxDelta = rDelta-1-xpr.ctxDelta;
 				else throw nul.unlocalisable;

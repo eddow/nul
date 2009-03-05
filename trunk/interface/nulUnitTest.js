@@ -15,7 +15,7 @@ tests = [
 		{xpr: 'N x; (y+1, y) = (x, 4)',
 		rslt: '{5}'},
 		{xpr: '(z+1, z+2) = (N a, N b)',
-		rslt: '{(&#x2115; (z[0|0] + 1)) , (&#x2115; (z[0|0] + 2))}'},
+		rslt: '{(z[0|0] + 1) , (z[0|0] + 2); (&#x2115; (z[0|0] + 1)) ; (&#x2115; (z[0|0] + 2))}'},
 		{xpr: '((a+1)=(b+2))= z, (c+3)=z, a=2',
 		rslt: '{(3 = (b[0|0] + 2)) , ((b[0|0] + 2) = (c[1|0] + 3)) , 2}'},
 		{xpr: '(z+1, z+2) = (N a, N b); z=3',
@@ -30,13 +30,6 @@ tests = [
 		rslt: '{11}'}
 	].named('Local management'),
 	[
-	/*
-		{xpr: '{_}a {_}b {_}c {_}d {_}e {_}f { (a,b,c) [] (d,e,f) }[_,1,2]',
-		rslt: '((a[0|2] , 1 , 2) &#9633; (d[3|2] , 1 , 2))'},
-		{xpr: '{_}a {_}b ({ a [] b }[5], a, b)',
-		rslt: '(((-[0|3] = 5) &#9633; (-[1|3] = 5)) , a[0|1] , b[1|1])'},
-
-	*/
 		{xpr: 'v; (z=1 [] z=2); v=z',
 		rslt: '{v[0|0]; (1; (v[0|0] = 1) &#9633; 2; (v[0|0] = 2))}'},
 		{xpr: '(z+1)=(1 [] 2)',
@@ -48,7 +41,7 @@ tests = [
 		{xpr: '(z*1)=(((a+1=a+2);(z = 1)) [] z = 2)',
 		rslt: '{(((a[1|0] + 1) = (a[1|0] + 2) = 1); (z[0|0] = 1) &#9633; 2; (z[0|0] = 2))}'},
 		{xpr: '{ (a,b,c) [] (d,e,f) }(_,1,2)',
-		rslt: ''},
+		rslt: '{(_[0|0] , 1 , 2; (c[3|0] = 2) ; (b[2|0] = 1) ; (a[1|0] = _[0|0]) &#9633; _[0|0] , 1 , 2; (f[6|0] = 2) ; (e[5|0] = 1) ; (d[4|0] = _[0|0]))}'},
 	].named('OR-s management'),
 	[
 		/*{xpr: '{_}x (({_}y (y, y+1)) = (x, x)), x',
@@ -144,8 +137,10 @@ function drawTests(tests, cs, lvl) {
 }
 
 function init() {
+	if(!nul.debug.perf) $('perfTbl').hide();
 	clpsSstm = nul.text.clpsSstm(tbody = $('tests'),'up');
 	drawTests(tests, clpsSstm, 0);
+	nul.execution.reset();
 }
 
 function setResult(tn, rslt, comm) {
@@ -165,13 +160,13 @@ function doTest(tn) {
 	var v, test = tbody.rows[tn].test;
 	nul.debug.assert = !$('qndTst').checked;
 	try {
-		nul.execution.reset();
 		v = v = nul.expression(test.xpr).evaluate().toString();
 	} catch(err) {
 		nul.exception.notice(err);
 		if(nul.erroneusJS) throw nul.erroneusJS;
 		return setResult(tn, 'err', err.message || err);
 	}
+	nul.execution.benchmark.draw($('benchmark'));
 	if(v== test.rslt) return setResult(tn, 'succ');
 	return setResult(tn, 'fail', v);
 }
@@ -192,7 +187,10 @@ function prgTests(tn) {
 		if(0<tstsBats.length && tn== tstsBats[0].endl) {
 			tstsBats[0].rsltDiv.innerHTML = rsltDiv(['unk','succ','fail','err'][tstsBats[0].rslt]);
 			tstsBats.shift();
-			if(0==tstsBats.length) return;
+			if(0==tstsBats.length) {
+				nul.execution.reset();
+				return;
+			}
 		}
 		ic = (rw=tbody.rows[tn]).select('input[type=checkbox]')
 		if(ic) {

@@ -5,6 +5,42 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+
+function lclCntx(knwldg) {
+	/*Sorting :
+	 * Locals values have to be contextualised before being given as contextualiation value
+	 * There is NO circular references in locals 
+	*/
+	var st = knwldg[0];
+	var i, slTbl=[];	//Sorted st : if i < j; st[slTbl[i]] doesn't depends on st[slTbl[j]]
+	var tSrt = [];		//Unsorted array
+	var nSrt = [];		//No need to sort array
+	for(i in st) {
+		i = reTyped(i);
+		if(
+		st[i] && st[i].deps && st[i].deps[-1] &&
+		!isEmpty(st[i].deps[-1], [nul.lcl.slf]) &&
+		!st[i].reindexing)
+			tSrt.push(i);
+		else {
+			nSrt.push(i);
+			if(st[i] && st[i].reindexing) delete st[i].reindexing;
+		}
+	}
+	///// Sorting the locals table
+	while(0< tSrt.length) {
+		if(i >= tSrt.length) i = 0;
+		if(trys(st[tSrt[i]].deps[-1], function(i) { 
+			return !slTbl.contains(i) && !nSrt.contains(i);
+		})) ++i;
+		else slTbl.push(tSrt.splice(i,1)[0]);
+	}
+	///// Now, contextualise the locals the sorted way
+	for(i = 0; i<slTbl.length; ++i) {
+		var v = st[slTbl[i]].localise().contextualise(knwldg, 'sub');
+		if(v) st[slTbl[i]] = v.localise();
+	}	
+}
  
 nul.behav = {
 	freedom: {
@@ -120,9 +156,8 @@ nul.behav = {
 			var rv = this.components.object.take(this.components.applied, kb, 1);
 			if(rv) return rv.xadd(this);
 			if(!this.components.object.transform()) {
-				/*TODO: lead to infinite while if will come again on next premice
-				kb.premiced(this);
-				return this.components.applied;*/
+				kb.premiced(this.clean().clone());
+				return this.components.applied;
 			}
 		}.perform('application->operate').xKeep()
 	},
@@ -157,19 +192,25 @@ nul.behav = {
 			};
 		},
 		takeFrdm: function(knwldg) {
-			if(this.components !== knwldg[0].premices) {
-				this.components.splice(0);
-				this.components.pushs(knwldg[0].premices);
-			}
-			for(var c=0; c<knwldg.length; ++c) {
-				var cl = knwldg[c].lvals;
-				for(var i=0; i<cl.length; ++i) if(cl[i]) this.components.unshift(
+			if(nul.debug.assert) assert(this.components === knwldg[0].premices, 'Expression kept ctx');
+			var ck = [];
+			var lclPrmcs = [];
+			while(0<knwldg.length) {
+				var cl = knwldg.pop();
+				var st = {};
+				//We need a map and not an array for lclCntx
+				for(var i=0; i<cl.lvals.length; ++i) st[i] = cl.lvals[i];
+				ck.unshift(st);
+				lclCntx(ck);
+				for(var i=0; i<cl.locals.length; ++i) if(st[i]) lclPrmcs.unshift(
 					nul.build.unification([
-						nul.build.local(c, i, knwldg[c].locals[i]),
-						cl[i]
+						nul.build.local(knwldg.length, i, cl.locals[i]),
+						st[i].localise()
 					]).clean());
 			}
-			return this.composed();
+			var rv = this.contextualise(ck,'sub') || this;
+			rv.components.pushs(lclPrmcs);
+			return rv.composed();
 		}
 	},
 	set: {
@@ -234,56 +275,36 @@ nul.behav = {
 			};
 		},
 		takeFrdm: function(ctx) {
-			if(this.components !== ctx.premices) {
-				this.components.splice(0);
-				this.components.pushs(ctx.premices);
-			}
+			if(nul.debug.assert) assert(this.components === ctx.premices, 'Expression kept ctx');
 			this.locals = ctx.locals;
 			this.summarised(); //To have the 'used' table filled 
 			var st = {};
 			var delta = 0;
 			
-			/*Sorting :
-			 * Locals values have to be contextualied before being given as contextualiation value
-			 * There is NO circular references in locals 
-			*/
-			var i, slTbl=[];	//Sorted st : if i < j; st[slTbl[i]] doesn't depends on st[slTbl[j]]
-			var tSrt = [];		//Unsorted array
-			var nSrt = [];		//No need to sort array
 			for(var i=0; i<ctx.locals.length; ++i) {
 				var v = ctx.lvals[i];
+				//TODO:Les auto-refs ne se remplacent pas
+				//TODO: si utilisé une fois et sans valeur : remplacer par un joker ?
 				if(!this.used[i+delta] || (v && 1==this.used[i+delta]) || 
 					(v && !v.flags.fuzzy)) {
 					ctx.lvals.splice(i,1);
 					ctx.locals.splice(i,1);
 					++delta; --i;
 					st[i+delta] = v;
-					if(v && v.deps[0] && !isEmpty(v.deps[0], [nul.lcl.slf])) tSrt.push(i+delta);
-					else nSrt.push(i+delta);
-				} else {
-					if(0< delta) st[i+delta] = nul.build.local(-1, i, ctx.locals[i]);
-					nSrt.push(i+delta);
+				} else if(0< delta) {
+					st[i+delta] = nul.build.local(-1, i, ctx.locals[i]);
+					st[i+delta].reindexing = true;
 				}
 			}
-			///// Sorting the locals table
-			while(0< tSrt.length) {
-				if(i >= tSrt.length) i = 0;
-				if(trys(st[tSrt[i]].deps[0], function(i) { 
-					return !slTbl.contains(i) && !nSrt.contains(i);
-				})) ++i;
-				else slTbl.push(tSrt.splice(i,1)[0]);
-			}
-			///// Now, contextualise the locals the sorted way
-			for(i = 0; i<slTbl.length; ++i) st[slTbl[i]] = 
-				st[slTbl[i]].contextualise(st, 'sub') || st[slTbl[i]];
 			if(0>= delta) return this.composed();
+			lclCntx([st]);
 			this.contextualise(st);
 			
 			for(var i=0; i<ctx.lvals.length; ++i) if(ctx.lvals[i]) this.components.unshift(
 				nul.build.unification(
 					[nul.build.local(0, i, this.locals[i]),
-					ctx.lvals[i]]
-				).clean());
+					ctx.lvals[i].localise()
+				]).clean());
 			return this.composed();
 		}.perform('set->takeCtx').xKeep()
 	},
