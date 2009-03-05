@@ -2,12 +2,14 @@
 #labels Language
 
 The assertion is mainly a preceder :
-{{{ ? a }}} will :
-* have the value {{{true}}} if {{{a}}} has the value {{{true}}}
-* *fail* if {{{a}}} has the value {{{false}}}
-* throw a semantic error if a is not a boolean
+{{{ value ? condition }}} will :
+* have the value {{{value}}} if {{{condition}}} has the value {{{true}}}
+* *fail* if {{{condition}}} has the value {{{false}}}
+* throw a semantic error if {{{condition}}} is not a boolean
 
-There is also a binary {{{?}}} that is a shortcut.
-{{{ a ? b }}} is equivalent to {{{ ( ? a ) : b }}}
+Note:
+This syntax has been choosen to keep the mathematical notation : the set of the naturals number smaller than 50 is written like this {{{ { x ? N x < 50 } }}}
 
-{{{ a ? b }}} means "If {{{a}}} then the value is {{{b}}}. If not, fail..."
+The "drawback" is that the equivalent of the ternary C++ operator is inverted.
+
+{{{ vTrue ? condition : vFalse }}} means {{{vTrue}}} if {{{condition}}} has the value {{{true}}} and {{{vFalse}}} if {{{condition}}} has the value {{{false}}}
