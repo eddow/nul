@@ -10,17 +10,13 @@
 // <us>s locals are distinct
 //returns an expression or nothing if unification unchanged 
 nul.unify = {
+	multiple: function(us, kb, x, way) {
+		if(!way) return nul.unify.commutative(us, kb, x)
+		return nul.unify.ncommutative(us, kb, x, way);
+	},
 	//Commutative algorithm
-	multiple: function(us, kb, x) {
-		function moveKnown(lfr, lto, kb) {
-			var trv;
-			for(var i=0; i<lfr.length;) {
-				trv = lfr[i].finalise(kb);
-				if(trv) { lto.unshift(unirv); lfr.splice(i,1); }
-				else ++i;
-			}
-		}
-		
+	commutative: function(us, kb, x) {
+	
 		//<us> : to try to unify
 		//<uu> : cannot unify with unifion
 		//<rv> : cannot unify with any past unifion
@@ -40,7 +36,7 @@ nul.unify = {
 				us.pushs(uu, rv);
 				uu = [];
 				rv = []
-				map(us, function(i) { us[i] = us[i].finalise(kb) || us[i]; });
+				//map(us, function(i) { us[i] = us[i].finalise(kb) || us[i]; });
 			} else {
 				rv.unshift(unifion);
 				us.pushs(uu);
@@ -52,13 +48,12 @@ nul.unify = {
 		us.pushs(rv);
 		if(fUsLn== rv.length) return;
 		return rv;
-	}.perform('nul.unify.multiple'),
-	/*Non-commutative algorithm
-	multiple: function(us, kb, x) {
+	}.perform('nul.unify.commutative'),
+	ncommutative: function(us, kb, x, way) {
 		var unifion = us.shift();
 		var rv = [];
 		while(0<us.length) {
-			var unitry = nul.unify.chewed(unifion, us[0], kb, 1);
+			var unitry = nul.unify.chewed(unifion, us[0], kb, way);
 			if(unitry) {
 				unifion = unitry;
 				us.shift();
@@ -70,8 +65,7 @@ nul.unify = {
 		rv.push(unifion);
 		us.pushs(rv);
 		return rv;
-	}.perform('nul.unify.multiple'),
-	*/
+	}.perform('nul.unify.ncommutative'),
 /*ways:
  *  0: don't care
  *  1: a = b
@@ -116,6 +110,7 @@ nul.unify = {
 				if(b) rv = rv.xadd(b, kb);
 				return rv;
 			}
+			nul.fail();
 		}
 		if('{}'== a.charact && '{}'== b.charact ) return;
 		return 'unk';
@@ -126,13 +121,13 @@ nul.unify = {
 	//locals are distinct
 	//returns an expression or nothing if it is sure nothing is manageable or 'unk' if this function couldn't manage
 	vcvs: function(a, b, kb, way) {
-		if('='== a.charact && 0==way) return nul.unify.andDist(a.components, a.x, b, kb, way);
+		if('='== a.charact) return nul.unify.andDist(a.components, a.x, b, kb, way);
+		if('[]'== a.charact) return nul.unify.orDist(a.components, a.x, b, kb, way);
 
-		if('[-]'== a.charact) {
+		if('[-]'== a.charact && a.components.object.finalRoot()) {
 			if(!a.components.object.take)
-				throw nul.semanticException('Not a set : '+ a.toHTML());
-			if(0>= way && a.components.object.finalRoot() &&
-			(!a.components.object.selfRef() || b.free())) {
+				throw nul.semanticException('Not a set : '+ a.components.object.toHTML());
+			if(0>= way && (!a.components.object.selfRef() || b.free())) {
 				//Try to 'take' the opposite way
 				var trtk = a.components.object.take(b, kb, -1);
 				if(trtk) return nul.unify.level(trtk, a.components.applied, kb, 1).dirty();
@@ -191,28 +186,33 @@ nul.unify = {
 	//<b> and <ax>(<as>' parent locals) are distinct
 	//always returns an expression 
 	orDist: function(as, ax, b, kb, way) {
-		//TODO: enter premiced ctx
-		var rv = kb.trys(
-			'OR distribution', as, ax,
-			function(c, kb) { return nul.unify.level(c, b.clone(), kb, way); });
-		if(nul.debug.assert) assert(rv, 'orDist use')
-		if(!isArray(rv)) return rv;
-		return nul.build.or3(rv).xed(kb, way, ax, b.x);
+		var rv = [];
+		for(var i=0; i<as.length; ++i) {
+			var kwf;
+			var oa = as[i];
+			var ob = b.clone();
+			if('kw'==oa.charact) {
+				kwf = oa.dirty();
+				kwf.components.value = nul.build.unification([oa.components.value, ob]);
+			} else kwf = nul.build.kwFreedom(nul.build.unification([oa, ob])).dirty();
+			rv.push(kwf.evaluate(kb));
+		}
+		return nul.build.ior3(rv).xed(kb, way, ax, b.x);
 	}.perform('nul.unify.orDist'),
 	
 	//unification of <b> with each member of table <as>
 	//<b> and <ax>(<as>' parent locals) are distinct
 	//always returns an expression
 	// way is 0 
-	andDist: function(as, ax, b, kb) {
+	andDist: function(as, ax, b, kb, way) {
+		//TODO: wayed distribution
 		if('='!= b.charact) as.push(b); else as.pushs(b.components);
 		var fl = as.length;
-		as = nul.unify.multiple(as, kb, ax) || as;
+		as = nul.unify.multiple(as, kb, ax, way) || as;
 
 		if(as) switch(as.length) {
-			case 1: return as[0].xed().xed(kb, 0, ax, b.x);
-			case fl: return;
-			default: return nul.build.unification(as, 0).xed(kb, 0, ax, b.x);
+			case 1: return as[0].xed(kb, way, ax, b.x);
+			default: return nul.build.unification(as, 0).xed(kb, way, ax, b.x);
 		}
 	}.perform('nul.unify.andDist')
 };

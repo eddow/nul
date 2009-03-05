@@ -12,7 +12,7 @@ tests = [
 	[
 		{xpr: '{ N x :- 2*x }({4} _)',
 		rslt: '{8}'},
-		{xpr: 'N x; (y, y+1) = (4, x)',
+		{xpr: 'N x; (y+1, y) = (x, 4)',
 		rslt: '{5}'},
 		{xpr: '(z+1, z+2) = (N a, N b)',
 		rslt: '{(&#x2115; (z[0|0] + 1)) , (&#x2115; (z[0|0] + 2))}'},
@@ -25,25 +25,29 @@ tests = [
 		{xpr: '(a+1)=(a+2)=(a+3)',
 		rslt: '{((a[0|0] + 1) = (a[0|0] + 2) = (a[0|0] + 3))}'},
 		{xpr: 'S(n+1,"str"); S= {1, c}; N n',
-		rslt: '{((n[0|0] + 1) := 1) , "str"; ((&#x2115; n[0|0]))}'},
+		rslt: '{((n[0|0] + 1) := 1) , "str"; (&#x2115; n[0|0])}'},
 		{xpr: '{n :- {Q x, Q y :- x+y} (1, n)} 10',
 		rslt: '{11}'}
 	].named('Local management'),
 	[
 	/*
-		{xpr: '{{_}a {_}b (a,b) :- a>b? a : b} [(5,4) :- _]', //fonction MAX
-		rslt: '((5 , 4) &lArr; 5)'},
-		{xpr: '{_}z {_}a (z*1)=(((a+1=a+2);(z = 1)) [] z = 2)',
-		rslt: '((((a[1|4] + 1) = (a[1|4] + 2)) ; 1) &#9633; 2)'},
 		{xpr: '{_}a {_}b {_}c {_}d {_}e {_}f { (a,b,c) [] (d,e,f) }[_,1,2]',
 		rslt: '((a[0|2] , 1 , 2) &#9633; (d[3|2] , 1 , 2))'},
 		{xpr: '{_}a {_}b ({ a [] b }[5], a, b)',
 		rslt: '(((-[0|3] = 5) &#9633; (-[1|3] = 5)) , a[0|1] , b[1|1])'},
 
-		{xpr: '(z+1)=(1 [] 2)',
-		rslt: ''},
 	*/
 		{xpr: 'v; (z=1 [] z=2); v=z',
+		rslt: '{v[0|0]; (1; (v[0|0] = 1) &#9633; 2; (v[0|0] = 2))}'},
+		{xpr: '(z+1)=(1 [] 2)',
+		rslt: '{((1 = (z[0|0] + 1)) &#9633; (2 = (z[0|0] + 1)))}'},
+		{xpr: '{ Q a, Q b :- a ? a > b : b }(6,7)', //fonction MAX
+		rslt: '{7}'},
+		{xpr: '{ a [] b } 5, a, b',
+		rslt: '{(5; (a[2|0] = 5) &#9633; 5; (b[3|0] = 5)) , a[0|0] , b[1|0]}'},
+		{xpr: '(z*1)=(((a+1=a+2);(z = 1)) [] z = 2)',
+		rslt: '{(((a[1|0] + 1) = (a[1|0] + 2) = 1); (z[0|0] = 1) &#9633; 2; (z[0|0] = 2))}'},
+		{xpr: '{ (a,b,c) [] (d,e,f) }(_,1,2)',
 		rslt: ''},
 	].named('OR-s management'),
 	[
@@ -166,8 +170,7 @@ function doTest(tn) {
 	} catch(err) {
 		nul.exception.notice(err);
 		if(nul.erroneusJS) throw nul.erroneusJS;
-		if(nul.failure!= err) return setResult(tn, 'err', err.message || err);
-		v = 'Failure';
+		return setResult(tn, 'err', err.message || err);
 	}
 	if(v== test.rslt) return setResult(tn, 'succ');
 	return setResult(tn, 'fail', v);

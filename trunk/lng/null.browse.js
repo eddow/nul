@@ -12,7 +12,7 @@
 - newSub(xpr, oldSub, newSub) : A new sub-expression is produced (oldSub can be newSub)
 - newAttribute(xpr, name, oldAttr, newAttr) : A new attribute is produced (oldAttr can be == newAttr)
 - finish(xpr, chgd, orig) : returns the final value, knowing the expresion, if it changed and the original expression
-- abort(xpr, willed, orig) : returns nothing. Called instead of 'finish' when a problem occured. <willed> specifies if the abortion had been asked by the behaviour.
+- abort(orig, willed) : returns nothing. Called instead of 'finish' when a problem occured. <willed> specifies if the abortion had been asked by the behaviour.
 - <charact>(xpr) : acts on a specific characterised expression
 */
 nul.browse = {
@@ -44,9 +44,14 @@ nul.browse = {
 			assertKbLen = behav.kb.knowledge.length; assertLc = nul.debug.lc; } 
 
 		var xpr = this.integre(), chg = false;
+		function iif(nv, ov) {
+			if(!nv) return ov;
+			chg = true;
+			return nv;
+		}
 		try {
 			try {
-				if(behav.before) xpr = (behav.before(xpr)||xpr).integre();
+				if(behav.before) xpr = iif(behav.before(xpr), xpr).integre();
 				if('undefined'== typeof behav.browse ||
 						('function'== typeof behav.browse && behav.browse(xpr)) ||
 						behav.browse(xpr))
@@ -59,11 +64,12 @@ nul.browse = {
 						return co;
 					}, xpr);
 				xpr.integre();
-				if(behav[xpr.charact]) xpr = (behav[xpr.charact](xpr) || xpr).integre();
-				chg |= xpr!==this;
+				if(behav[xpr.charact]) xpr = iif(behav[xpr.charact](xpr), xpr);
 			} catch(err) {
 				nul.exception.notice(err);
-				if(behav.abort) behav.abort(xpr, nul.browse.abort== err, this);
+				if(behav.abort) xpr = behav.abort(this, err);
+				else xpr = null;
+				if(xpr) return xpr.integre();
 				if(nul.browse.abort== err) return;
 				throw err;
 			}
@@ -95,10 +101,10 @@ nul.browse = {
 				}
 				throw nul.browse.abort;*/
 			},
-			abort: function(xpr) { if('ctx'== xpr.freedom) --this.ctxDelta; },
+			abort: function(orig) { if('ctx'== orig.freedom) --this.ctxDelta; },
 			finish: function(xpr, chgd, orig) {
 				if('ctx'== orig.freedom) --this.ctxDelta;
-				if(chgd) return xpr.dirty().summarised();
+				if(chgd) return xpr.dirty().summarised().compose();
 			},
 			itmCtxlsz: function(ctxNdx, lindx) {
 				return 0<= ctxNdx && ctxNdx<this.rpl.length && 
@@ -137,8 +143,8 @@ nul.browse = {
 				// TODO: on peut p-e abandonner ....
 				if('ctx'== xpr.freedom) ++this.ctxDelta;
 			}.perform('nul.lclShft->before'),
-			abort: function(xpr) {
-				if('ctx'== xpr.freedom) --this.ctxDelta;
+			abort: function(orig, err) {
+				if('ctx'== orig.freedom) --this.ctxDelta;
 			},
 			finish: function(xpr, chgd) {
 				if('ctx'== xpr.freedom) --this.ctxDelta;
@@ -169,8 +175,8 @@ nul.browse = {
 				if('ctx'== xpr.freedom) --this.ctxDelta;
 				return xpr.summarised();
 			},
-			abort: function(xpr) {
-				if('ctx'== xpr.freedom) --this.ctxDelta;
+			abort: function(orig) {
+				if('ctx'== orig.freedom) --this.ctxDelta;
 			},
 			local: function(xpr) {
 				var rDelta = this.ctxDelta + this.inc;
@@ -195,12 +201,9 @@ nul.browse = {
 			newAttribute: function(xpr, name, oldAttr, newAttr) {
 				return newAttr.clean();
 			},
-			browse: function(xpr) {
-				return !xpr.subOperationManagement;
-			},
 			before: function(xpr) {
 				if(!xpr.flags.dirty) throw nul.browse.abort;
-				if('ctx'== xpr.freedom) this.kb.enter(xpr);
+				if(xpr.freedom) this.kb.push(xpr.makeFrdm(this.kb), xpr.freedom);
 				nul.debug.log('evals')(nul.debug.lcs.collapser('Entering'),xpr);
 			},
 			finish: function(xpr, chgd, orig) {
@@ -214,17 +217,28 @@ nul.browse = {
 						if(rv) { chgd = true; xpr = rv; }
 					}
 					if(!rv && chgd) xpr = xpr.clean();
-				} catch(err) { this.abort(xpr,false,orig); throw nul.exception.notice(err); }
+				} catch(err) { this.abort(orig,err); throw nul.exception.notice(err); }
 				xpr = chgd?xpr:null;
 				nul.debug.log('evals')(nul.debug.lcs.endCollapser('Leave', 'Produce'),
-					xpr?[xpr, 'after', orig]:orig);
-				return ('ctx'== orig.freedom)?this.kb.leave(xpr):xpr;
+					xpr?(xpr!=orig?[xpr, 'after', orig]:['modified', xpr]):orig);
+				if(orig.freedom) {
+					if(!chgd) this.kb.pop(orig.freedom);
+					else {
+						//if('kw'== orig.freedom)  
+						xpr = (xpr.finalise(this.kb)||xpr).takeFrdm(this.kb.pop(orig.freedom));
+					}
+				}
+				return chgd?xpr:null;
+				//TODO: seek for duplicatas
 			},
-			abort: function(xpr, willed, orig) {
-				if(willed) return;
+			abort: function(orig, err) {
+				if(nul.browse.abort== err) return;
+				if(orig.freedom) this.kb.pop(orig.freedom);
+				var xpr;
+				if(nul.failure== err && orig.fail) xpr = orig.fail();
 				nul.debug.log('evals')(nul.debug.lcs.endCollapser('Abort', 'Fail'),
-					xpr?[xpr, 'after', orig]:orig);
-				return ('ctx'== orig.freedom)?this.kb.abort(xpr):xpr;
+					xpr?(xpr!=orig?[xpr, 'after', orig]:['modified', xpr]):orig);
+				return xpr;
 			}
 		};
 	},

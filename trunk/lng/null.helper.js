@@ -18,7 +18,7 @@ function isArray(itm) {
 var cloneStack = [];
 //Duplicate <myObj> and its components
 function clone(myObj) {
-	if(null== myObj || typeof(myObj) != 'object') return myObj;
+	if(null== myObj || typeof(myObj) != 'object' || myObj.ownerDocument) return myObj;
 	if(nul.debug.assert) assert(!cloneStack.contains(myObj), 'Clone not re-entrant'); 
 	cloneStack.push(myObj);
 	try { return map(myObj, function(i, o) { return clone(o); }); }

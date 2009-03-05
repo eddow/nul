@@ -72,6 +72,10 @@ span.global {
 	font-size: large;
 	color: #600060;
 }
+span.failure {
+	font-size: large;
+	color: #800020;
+}
 
 span.local .desc {
 	font-size: xx-small;

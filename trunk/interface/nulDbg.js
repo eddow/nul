@@ -43,7 +43,7 @@ function testEvaluation()
 		
 		nul.debug.assert = $('shwAssert').checked;
 		if($('shwLogging').checked) {
-			nul.debug.logging = {};
+			nul.debug.logging = {error: true};
 			nul.debug.logging.knowledge = nul.debug.watches = $('shwWatches').checked;
 			nul.debug.logging.evals = $('shwLoggingEvals').checked;
 			nul.debug.logging.ctxs = $('shwLoggingCtxs').checked;
@@ -60,7 +60,7 @@ function testEvaluation()
 		else try { evaluate(); }
 		catch( err ) {
 			nul.exception.notice(err);
-			evd.innerHTML = (err == nul.failure)?'Failed.':err.message;
+			evd.innerHTML = err.message;
 			if(nul.debug.watches && err.callStack) nul.debug.callStack.draw(err.callStack);
 			if(nul.debug.watches && err.kb) nul.debug.kbase.draw(err.kb);
 			if(nul.erroneusJS) throw nul.erroneusJS;

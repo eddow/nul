@@ -68,13 +68,13 @@ nul.text = {
 			elm.getElementsBySelector('div.'+knd).each(Element.hide);
 		}
 	},
-	expressionHTML: function(oprtr, oprnds) {
+	expressionHTML: function(oprtr, oprnds, beside) {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
 			strings.push(oprnds[i].toHTML());
 		return strings.join(' '+oprtr+' ');
 	},
-	expressionString: function(oprtr, oprnds) {
+	expressionString: function(oprtr, oprnds, beside) {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
 			strings.push(oprnds[i].toString());

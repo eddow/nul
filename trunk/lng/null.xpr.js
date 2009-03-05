@@ -40,8 +40,9 @@ nul.xpr = {	//Main interface implemented by all expressions
 		switch(this.charact) {
 			case 'atom': return this.value == xpr.value;
 			case 'local': return this.lindx == xpr.lindx && this.ctxDelta==xpr.ctxDelta;
+			case 'native': return this.name == xpr.name; 
 		}
-		return true;
+		throw nul.internalException('Unknown expression to compare : '+this.charact);
 	}.perform('nul.xpr->cmp'),
 /* Makes a summary of components and characteristics :
  *  Fix flags, dependances, ...
@@ -62,7 +63,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 		
 		if(this.makeDeps) dps.push(this.makeDeps());
 		this.deps = nul.lcl.dep.mix(dps);
-		if(this.freedom) {
+		if('ctx'== this.freedom) {
 			this.used = this.deps[0] || {};
 			this.deps = nul.lcl.dep.dec(this.deps, this.used);
 		}
@@ -77,15 +78,6 @@ nul.xpr = {	//Main interface implemented by all expressions
 	}.perform('nl.xpr->summarised').xKeep(),
 	//Be sure the expression is operated until it's not dirty anymore
 	composed: function() { return this.integre(); },	
-	finalise: function(kb) {
-		var xpr = this.integre().known(kb) || this;
-		var cpt = 20;
-		while(xpr.flags.dirty) {
-			xpr = xpr.evaluate(kb) || xpr;
-			if(0>=--cpt) throw nul.internalException('Too much finalisation');
-		}
-		return xpr;
-	}.perform('nul.xpr->finalise').xKeep(),
 	//Get a list of non-fuzzy expressions
 	solve: function() {
 		//if(nul.debug) nul.debug.log('kbLog')(
@@ -108,8 +100,8 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return this.browse(nul.browse.evaluate(kb||nul.kb())) || this.clean();
 	}.perform('nul.xpr->evaluate').xKeep(),
 	//Replace this context's locals according to association/table <ctx>
-	contextualise: function(st) {
-		return this.browse(nul.browse.contextualise([st], 0));
+	contextualise: function(st, sub) {
+		return this.browse(nul.browse.contextualise([st], sub?0:-1));
 	}.perform('nul.xpr->contextualise').xKeep(),
 	known: function(kb) {
 		var sts = [];
@@ -127,6 +119,12 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return this.browse(nul.browse.extraction);
 	}.perform('nul.xpr->extraction').xKeep(),
 
+
+	//This expression wrapped.
+	//ctxDelta-s of outer locals are incremented
+	wrap: function() {
+		return this.browse(nul.browse.lclShft('wrp')) || this;
+	}.perform('nul.xpr->wrap').xKeep(),
 	
 	//This expression wrapped.
 	//ctxDelta-s of outer locals are incremented
@@ -162,6 +160,10 @@ nul.xpr = {	//Main interface implemented by all expressions
 	},
 	
 	compose: function(nComps) {
+		if(!nComps) {
+			if(!this.components) return this.composed();
+			nComps = this.components;
+		}
 		//TODO: '[]',':' use sub-components
 		if(['[]',':','=','&','|','^','+','*','&&','||'].contains(this.charact)) {
 			var nc = [];
@@ -172,8 +174,10 @@ nul.xpr = {	//Main interface implemented by all expressions
 			}
 			nComps = nc;
 		}
-		if(isArray(nComps)) this.components.slice(0);
-		merge(this.components, nComps);
+		if(nComps!== this.components) {
+			if(isArray(nComps)) this.components.splice(0);
+			merge(this.components, nComps);
+		}
 		return this.integre().summarised().composed().integre();
 	}.perform('nul.xpr->compose').xKeep(),
 	xed : function(kb, way, axs) {
@@ -195,7 +199,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	
 	//Gets weither this expresion i failable by itself (cf. attributes, ...)
 	failableNature: function() {
-		return ['<<=','=','?','[-]'].contains(this.charact) ||
+		return ['<<=','=',':=','?','[-]'].contains(this.charact) ||
 			(!this.fixed() && !isEmpty(this.x.attributes));
 	},
 	//Return the failable parts of this expression in an array
@@ -204,14 +208,15 @@ nul.xpr = {	//Main interface implemented by all expressions
 		if(this.failableNature()) return [this];
 		var rv = [];
 		if(this.isFailable && this.isFailable()) {
-			if(this.failableSubs) rv = this.failableSubs();
-			else {	//Add 'this' but without the attributes
-				rv = [clone1(this)];
-				rv[0].x = clone1(this.x);
-				rv[0].x.attributes = {};
-			}
+			//Add 'this' but without the attributes
+			rv = [clone1(this)];
+			rv[0].x = clone1(this.x);
+			rv[0].x.attributes = {};
 		} else if(!this.isFailable)
-			map(this.components, function() { rv.pushs(this.failables()); });
+			map(this.components, function() {
+				if(nul.debug.assert) assert(this.failables, 'Only xprs')
+				rv.pushs(this.failables());
+			});
 		map(this.x.attributes, function() { rv.pushs(this.failables()); });
 
 		return rv;

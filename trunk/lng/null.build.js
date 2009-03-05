@@ -22,19 +22,21 @@ nul.x = function(x) {
 if(nul.debug.xTest) nul.x.cpt = 0;
 
 nul.build = {
-	freedom: function(tp, value, premices, lvals, locals, itm) {
-		itm.freedom = tp;
-		
-		map(itm, function(i, o) { if('function'== typeof o && 'f_'!= i.substr(0,2))
-			itm['f_'+i] = o; })
-		for(var i in nul.behav.freedom) itm[i] = nul.behav.freedom[i];
-		itm.locals = locals;
-		lvals.premices = nul.build.and3(premices);
-		lvals.value = value;
-		return itm.compose(lvals);
+	freeval: function(value, premices) {
+		var rv = premices || [];
+		if(value) rv.value = value;
+		return rv;
 	},
-	ctxFreedom: function(value, premices, lvals, locals, itm) {
-		return this.freedom('ctx', value, premices, lvals, locals, itm);
+	freedom: function(tp, locals, itm) {
+		if(itm.charact && ['{}','kw'].contains(itm.charact)) {
+			itm.freedom = tp;
+			
+			map(itm, function(i, o) { if('function'== typeof o && 'f_'!= i.substr(0,2))
+				itm['f_'+i] = o; })
+			for(var i in nul.behav.freedom) itm[i] = nul.behav.freedom[i];
+			itm.locals = locals;
+		}
+		return itm;
 	},
 	item: function(ops) {
 		var itm = {};
@@ -157,24 +159,26 @@ nul.build = {
 			nul.behav.application,'[-]', {object: obj, applied: apl},'');
 	},
 	kwFreedom: function(value, premices) {	//Knowledge-wide freedom
-		return this.freedom('kw', value, premices, [], [], this.item([], nul.behav.kwFreedom, {
+		return this.freedom('kw', [], this.item(this.freeval(value, premices), nul.behav.kwFreedom, {
 			charact: 'kw',
-			expressionHTML: function() { 
+			expressionHTML: function() {
+				if(!this.components) return '<span class="failure">fail</span>';
 				return this.freedomHTML();
 			},
 			expressionString: function() {
+				if(!this.components) return '&lt;fail&gt;';
 				return this.freedomString();
 			},
 		}));
 	},
-	set: function(value, premices, lvals, locals) {
+	set: function(value, premices, locals) {
 		if(!value) return this.item(null, {
 			charact: '{}',
 			expressionHTML: function() { return '&phi;'; },
 			expressionString: function() { return '&phi;'; },
 			take: function(apl) { nul.fail('Taking from empty set : ' + apl.dbgHTML()); }
 		});
-		return this.ctxFreedom(value, premices, lvals, locals, this.item([], nul.behav.set, {
+		return this.freedom('ctx', locals, this.item(this.freeval(value, premices), nul.behav.set, {
 			charact: '{}',
 			expressionHTML: function() { 
 				return ''+
@@ -237,11 +241,11 @@ nul.build = {
 	and3: function(ops) {
 		return this.listOp(nul.behav.and3,';', ops);
 	},
-	or3: function(ops) {
-		return this.listOp(nul.behav.or3,'[]', ops, '&#9633;');
+	ior3: function(ops) {
+		return this.listOp(merge(nul.behav.ior3, nul.behav.kwFreedomHolder), '[]', ops, '&#9633;');
 	},
 	xor3: function(ops) {
-		return this.listOp(nul.behav.xor3,':', ops);
+		return this.listOp(merge(nul.behav.xor3, nul.behav.kwFreedomHolder),':', ops);
 	},
 	xml: function(node, attrs, content) {
 		var rv = this.lambda(
