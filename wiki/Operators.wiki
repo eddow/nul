@@ -19,6 +19,6 @@
 
 Other structures are :
 || {{{\/local ...}}} || [FuzzyExpressions Fuzzy expressions] ||
-|| {{{[local ... ]}}} || [AutoReferences Auto-references] ||
+|| {{{[local ... ]}}} || [AutoReferences Auto-references] - removed ||
 || {{{{ ... } }}} || [Sets] ||
-|| {{{...[...]}}} || [TakeExpression Token expressions] ||
+|| {{{...(...)}}} || [TakeExpression Token expressions] ||
