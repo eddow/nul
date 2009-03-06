@@ -221,8 +221,8 @@ nul.xpr = {	//Main interface implemented by all expressions
 
 		return rv;
 	},
-	key: function() { return this.x.attributes['']; },
-	keyed: function(k) {
+	handle: function() { return this.x.attributes['']; },
+	handled: function(k) {
 		if(k) this.x.attributes[''] = k;
 		else delete this.x.attributes[''];
 		return this;
