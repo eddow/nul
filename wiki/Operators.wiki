@@ -13,7 +13,7 @@
 || | | || boolean or ||
 ||  !  || boolean negation ||
 || < > <= >= || atom comparison ||
-|| <<= || (up-to come) insert ||
+|| <<+ || (up-to come) insert ||
 || + - `*` / % || atom addition, substraction, multiplication, division, modulo ||
 || & | ^ || atom and, or, xor ||
 
