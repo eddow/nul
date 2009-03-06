@@ -36,7 +36,9 @@ nul.kb = function(knowledge, protectedKb) {
 							this.knowledge[lcl.ctxDelta]));
 			}
 			this.knowledge[lcl.ctxDelta].lvals[lcl.lindx] = lclzd;
-			return xpr.flags.fuzzy?lcl:xpr;
+			return (xpr.flags.fuzzy || (
+				lclzd.deps[-1] && lclzd.deps[-1][lcl.lindx])
+			)?lcl:xpr;
 		}.perform('nul.kb->know'),
 		
 		protectedKnowledge: function(lcl, fct) {
@@ -49,18 +51,12 @@ nul.kb = function(knowledge, protectedKb) {
 			return rv;
 		},
 
-		holder: function(lcl) {
-			if('string'== typeof lcl) lcl = {ctxDelta: 0, lindx: lcl};
-			return this.knowledge[lcl.ctxDelta].lvals[lcl.lindx];
-		},
 		//Gets what is known about a local (or nothing if nothing is known)
-		isKnown: function(lcl) {
-			var rv = this.holder(lcl);
-			return rv || (this.protectedKb && this.protectedKnowledge(lcl,'isKnown'));
-		}.perform('nul.kb->isKnown'),
 		known: function(lcl) {
-			var rv = this.holder(lcl);
-			if(rv) return rv.localise(lcl.ctxDelta);
+			if('object'!= typeof lcl) lcl = {ctxDelta: 0, lindx: lcl};
+			var rv = this.knowledge[lcl.ctxDelta]?
+				this.knowledge[lcl.ctxDelta].lvals[lcl.lindx]:null;
+			if(rv) return rv;
 			if(this.protectedKb) return this.protectedKnowledge(lcl,'known');
 		}.perform('nul.kb->known'),
 		//Affect an expression to a local variable.
@@ -68,22 +64,37 @@ nul.kb = function(knowledge, protectedKb) {
 		affect: function(lcl, xpr) {
 			if(this.affectable(xpr)) {
 				if(xpr.ctxDelta == lcl.ctxDelta && xpr.lindx == lcl.lindx) return lcl;
-				//Always affect to the lowest ctxDelta : the lower in the xpr hyerarchi
-				//Only affect once : circle references kills
+				var kx = this.known(xpr);
 				if( lcl.ctxDelta > xpr.ctxDelta ||
-					(lcl.ctxDelta == xpr.ctxDelta && (
-						lcl.lindx < xpr.lindx || nul.lcl.slf== xpr.lindx)))
+					(lcl.ctxDelta == xpr.ctxDelta && 
+						lcl.lindx < xpr.lindx &&
+						(!kx || !kx.deps[-1] || !kx.deps[-1][lcl.lindx])))
 					{ var tmp = xpr; xpr = lcl; lcl = tmp; }
-			} 
-			if(this.isKnown(lcl)) xpr = nul.unify.level(this.known(lcl), xpr, this);
-			//xpr = xpr.finalise(this) || xpr;
-			/*TODO: error on self or ok if set
-			xpr = xpr.contextualise(
-				nul.lcl.selfCtx(lcl.dbgName, lcl.lindx),
-				lcl.ctxDelta) || xpr;*/
-			if(nul.lcl.slf!= lcl.lindx) return this.know(lcl, xpr);
-			this.know(lcl, xpr);
-			return lcl;
+			}
+			var ovl;
+			if(xpr.deps[0]) for(var d in xpr.deps[0])
+				if((ovl = this.known(d)) && ovl.deps[-1] && ovl.deps[-1][lcl.lindx]) {
+					var st = {};
+					st[lcl.lindx] = xpr;
+					return this.affect(nul.build.local(0, d), ovl.localise().contextualise(st).localise());
+				}
+			if(ovl = this.known(lcl)) {
+				if(xpr.deps[lcl.ctxDelta] && xpr.deps[lcl.ctxDelta][lcl.lindx]) {
+					var st = {};
+					st[lcl.lindx] = ovl;
+					xpr = xpr.contextualise(st,lcl.ctxDelta).evaluate(this);
+					ovl = ovl.localise(lcl.ctxDelta);
+				} else {
+					ovl = ovl.localise(lcl.ctxDelta);
+					if(ovl.deps[lcl.ctxDelta] && ovl.deps[lcl.ctxDelta][lcl.lindx]) {
+						var st = {};
+						st[lcl.lindx] = xpr.localise(lcl.ctxDelta);
+						ovl = ovl.contextualise(st,lcl.ctxDelta).evaluate(this);
+					}
+				}
+				xpr = nul.unify.level(ovl, xpr, this);
+			}
+			return this.know(lcl, xpr);
 		},
 		//Determine if the expression <xpr> can simply be affected a value for this knowledge base.
 		affectable: function(xpr) {
@@ -101,50 +112,30 @@ nul.kb = function(knowledge, protectedKb) {
 	
 		//Context push
 		push: function(frdm, ftp) {
-			switch(ftp) {
-				case 'ctx': this.knowledge.unshift(frdm); break;
-				case 'kw':
-					this.protectedKb = nul.kb(this.knowledge, this.protectedKb);
-					this.knowledge = [];
-					for(var i=0; i<this.protectedKb.knowledge.length; ++i)
-						this.knowledge.push({
-							lvals:[],
-							locals: this.protectedKb.knowledge[i].locals
-						});
-					merge(this.knowledge[0], frdm);
-					break;
-			}
+			this.protectedKb = nul.kb(this.knowledge, this.protectedKb);
+			this.knowledge = [];
+			for(var i=0; i<this.protectedKb.knowledge.length; ++i)
+				this.knowledge.push({
+					lvals:[],
+					locals: this.protectedKb.knowledge[i].locals
+				});
+			if('ctx'== ftp) this.knowledge.unshift(frdm);
+			else merge(this.knowledge[0], frdm);
 			
 			if(nul.debug.watches)
 			{
-				switch(ftp) {
-					case 'ctx':
-						nul.debug.kbase.push(nul.debug.ctxTable(this.knowledge[0]));
-						break;
-					case 'kw': break;	//TODO
-				}
+				if('ctx'== ftp) nul.debug.kbase.push(nul.debug.ctxTable(this.knowledge[0]));
 				if(nul.debug.assert)
 					assert(nul.debug.kbase.length()==this.knowledge.length, 'Entering debug level');
 			}
 		},
 		//Context pop
 		pop: function(ftp) {
-			var rv;
-			switch(ftp) {
-				case 'ctx': rv = this.knowledge.shift(); break;
-				case 'kw':
-					rv = this.knowledge;
-					this.knowledge = this.protectedKb.knowledge;
-					this.protectedKb = this.protectedKb.protectedKb;
-					break;
-			}
+			var rv = this.knowledge;
+			this.knowledge = this.protectedKb.knowledge;
+			this.protectedKb = this.protectedKb.protectedKb;
 			if(nul.debug.watches) {
-				switch(ftp) {
-					case 'ctx':
-						nul.debug.kbase.pop();
-						break;
-					case 'kw': break;	//TODO
-				}
+				if('ctx'== ftp) nul.debug.kbase.pop();
 				if(nul.debug.assert)
 						assert(nul.debug.kbase.length()==this.knowledge.length, 'Leaving debug level');
 			}

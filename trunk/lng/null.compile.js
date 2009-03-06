@@ -59,7 +59,7 @@ nul.operators = [
 	['&&','m'], ['||','m'],					//booleans:conditionals
 	['!','p'],
 	['<','m'], ['>','m'], ['<=','m'], ['>=','m'],
-	['<<=','l'],
+	['<<+','l'],
 	['+','m'], ['-','l'],
 	['-','p'],
 	['*','m'], ['/','l'], ['%','l'],
@@ -164,13 +164,15 @@ nul.compiler = function(txt)
 					if(this.tknzr.take('}')) return nul.compiled.set();
 					return this.tknzr.expect('}', nul.compiled.set(this.expression()));
 				}
-				if(this.tknzr.take('<')) return this.xml();
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 				//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
-				if(!lax) for(var p= 0; p<nul.operators.length; ++p) {
-					var oprtr = nul.operators[p];
-					if('p'== oprtr[1] && this.tknzr.take(oprtr[0]))
-						return nul.compiled.preceded(oprtr[0], this.expression(1+p));
+				if(!lax) {
+					if(this.tknzr.take('<')) return this.xml();
+					for(var p= 0; p<nul.operators.length; ++p) {
+						var oprtr = nul.operators[p];
+						if('p'== oprtr[1] && this.tknzr.take(oprtr[0]))
+							return nul.compiled.preceded(oprtr[0], this.expression(1+p));
+					}
 				}
 				rv = this.tknzr.pop(['alphanum', 'number', 'string']);
 			}

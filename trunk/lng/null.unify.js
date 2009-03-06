@@ -127,7 +127,7 @@ nul.unify = {
 		if('[-]'== a.charact && a.components.object.finalRoot()) {
 			if(!a.components.object.take)
 				throw nul.semanticException('Not a set : '+ a.components.object.toHTML());
-			if(0>= way && (!a.components.object.selfRef() || b.free())) {
+			if(0>= way) {
 				//Try to 'take' the opposite way
 				var trtk = a.components.object.take(b, kb, -1);
 				if(trtk) return nul.unify.level(trtk, a.components.applied, kb, 1).dirty();

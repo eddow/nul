@@ -73,7 +73,6 @@ nul.xpr = {	//Main interface implemented by all expressions
 		if((!this.flags || this.flags.dirty) && !flags.dirty && this.operable()) flags.dirty = true;
 		this.flags = flags;
 		
-		
 		return this;
 	}.perform('nl.xpr->summarised').xKeep(),
 	//Be sure the expression is operated until it's not dirty anymore
@@ -100,8 +99,8 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return this.browse(nul.browse.evaluate(kb||nul.kb())) || this.clean();
 	}.perform('nul.xpr->evaluate').xKeep(),
 	//Replace this context's locals according to association/table <ctx>
-	contextualise: function(st, sub) {
-		return this.browse(nul.browse.contextualise(isArray(st)?st:[st], sub?0:-1));
+	contextualise: function(st, dlt) {
+		return this.browse(nul.browse.contextualise(isArray(st)?st:[st], dlt||0)) || this;
 	}.perform('nul.xpr->contextualise').xKeep(),
 	known: function(kb) {
 		var sts = [];
@@ -111,7 +110,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 				if(kb.knowledge[j].lvals[i] && !kb.knowledge[j].lvals[i].flags.fuzzy)
 					sts[j][i] = kb.knowledge[j].lvals[i];
 		}
-		return this.contextualise(sts, 'sub');
+		return this.contextualise(sts);
 	}.perform('nul.xpr->known').xKeep(),
 	
 	//Take the side-effected value of this expression
@@ -138,19 +137,20 @@ nul.xpr = {	//Main interface implemented by all expressions
 	}.perform('nul.xpr->stpDn').xKeep(),
 
 	//Transform an expression from kb local-space to expression local-space and vice versa
-	localise: function(inc) {
-		//TODO: optimise: throw nul.unlocalisable en fonction des dépendances
-		var rv = this.clone();
-		return rv.browse(nul.browse.localise(inc||0)) || rv;
+	nclocalise: function(inc) {
+		return this.browse(nul.browse.localise(inc||0)) || this;
 	}.perform('nul.xpr->localise').xKeep(),
+
+	localise: function(inc) {
+		return this.clone().nclocalise(inc);
+	}.perform('nul.xpr->localise').xKeep(),
+
 	//Shortcut: Weither this epression is free of dependance toward external locals
 	free: function() { return nul.lcl.dep.free(this.deps); }.perform('nul.xpr->free'),
 	//If the root expression of this operand will be kept forever
 	finalRoot: function() { return !this.operate && 'local'!= this.charact; },
-	//If this expression is self-refering
-	selfRef: function() { return this.deps[0] && this.deps[0][nul.lcl.slf]; },
 	//If this operand will keep this value forever
-	fixed: function() { return this.free() && this.finalRoot() && !this.selfRef(); },
+	fixed: function() { return this.free() && this.finalRoot() },
 	subFixed: function() { return !trys(this.components, function() { return !this.fixed(); }) },
 	operable: function() { return !!this.operate; },
 	clean: function() { delete this.flags.dirty; return this; },
@@ -199,7 +199,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	
 	//Gets weither this expresion i failable by itself (cf. attributes, ...)
 	failableNature: function() {
-		return ['<<=','=',':=','?','[-]'].contains(this.charact) ||
+		return ['<<+','=',':=','?','[-]'].contains(this.charact) ||
 			(!this.fixed() && !isEmpty(this.x.attributes));
 	},
 	//Return the failable parts of this expression in an array

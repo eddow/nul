@@ -10,7 +10,6 @@
 - browse
 - before(xpr) : returns nothing to remain unchanged or something as new value to browse
 - newSub(xpr, oldSub, newSub) : A new sub-expression is produced (oldSub can be newSub)
-- newAttribute(xpr, name, oldAttr, newAttr) : A new attribute is produced (oldAttr can be == newAttr)
 - finish(xpr, chgd, orig) : returns the final value, knowing the expresion, if it changed and the original expression
 - abort(orig, willed) : returns nothing. Called instead of 'finish' when a problem occured. <willed> specifies if the abortion had been asked by the behaviour.
 - <charact>(xpr) : acts on a specific characterised expression
@@ -60,7 +59,7 @@ nul.browse = {
 						var co = this.browse(behav);
 						chg |= !!co;
 						co = co||this;
-						if(behav.newComponent) co = behav.newComponent(xpr, this, co) || co;
+						if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
 						return co;
 					}, xpr);
 				xpr.integre();
@@ -108,7 +107,9 @@ nul.browse = {
 			},
 			itmCtxlsz: function(ctxNdx, lindx) {
 				return 0<= ctxNdx && ctxNdx<this.rpl.length && 
-					this.rpl[ctxNdx][lindx];
+					this.rpl[ctxNdx][lindx] && (
+						!this.rpl[ctxNdx][lindx].deps[-1] ||
+						!this.rpl[ctxNdx][lindx].deps[-1][lindx]);
 			},
 			local: function(xpr) {
 				var ctxNdx = xpr.ctxDelta-this.ctxDelta;
@@ -148,7 +149,6 @@ nul.browse = {
 			}.perform('nul.lclShft->finish'),
 			local: function(xpr) {
 				if('wrp'!= this.action && xpr.ctxDelta==this.ctxDelta) {
-					assert(nul.lcl.slf!= xpr.lindx, 'Dont move self');
 					xpr.lindx += this.inc;
 					if(['upg', 'sdn'].contains(this.action)) ++xpr.ctxDelta;
 				} else if('sup'== this.action && xpr.ctxDelta>this.ctxDelta) --xpr.ctxDelta;
@@ -191,8 +191,8 @@ nul.browse = {
 		return {
 			name: 'evaluation',
 			kb: kb,
-			newComponent: function(xpr, oldComp, newComp) {
-				return newComp.clean();
+			newSub: function(xpr, oldSub, newSub) {
+				return newSub.clean();
 			},
 			newAttribute: function(xpr, name, oldAttr, newAttr) {
 				return newAttr.clean();
@@ -204,25 +204,28 @@ nul.browse = {
 			},
 			finish: function(xpr, chgd, orig) {
 				var assertKbLen, assertLc;
-				if(nul.debug.assert) { assertKbLen = this.kb.knowledge.length; assertLc = nul.debug.lc; } 
-				xpr.summarised().composed();	//warn: if must use KB, the KB is one too much inside here
 				try {
+					if(nul.debug.assert) { assertKbLen = this.kb.knowledge.length; assertLc = nul.debug.lc; } 
+					xpr.summarised().composed();
 					var rv;
 					if(xpr.operable()) {
 						rv = xpr.operate(this.kb);
 						if(rv) { chgd = true; xpr = rv; }
 					}
-					if(!rv && chgd) xpr = xpr.clean();
-				} catch(err) { this.abort(orig,err); throw nul.exception.notice(err); }
+					if(!rv && chgd) { xpr = xpr.clean(); chgd = true; }
+					if(orig.freedom && chgd) xpr = xpr.finalise(this.kb)||xpr;
+				} catch(err) {
+					var rv = this.abort(orig,err);
+					if(rv) return rv;
+					throw nul.exception.notice(err);
+				}
 				xpr = chgd?xpr:null;
 				nul.debug.log('evals')(nul.debug.lcs.endCollapser('Leave', 'Produce'),
 					xpr?(xpr!=orig?[xpr, 'after', orig]:['modified', xpr]):orig);
+				
 				if(orig.freedom) {
 					if(!chgd) this.kb.pop(orig.freedom);
-					else {
-						//if('kw'== orig.freedom)  
-						xpr = (xpr.finalise(this.kb)||xpr).takeFrdm(this.kb.pop(orig.freedom));
-					}
+					else xpr = xpr.takeFrdm(this.kb.pop(orig.freedom));
 				}
 				return chgd?xpr:null;
 				//TODO: seek for duplicatas

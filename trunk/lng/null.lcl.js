@@ -7,8 +7,6 @@
  *--------------------------------------------------------------------------*/
  
 nul.lcl = {
-	slf: '&crarr;',
-	rcr: '&uarr;',
 	//Manage dependances
 	dep : {
 		//The empty dependances
@@ -27,18 +25,16 @@ nul.lcl = {
 			rv[delta][lndx] = cnt||1;
 			return rv;
 		},
-		//mix the dependances <d1> and <d2>
-		//<d1> can also be a table[] and no <d2>
-		mix: function(d1, d2) {
-			if(d2) d1 = [ d1, d2 ];
+		//mix the dependances in the array <dn>
+		mix: function(ds) {
 			var rv = {};
-			for(var dn = 0; dn< d1.length; ++dn )
-				for(var d in d1[dn])
+			for(var dn = 0; dn< ds.length; ++dn )
+				for(var d in ds[dn])
 				{
 					if(!rv[d]) rv[d] = {};
-					for(var l in d1[dn][d])
-						if(!rv[d][l]) rv[d][l] = d1[dn][d][l];
-						else rv[d][l] += d1[dn][d][l];
+					for(var l in ds[dn][d])
+						if(!rv[d][l]) rv[d][l] = ds[dn][d][l];
+						else rv[d][l] += ds[dn][d][l];
 				}
 			return rv;
 		},
@@ -53,12 +49,5 @@ nul.lcl = {
 			}
 			return nDeps;
 		}
-	},
-	//Create a context where a variable is associated to 'self'
-	//<lindx> is the local-index of variable becoming 'self'
-	selfCtx: function(dbgName, lindx, ctx) {
-		var rv = ctx?clone1(ctx):[];
-		rv[lindx] = nul.build.local(-1, nul.lcl.slf, dbgName||'');
-		return rv;
 	}
 };

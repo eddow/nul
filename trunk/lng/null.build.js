@@ -10,7 +10,8 @@ nul.x = function(x) {
 	rv.attributes = x&&x.attributes?clone1(x.attributes):{};
 	rv.clone = function() { return nul.x(this); };
 	rv.xadd = function(x, kb) {
-		if(nul.debug.xTest) assert(this.dbg!= x.dbg, 'X doesnt merge to itself');
+		//TODO: avoid too much xadd
+		//if(nul.debug.xTest) assert(this.dbg!= x.dbg, 'X doesnt merge to itself');
 		merge(this.attributes, x.attributes, function(a,b) { return nul.unify.level(a,b, kb); });
 		for(var i in x) if(!['attributes'].contains(i))
 			this[i] = x[i];
@@ -192,7 +193,7 @@ nul.build = {
 		}));
 	},
 	seAppend: function(dst, itms) {
-		return this.nmdOp(nul.behav.seAppend,'<<=', { effected: dst, appended: itms }, '&lt;&lt;=');
+		return this.nmdOp(nul.behav.seAppend,'<<+', { effected: dst, appended: itms }, '&lt;&lt;=');
 	},
 	lambda: function(parms, value) {
 		if(value.key()) return nul.build.lambda(parms, value.key());
@@ -216,9 +217,9 @@ nul.build = {
 			function() {
 				if(1==this.components.length && !this.components.follow)
 					return '{'+this.components[0].toString()+'}';
-				var rv = nul.text.expressionString(',', this.components);
-				if(!this.components.follow) return rv;
-				return rv.substr(0,rv.length-1)+' ,.. '+this.components.follow.toString()+')';
+				var rv = '('+nul.text.expressionString(',', this.components);
+				if(!this.components.follow) return rv + ')';
+				return rv +' ,.. '+this.components.follow.toString()+')';
 			}			
 		]);
 	},

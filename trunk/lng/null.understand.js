@@ -77,7 +77,7 @@ nul.understanding = {
 			case '=':	return nul.build.unification(ops, 0);
 			case ':=':	return nul.build.unification(ops, -1);
 
-			case '<<=':	return nul.build.seAppend(ops[0], ops[1]);
+			case '<<+':	return nul.build.seAppend(ops[0], ops[1]);
 
 			case '?': 
 				ub.know(nul.build.assert(ops[1]));
@@ -139,6 +139,7 @@ nul.understanding = {
 	},
 	
 	definition: function(ub) {
+		if('_'== this.decl) throw nul.semanticException('Cannot declare joker !')
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
 	},

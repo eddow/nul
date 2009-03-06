@@ -19,7 +19,7 @@ function lclCntx(knwldg) {
 		i = reTyped(i);
 		if(
 		st[i] && st[i].deps && st[i].deps[-1] &&
-		!isEmpty(st[i].deps[-1], [nul.lcl.slf]) &&
+		!isEmpty(st[i].deps[-1]) &&
 		!st[i].reindexing)
 			tSrt.push(i);
 		else {
@@ -28,16 +28,18 @@ function lclCntx(knwldg) {
 		}
 	}
 	///// Sorting the locals table
+	var cpt = 100;
 	while(0< tSrt.length) {
+		if(nul.debug.assert) assert(0<--cpt, 'Infinite loop security');
 		if(i >= tSrt.length) i = 0;
-		if(trys(st[tSrt[i]].deps[-1], function(i) { 
-			return !slTbl.contains(i) && !nSrt.contains(i);
+		if(trys(st[tSrt[i]].deps[-1], function(l) { 
+			return !slTbl.contains(l) && !nSrt.contains(l) && l!= tSrt[i];
 		})) ++i;
 		else slTbl.push(tSrt.splice(i,1)[0]);
 	}
 	///// Now, contextualise the locals the sorted way
 	for(i = 0; i<slTbl.length; ++i) {
-		var v = st[slTbl[i]].localise().contextualise(knwldg, 'sub');
+		var v = st[slTbl[i]].localise().contextualise(knwldg);
 		if(v) st[slTbl[i]] = v.localise();
 	}	
 }
@@ -124,7 +126,74 @@ nul.behav = {
 		},
 		integrity: function() {
 			return this.charact == {kw:'kw', ctx:'{}'}[this.freedom];
-		}
+		},
+		takeFrdm: function(knwldg) {
+			if(nul.debug.assert) assert(this.components === knwldg[0].premices, 'Expression kept ctx');
+			var ck = [];
+			var lclPrmcs = [];
+			while((('ctx'==this.freedom)?1:0)<knwldg.length) {
+				var ctx = knwldg.pop();
+				var ltrCtx = {};
+				var st = {};
+				//We need a map and not an array for lclCntx
+				for(var i=0; i<ctx.lvals.length; ++i)
+					if(!ctx.lvals[i] ||
+					!ctx.lvals[i].deps[-1] ||
+					!ctx.lvals[i].deps[-1][i]) st[i] = ctx.lvals[i];
+					else ltrCtx[i] = true;
+				ck.unshift(st);
+				lclCntx(ck);
+				for(var i=0; i<ctx.locals.length; ++i) if(st[i]) {
+					var vi = st[i].localise();
+					if(ltrCtx[i]) vi = vi.contextualise(ck) || vi;
+					lclPrmcs.unshift(
+						nul.build.unification([
+							nul.build.local(knwldg.length, i, ctx.locals[i]),
+							vi
+						]).clean());
+				}
+			}
+			if('ctx'==this.freedom) {
+				this.summarised(); //To have the 'used' table filled 
+				var st = {};
+				var delta = 0;
+				var ltrCtx = {};
+				var ctx = knwldg.pop();
+				for(var i=0; i<ctx.locals.length; ++i) {
+					var v = ctx.lvals[i];
+					//TODO: si utilisé une fois et sans valeur : remplacer par un joker ?
+					// mieux: si utilisé une fois dans le prémices sur une égalité, enlever;
+					// sur un take, si set, enlever; si token : set not {}
+					if(!this.used[i+delta] || (v &&
+						(1==this.used[i+delta] || !v.flags.fuzzy) &&
+						!v.deps[-1][i+delta])
+					) {
+						ctx.lvals.splice(i,1);
+						ctx.locals.splice(i,1);
+						++delta; --i;
+						st[i+delta] = v;
+					} else if(0< delta) {
+						st[i+delta] = nul.build.local(-1, i, ctx.locals[i]);
+						st[i+delta].reindexing = true;
+						if(v) ltrCtx[i] = true;	//Self-refered contextualise after other locals
+					}
+				}
+				ck.unshift(st);
+				if(0< delta) lclCntx(ck);	
+				for(var i=0; i<ctx.lvals.length; ++i) if(ctx.lvals[i]) {
+					var vi = ctx.lvals[i].localise();
+					if(ltrCtx[i]) vi = vi.contextualise(ck) || vi;
+					lclPrmcs.unshift(
+						nul.build.unification(
+							[nul.build.local(0, i, ctx.locals[i]),
+							vi
+						]).clean());
+				}			
+			}
+			var rv = this.contextualise(ck,'ctx'==this.freedom?-1:0) || this;
+			rv.components.pushs(lclPrmcs);
+			return rv.composed().summarised();
+		}.perform('freedom->takeFrdm')
 	},
 	html_place: {
 		transform: function() { return true; },
@@ -147,8 +216,7 @@ nul.behav = {
 	},
 	application: {
 		operable: function() {
-			return this.components.object.finalRoot() && (
-				!this.components.object.selfRef() || this.components.applied.free());
+			return this.components.object.finalRoot();
 		},
 		operate: function(kb) {
 			if(!this.components.object.take)
@@ -157,7 +225,7 @@ nul.behav = {
 			if(rv) return rv.xadd(this);
 			if(!this.components.object.transform()) {
 				kb.premiced(this.clean().clone());
-				return this.components.applied;
+				return this.components.applied.xadd(this);
 			}
 		}.perform('application->operate').xKeep()
 	},
@@ -172,6 +240,7 @@ nul.behav = {
 		},
 		fail: function() {
 			delete this.components;
+			this.flags = this.deps = {};
 			return this;
 		},
 		makeFrdm: function(kb) {
@@ -190,27 +259,6 @@ nul.behav = {
 					return this;
 				}
 			};
-		},
-		takeFrdm: function(knwldg) {
-			if(nul.debug.assert) assert(this.components === knwldg[0].premices, 'Expression kept ctx');
-			var ck = [];
-			var lclPrmcs = [];
-			while(0<knwldg.length) {
-				var cl = knwldg.pop();
-				var st = {};
-				//We need a map and not an array for lclCntx
-				for(var i=0; i<cl.lvals.length; ++i) st[i] = cl.lvals[i];
-				ck.unshift(st);
-				lclCntx(ck);
-				for(var i=0; i<cl.locals.length; ++i) if(st[i]) lclPrmcs.unshift(
-					nul.build.unification([
-						nul.build.local(knwldg.length, i, cl.locals[i]),
-						st[i].localise()
-					]).clean());
-			}
-			var rv = this.contextualise(ck,'sub') || this;
-			rv.components.pushs(lclPrmcs);
-			return rv.composed();
 		}
 	},
 	set: {
@@ -232,7 +280,7 @@ nul.behav = {
 			return nul.unify.level(this.clone().stpUp(kb), apl, kb, way);
 		}.perform('set->take'),
 		fail: function() {
-			return nul.build.set();
+			return nul.build.set().xadd(this);
 		},
 		extract: function() {
 			//TODO: remember extraction and use it instead from now on
@@ -273,40 +321,7 @@ nul.behav = {
 					return this;
 				}
 			};
-		},
-		takeFrdm: function(ctx) {
-			if(nul.debug.assert) assert(this.components === ctx.premices, 'Expression kept ctx');
-			this.locals = ctx.locals;
-			this.summarised(); //To have the 'used' table filled 
-			var st = {};
-			var delta = 0;
-			
-			for(var i=0; i<ctx.locals.length; ++i) {
-				var v = ctx.lvals[i];
-				//TODO:Les auto-refs ne se remplacent pas
-				//TODO: si utilisé une fois et sans valeur : remplacer par un joker ?
-				if(!this.used[i+delta] || (v && 1==this.used[i+delta]) || 
-					(v && !v.flags.fuzzy)) {
-					ctx.lvals.splice(i,1);
-					ctx.locals.splice(i,1);
-					++delta; --i;
-					st[i+delta] = v;
-				} else if(0< delta) {
-					st[i+delta] = nul.build.local(-1, i, ctx.locals[i]);
-					st[i+delta].reindexing = true;
-				}
-			}
-			if(0>= delta) return this.composed();
-			lclCntx([st]);
-			this.contextualise(st);
-			
-			for(var i=0; i<ctx.lvals.length; ++i) if(ctx.lvals[i]) this.components.unshift(
-				nul.build.unification(
-					[nul.build.local(0, i, this.locals[i]),
-					ctx.lvals[i].localise()
-				]).clean());
-			return this.composed();
-		}.perform('set->takeCtx').xKeep()
+		}
 	},
 	seAppend: {
 		extract: function() {
@@ -446,8 +461,8 @@ nul.behav = {
 		}.perform('and3->composed').xKeep(),
 	},
 	kwFreedomHolder: {
-		operate: function(kb) {
-			var i=0, l = this.components.length;
+		composed: function() {
+			var i=0;
 			while(i<this.components.length)
 				//If component is failed, remove it
 				if('kw'== this.components[i].charact && !this.components[i].components)
@@ -459,12 +474,18 @@ nul.behav = {
 			if(i<this.components.length) this.components.splice(++i);
 			switch(i) {
 				case 0: nul.fail();
-				case 1:
-					if('kw'== this.components[0].charact)
-						kb.premiced(this.components[0].components);
-					return this.components[0];
-				case l: return;
-				default: return this;
+				case 1: this.dirty();
+			}
+			return this;
+		}.perform('kwFreedomHolder->composed'),
+		operate: function(kb) {
+			if(1== this.components.length) {
+				var rv = this.components[0];
+				if('kw'== rv.charact) {
+					kb.premiced(rv.components);
+					rv = rv.components.value;
+				}
+				return rv.xadd(this);
 			}
 		}.perform('kwFreedomHolder->operate').xKeep(),
 	},

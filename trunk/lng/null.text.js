@@ -100,8 +100,6 @@ nul.text = {
 		}
 		if(this.freedom && 0<this.locals.length) {
 			aLocals = [];
-			if(this.deps && this.deps[0] && this.deps[0][nul.lcl.slf])
-				aLocals.push(nul.lcl.slf);
 			for(var i=0; i<this.locals.length; ++i)
 				aLocals.push(this.locals[i]);
 			if(0<aLocals.length) aLocals = nul.text.js.tile('locals', aLocals.join(', '));
