@@ -117,14 +117,14 @@ nul.text = {
 		if('undefined'!= typeof this.x.lvl)
 			rv += '<div class="shortStr level" style="display: none;" >' +
 				this.x.lvl + '</div>';
-		if(this.key()) rv += this.key().toHTML() + '<span class="op">&lArr;</span>'; 
+		if(this.handle()) rv += this.handle().toHTML() + '<span class="op">&lArr;</span>'; 
 		rv += this.expressionHTML();
 		var cls = this.freedom?' freedom':'';
 		return '<span class="xpr'+cls+'">'+rv+'</span>';
 	}.perform('nul.text->toHTML'),
 	toString: function() {
-		if(!this.key()) return this.expressionString();
-		return this.key().toString() + ' :- ' + this.expressionString();
+		if(!this.handle()) return this.expressionString();
+		return this.handle().toString() + ' :- ' + this.expressionString();
 	},
 	clpsSstm : function(table, uc, lcFct) {
 		return table ? table.clpsSstm = {

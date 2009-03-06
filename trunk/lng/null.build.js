@@ -196,8 +196,8 @@ nul.build = {
 		return this.nmdOp(nul.behav.seAppend,'<<+', { effected: dst, appended: itms }, '&lt;&lt;=');
 	},
 	lambda: function(parms, value) {
-		if(value.key()) return nul.build.lambda(parms, value.key());
-		return value.keyed(parms).summarised();
+		if(value.handle()) return nul.build.lambda(parms, value.handle());
+		return value.handled(parms).summarised();
 	},
 	cumulExpr: function(oprtr, oprnds) {
 		return this.listOp(nul.behav.cumulExpr,oprtr, oprnds, mathSymbol(oprtr));

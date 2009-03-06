@@ -153,12 +153,12 @@ nul.unify = {
 			} else way = way||0;
 			
 			if(0<way) {
-				var bkey = b.key(); b.keyed();
-				if(a.key()) {
-					kb.premiced([nul.unify.level(a.key(), b, kb, 1)]);
-					return a.keyed(bkey);
+				var bkey = b.handle(); b.handled();
+				if(a.handle()) {
+					kb.premiced([nul.unify.level(a.handle(), b, kb, 1)]);
+					return a.handled(bkey);
 				}
-				if(bkey) return nul.unify.level(a, b, kb, 1).keyed(bkey);
+				if(bkey) return nul.unify.level(a, b, kb, 1).handled(bkey);
 			}
 			var rv = nul.unify.subs(a, b, kb, way);
 			if('unk'!== rv) return rv;
