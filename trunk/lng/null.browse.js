@@ -73,6 +73,7 @@ nul.browse = {
 				throw err;
 			}
 			if(behav.finish) { xpr = behav.finish(xpr, chg, this); chg = true; }
+			if(chg && xpr) xpr = xpr.summarised();
 		} catch(err) { throw nul.exception.notice(err);
 		} finally { if(nul.debug.assert && behav.kb)
 			assert(assertKbLen== behav.kb.knowledge.length,
@@ -83,38 +84,21 @@ nul.browse = {
 		nul.debug.log('perf')('Useless browse for '+behav.name,this);			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
-	contextualise: function(rpl, dlt) {
+	contextualise: function(rpl) {
 		return {
 			name: 'contextualisation',
-			ctxDelta: dlt||0,
 			rpl: rpl,
+			eqProtect: [0],
 			before: function(xpr) {
-				if('ctx'== xpr.freedom) ++this.ctxDelta;
-				/*TODO: avoid useless sub-contextualisation
-				for(var cd in xpr.deps) {
-					cd = reTyped(cd);
-					if(this.ctxDelta<= cd && cd <this.ctxDelta+this.knwldg.length)
-						for(var li in xpr.deps[cd])
-							if(this.itmCtxlsz(cd-this.ctxDelta, li))
-								return;
-				}
-				throw nul.browse.abort;*/
+				if(xpr.unification) this.eqProtect.unshift(0);
+				else --this.eqProtect[0];
 			},
-			abort: function(orig) { if('ctx'== orig.freedom) --this.ctxDelta; },
 			finish: function(xpr, chgd, orig) {
-				if('ctx'== orig.freedom) --this.ctxDelta;
-				if(chgd) return xpr.dirty().summarised().compose();
-			},
-			itmCtxlsz: function(ctxNdx, lindx) {
-				return 0<= ctxNdx && ctxNdx<this.rpl.length && 
-					this.rpl[ctxNdx][lindx] && (
-						!this.rpl[ctxNdx][lindx].deps[-1] ||
-						!this.rpl[ctxNdx][lindx].deps[-1][lindx]);
-			},
-			local: function(xpr) {
-				var ctxNdx = xpr.ctxDelta-this.ctxDelta;
-				if(this.itmCtxlsz(ctxNdx, xpr.lindx))
-					return this.rpl[ctxNdx][xpr.lindx].localise(xpr.ctxDelta).xadd(xpr.x);
+				xpr.summarised();
+				if(chgd) xpr.dirty();
+				if(0!= ++this.eqProtect[0] && this.rpl[xpr.ndx]) return this.rpl[xpr.ndx];
+				if(orig.unification) this.eqProtect.shift();
+				if(chgd) return xpr;
 			}
 		};
 	},
@@ -125,67 +109,55 @@ nul.browse = {
 		},
 		finish: function(xpr, chgd) {
 			if(xpr.extract) return xpr.extract();
-			if(chgd) return xpr.summarised().dirty();
+			if(chgd) return xpr.dirty();
 		}
 	},
-	lclShft: function(act, n) {
+	lclShft: function(act, inc, ctxN) {
 		return {
 			name: 'local shifting',
-			ctxDelta: ('undefined'!= typeof n)?-1:0,
-			inc: n||0,
 			action: act,
-			before: function(xpr) {
-				//if(!nul.debug.levels && !this.shifted(xpr))
-				//	throw nul.browse.abort;
-				// TODO: on peut p-e abandonner ....
-				if('ctx'== xpr.freedom) ++this.ctxDelta;
-			}.perform('nul.lclShft->before'),
-			abort: function(orig, err) {
-				if('ctx'== orig.freedom) --this.ctxDelta;
-			},
-			finish: function(xpr, chgd) {
-				if('ctx'== xpr.freedom) --this.ctxDelta;
-				if(chgd) return xpr.summarised();
-			}.perform('nul.lclShft->finish'),
+			inc: inc,
+			ctxN: ctxN,
 			local: function(xpr) {
-				if('wrp'!= this.action && xpr.ctxDelta==this.ctxDelta) {
+				switch(this.action) {
+					case 'sdn':
+						if(xpr.ctxDelta < this.ctxN) return;
+						xpr.ctxDelta += this.inc;
+						break;
+					case 'sup':
+						if(xpr.ctxDelta < this.ctxN) return;
+						if(xpr.ctxDelta == this.ctxN) xpr.lindx += this.inc;
+						--xpr.ctxDelta;
+						break;
+				}
+				/*if('wrp'!= this.action && xpr.ctxDelta==this.ctxDelta) {
 					xpr.lindx += this.inc;
 					if(['upg', 'sdn'].contains(this.action)) ++xpr.ctxDelta;
 				} else if('sup'== this.action && xpr.ctxDelta>this.ctxDelta) --xpr.ctxDelta;
 				else if(['wrp', 'sdn'].contains(this.action) && xpr.ctxDelta>this.ctxDelta) ++xpr.ctxDelta;
-				else return;
+				else return;*/
 				return xpr;
 			}.perform('nul.lclShft->local')
 		};
 	},
-	localise: function(inc) {
-		return {
-			name: 'localisation',
-			inc: inc,
-			ctxDelta: 0,
-			before: function(xpr) {
-				if(isEmpty(xpr.deps)) throw nul.browse.abort;
-				if('ctx'== xpr.freedom) ++this.ctxDelta;
-			},
-			finish: function(xpr, chgd) {
-				if('ctx'== xpr.freedom) --this.ctxDelta;
-				return xpr.summarised();
-			},
-			abort: function(orig) {
-				if('ctx'== orig.freedom) --this.ctxDelta;
-			},
-			local: function(xpr) {
-				var rDelta = this.ctxDelta + this.inc;
-				//From kb local-space to expression local-space 
-				if(0>xpr.ctxDelta) xpr.ctxDelta = rDelta-1-xpr.ctxDelta;
-				//The same in any local-space 
-				else if(this.ctxDelta > xpr.ctxDelta) return;
-				//From expression local-space to kb local-space 
-				else if(rDelta <= xpr.ctxDelta) xpr.ctxDelta = rDelta-1-xpr.ctxDelta;
-				else throw nul.unlocalisable;
-				return xpr;
-			}
-		};
+	absolutise: {
+		name: 'absolutisation',
+		ctxDelta: -1,
+		before: function(xpr) {
+			if('ctx'== xpr.freedom) ++this.ctxDelta;
+		}.perform('nul.lclShft->before'),
+		abort: function(orig, err) {
+			if('ctx'== orig.freedom) --this.ctxDelta;
+		},
+		finish: function(xpr, chgd) {
+			if('ctx'== xpr.freedom) --this.ctxDelta;
+			if(chgd) return xpr.summarised();
+		},
+		local: function(xpr) {
+			xpr.ctxDelta = this.ctxDelta-xpr.ctxDelta;
+			xpr.ndx = xpr.acNdx = '['+xpr.lindx+'|'+xpr.ctxDelta+']'
+			return xpr.summarised();
+		}.perform('nul.lclShft->local')
 	},
 	evaluate: function(kb) {
 		return {
@@ -199,7 +171,7 @@ nul.browse = {
 			},
 			before: function(xpr) {
 				if(!xpr.flags.dirty) throw nul.browse.abort;
-				if(xpr.freedom) this.kb.push(xpr.makeFrdm(this.kb), xpr.freedom);
+				if(xpr.freedom) xpr.makeFrdm(this.kb);
 				nul.debug.log('evals')(nul.debug.lcs.collapser('Entering'),xpr);
 			},
 			finish: function(xpr, chgd, orig) {
@@ -225,7 +197,7 @@ nul.browse = {
 				
 				if(orig.freedom) {
 					if(!chgd) this.kb.pop(orig.freedom);
-					else xpr = xpr.takeFrdm(this.kb.pop(orig.freedom));
+					else this.kb.pop(xpr);
 				}
 				return chgd?xpr:null;
 				//TODO: seek for duplicatas

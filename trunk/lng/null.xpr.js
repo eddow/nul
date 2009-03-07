@@ -52,22 +52,25 @@ nul.xpr = {	//Main interface implemented by all expressions
 		//TODO: vérifier qu'il n'y a pas de redondance : NE PAS TROP SUMMARISER
 		var dps = [];
 		var flags = {};
+		var ndx = '';
 		nul.browse.subs(this.integre(),function() {
 			if(nul.debug.assert) assert(this.deps,'Subs summarised.'); 
 			dps.push(this.deps);
 			for(var f in this.flags) flags[f] = true;
+			ndx += '|' + this.ndx;
 		});
 
+		if(this.acNdx) this.ndx = this.acNdx;
+		else this.ndx = '[' + this.charact + ndx + ']';
 		if(['{}', ';'].contains(this.charact)) delete flags.fuzzy;
 		if(['[-]','[]'].contains(this.charact)) flags.fuzzy = true;
 		
 		if(this.makeDeps) dps.push(this.makeDeps());
 		this.deps = nul.lcl.dep.mix(dps);
-		if('ctx'== this.freedom) {
+		if('-ctx'== this.freedom) {
 			this.used = this.deps[0] || {};
 			this.deps = nul.lcl.dep.dec(this.deps, this.used);
 		}
-		//Attributes unification could fail later
 		if(this.failableNature() || (this.isFailable && this.isFailable())) flags.failable = true;
 
 		if((!this.flags || this.flags.dirty) && !flags.dirty && this.operable()) flags.dirty = true;
@@ -96,23 +99,39 @@ nul.xpr = {	//Main interface implemented by all expressions
 	}.perform('nul.xpr->solve'),
 	//Gets the value of this expression after operations effect (unifications, '+',  ...)
 	evaluate: function(kb) {
-		return this.browse(nul.browse.evaluate(kb||nul.kb())) || this.clean();
+		if(!kb) kb = nul.kb();
+		var rv = this;
+		var dbgCpt = 0;
+		while(rv.flags.dirty) {
+			if(nul.debug.assert) assert(50>++dbgCpt, 'Finite loop');
+			rv = rv.browse(nul.browse.evaluate(kb)) || rv.clean();
+		}
+		return rv;
 	}.perform('nul.xpr->evaluate').xKeep(),
 	//Replace this context's locals according to association/table <ctx>
-	contextualise: function(st, dlt) {
-		return this.browse(nul.browse.contextualise(isArray(st)?st:[st], dlt||0)) || this;
+	known: function(knwlg) {
+		var tt = {};	//Transformation table
+		for(var i= 0; i<knwlg.length; ++i)
+			if(['=',':='].contains(knwlg[i].charact)) {
+				var rplBy = knwlg[i].components[0];
+				if(!rplBy.flags.fuzzy) for(var c=1; c<knwlg[i].components.length; ++c) {
+					var rplOrg = knwlg[i].components[c];
+					if(!rplBy.contains(rplOrg) /*&& 'local'== rplOrg.charact*/)
+						tt[rplOrg.ndx] = rplBy;
+				}
+			}
+		return this.contextualise(tt);
+	},
+	contextualise: function(tt) {
+		if(isEmpty(tt)) return this;
+		return this.browse(nul.browse.contextualise(tt)) || this;
 	}.perform('nul.xpr->contextualise').xKeep(),
-	known: function(kb) {
-		var sts = [];
-		for(var j = 0; j<kb.knowledge.length; ++j) {
-			sts.push({});
-			for(var i=0; i<kb.knowledge[j].lvals.length; ++i)
-				if(kb.knowledge[j].lvals[i] && !kb.knowledge[j].lvals[i].flags.fuzzy)
-					sts[j][i] = kb.knowledge[j].lvals[i];
-		}
-		return this.contextualise(sts);
-	}.perform('nul.xpr->known').xKeep(),
-	
+	absolutise: function() {
+		return this.browse(nul.browse.absolutise) || this;
+	}.perform('nul.xpr->contextualise').xKeep(),
+	contains: function(xpr) {
+		return -1<this.ndx.indexOf(xpr.ndx);
+	},
 	//Take the side-effected value of this expression
 	extraction: function() {
 		return this.browse(nul.browse.extraction);
@@ -125,26 +144,12 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return this.browse(nul.browse.lclShft('wrp')) || this;
 	}.perform('nul.xpr->wrap').xKeep(),
 	
-	//This expression wrapped.
-	//ctxDelta-s of outer locals are incremented
-	wrap: function() {
-		return this.browse(nul.browse.lclShft('wrp')) || this;
-	}.perform('nul.xpr->wrap').xKeep(),
 	//This expression wrapped. Locals are given up.
 	//ctxDelta-s of these locals and outer locals are incremented
-	stpDn: function() {
-		return this.browse(nul.browse.lclShft('sdn')) || this;
+	stpDn: function(inc, kb) {
+		return this.browse(nul.browse.lclShft('sdn', inc, kb.contexts.length-inc)) || this;
 	}.perform('nul.xpr->stpDn').xKeep(),
-
-	//Transform an expression from kb local-space to expression local-space and vice versa
-	nclocalise: function(inc) {
-		return this.browse(nul.browse.localise(inc||0)) || this;
-	}.perform('nul.xpr->localise').xKeep(),
-
-	localise: function(inc) {
-		return this.clone().nclocalise(inc);
-	}.perform('nul.xpr->localise').xKeep(),
-
+	
 	//Shortcut: Weither this epression is free of dependance toward external locals
 	free: function() { return nul.lcl.dep.free(this.deps); }.perform('nul.xpr->free'),
 	//If the root expression of this operand will be kept forever
@@ -221,10 +226,10 @@ nul.xpr = {	//Main interface implemented by all expressions
 
 		return rv;
 	},
-	handle: function() { return this.x.attributes['']; },
+	handle: function() { return this.x.attributes['+handle']; },
 	handled: function(k) {
-		if(k) this.x.attributes[''] = k;
-		else delete this.x.attributes[''];
+		if(k) this.x.attributes['+handle'] = k;
+		else delete this.x.attributes['+handle'];
 		return this;
 	},
 //Debug purpose

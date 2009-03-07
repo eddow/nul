@@ -70,7 +70,7 @@ function mathSymbol(s) {
 
 //Is <o> an empty association ? (<b>eside the values contained in array <b>) 
 function isEmpty(o, b) {
-	for(var i in o) if(!b || !b.contains(i)) return false;
+	for(var i in o) if(!b || !b.contains(reTyped(i))) return false;
 	return true;
 }
 

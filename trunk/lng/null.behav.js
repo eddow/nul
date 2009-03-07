@@ -5,76 +5,52 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-
-function lclCntx(knwldg) {
-	/*Sorting :
-	 * Locals values have to be contextualised before being given as contextualiation value
-	 * There is NO circular references in locals 
-	*/
-	var st = knwldg[0];
-	var i, slTbl=[];	//Sorted st : if i < j; st[slTbl[i]] doesn't depends on st[slTbl[j]]
-	var tSrt = [];		//Unsorted array
-	var nSrt = [];		//No need to sort array
-	for(i in st) {
-		i = reTyped(i);
-		if(
-		st[i] && st[i].deps && st[i].deps[-1] &&
-		!isEmpty(st[i].deps[-1]) &&
-		!st[i].reindexing)
-			tSrt.push(i);
-		else {
-			nSrt.push(i);
-			if(st[i] && st[i].reindexing) delete st[i].reindexing;
-		}
-	}
-	///// Sorting the locals table
-	var cpt = 100;
-	while(0< tSrt.length) {
-		if(nul.debug.assert) assert(0<--cpt, 'Infinite loop security');
-		if(i >= tSrt.length) i = 0;
-		if(trys(st[tSrt[i]].deps[-1], function(l) { 
-			return !slTbl.contains(l) && !nSrt.contains(l) && l!= tSrt[i];
-		})) ++i;
-		else slTbl.push(tSrt.splice(i,1)[0]);
-	}
-	///// Now, contextualise the locals the sorted way
-	for(i = 0; i<slTbl.length; ++i) {
-		var v = st[slTbl[i]].localise().contextualise(knwldg);
-		if(v) st[slTbl[i]] = v.localise();
-	}	
-}
  
 nul.behav = {
 	freedom: {
 		finalise: function(kb) {
-			var lPrem = 0;
-			var tof = [{s:this.components,n:'value'}], fnd = [], cs = this.components;
-			if(this.finalisationValues) tof.pushs(this.finalisationValues(kb));
-			var cpt = 50;
-			this.f_composed();
-			while(0< tof.length) {
-				var ndx = tof.shift();
-				var c = ndx.s[ndx.n];
-				if(c) {
-					c = c.integre().known(kb) || c;
-					if(c.flags.dirty) {
-						tof.pushs(fnd); fnd = [];
-						do {
-							c = c.evaluate(kb) || c;
-							if(0>=--cpt) throw nul.internalException('Too much finalisation');
-						} while(c.flags.dirty)
-					}
-					ndx.s[ndx.n] = c;
+			if(nul.debug.assert) assert(kb.knowledge[0].premices === this.components,
+				'Finalise freedom while knowing it')
+			this.known(this.components);
+			while(this.flags.dirty) {
+				var nprms = this.components.splice(0);
+				kb.forget();
+				while(0<nprms.length) {
+					var prms = nprms.pop().evaluate(kb);
+					if(prms.flags.failable) kb.knew(prms);
 				}
-				fnd.push(ndx);
-				for(; lPrem<this.components.length; ++lPrem) tof.push({s:this.components,n:lPrem});
+				this.components.value = this.components.value.evaluate(kb);
+				this.summarised();
+				this.known(this.components);
+			}
+			//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
+			var ctxn = kb.contexts.length-1;
+			//TODO: we could eliminate more : (a+1=b) should forget a+1=b
+			var usefulLocals = this.components.value.deps[ctxn];
+			if(!usefulLocals) kb.forget();
+			else {
+				var forgottenPrmcs = [];
+				for(var i=0; i<this.components.length; ++i)
+					if(isEmpty(this.components[i].deps, [ctxn]))
+						forgottenPrmcs.push(i);
+				do {
+					for(var i=0; i<forgottenPrmcs.length; ++i) {
+						var ds = this.components[forgottenPrmcs[i]].deps[ctxn];
+						if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
+					}
+					if(i>=forgottenPrmcs.length) ++i;
+					else forgottenPrmcs.splice(i,1);
+				} while(i<=forgottenPrmcs.length);
+				//Remove in inverse orders to have valid indices.
+				// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
+				//  first remove 3 then 1.
+				while(0<forgottenPrmcs.length) kb.forget(forgottenPrmcs.pop());
 			}
 			return this;
 		}.perform('freedom->finalise').xKeep(),
 		composed: function() {
-			//TODO: stpUp non-dep0 premices (if allowed)
-			var nc = this.components.splice(0);
-			while(0<nc.length) this.components.pushs(nc.shift().failables());
+			//var nc = this.components.splice(0);
+			//while(0<nc.length) this.components.pushs(nc.shift().failables());
 			return this.f_composed().summarised();			
 		}.perform('freedom->composed').xKeep(),
 		//This expression's locals are moved from (0..#) to (<n>..<n>+#)
@@ -83,7 +59,7 @@ nul.behav = {
 		lclShft: function(kb) {
 			return this.browse(
 				nul.browse.lclShft('sft', kb
-					.premiced(this.components)
+					.knew(this.components)
 					.addLocals(this.locals))
 			) || this;
 		}.perform('freedom->lclShft').xKeep(),
@@ -91,11 +67,12 @@ nul.behav = {
 		//this' locals are added to <kb>' last context 
 		//ctxDelta-s of outer locals are decremented
 		stpUp: function(kb) {
-			return (this.browse(
-				nul.browse.lclShft('sup', kb
-					.premiced(this.components)
-					.addLocals(this.locals))
-			) || this).components.value;
+			var dlt = kb.addLocals(this.locals);
+			var rv = (this.browse(
+				nul.browse.lclShft('sup', dlt, kb.contexts.length)
+			) || this);
+			kb.knew(rv.components);
+			return rv.components.value
 		}.perform('freedom->stpUp'),
 		//Extract locals and says <this> we gonna give them to his parent
 		//this' locals are added to <kb>' last context 
@@ -103,7 +80,7 @@ nul.behav = {
 		lclsUpg: function(kb) {
 			return this.browse(
 				nul.browse.lclShft('upg', kb
-					.premiced(this.components)
+					.knew(this.components)
 					.addLocals(this.locals))
 			) || this;
 		}.perform('freedom->lclsUpg').xKeep(),
@@ -126,74 +103,7 @@ nul.behav = {
 		},
 		integrity: function() {
 			return this.charact == {kw:'kw', ctx:'{}'}[this.freedom];
-		},
-		takeFrdm: function(knwldg) {
-			if(nul.debug.assert) assert(this.components === knwldg[0].premices, 'Expression kept ctx');
-			var ck = [];
-			var lclPrmcs = [];
-			while((('ctx'==this.freedom)?1:0)<knwldg.length) {
-				var ctx = knwldg.pop();
-				var ltrCtx = {};
-				var st = {};
-				//We need a map and not an array for lclCntx
-				for(var i=0; i<ctx.lvals.length; ++i)
-					if(!ctx.lvals[i] ||
-					!ctx.lvals[i].deps[-1] ||
-					!ctx.lvals[i].deps[-1][i]) st[i] = ctx.lvals[i];
-					else ltrCtx[i] = true;
-				ck.unshift(st);
-				lclCntx(ck);
-				for(var i=0; i<ctx.locals.length; ++i) if(st[i]) {
-					var vi = st[i].localise();
-					if(ltrCtx[i]) vi = vi.contextualise(ck) || vi;
-					lclPrmcs.unshift(
-						nul.build.unification([
-							nul.build.local(knwldg.length, i, ctx.locals[i]),
-							vi
-						]).clean());
-				}
-			}
-			if('ctx'==this.freedom) {
-				this.summarised(); //To have the 'used' table filled 
-				var st = {};
-				var delta = 0;
-				var ltrCtx = {};
-				var ctx = knwldg.pop();
-				for(var i=0; i<ctx.locals.length; ++i) {
-					var v = ctx.lvals[i];
-					//TODO: si utilisé une fois et sans valeur : remplacer par un joker ?
-					// mieux: si utilisé une fois dans le prémices sur une égalité, enlever;
-					// sur un take, si set, enlever; si token : set not {}
-					if(!this.used[i+delta] || (v &&
-						(1==this.used[i+delta] || !v.flags.fuzzy) &&
-						!v.deps[-1][i+delta])
-					) {
-						ctx.lvals.splice(i,1);
-						ctx.locals.splice(i,1);
-						++delta; --i;
-						st[i+delta] = v;
-					} else if(0< delta) {
-						st[i+delta] = nul.build.local(-1, i, ctx.locals[i]);
-						st[i+delta].reindexing = true;
-						if(v) ltrCtx[i] = true;	//Self-refered contextualise after other locals
-					}
-				}
-				ck.unshift(st);
-				if(0< delta) lclCntx(ck);	
-				for(var i=0; i<ctx.lvals.length; ++i) if(ctx.lvals[i]) {
-					var vi = ctx.lvals[i].localise();
-					if(ltrCtx[i]) vi = vi.contextualise(ck) || vi;
-					lclPrmcs.unshift(
-						nul.build.unification(
-							[nul.build.local(0, i, ctx.locals[i]),
-							vi
-						]).clean());
-				}			
-			}
-			var rv = this.contextualise(ck,'ctx'==this.freedom?-1:0) || this;
-			rv.components.pushs(lclPrmcs);
-			return rv.composed().summarised();
-		}.perform('freedom->takeFrdm')
+		}
 	},
 	html_place: {
 		transform: function() { return true; },
@@ -224,12 +134,15 @@ nul.behav = {
 			var rv = this.components.object.take(this.components.applied, kb, 1);
 			if(rv) return rv.xadd(this);
 			if(!this.components.object.transform()) {
-				kb.premiced(this.clean().clone());
+				kb.knew(this.clean().clone());
 				return this.components.applied.xadd(this);
 			}
 		}.perform('application->operate').xKeep()
 	},
 	kwFreedom: {
+		takeFrdm: function(knwl, ctx) {
+			return this.composed().summarised();
+		}.perform('kwFreedom->takeFrdm'),
 		composed: function() {
 			if(this.components &&
 			this.components.value &&	//Value is not set when called from within nul.build.item
@@ -244,30 +157,25 @@ nul.behav = {
 			return this;
 		},
 		makeFrdm: function(kb) {
-			for(var i=0; i<this.components.length; ++i) this.components[i].dirty();
-			return {
-				origXpr: this,
-				origHTML: this.dbgHTML(),
-
-				premices: this.components,
-	
-				addLocals: function(locals) {
-					return kb.protectedKb.addLocals(locals);
-				},
-				premiced: function(premices) {
-					this.premices.pushs(isArray(premices)?premices:[premices]);
-					return this;
-				}
-			};
+			kb.push(nul.knowledge(this.components));
 		}
 	},
 	set: {
-		finalisationValues: function(kb) {
-			var ctx = kb.knowledge[0];
-			var rv = [];
-			for(var i=0; i<ctx.locals.length; ++i) rv.push({s:ctx.lvals, n:i});
-			return rv;
-		},
+		takeFrdm: function(knwl, ctx) {
+			this.composed().summarised();
+			//TODO: keep on here; remove the 'return'
+			var delta = 0, i = 0, tt = {};
+			while(i<ctx.length) {
+				if(!this.used[i+delta]) {
+					++delta;
+					ctx.splice(i,1);
+				} else {
+					if(0<delta) tt[nul.build.local(0,i+delta).ndx] = nul.build.local(0,i,ctx[i]); 
+					++i;
+				}
+			}
+			return this.contextualise(tt, -1);
+		}.perform('set->takeFrdm'),
 		composed: function() {
 		//TODO: composed : if can enumarate, just enumerate in a list
 			return this;
@@ -277,7 +185,7 @@ nul.behav = {
 			return true;
 		},
 		take: function(apl, kb, way) {
-			return nul.unify.level(this.clone().stpUp(kb), apl, kb, way);
+			return nul.unify.level(apl, this.clone().stpUp(kb), kb, -1);
 		}.perform('set->take'),
 		fail: function() {
 			return nul.build.set().xadd(this);
@@ -302,25 +210,14 @@ nul.behav = {
 		isFailable: function() {
 			return false;
 		},
-		makeFrdm: function() {
-			for(var i=0; i<this.components.length; ++i) this.components[i].dirty();
-			return {
-				origXpr: this,
-				origHTML: this.dbgHTML(),
-
-				lvals: [],
+		makeFrdm: function(kb) {
+			kb.push(nul.knowledge(this.components), {
 				locals: this.locals,
-				premices: this.components,
-	
 				addLocals: function(locals) {
 					this.locals.pushs(isArray(locals)?locals:[locals]);
 					return this.locals.length-locals.length;
-				},
-				premiced: function(premices) {
-					this.premices.pushs(isArray(premices)?premices:[premices]);
-					return this;
 				}
-			};
+			});
 		}
 	},
 	seAppend: {
@@ -439,6 +336,7 @@ nul.behav = {
 	},
 	unification: {
 		composed: function() {
+			
 			return this;	//TODO: wayed unifications go to keys: bien utile ? fait dans chewed
 			//TODO: wayed, fixed and keyless ... becomes simple unification (way=0) ?
 		},
@@ -446,11 +344,9 @@ nul.behav = {
 		{
 			var fl = this.components.length;
 			var rv = nul.unify.multiple(this.components, kb, this.way)
-			if(rv) switch(rv.length) {
-				case 1: return rv[0].xadd(this);
-				case fl: return;
-				default: return this.compose(rv);
-			}
+			if(rv && 1== rv.length) return rv[0].xadd(this);
+			if(!rv) rv = this.components;
+			return kb.affect(rv, this.way);
 		}.perform('unification->operate').xKeep()
 	},
 	and3: {
@@ -482,7 +378,7 @@ nul.behav = {
 			if(1== this.components.length) {
 				var rv = this.components[0];
 				if('kw'== rv.charact) {
-					kb.premiced(rv.components);
+					kb.knew(rv.components);
 					rv = rv.components.value;
 				}
 				return rv.xadd(this);

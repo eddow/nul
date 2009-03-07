@@ -9,7 +9,6 @@
 var nul = {
 	globals: {},
 	failure: 'nul.failure',
-	unlocalisable: 'nul.unlocalisable',
 	fail: function(msg)
 	{
 		nul.debug.log('fail')('Failure', msg || '');		
@@ -29,17 +28,20 @@ var nul = {
 		if('undefined'== typeof v.value) throw nul.semanticException('Boolean expected: '+v.toHTML());
 		return null!== v && false!== v;
 	},
-	firstUnderstandBase: function() {
-		var fb = nul.understanding.emptyBase();
-		for(var p in nul.globals)
-			fb.createFreedom(p, nul.globals[p]);
-		return fb;
+	globalsUse: function() {
+		var ub = nul.understanding.emptyBase();
+		var tt = [];
+		for(var p in nul.globals) tt[ub.createFreedom(p).ndx] = nul.globals[p];
+		return {ub: ub, tt:tt};
+	},
+	firstContextualise: function(xpr) {
+		var tt = [];
 	},
 	expression: function(txt)
 	{
 		nul.erroneus = false;
-		var ub = nul.firstUnderstandBase();
-		return ub.asSet(nul.compile(txt).understand(ub));
+		var gu = nul.globalsUse();
+		return gu.ub.asSet(nul.compile(txt).understand(gu.ub)).absolutise().contextualise(gu.tt);
 	},
 	html: function(txt)
 	{

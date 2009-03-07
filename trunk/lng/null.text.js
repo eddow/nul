@@ -83,8 +83,7 @@ nul.text = {
 	toHTML: function() {
 		var aLocals = '', aDeps = '', aDepsTtl = '', aShort = this.toString(),
 			aFlags, aAttr, aAttrTtl;
-		aShort = nul.text.js.tile('shortStr', this.toString(), 
-			(('undefined'!= typeof this.x.lvl)?(this.x.lvl+'] '):'')+this.toString());
+		aShort = nul.text.js.tile('shortStr', this.toString(), this.toString());
 		aFlags = nul.text.js.tile('flags',
 			isEmpty(this.flags)?'&phi;':keys(this.flags).join(', '),
 			keys(this.flags));
@@ -107,7 +106,7 @@ nul.text = {
 		}
 		aAttrTtl = [];
 		aAttr = [];
-		for(var i in this.x.attributes) if(''!=i) {
+		for(var i in this.x.attributes) if('+'!=i.substr(0,1)) {
 			aAttr.push('<b>'+i+'</b>&nbsp;'+this.x.attributes[i].toString());
 			aAttrTtl.push(i);
 		}

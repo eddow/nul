@@ -10,12 +10,12 @@
 // <us>s locals are distinct
 //returns an expression or nothing if unification unchanged 
 nul.unify = {
-	multiple: function(us, kb, x, way) {
-		if(!way) return nul.unify.commutative(us, kb, x)
-		return nul.unify.ncommutative(us, kb, x, way);
+	multiple: function(us, kb, way) {
+		if(!way) return nul.unify.commutative(us, kb)
+		return nul.unify.ncommutative(us, kb, way);
 	},
 	//Commutative algorithm
-	commutative: function(us, kb, x) {
+	commutative: function(us, kb) {
 	
 		//<us> : to try to unify
 		//<uu> : cannot unify with unifion
@@ -49,7 +49,7 @@ nul.unify = {
 		if(fUsLn== rv.length) return;
 		return rv;
 	}.perform('nul.unify.commutative'),
-	ncommutative: function(us, kb, x, way) {
+	ncommutative: function(us, kb, way) {
 		var unifion = us.shift();
 		var rv = [];
 		while(0<us.length) {
@@ -77,8 +77,9 @@ nul.unify = {
 		if(!a ^ !b) return a||b;
 		way = way||0;
 		if(!kb) return nul.build.unification([a,b], way);
-		return nul.unify.chewed(a, b, kb, way) ||
-			nul.build.unification([a,b], way).clean();
+		var rv = nul.unify.chewed(a, b, kb, way);
+		if(rv) return rv;
+		return kb.affect([a,b],way).clean();
 	}.perform('nul.unify.level'),
 
 	//Only unify component <c>
@@ -94,18 +95,19 @@ nul.unify = {
 	//returns an expression or nothing if it is sure nothing is manageable or 'unk' if this function couldn't manage 
 	subs: function(a, b, kb, way) {
 		if(','== a.charact && ','== b.charact) {
+			//Lists are affected comps by comps without way. The handle stuff was on the list
 			if(a.components.length > b.components.length) { var t=a; a=b; b=t; }
 			if(a.components.length== b.components.length || a.components.follow) {
 				var rv = [];
 				for(var i=0; i<a.components.length; ++i)
-					rv.push(nul.unify.sub(a, b, i, kb, way));
+					rv.push(nul.unify.sub(a, b, i, kb));
 				b.components.splice(0,i);
 				var bx = b.x;
 				if(0==b.components.length) b = b.components.follow;				
 				if(a.components.follow)
-					rv.follow = nul.unify.level(a.components.follow, b, kb, way)
+					rv.follow = nul.unify.level(a.components.follow, b, kb)
 				else if(b)
-					rv.follow = nul.unify.level(nul.build.set(), b, kb, way)
+					rv.follow = nul.unify.level(nul.build.set(), b, kb)
 				rv = a.compose(rv).summarised().xadd(bx, kb);
 				if(b) rv = rv.xadd(b, kb);
 				return rv;
@@ -145,41 +147,31 @@ nul.unify = {
 	//<a> and <b> share their locals
 	//returns an expression or nothing if nothing is possible to do now 
 	chewed: function(a, b, kb, way) {
-		try {
-			if(a.cmp(b)) return a;
-			if(0>way) {
-				way = 1;
-				var t = a; a = b; b = t;
-			} else way = way||0;
-			
-			if(0<way) {
-				var bkey = b.handle(); b.handled();
-				if(a.handle()) {
-					kb.premiced([nul.unify.level(a.handle(), b, kb, 1)]);
-					return a.handled(bkey);
-				}
-				if(bkey) return nul.unify.level(a, b, kb, 1).handled(bkey);
+		if(a.cmp(b)) return a;
+		if(0>way) {
+			way = 1;
+			var t = a; a = b; b = t;
+		} else way = way||0;
+		
+		if(0<way) {
+			var bkey = b.handle(); b.handled();
+			if(a.handle()) {
+				nul.unify.level(a.handle(), b, kb, 0);	//We don't take the handle of the handle
+				return a.handled(bkey);
 			}
-			var rv = nul.unify.subs(a, b, kb, way);
-			if('unk'!== rv) return rv;
-	
-			rv = nul.unify.vcvs(a, b, kb, way);
-			if('unk'!== rv) return rv;
-			rv = nul.unify.vcvs(b, a, kb, -way);
-			if('unk'!== rv) return rv;
-	
-			if(kb.affectable(a)) return kb.affect(a, b);
-			if(kb.affectable(b)) return kb.affect(b, a);
-			//TODO: try extraction before fail ?
-			if(a.fixed() && b.fixed())
-				nul.fail('Unification failure : ' + a.dbgHTML() + ' and ' + b.dbgHTML());
-		} catch(err) {
-			//Localisation failure means a localcannot be affected because of context position
-			//  (see browse.localise throwing nul.unlocalisable)
-			//If localisation failure, then the unification cannot be stored in the KB.
-			// In this case, just returns the unification as it is first expressed
-			if(err!=nul.unlocalisable) throw nul.exception.notice(err);
+			if(bkey) return nul.unify.level(a, b, kb, 1).handled(bkey);
 		}
+		var rv = nul.unify.subs(a, b, kb, way);
+		if('unk'!== rv) return rv;
+
+		rv = nul.unify.vcvs(a, b, kb, way);
+		if('unk'!== rv) return rv;
+		rv = nul.unify.vcvs(b, a, kb, -way);
+		if('unk'!== rv) return rv;
+
+		//TODO: try extraction before fail ?
+		if(a.fixed() && b.fixed())
+			nul.fail('Unification failure : ' + a.dbgHTML() + ' and ' + b.dbgHTML());
 	}.perform('nul.unify.chewed'),
 	
 	//unification of <b> with one member of table <as>
@@ -208,7 +200,7 @@ nul.unify = {
 		//TODO: wayed distribution
 		if('='!= b.charact) as.push(b); else as.pushs(b.components);
 		var fl = as.length;
-		as = nul.unify.multiple(as, kb, ax, way) || as;
+		as = nul.unify.multiple(as, kb, way) || as;
 
 		if(as) switch(as.length) {
 			case 1: return as[0].xed(kb, way, ax, b.x);

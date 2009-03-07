@@ -165,10 +165,9 @@ nul.debug = {
 	},
 	ctxTable: function(ctx) {
 		var rv = '';
-		var prc = ctx.origHTML;
 		for(var i=0; i<ctx.length; ++i)
 			rv += '<tr><th>'+i+'</th><td>'+ctx.lvals[i].dbgHTML()+'</td></tr>';
-		return [prc, '<table class="context">'+rv+'</table>'];
+		return ['', '<table class="context">'+rv+'</table>'];
 	}
 };
 

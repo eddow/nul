@@ -125,6 +125,9 @@ nul.build = {
 
 	atom: function(value) {
 		return this.item(null, {
+			acNdx: '[' + ('string'==typeof(value)?'"':'') +
+				value.toString().replace('[','[[]').replace(']','[]]').replace('|','[|]') +
+				('string'==typeof(value)?'"':'') + ']',
 			value: value,
 			charact: 'atom',
 			expressionHTML: 'string'==typeof(value)?
@@ -140,6 +143,7 @@ nul.build = {
 			charact: 'local',	//TODO: remplacer les 'undefined'!= typeof ....lindx par un test sur charact
 			ctxDelta: ctxDelta,
 			lindx: lindx,
+			acNdx: '['+lindx+'|'+ctxDelta+']',
 			dbgName: dbgName,
 			expressionHTML: function() {
 				return this.dbgName? (
@@ -149,7 +153,7 @@ nul.build = {
 					);
 			},
 			expressionString: function() {
-				return (this.dbgName?this.dbgName:'')+ '['+this.lindx+'|'+this.ctxDelta+']';
+				return (this.dbgName?this.dbgName:'')+ this.acNdx;
 			},
 			makeDeps: function() { return nul.lcl.dep.dep(this.ctxDelta, this.lindx); },
 		});
@@ -235,7 +239,10 @@ nul.build = {
 	unification: function(ops, way) {
 		if(1== way) { var t = ops[0]; ops[0] = ops[1]; ops[1] = t; way = -1; }
 		return this.listOp(
-			merge({way:way||0}, nul.behav.unification),
+			merge({
+				way:way||0,
+				unification: true
+			}, nul.behav.unification),
 			way==-1?':=':'=',
 			ops);
 	},
@@ -279,6 +286,7 @@ nul.build = {
 			callback: fct,
 			charact: 'native',
 			name: name,
+			acNdx: '['+name+']',
 			expressionHTML: function() { return '<span class="global">'+this.name+'</span>'; },
 			expressionString: function() { return this.name; }
 		}, nul.behav.nativeSet);
