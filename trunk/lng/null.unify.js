@@ -159,7 +159,8 @@ nul.unify = {
 				nul.unify.level(a.handle(), b, kb, 0);	//We don't take the handle of the handle
 				return a.handled(bkey);
 			}
-			if(bkey) return nul.unify.level(a, b, kb, 1).handled(bkey);
+			if(!bkey && !b.finalRoot()) bkey = kb.createLocal('_');
+			if(bkey) return nul.unify.level(a, b, kb, 0).clone().handled(bkey);
 		}
 		var rv = nul.unify.subs(a, b, kb, way);
 		if('unk'!== rv) return rv;

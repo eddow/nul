@@ -23,82 +23,103 @@ nul.behav = {
 				this.summarised();
 				this.known(this.components);
 			}
-			//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
-			var ctxn = kb.contexts.length-1;
-			//TODO: we could eliminate more : (a+1=b) should forget a+1=b
-			var usefulLocals = this.components.value.deps[ctxn];
-			if(!usefulLocals) kb.forget();
-			else {
-				var forgottenPrmcs = [];
-				for(var i=0; i<this.components.length; ++i)
-					if(isEmpty(this.components[i].deps, [ctxn]))
-						forgottenPrmcs.push(i);
-				do {
-					for(var i=0; i<forgottenPrmcs.length; ++i) {
-						var ds = this.components[forgottenPrmcs[i]].deps[ctxn];
-						if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
-					}
-					if(i>=forgottenPrmcs.length) ++i;
-					else forgottenPrmcs.splice(i,1);
-				} while(i<=forgottenPrmcs.length);
-				//Remove in inverse orders to have valid indices.
-				// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
-				//  first remove 3 then 1.
-				while(0<forgottenPrmcs.length) kb.forget(forgottenPrmcs.pop());
+			//TODO: knowledge must be forgotten in or premice if not used in containing set : n=(1[]2) should give (1[]2)
+			if('ctx'== this.freedom) {
+				//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
+				var ctxn = kb.contexts[0].ctxName;
+				/*TODO:
+				 * we could eliminate more : (a+1=b) should forget a+1=b
+				 * even group the equivalent locals to express in one only : v; (z=1 [] z=2); v=z
+				*/
+				var usefulLocals = this.components.value.deps[ctxn];
+				if(!usefulLocals) kb.forget();
+				else {
+					var forgottenPrmcs = [];
+					for(var i=0; i<this.components.length; ++i)
+						if(isEmpty(this.components[i].deps, [ctxn]))
+							forgottenPrmcs.push(i);
+					do {
+						var ds;
+						for(var i=0; i<forgottenPrmcs.length; ++i) {
+							ds = this.components[forgottenPrmcs[i]].deps[ctxn];
+							if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
+						}
+						if(i>=forgottenPrmcs.length) ++i;
+						else {
+							merge(usefulLocals, ds);
+							forgottenPrmcs.splice(i,1);
+						}
+					} while(i<=forgottenPrmcs.length);
+					//Remove in inverse orders to have valid indices.
+					// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
+					//  first remove 3 then 1.
+					while(0<forgottenPrmcs.length) kb.forget(forgottenPrmcs.pop());
+				}
 			}
 			return this;
 		}.perform('freedom->finalise').xKeep(),
+		frdmMock: function(kb) {
+			var fv = this;
+			var rvThis = function() { return this; };
+			return {
+				components: clone1(this.components),
+				kb: kb,
+				operate: function() {
+					fv.components.value = this.components.value;
+					for(var i=0; i<this.components.length; ++i)
+						if(['[]',':'].contains(this.components[i].charact) &&
+							this.components[i].flags.failable) {
+							var ior = nul.build.ior3(this.components[i].components).clean();
+							for(var c=0; c<ior.components.length; ++c)
+								delete ior.components[c].components.value;
+							this.kb.knew(ior);
+						}
+					return fv;
+				},
+				x : { attributes: {} },
+				integre: rvThis,
+				summarised: rvThis,
+				composed: rvThis,
+				operable: rvThis
+			};
+		},
 		composed: function() {
 			//var nc = this.components.splice(0);
 			//while(0<nc.length) this.components.pushs(nc.shift().failables());
 			return this.f_composed().summarised();			
 		}.perform('freedom->composed').xKeep(),
-		//This expression's locals are moved from (0..#) to (<n>..<n>+#)
-		//this' locals are added to <kb>' last context 
-		//ctxDelta-s are unchanged
-		lclShft: function(kb) {
-			return this.browse(
-				nul.browse.lclShft('sft', kb
-					.knew(this.components)
-					.addLocals(this.locals))
-			) || this;
-		}.perform('freedom->lclShft').xKeep(),
 		//This expression climbed.
 		//this' locals are added to <kb>' last context 
 		//ctxDelta-s of outer locals are decremented
 		stpUp: function(kb) {
 			var dlt = kb.addLocals(this.locals);
 			var rv = (this.browse(
-				nul.browse.lclShft('sup', dlt, kb.contexts.length)
+				nul.browse.lclShft(dlt, this.ctxName, kb.contexts[0].ctxName)
 			) || this);
 			kb.knew(rv.components);
 			return rv.components.value
 		}.perform('freedom->stpUp'),
-		//Extract locals and says <this> we gonna give them to his parent
-		//this' locals are added to <kb>' last context 
-		//ctxDelta-s of these locals are incremented
-		lclsUpg: function(kb) {
-			return this.browse(
-				nul.browse.lclShft('upg', kb
-					.knew(this.components)
-					.addLocals(this.locals))
-			) || this;
-		}.perform('freedom->lclsUpg').xKeep(),
+
 		freedomHTML: function() {
-			var rv = this.components.value?this.components.value.toHTML():
-				'<span class="failure">?</span>';
-			if(0<this.components.length) rv =
-				'<table class="xpr freedom"><tr><td class="freedom">' +
-				rv +
-				'</td></tr><tr><th class="freedom">' +
-				nul.text.expressionHTML(';', this.components) +
-				'</th></tr></table>';
-			return rv;
+			var rv = '';
+			if(this.components.value) {
+				if(0<this.components.length) return ''+
+					'<table class="xpr freedom"><tr><td class="freedom">' +
+					this.components.value.toHTML() +
+					'</td></tr><tr><th class="freedom">' +
+					nul.text.expressionHTML(';', this.components) +
+					'</th></tr></table>';
+				return this.components.value.toHTML();
+			}
+			if(0<this.components.length) return nul.text.expressionHTML(';', this.components);
+			return '<span class="failure">Ok</span>';
 		},
 		freedomString: function() {
-			var rv = this.components.value?this.components.value.toString():'(?)';
+			var rv = '';
+			if(this.components.value) rv =
+				this.components.value.toString() + (0<this.components.length?'; ':'');
 			if(0<this.components.length)
-				rv += '; '+ nul.text.expressionString(';', this.components);
+				rv += nul.text.expressionString(';', this.components);
 			return rv;
 		},
 		integrity: function() {
@@ -158,23 +179,25 @@ nul.behav = {
 		},
 		makeFrdm: function(kb) {
 			kb.push(nul.knowledge(this.components));
+			return this.frdmMock(kb);
 		}
 	},
 	set: {
 		takeFrdm: function(knwl, ctx) {
 			this.composed().summarised();
-			//TODO: keep on here; remove the 'return'
+			//Remove local-index-space allocations for unknowns not used anymore
 			var delta = 0, i = 0, tt = {};
 			while(i<ctx.length) {
 				if(!this.used[i+delta]) {
 					++delta;
 					ctx.splice(i,1);
 				} else {
-					if(0<delta) tt[nul.build.local(0,i+delta).ndx] = nul.build.local(0,i,ctx[i]); 
+					if(0<delta) tt[nul.build.local(this.ctxName,i+delta).ndx] =
+						nul.build.local(this.ctxName,i,ctx[i]); 
 					++i;
 				}
 			}
-			return this.contextualise(tt, -1);
+			return this.contextualise(tt);
 		}.perform('set->takeFrdm'),
 		composed: function() {
 		//TODO: composed : if can enumarate, just enumerate in a list
@@ -212,12 +235,14 @@ nul.behav = {
 		},
 		makeFrdm: function(kb) {
 			kb.push(nul.knowledge(this.components), {
+				ctxName: this.ctxName,
 				locals: this.locals,
 				addLocals: function(locals) {
 					this.locals.pushs(isArray(locals)?locals:[locals]);
 					return this.locals.length-locals.length;
 				}
 			});
+			return this.frdmMock(kb);
 		}
 	},
 	seAppend: {

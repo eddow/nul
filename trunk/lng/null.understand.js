@@ -7,6 +7,7 @@
  *--------------------------------------------------------------------------*/
  
 nul.understanding = {
+	ctxNames: 0,
 	phase: 0,
 	unresolvable: 'localNameUnresolvable',
 	emptyBase: function(prntUb, alocal) {
@@ -15,19 +16,19 @@ nul.understanding = {
 			premices: [],
 			locals: [],
 			prntUb: prntUb,
+			name: 'c'+(++nul.understanding.ctxNames),
 			asSet: function(xpr) {
-				return nul.build.set(xpr, this.premices, this.locals);
+				return nul.build.set(xpr, this.premices, this.locals, this.name);
 			},
 			asKwFrdm: function(xpr) {
 				return nul.build.kwFreedom(xpr, this.premices);
 			},
-			resolve: function(identifier, delta) {
-				if(!delta) delta = 0;
+			resolve: function(identifier) {
 				if(this.parms && 'undefined'!= typeof this.parms[identifier]) {
 					var ndx = this.parms[identifier];
-					return nul.build.local(delta, ndx, (identifier!=ndx)?identifier:null);
+					return nul.build.local(this.name, ndx, (identifier!=ndx)?identifier:null);
 				}
-				if(this.prntUb) return this.prntUb.resolve(identifier, (this.parms?1:0)+delta);
+				if(this.prntUb) return this.prntUb.resolve(identifier);
 				throw nul.understanding.unresolvable;
 			},
 			createFreedom: function(name, value) {
@@ -36,7 +37,7 @@ nul.understanding = {
 				var rv = this.locals.length;
 				this.locals.push(name);
 				if('_'!= name) this.parms[name] = rv;
-				rv = nul.build.local(0, rv, name)
+				rv = nul.build.local(this.name, rv, name)
 				if(value) this.premices.push(nul.build.unification([rv, value]));
 				return rv;
 			},

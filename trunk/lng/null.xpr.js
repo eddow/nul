@@ -39,7 +39,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 		}
 		switch(this.charact) {
 			case 'atom': return this.value == xpr.value;
-			case 'local': return this.lindx == xpr.lindx && this.ctxDelta==xpr.ctxDelta;
+			case 'local': return this.lindx == xpr.lindx && this.ctxName==xpr.ctxName;
 			case 'native': return this.name == xpr.name; 
 		}
 		throw nul.internalException('Unknown expression to compare : '+this.charact);
@@ -67,9 +67,9 @@ nul.xpr = {	//Main interface implemented by all expressions
 		
 		if(this.makeDeps) dps.push(this.makeDeps());
 		this.deps = nul.lcl.dep.mix(dps);
-		if('-ctx'== this.freedom) {
-			this.used = this.deps[0] || {};
-			this.deps = nul.lcl.dep.dec(this.deps, this.used);
+		if('ctx'== this.freedom) {
+			this.used = this.deps[this.ctxName] || {};
+			delete this.deps[this.ctxName];
 		}
 		if(this.failableNature() || (this.isFailable && this.isFailable())) flags.failable = true;
 
@@ -112,7 +112,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	known: function(knwlg) {
 		var tt = {};	//Transformation table
 		for(var i= 0; i<knwlg.length; ++i)
-			if(['=',':='].contains(knwlg[i].charact)) {
+			if('='== knwlg[i].charact) {
 				var rplBy = knwlg[i].components[0];
 				if(!rplBy.flags.fuzzy) for(var c=1; c<knwlg[i].components.length; ++c) {
 					var rplOrg = knwlg[i].components[c];
@@ -120,14 +120,11 @@ nul.xpr = {	//Main interface implemented by all expressions
 						tt[rplOrg.ndx] = rplBy;
 				}
 			}
-		return this.contextualise(tt);
+		return this.contextualise(tt, 'protect');
 	},
-	contextualise: function(tt) {
+	contextualise: function(tt, prtct) {
 		if(isEmpty(tt)) return this;
-		return this.browse(nul.browse.contextualise(tt)) || this;
-	}.perform('nul.xpr->contextualise').xKeep(),
-	absolutise: function() {
-		return this.browse(nul.browse.absolutise) || this;
+		return this.browse(nul.browse.contextualise(tt, prtct)) || this;
 	}.perform('nul.xpr->contextualise').xKeep(),
 	contains: function(xpr) {
 		return -1<this.ndx.indexOf(xpr.ndx);
@@ -137,19 +134,6 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return this.browse(nul.browse.extraction);
 	}.perform('nul.xpr->extraction').xKeep(),
 
-
-	//This expression wrapped.
-	//ctxDelta-s of outer locals are incremented
-	wrap: function() {
-		return this.browse(nul.browse.lclShft('wrp')) || this;
-	}.perform('nul.xpr->wrap').xKeep(),
-	
-	//This expression wrapped. Locals are given up.
-	//ctxDelta-s of these locals and outer locals are incremented
-	stpDn: function(inc, kb) {
-		return this.browse(nul.browse.lclShft('sdn', inc, kb.contexts.length-inc)) || this;
-	}.perform('nul.xpr->stpDn').xKeep(),
-	
 	//Shortcut: Weither this epression is free of dependance toward external locals
 	free: function() { return nul.lcl.dep.free(this.deps); }.perform('nul.xpr->free'),
 	//If the root expression of this operand will be kept forever

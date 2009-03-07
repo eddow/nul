@@ -18,11 +18,11 @@ nul.lcl = {
 			return true;
 		},
 		//Create a one-local dependance
-		//A dependance toward ctxDelta <delta>, lindx <lndx> and depending <cnt> times
-		dep: function(delta, lndx, cnt) {
+		//A dependance toward ctx <ctxName>, lindx <lndx> and depending <cnt> times
+		dep: function(ctxName, lndx, cnt) {
 			var rv = {};
-			rv[delta] = {};
-			rv[delta][lndx] = cnt||1;
+			rv[ctxName] = {};
+			rv[ctxName][lndx] = cnt||1;
 			return rv;
 		},
 		//mix the dependances in the array <dn>
@@ -38,16 +38,5 @@ nul.lcl = {
 				}
 			return rv;
 		},
-		//Returns the <inc>-times un-wrapped dependances <deps>
-		dec: function(deps) {
-			var nDeps = {};
-			for(var d in deps) 
-			{
-				d = reTyped(d);
-				//Negative deltas are used in internal-local representation
-				if(0!= d) nDeps[d-1] = deps[d];
-			}
-			return nDeps;
-		}
 	}
 };

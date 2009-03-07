@@ -49,7 +49,7 @@ nul.browse = {
 			return nv;
 		}
 		try {
-			try {
+			try {	//TODO: attributes browsed before call to 'before' ?
 				if(behav.before) xpr = iif(behav.before(xpr), xpr).integre();
 				if('undefined'== typeof behav.browse ||
 						('function'== typeof behav.browse && behav.browse(xpr)) ||
@@ -84,10 +84,11 @@ nul.browse = {
 		nul.debug.log('perf')('Useless browse for '+behav.name,this);			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
-	contextualise: function(rpl) {
+	contextualise: function(rpl, prtct) {
 		return {
 			name: 'contextualisation',
 			rpl: rpl,
+			prtct: prtct,
 			eqProtect: [0],
 			before: function(xpr) {
 				if(xpr.unification) this.eqProtect.unshift(0);
@@ -95,8 +96,9 @@ nul.browse = {
 			},
 			finish: function(xpr, chgd, orig) {
 				xpr.summarised();
-				if(chgd) xpr.dirty();
-				if(0!= ++this.eqProtect[0] && this.rpl[xpr.ndx]) return this.rpl[xpr.ndx];
+				if(chgd && this.prtct) xpr.dirty();
+				if((0!= ++this.eqProtect[0] || !this.prtct) && this.rpl[xpr.ndx])
+					return this.rpl[xpr.ndx];
 				if(orig.unification) this.eqProtect.shift();
 				if(chgd) return xpr;
 			}
@@ -112,52 +114,17 @@ nul.browse = {
 			if(chgd) return xpr.dirty();
 		}
 	},
-	lclShft: function(act, inc, ctxN) {
+	lclShft: function(inc, orgName, dstName) {
 		return {
 			name: 'local shifting',
-			action: act,
 			inc: inc,
-			ctxN: ctxN,
+			dstName: dstName || orgName,
+			orgName: orgName,
 			local: function(xpr) {
-				switch(this.action) {
-					case 'sdn':
-						if(xpr.ctxDelta < this.ctxN) return;
-						xpr.ctxDelta += this.inc;
-						break;
-					case 'sup':
-						if(xpr.ctxDelta < this.ctxN) return;
-						if(xpr.ctxDelta == this.ctxN) xpr.lindx += this.inc;
-						--xpr.ctxDelta;
-						break;
-				}
-				/*if('wrp'!= this.action && xpr.ctxDelta==this.ctxDelta) {
-					xpr.lindx += this.inc;
-					if(['upg', 'sdn'].contains(this.action)) ++xpr.ctxDelta;
-				} else if('sup'== this.action && xpr.ctxDelta>this.ctxDelta) --xpr.ctxDelta;
-				else if(['wrp', 'sdn'].contains(this.action) && xpr.ctxDelta>this.ctxDelta) ++xpr.ctxDelta;
-				else return;*/
-				return xpr;
+				if(xpr.ctxName == this.orgName)
+					return nul.build.local(this.dstName, xpr.lindx + this.inc, xpr.dbgName);
 			}.perform('nul.lclShft->local')
 		};
-	},
-	absolutise: {
-		name: 'absolutisation',
-		ctxDelta: -1,
-		before: function(xpr) {
-			if('ctx'== xpr.freedom) ++this.ctxDelta;
-		}.perform('nul.lclShft->before'),
-		abort: function(orig, err) {
-			if('ctx'== orig.freedom) --this.ctxDelta;
-		},
-		finish: function(xpr, chgd) {
-			if('ctx'== xpr.freedom) --this.ctxDelta;
-			if(chgd) return xpr.summarised();
-		},
-		local: function(xpr) {
-			xpr.ctxDelta = this.ctxDelta-xpr.ctxDelta;
-			xpr.ndx = xpr.acNdx = '['+xpr.lindx+'|'+xpr.ctxDelta+']'
-			return xpr.summarised();
-		}.perform('nul.lclShft->local')
 	},
 	evaluate: function(kb) {
 		return {
@@ -171,8 +138,8 @@ nul.browse = {
 			},
 			before: function(xpr) {
 				if(!xpr.flags.dirty) throw nul.browse.abort;
-				if(xpr.freedom) xpr.makeFrdm(this.kb);
 				nul.debug.log('evals')(nul.debug.lcs.collapser('Entering'),xpr);
+				if(xpr.freedom) return xpr.makeFrdm(this.kb);
 			},
 			finish: function(xpr, chgd, orig) {
 				var assertKbLen, assertLc;
@@ -184,8 +151,8 @@ nul.browse = {
 						rv = xpr.operate(this.kb);
 						if(rv) { chgd = true; xpr = rv; }
 					}
-					if(!rv && chgd) { xpr = xpr.clean(); chgd = true; }
-					if(orig.freedom && chgd) xpr = xpr.finalise(this.kb)||xpr;
+					if(!rv && chgd) { xpr = xpr.composed().clean(); chgd = true; }
+					if(orig.freedom && chgd) xpr = xpr.finalise(this.kb).composed();
 				} catch(err) {
 					var rv = this.abort(orig,err);
 					if(rv) return rv;

@@ -6,8 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
  
-function removeAccess(acs, n) {
-}
 nul.knowledge = function(statements) {
 	var rv = {
 		premices: statements,
@@ -79,15 +77,17 @@ nul.kb = function(knowledge) {
 
 			us = eqClass;
 			//Sort to have a nice 'replace-by'
-			for(var n=1; n<us.length; ++n)
-				if(isEmpty(us[n].deps))
-					us.unshift(us.splice(n,1)[0]);
-		 	if('local'== us[0].charact) {
-		 		for(var n=1; n<us.length; ++n) if('local'!= us[n].charact) break;
-		 		if(n<us.length) us.unshift(us.splice(n,1)[0]);
-		 	}
+			if(!way) {
+				for(var n=1; n<us.length; ++n)
+					if(isEmpty(us[n].deps))
+						us.unshift(us.splice(n,1)[0]);
+			 	if('local'== us[0].charact) {
+			 		for(var n=1; n<us.length; ++n) if('local'!= us[n].charact) break;
+			 		if(n<us.length) us.unshift(us.splice(n,1)[0]);
+			 	}
+			}
 
-			nul.debug.log('knowledge')('Equivalents', clone1(us));
+			nul.debug.log('knowledge')(['Handles','Equivals','Handled'][1+way], clone1(us));
 			//if(nul.debug.watches) nul.debug.kevol.log(a.dbgHTML(), 'as', b.dbgHTML());
 
 			var rv = us[0];
@@ -96,6 +96,13 @@ nul.kb = function(knowledge) {
 			return rv;
 		},
 
+		createLocal: function(lName) {
+			if(nul.debug.assert) assert(0<this.contexts.length, 'Add locals in context.');
+			return nul.build.local(
+				this.contexts[0].ctxName,
+				this.contexts[0].addLocals([lName]),
+				lName);
+		},
 		addLocals: function(locals) {
 			if(nul.debug.assert) assert(0<this.contexts.length, 'Add locals in context.');
 			return this.contexts[0].addLocals(locals);
@@ -105,21 +112,28 @@ nul.kb = function(knowledge) {
 			if(!isArray(premices)) premices = [premices];
 			var i = 0;
 			while(i< premices.length) {
-				if(['=',':='].contains(premices[i].charact)) {
+				if(premices[i].unification) {
 					var prm = premices.splice(i,1)[0];
-					this.affect(prm.components,':='==prm.charact?1:0);
+					this.affect(prm.components,':='==prm.charact?-1:0);
 				} else if('[-]'== premices[i].charact) {
 					nul.debug.log('knowledge')('Known',
 						[premices[i].components.applied,'in',premices[i].components.object]);
-					if(nul.debug.watches) nul.debug.kevol.log(
+					/*if(nul.debug.watches) nul.debug.kevol.log(
 						premices[i].components.applied.dbgHTML(), 'in',
-						premices[i].components.object.dbgHTML());
+						premices[i].components.object.dbgHTML());*/
+					++i;
+				} else if('?'== premices[i].charact) {
+					nul.debug.log('knowledge')('Assert', [premices[i].components[0]]);
+					++i;
+				} else if('[]'== premices[i].charact) {
+					nul.debug.log('knowledge')('Choice', clone1(premices[i].components));
 					++i;
 				} else {
-					var dstr = premices[i].splice(i,1)[0];
+					throw nul.internalException('premice neither asert, neither take, neither unification')
+					/*var dstr = premices[i].splice(i,1)[0];
 					if(dstr.components) map(dstr.components, function() {
 						premices.push(this);
-					});
+					});*/
 				}
 			}
 			return this.knowledge[0].knew(premices);

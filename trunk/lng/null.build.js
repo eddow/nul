@@ -138,24 +138,24 @@ nul.build = {
 				function() { return ''+this.value; },
 		});
 	},
-	local: function(ctxDelta, lindx, dbgName) {
+	local: function(ctxName, lindx, dbgName) {
 		return this.item(null, {
 			charact: 'local',	//TODO: remplacer les 'undefined'!= typeof ....lindx par un test sur charact
-			ctxDelta: ctxDelta,
+			ctxName: ctxName,
 			lindx: lindx,
-			acNdx: '['+lindx+'|'+ctxDelta+']',
+			acNdx: '['+lindx+'|'+ctxName+']',
 			dbgName: dbgName,
 			expressionHTML: function() {
 				return this.dbgName? (
-					'<span class="local">'+this.dbgName+'<span class="desc"><span class="sup">'+this.lindx+'</span><span class="sub">'+this.ctxDelta+'</span></span></span>'
+					'<span class="local">'+this.dbgName+'<span class="desc"><span class="sup">'+this.lindx+'</span><span class="sub">'+this.ctxName+'</span></span></span>'
 					) : (
-					'<span class="local">'+this.lindx+'<span class="desc"><span class="sub">'+this.ctxDelta+'</span></span></span>'
+					'<span class="local">'+this.lindx+'<span class="desc"><span class="sub">'+this.ctxName+'</span></span></span>'
 					);
 			},
 			expressionString: function() {
 				return (this.dbgName?this.dbgName:'')+ this.acNdx;
 			},
-			makeDeps: function() { return nul.lcl.dep.dep(this.ctxDelta, this.lindx); },
+			makeDeps: function() { return nul.lcl.dep.dep(this.ctxName, this.lindx); },
 		});
 	},
 		
@@ -176,7 +176,7 @@ nul.build = {
 			},
 		}));
 	},
-	set: function(value, premices, locals) {
+	set: function(value, premices, locals, ctxName) {
 		if(!value) return this.item(null, {
 			charact: '{}',
 			expressionHTML: function() { return '&phi;'; },
@@ -185,6 +185,7 @@ nul.build = {
 		});
 		return this.freedom('ctx', locals, this.item(this.freeval(value, premices), nul.behav.set, {
 			charact: '{}',
+			ctxName: ctxName,
 			expressionHTML: function() { 
 				return ''+
 					'<span class="big op">{</span>' +

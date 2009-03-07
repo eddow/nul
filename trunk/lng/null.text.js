@@ -101,7 +101,8 @@ nul.text = {
 			aLocals = [];
 			for(var i=0; i<this.locals.length; ++i)
 				aLocals.push(this.locals[i]);
-			if(0<aLocals.length) aLocals = nul.text.js.tile('locals', aLocals.join(', '));
+			if(0<aLocals.length)
+				aLocals = nul.text.js.tile('locals', this.ctxName + ': ' + aLocals.join(', '));
 			else aLocals = '';
 		}
 		aAttrTtl = [];
@@ -116,7 +117,7 @@ nul.text = {
 		if('undefined'!= typeof this.x.lvl)
 			rv += '<div class="shortStr level" style="display: none;" >' +
 				this.x.lvl + '</div>';
-		if(this.handle()) rv += this.handle().toHTML() + '<span class="op">&lArr;</span>'; 
+		if(this.handle()) rv += this.handle().toHTML() + '<span class="op">&rArr;</span>'; 
 		rv += this.expressionHTML();
 		var cls = this.freedom?' freedom':'';
 		return '<span class="xpr'+cls+'">'+rv+'</span>';

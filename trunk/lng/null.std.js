@@ -29,19 +29,17 @@ var nul = {
 		return null!== v && false!== v;
 	},
 	globalsUse: function() {
+		nul.understanding.ctxNames = 0;
 		var ub = nul.understanding.emptyBase();
 		var tt = [];
 		for(var p in nul.globals) tt[ub.createFreedom(p).ndx] = nul.globals[p];
 		return {ub: ub, tt:tt};
 	},
-	firstContextualise: function(xpr) {
-		var tt = [];
-	},
 	expression: function(txt)
 	{
 		nul.erroneus = false;
 		var gu = nul.globalsUse();
-		return gu.ub.asSet(nul.compile(txt).understand(gu.ub)).absolutise().contextualise(gu.tt);
+		return gu.ub.asSet(nul.compile(txt).understand(gu.ub)).contextualise(gu.tt);
 	},
 	html: function(txt)
 	{
