@@ -8,8 +8,16 @@
  
 nul.xpr = {	//Main interface implemented by all expressions
 	isXpr: true,
-	clone: function() {
-		return clone(this.integre());
+	clone: function(nComps, nAttrs) {
+		var rv = clone1(this);
+		if(nComps) rv.components = nComps;
+		else if(rv.components) rv.components = map(this.components, function() { return this.clone(); });
+		rv.x = clone1(rv.x);
+		rv.x.attributes = nAttrs || map(this.x.attributes, function() { return this.clone(); });
+		return rv.integre();
+	}.perform('nul.xpr->clone').xKeep(),
+	clone1: function() {
+		return this.clone(clone1(this.components),clone1(this.x.attributes));
 	}.perform('nul.xpr->clone').xKeep(),
 	toHTML: nul.text.toHTML,
 	dbgHTML: function() {
@@ -53,13 +61,14 @@ nul.xpr = {	//Main interface implemented by all expressions
 		var dps = [];
 		var flags = {};
 		var ndx = '';
-		nul.browse.subs(this.integre(),function() {
+		var sumSubs = function() {
 			if(nul.debug.assert) assert(this.deps,'Subs summarised.'); 
 			dps.push(this.deps);
 			for(var f in this.flags) flags[f] = true;
 			ndx += '|' + this.ndx;
-		});
-
+		};
+		if(this.components) map(this.components, sumSubs);
+		map(this.x.attributes, sumSubs);
 		if(this.acNdx) this.ndx = this.acNdx;
 		else this.ndx = '[' + this.charact + ndx + ']';
 		if(['{}', ';'].contains(this.charact)) delete flags.fuzzy;
@@ -70,6 +79,10 @@ nul.xpr = {	//Main interface implemented by all expressions
 		if('ctx'== this.freedom) {
 			this.used = this.deps[this.ctxName] || {};
 			delete this.deps[this.ctxName];
+		}
+		if(this.arCtxName) {
+			if(this.deps[this.arCtxName]) delete this.deps[this.arCtxName];
+			else delete this.arCtxName;
 		}
 		if(this.failableNature() || (this.isFailable && this.isFailable())) flags.failable = true;
 
@@ -120,12 +133,20 @@ nul.xpr = {	//Main interface implemented by all expressions
 						tt[rplOrg.ndx] = rplBy;
 				}
 			}
-		return this.contextualise(tt, 'protect');
+		return this.contextualise(tt, 'knwl');
 	},
 	contextualise: function(tt, prtct) {
 		if(isEmpty(tt)) return this;
 		return this.browse(nul.browse.contextualise(tt, prtct)) || this;
 	}.perform('nul.xpr->contextualise').xKeep(),
+
+	//Specify that occurences of <xpr> in <this> expression are indeed self-references
+	setSelfRef: function(xpr) {
+		var tt = {};
+		if(!this.arCtxName) this.arCtxName = 'ar'+(++nul.understanding.srCtxNames);
+		tt[xpr.ndx] = nul.build.local(this.arCtxName,nul.lcl.slf, xpr.dbgName?xpr.dbgName:null);
+		return this.contextualise(tt);
+	},
 	contains: function(xpr) {
 		return -1<this.ndx.indexOf(xpr.ndx);
 	},
@@ -171,8 +192,8 @@ nul.xpr = {	//Main interface implemented by all expressions
 	}.perform('nul.xpr->compose').xKeep(),
 	xed : function(kb, way, axs) {
 		var i, xpr = this;
-		if(0<way) for(i=2; i<arguments.length; ++i) xpr = xpr.xadd(arguments[i]);
-		else for(i=arguments.length-1; i>=2; --i) xpr = xpr.xadd(arguments[i]);
+		if(0<way) for(i=2; i<arguments.length; ++i) xpr = xpr.xadd(arguments[i], kb);
+		else for(i=arguments.length-1; i>=2; --i) xpr = xpr.xadd(arguments[i], kb);
 		return xpr;
 	},
 	xadd: function(x, kb) {

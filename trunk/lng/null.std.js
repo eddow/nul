@@ -30,6 +30,7 @@ var nul = {
 	},
 	globalsUse: function() {
 		nul.understanding.ctxNames = 0;
+		nul.understanding.srCtxNames = 0;
 		var ub = nul.understanding.emptyBase();
 		var tt = [];
 		for(var p in nul.globals) tt[ub.createFreedom(p).ndx] = nul.globals[p];
@@ -48,7 +49,7 @@ var nul = {
 		var ub = nul.firstUnderstandBase();
 		var ubl = ub.length;
 		for(var i=0; i<comps.length; ++i) {
-			comps[i] = ub.asSet(comps[i].understand(ub));
+			comps[i] = ub.asSet(comps[i].understand(ub)).contextualise(gu.tt);
 			ub.splice(ubl);
 		}
 		return comps;

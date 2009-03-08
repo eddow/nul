@@ -101,7 +101,8 @@ nul.debug = {
 	watches: false,
 	perf: 0> window.location.href.indexOf('noperf'),
 	xTest: 0> window.location.href.indexOf('noxtest'),
-	lcLimit: 70,
+	acts: 0<= window.location.href.indexOf('actLog'),
+	lcLimit: 500,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
 		return nul.debug.callStack.item().get()[0];
@@ -115,8 +116,9 @@ nul.debug = {
 	},
 	toLogText: function(v) {
 		if(isArray(v)) {
-			for(var i=0; i<v.length; ++i) v[i] = nul.debug.toLogText(v[i]);
-			return v.join(' ');
+			var rv = [];
+			for(var i=0; i<v.length; ++i) rv.push(nul.debug.toLogText(v[i]));
+			return rv.join(' ');
 		}
 		if(v.dbgHTML) return v.dbgHTML();
 		return v.toString()
@@ -168,8 +170,30 @@ nul.debug = {
 		for(var i=0; i<ctx.length; ++i)
 			rv += '<tr><th>'+i+'</th><td>'+ctx.lvals[i].dbgHTML()+'</td></tr>';
 		return ['', '<table class="context">'+rv+'</table>'];
-	}
+	},
+	described: function(dscr) {
+		var ftc = this;
+		return function() {
+			var cargs = arrg(arguments);
+			var d, abrt = false, lgd = false, rv;
+			try {
+				d = dscr.apply(this, cargs);
+				nul.debug.log('acts')(nul.debug.lcs.collapser('Begin'),d);
+				lgd = true;
+				rv = ftc.apply(this, cargs);
+				return rv;
+			} catch(err) { abrt = true; nul.exception.notice(err); throw err;
+			} finally {
+				if(lgd) nul.debug.log('acts')(
+					nul.debug.lcs.endCollapser(abrt?'Abort':'End', abrt?'Failed':'Done'),
+					rv?[rv]:['&phi;']);
+			}
+		};
+	},
 };
+
+if(nul.debug.acts) Function.prototype.describe = nul.debug.described;
+else Function.prototype.describe = function() { return this; };
 
 if(nul.debug.xTest)
 	Function.prototype.xKeep = function() {

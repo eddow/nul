@@ -55,16 +55,18 @@ nul.kb = function(knowledge) {
 
 		//Affect an expression to an other expression.
 		//<unk> and <knwn> are both expressions.
-		affect: function(us, way) {
+		affect: function(us, way, x) {
 			way = way||0;
 
 			//Merge equalities if needed
 			var eqClass = [];
 			var eqClassNdx = {};
+			var merged = false;
 			for(var n=0; n<us.length; ++n) {
 				var fpn, eqi;
-				if('undefined'!= typeof(fpn= this.knowledge[0].access[us[n].ndx])) {
-					//TODO: xadd
+				if('undefined'!= typeof(fpn= this.knowledge[0].access[us[n].ndx]) &&
+					this.knowledge[0].premices[fpn].way == way) {
+					merged = true;
 					eqi = this.knowledge[0].forget(fpn).components;
 					eqi.push(us[n]);
 				} else eqi = [us[n]];
@@ -76,18 +78,30 @@ nul.kb = function(knowledge) {
 			}
 
 			us = eqClass;
-			//Sort to have a nice 'replace-by'
+			if(merged) {
+				var rv = nul.unify.multiple(us, this, way, x);
+				if(rv && 1== rv.length) return rv[0];
+				if(rv) us = rv;
+			}
+			//Sort to have a nice 'replace-by'. note: replaceBy = left-ward
 			if(!way) {
+				//free variables goes left
 				for(var n=1; n<us.length; ++n)
 					if(isEmpty(us[n].deps))
 						us.unshift(us.splice(n,1)[0]);
+				//If left-ward is a local, try to put another value (not local) leftward
 			 	if('local'== us[0].charact) {
 			 		for(var n=1; n<us.length; ++n) if('local'!= us[n].charact) break;
 			 		if(n<us.length) us.unshift(us.splice(n,1)[0]);
 			 	}
+			 	//Don't replace X by a value that refer X : if it occurs, contextualise into self-reference
+			 	do {
+			 		for(var n=1; n<us.length; ++n) if(us[0].contains(us[n])) break;
+			 		if(n<us.length) us[0].setSelfRef(us[n]);
+			 	} while(n<us.length);
 			}
 
-			nul.debug.log('knowledge')(['Handles','Equivals','Handled'][1+way], clone1(us));
+			nul.debug.log('knowledge')(['Handles','Equivals','Handled'][1+way], us);
 			//if(nul.debug.watches) nul.debug.kevol.log(a.dbgHTML(), 'as', b.dbgHTML());
 
 			var rv = us[0];
@@ -114,7 +128,7 @@ nul.kb = function(knowledge) {
 			while(i< premices.length) {
 				if(premices[i].unification) {
 					var prm = premices.splice(i,1)[0];
-					this.affect(prm.components,':='==prm.charact?-1:0);
+					this.affect(prm.components,':='==prm.charact?-1:0, prm.x);
 				} else if('[-]'== premices[i].charact) {
 					nul.debug.log('knowledge')('Known',
 						[premices[i].components.applied,'in',premices[i].components.object]);
@@ -126,14 +140,12 @@ nul.kb = function(knowledge) {
 					nul.debug.log('knowledge')('Assert', [premices[i].components[0]]);
 					++i;
 				} else if('[]'== premices[i].charact) {
-					nul.debug.log('knowledge')('Choice', clone1(premices[i].components));
+					nul.debug.log('knowledge')('Choice', premices[i].components);
 					++i;
 				} else {
-					throw nul.internalException('premice neither asert, neither take, neither unification')
-					/*var dstr = premices[i].splice(i,1)[0];
-					if(dstr.components) map(dstr.components, function() {
-						premices.push(this);
-					});*/
+					//TODO: assert there are some attributes to verify
+					nul.debug.log('knowledge')('Attributed', premices[i]);
+					++i;
 				}
 			}
 			return this.knowledge[0].knew(premices);

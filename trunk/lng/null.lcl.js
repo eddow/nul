@@ -7,6 +7,7 @@
  *--------------------------------------------------------------------------*/
  
 nul.lcl = {
+	slf: '&crarr;',
 	//Manage dependances
 	dep : {
 		//The empty dependances

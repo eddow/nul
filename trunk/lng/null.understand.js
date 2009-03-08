@@ -5,9 +5,11 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
+
+//TODO: ?a <=?=> a=true 
 nul.understanding = {
 	ctxNames: 0,
+	srCtxNames: 0,
 	phase: 0,
 	unresolvable: 'localNameUnresolvable',
 	emptyBase: function(prntUb, alocal) {
@@ -144,6 +146,14 @@ nul.understanding = {
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
 	},
+	attributed: function(ub) {
+		return nul.build.attributed(
+			this.applied.understand(ub),
+			this.name,
+			this.value.understand(ub));
+	},
+
+
 	/*
 	xml: function(o, ub) {
 		var attrs = {}, content = [];
@@ -151,14 +161,6 @@ nul.understanding = {
 		ub = nul.understanding.emptyBase(ub);
 		for(var a in o.attributes) attrs[a] = nul.understanding.understand(o.attributes[a], ub);
 		return nul.build.xml( o.node, attrs, content );
-	},
-
-	attributed: function(o, ub) {
-		var decls = {};
-		var applied = nul.understanding.understand(o.applied, ub, 'noub');
-		var rv = nul.build.attributed(applied, o.name, nul.understanding.understand(o.value, ub));
-		ub.createFreedom(o.name, null, true)
-		return rv;
 	},
 	objectivity: function(o, ub) {
 		var lindx = ub.createFreedom(o.lcl);

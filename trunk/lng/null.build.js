@@ -5,10 +5,9 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-nul.x = function(x) {
+nul.x = function() {
 	rv = {};
-	rv.attributes = x&&x.attributes?clone1(x.attributes):{};
-	rv.clone = function() { return nul.x(this); };
+	rv.attributes = {};
 	rv.xadd = function(x, kb) {
 		//TODO: avoid too much xadd
 		//if(nul.debug.xTest) assert(this.dbg!= x.dbg, 'X doesnt merge to itself');
@@ -200,10 +199,6 @@ nul.build = {
 	seAppend: function(dst, itms) {
 		return this.nmdOp(nul.behav.seAppend,'<<+', { effected: dst, appended: itms }, '&lt;&lt;=');
 	},
-	lambda: function(parms, value) {
-		if(value.handle()) return nul.build.lambda(parms, value.handle());
-		return value.handled(parms).summarised();
-	},
 	cumulExpr: function(oprtr, oprnds) {
 		return this.listOp(nul.behav.cumulExpr,oprtr, oprnds, mathSymbol(oprtr));
 	},
@@ -281,6 +276,14 @@ nul.build = {
 	attributed: function(applied, name, value) {
 		applied.x.attributes[name] = value;
 		return applied.summarised();
+	},
+	lambda: function(parms, value) {
+		if(value.handle()) {
+			nul.build.lambda(parms, value.handle());
+			return value;
+		}
+		return value.handled(parms).summarised();
+		//return this.attributed(value, '+handle', parms);
 	},
 	nativeSet: function(name, fct) {
 		return this.item(null, {

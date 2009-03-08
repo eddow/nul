@@ -13,12 +13,13 @@ function init()
 	nul.debug.kbase.table = $('kbase');
 	nul.debug.kevol.table = $('kevol');
 	nul.debug.logs.table = $('logs');
+	if(!nul.debug.acts) $('shwLoggingActs').disabled = true;
 	src = document.getElementById('source');
 	prd = document.getElementById('parsed');
 	evd = document.getElementById('evaled');
 	rcr = document.getElementById('recur');
 	sbx = document.getElementById('sandBox');
-	//nul.globals.sandBox = nul.build.html_place(sbx);
+	//nl.globals.sandBox = nul.build.html_place(sbx);
 	for(var i in this) knGlobs[i] = true;
 }
 
@@ -47,7 +48,7 @@ function testEvaluation()
 			nul.debug.logging.knowledge = nul.debug.watches = $('shwWatches').checked;
 			nul.debug.logging.evals = $('shwLoggingEvals').checked;
 			nul.debug.logging.ctxs = $('shwLoggingCtxs').checked;
-			nul.debug.logging.info = $('shwLoggingInfos').checked;
+			nul.debug.logging.acts = $('shwLoggingActs').checked;
 			nul.debug.logging.perf = $('shwLoggingPerfs').checked;
 		} else nul.debug.logging = false;
 	}

@@ -7,6 +7,16 @@
  *--------------------------------------------------------------------------*/
  
 nul.text = {
+	drawing: [],
+	beginDraw: function(xpr) {
+		if(nul.text.drawing.contains(xpr)) return false;
+		nul.text.drawing.push(xpr);
+		return true;
+	},
+	endDraw: function(xpr) {
+		if(nul.debug.assert) assert(xpr==nul.text.drawing.pop(), 'Drawing consistency');
+		else nul.text.drawing.pop();
+	},
 	tblHTML: function(tbl, glue) {
 		if(isArray(tbl)) return map(tbl, function() {
 			return this.dbgHTML();
@@ -81,9 +91,11 @@ nul.text = {
 		return strings.join(' '+(oprtr?(oprtr+' '):''));
 	},
 	toHTML: function() {
+		if(!nul.text.beginDraw(this)) return '<span class="failure">Self contained!</span>';
 		var aLocals = '', aDeps = '', aDepsTtl = '', aShort = this.toString(),
-			aFlags, aAttr, aAttrTtl;
+			aFlags, aAttr, aAttrTtl, aAutoRef = '';
 		aShort = nul.text.js.tile('shortStr', this.toString(), this.toString());
+		if(this.arCtxName) aAutoRef = nul.text.js.tile('autoRef', this.arCtxName);
 		aFlags = nul.text.js.tile('flags',
 			isEmpty(this.flags)?'&phi;':keys(this.flags).join(', '),
 			keys(this.flags));
@@ -113,18 +125,24 @@ nul.text = {
 		}
 		if(0>= aAttr.length) aAttr = '';
 		else aAttr = nul.text.js.tile('attributes', aAttr.join('<hr />'), aAttrTtl.join(','));
-		var rv = aShort+aLocals+aDeps+aFlags+aAttr+nul.text.js.tiled();
+		var rv = aShort+aAutoRef+aLocals+aDeps+aFlags+aAttr+nul.text.js.tiled();
 		if('undefined'!= typeof this.x.lvl)
 			rv += '<div class="shortStr level" style="display: none;" >' +
 				this.x.lvl + '</div>';
 		if(this.handle()) rv += this.handle().toHTML() + '<span class="op">&rArr;</span>'; 
 		rv += this.expressionHTML();
 		var cls = this.freedom?' freedom':'';
+		nul.text.endDraw(this);
 		return '<span class="xpr'+cls+'">'+rv+'</span>';
 	}.perform('nul.text->toHTML'),
 	toString: function() {
-		if(!this.handle()) return this.expressionString();
-		return this.handle().toString() + ' :- ' + this.expressionString();
+		if(!nul.text.beginDraw(this)) return '&lt;Self contained!&gt;';
+		var rv = '';
+		if(this.arCtxName) rv += this.arCtxName+':';
+		if(this.handle()) rv += this.handle().toString() + ' :- ';
+		rv += this.expressionString();
+		nul.text.endDraw(this);
+		return rv;
 	},
 	clpsSstm : function(table, uc, lcFct) {
 		return table ? table.clpsSstm = {

@@ -50,8 +50,8 @@ nul.operators = [
 	['!','s'],								//extraction
 	['[]','m'],								//booleans:meta OR
 	[';','m'],								//booleans:meta AND
-	[':-','r'],								//lambda
 	[',..','r'], [',','m'],	 				//list
+	[':-','r'],								//lambda
 	['=','m'], [':=','m'],					//unify
 	[':','m'],								//booleans:meta XOR
 	['?','l'],								//a?b ==> if(a) then b else fail (shortcut)

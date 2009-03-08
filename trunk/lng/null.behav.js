@@ -23,7 +23,7 @@ nul.behav = {
 				this.summarised();
 				this.known(this.components);
 			}
-			//TODO: knowledge must be forgotten in or premice if not used in containing set : n=(1[]2) should give (1[]2)
+			//TODO: knowledge must be forgotten in OR premice if not used in containing set : n=(1[]2) should give (1[]2)
 			if('ctx'== this.freedom) {
 				//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
 				var ctxn = kb.contexts[0].ctxName;
@@ -79,7 +79,9 @@ nul.behav = {
 				x : { attributes: {} },
 				integre: rvThis,
 				summarised: rvThis,
+				compose: rvThis,
 				composed: rvThis,
+				clone: rvThis,
 				operable: rvThis
 			};
 		},
@@ -152,11 +154,23 @@ nul.behav = {
 		operate: function(kb) {
 			if(!this.components.object.take)
 				throw nul.semanticException('Not a set : '+ this.components.object.toHTML());
+			var selfRef = this.components.object.arCtxName, srTt;
+			if(selfRef) {
+				srTt = {};
+				srTt[nul.build.local(selfRef,nul.lcl.slf).ndx] = this.components.object;
+			}
+			if(selfRef && !isEmpty(this.components.applied.deps)) return;
 			var rv = this.components.object.take(this.components.applied, kb, 1);
-			if(rv) return rv.xadd(this);
+			if(rv) {
+				//TODO: optimise recursion
+				while(selfRef && rv.deps[selfRef]) {
+					rv = rv.contextualise(srTt,'self').evaluate(kb);
+				}
+				return rv.xadd(this, kb);
+			}
 			if(!this.components.object.transform()) {
 				kb.knew(this.clean().clone());
-				return this.components.applied.xadd(this);
+				return this.components.applied.xadd(this, kb);
 			}
 		}.perform('application->operate').xKeep()
 	},
@@ -200,11 +214,11 @@ nul.behav = {
 			return this.contextualise(tt);
 		}.perform('set->takeFrdm'),
 		composed: function() {
-		//TODO: composed : if can enumarate, just enumerate in a list
+			//TODO: composed : if can enumarate, just enumerate in a list
 			return this;
 		}.perform('set->composed').xKeep(),
 		transform: function() {
-			//TODO: set::transform : can if :- or ..[]:-[]..
+			//TODO: set::transform : if " :- " or " ..[]:-[].. "
 			return true;
 		},
 		take: function(apl, kb, way) {
@@ -272,7 +286,7 @@ nul.behav = {
 				} else o = null;
 				ncps.unshift(c);
 			}
-			if(1==ncps.length) return ncps[0].xadd(this);
+			if(1==ncps.length) return ncps[0].xadd(this, kb);
 			if(ncps.length != this.components.length)
 				return this.compose(ncps).clean();
 		}.perform('cumulExpr->operate').xKeep()
@@ -285,7 +299,7 @@ nul.behav = {
 				nul.asJs(this.components[0], this.charact) +
 				this.charact +
 				nul.asJs(this.components[1], this.charact) ))
-				.xadd(this);
+				.xadd(this, kb);
 		}.perform('biExpr->operate').xKeep()
 	},
 	list: {
@@ -320,7 +334,7 @@ nul.behav = {
 			if(!rvl && !rvf) nul.fail;
 			if(!rvl ^ !rvf) return rvl || rvf;
 			rvl = nul.build.ior3([rvl,rvf]);
-			return rvl?rv.xadd(x):rvl;			
+			return rvl?rv.xadd(x, kb):rvl;			
 		}.perform('list->take')
 	},
 	preceded: {
@@ -329,7 +343,7 @@ nul.behav = {
 		{
 			return nul.build
 				.atom(eval( this.charact + nul.asJs(this.components[0],this.charact) ))
-				.xadd(this);
+				.xadd(this, kb);
 		}.perform('preceded->operate').xKeep()
 	},
 	assert: {
@@ -340,7 +354,7 @@ nul.behav = {
 			if('boolean'!= typeof v)
 				throw nul.semanticException('Boolean expected instead of ' +
 					this.components[0].toString());
-			if(v) return this.components[0].xadd(this);
+			if(v) return this.components[0].xadd(this, kb);
 			nul.fail('Assertion not provided');
 		}.perform('assert->operate').xKeep(),
 		composed: function() {
@@ -360,18 +374,13 @@ nul.behav = {
 		extract: function() {}		//Must avoid sub-expr extraction
 	},
 	unification: {
-		composed: function() {
-			
-			return this;	//TODO: wayed unifications go to keys: bien utile ? fait dans chewed
-			//TODO: wayed, fixed and keyless ... becomes simple unification (way=0) ?
-		},
 		operate: function(kb)
 		{
 			var fl = this.components.length;
-			var rv = nul.unify.multiple(this.components, kb, this.way)
-			if(rv && 1== rv.length) return rv[0].xadd(this);
+			var rv = nul.unify.multiple(this.components, kb, this.way, this.x)
+			if(rv && 1== rv.length) return rv[0].xadd(this, kb);
 			if(!rv) rv = this.components;
-			return kb.affect(rv, this.way);
+			return kb.affect(rv, this.way, this.x);
 		}.perform('unification->operate').xKeep()
 	},
 	and3: {
@@ -406,7 +415,7 @@ nul.behav = {
 					kb.knew(rv.components);
 					rv = rv.components.value;
 				}
-				return rv.xadd(this);
+				return rv.xadd(this, kb);
 			}
 		}.perform('kwFreedomHolder->operate').xKeep(),
 	},

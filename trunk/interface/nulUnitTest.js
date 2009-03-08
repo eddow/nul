@@ -11,7 +11,7 @@ Array.prototype.named = function(nm) { this.name = nm; return this; };
 tests = [
 	[
 		{xpr: '{ N x :- 2*x }({4} _)',
-		rslt: '{_[0|c1] :- 8}'},
+		rslt: '{8}'},
 		{xpr: 'N x; (y+1, y) = (x, 4)',
 		rslt: '{5}'},
 		{xpr: '(z+1, z+2) = (N a, N b)',
@@ -26,7 +26,7 @@ tests = [
 		rslt: '{(a[0|c1] + 1); ((a[0|c1] + 1) = (a[0|c1] + 2) = (a[0|c1] + 3))}'},
 		{xpr: 'S(n+1,"str"); S= {1, c}; N n',
 		rslt: '{(1 , "str")}'},
-		{xpr: '{n :- {Q x, Q y :- x+y} (1, n)} 10',
+		{xpr: '{n :- {(Q x, Q y) :- x+y} (1, n)} 10',
 		rslt: '{11}'}
 	].named('Local management'),
 	[
@@ -34,7 +34,7 @@ tests = [
 		rslt: '{v[0|c1]; (v[0|c1] = z[1|c1]) ; ((1 = z[1|c1]) &#9633; (2 = z[1|c1]))}'},
 		{xpr: '(z+1)=(1 [] 2)',
 		rslt: '{(1; (1 = (z[0|c1] + 1)) &#9633; 2; (2 = (z[0|c1] + 1)))}'},
-		{xpr: 'mx(5,3), mx(3,5); mx={ Q a, Q b :- a ? a > b : b }', //fonction MAX
+		{xpr: 'mx(5,3), mx(3,5); mx={ (Q a, Q b) :- a ? a > b : b }', //fonction MAX
 		rslt: '{(5 , 5)}'},
 		{xpr: '{ a [] b } 5, a, b',
 		rslt: '{((5; (5 = a[2|c1]) &#9633; 5; (5 = b[3|c1])) , a[0|c1] , b[1|c1])}'},
@@ -49,9 +49,9 @@ tests = [
 		{xpr: '(e= !e) = (1>0 [] 1<0)',
 		rslt: '&phi;'},
 		{xpr: '(y, y+1) = (x, x), x',
-		rslt: '{((y[0|0] , y[0|0]) , y[0|0]); (y[0|0] = (y[0|0] + 1))}'},
+		rslt: '{((ar1:(y[&crarr;|ar1] + 1) , ar1:(y[&crarr;|ar1] + 1)) , ar1:(y[&crarr;|ar1] + 1))}'},
 		{xpr: 'x; (y, y+1) = (x, x)',
-		rslt: '{x[0|0]; (x[0|0] = (x[0|0] + 1))}'},
+		rslt: '{ar1:(y[&crarr;|ar1] + 1)}'},
 		
 		/*
 		{xpr: '{ x= (_, x) }(5,(5,(5,(5,(5,_)))))',
@@ -67,6 +67,15 @@ tests = [
 		rslt: '4'}*/
 	].named('Attributes management'),
 	[
+		{xpr: 'f 5; f={ 0 :- 1 [] N n ? n > 0 :- n * f(n-1)}',
+		desc: 'Factorial of 5',
+		rslt: '{120}'},
+		{xpr: 'fib 5; fib={ (0 [] 1) :- 1 [] N n ? n>0 :- fib(n-1) + fib(n-2) }',
+		desc: 'Unoptimised Fibbonacci on 5',
+		rslt: '{8}'},
+		{xpr: 'fib 5 ; fib = {N n :- (fibaux={ (N x, _, 0) :- x [] (N x, N y, N z ? z>0) :-  fibaux(y, x+y, z-1) }) (1, 1, n) }',
+		desc: 'Accumulated Fibbonacci on 5',
+		rslt: '{8}'}
 		/*{xpr: '[f{ 1 [] ({_}x x>1?x:- x * f[x-1]) }][5]',
 		rslt: '120'},
 		{xpr: '{ {_}n n:- [fib { {_}x x, _, 1 :- x [] {_}x {_}y {_}z z > 1 ? (x, y, z) :- fib[y, y+x, z-1] }][1, 1, n] }[5]',

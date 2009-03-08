@@ -93,7 +93,7 @@ span.local .desc  .sub {
 	display: table-row;
 }
 
-a.shortStr, a.locals, a.dependances, a.flags, a.attributes {
+a.shortStr, a.locals, a.dependances, a.flags, a.attributes, a.autoRef {
 	display: table-cell;
 	font-size: 4px;
 	cursor: none;
@@ -106,7 +106,7 @@ a.shortStr, a.locals, a.dependances, a.flags, a.attributes {
 	vertical-align: top;
 }
 
-div.shortStr, div.locals, div.dependances, div.flags, div.attributes {
+div.shortStr, div.locals, div.dependances, div.flags, div.attributes, div.autoRef {
 	cursor: default;
 	font-size: 1em;
 	position: absolute;
@@ -137,6 +137,11 @@ a.flags div {
 .shortStr {
 	border-color: blue;
 	background-color: lightblue;
+}
+
+.autoRef {
+	border-color: black;
+	background-color: grey;
 }
 
 .locals {
