@@ -26,7 +26,7 @@ The handeling unification is not ment to be used as this. The handle is created 
 
 The 'object taking' or 'set application' involve the handeling unification. Indeed, {{{ { x } a }}} ({{{a}}} taken out of the sets of {{{x}}}) involve it statusing {{{a := x}}}
 
-The handle system is ued to query a database through an index and also to create _functions_ - that are in NUL, finally, just indexed tables.
+The handle system is used to query a database through an index and also to create _functions_ - that are in NUL, finally, just indexed tables.
 
 The function double is the set that contains each number handeling their double : {{{ { x :- 2*x } }}}
 As on the second schematic case, {{{ 4 := (x :- x*2) }}} is worth {{{ x*2 }}} while {{{ 4 = x }}} - and therefore {{{8}}}.
