@@ -18,7 +18,7 @@ If an expression has a named attribute, it can be used with the {{{->}}} operato
 == Example ==
 
 {{{
-N x x ::double x*2.
+N x::double x*2.
 }}}
 This is just like another natural number. Now, you can access {{{x->double}}} to get the doubled value.
 
@@ -34,7 +34,7 @@ This is not a limitation, this have been choosen this way! If it is needed to ac
 
 The set of complex numbers can be described as this :
 {{{
-{ Q a Q b (a, b)
+{ (Q a, Q b)
 ::rl a.
 ::img b.
 ::sq rl*rl+img*img.
