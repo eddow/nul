@@ -13,32 +13,36 @@
  */ 
 nul.solve = {
 	solve: function(xpr) {
-		if(!xpr.flags.fuzzy) return {solved:[xpr], fuzzy:[]};
+		if(','== xpr.charact) return {
+			solved:xpr.components,
+			fuzzy:xpr.components.follow?[xpr.components.follow]:[]
+		};
 		var rv = {solved:[], fuzzy:[]}, tryed, cn;
-		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn); ++cn) try {
-			var ss = nul.solve.solve(tryed.evaluate()||tryed);
-			rv.solved.pushs(ss.solved);
-			rv.fuzzy.pushs(ss.fuzzy);
+		for(cn=0; tryed=nul.solve.tryed(xpr, cn); ++cn) try {
+			tryed = nul.solve.solve(tryed.evaluate()||tryed);
+			rv.solved.pushs(tryed.solved);
+			rv.fuzzy.pushs(tryed.fuzzy);
 		} catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
 		if(0== cn) rv.fuzzy.push(xpr);
 		return rv;
 	},
 	tryed: function(xpr, cn) {
 		return xpr.browse({
+			clone: 'itm',
 			name: 'solve try',
 			browse: true,
 			cn: cn,
+			enter: 0,
 			before: function(xpr) {
-				if(!this.browse ||
-					'{}'==xpr.charact) throw nul.browse.abort;
-				if([':','[]'].contains(xpr.charact)) {
+				if(!this.browse || ('{}'==xpr.charact && 0<(this.enter++)))
+					throw nul.browse.abort;
+				if(xpr.possibility) {
 					this.browse = false;
-					if(this.cn < xpr.components.length)
-						return xpr.components[this.cn].xadd(xpr.x);
+					return xpr.possibility(this.cn);
 				} 
 			},
 			finish: function(xpr, chgd) {
-				if(chgd) return xpr.summarised();
+				if(chgd) return xpr.summarised().dirty();
 			}
 		});
 	}

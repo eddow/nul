@@ -195,7 +195,8 @@ nul.unify = {
 			} else kwf = nul.build.kwFreedom(nul.build.unification([oa, ob], way)).dirty();
 			rv.push(kwf.evaluate(kb));
 		}
-		return nul.build.ior3(rv).xed(kb, way, ax, b.x).operate(kb);
+		rv = nul.build.ior3(rv).xed(kb, way, ax, b.x);
+		return rv.operate(kb)||rv;
 	}.perform('nul.unify.orDist'),
 	
 	//unification of <b> with each member of table <as>

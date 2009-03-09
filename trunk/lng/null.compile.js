@@ -46,11 +46,12 @@ nul.compiled = {
 //m => multi (a , b , c)
 //p => preceder (- a)
 //s => postceder (a !)
+//k => kept (a , b , c ,.. d)
 nul.operators = [
 	['!','s'],								//extraction
 	['[]','m'],								//booleans:meta OR
 	[';','m'],								//booleans:meta AND
-	[',..','r'], [',','m'],	 				//list
+	[',','k'],				 				//list
 	[':-','r'],								//lambda
 	['=','m'], [':=','m'],					//unify
 	[':','m'],								//booleans:meta XOR
@@ -80,8 +81,12 @@ nul.compiler = function(txt)
 			var rv = [firstOp];
 			switch(oprtr[1])
 			{
+				case 'k':
+					while( this.tknzr.take(oprtr[0]) ) rv.push(this.expression(oprtrLvl));
+					if(this.tknzr.take(oprtr[0]+'..')) rv.follow = this.expression(oprtrLvl);
+					break;
 				case 'm':
-					while( this.tknzr.take(oprtr[0]) ) rv.push(this.expression(oprtrLvl))
+					while( this.tknzr.take(oprtr[0]) ) rv.push(this.expression(oprtrLvl));
 					break;
 				case 'l':
 					if( this.tknzr.take(oprtr[0]) ) rv.push(this.expression(oprtrLvl));
@@ -107,7 +112,7 @@ nul.compiler = function(txt)
 			{
 				rv = this.list(firstOp, oprtr, 1+oprtrLvl);
 				if(0== rv.length) throw nul.internalException('No components and an operator');
-				if(1== rv.length) return rv[0];
+				if(1== rv.length && !rv.follow) return rv[0];
 				if('ceded'== rv[1]) firstOp = nul.compiled.postceded(oprtr[0], rv[0]);
 				else firstOp = nul.compiled.expression(oprtr[0], rv);
 			} while('l'== oprtr[1]);

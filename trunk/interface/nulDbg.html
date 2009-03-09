@@ -21,6 +21,7 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 <script type="text/javascript" src="../lng/null.execution.js"></script>
 <script type="text/javascript" src="../lng/null.helper.js"></script>
 <script type="text/javascript" src="../lng/null.text.js"></script>
+<script type="text/javascript" src="../lng/null.set.js"></script>
 <script type="text/javascript" src="../lng/null.build.js"></script>
 <script type="text/javascript" src="../lng/null.browse.js"></script>
 <script type="text/javascript" src="../lng/null.xpr.js"></script>
@@ -68,7 +69,14 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 			<div class="msTab" name="values">
 				<div id="sandBox"><b>yh</b><i>oo</i></div>
 				<div id="parsed"></div>
-				<fieldset><legend>Knowledge evolution</legend><table id="kevol"></table></fieldset>
+				<fieldset><legend>Solutions</legend>
+					<input type="button" disabled="disabled" id="extractBu"
+						value="Extract" onclick="extractThis();" />
+					<input type="checkbox" id="extractChk" /> Extraction...
+					<ul id="solutionLst">
+					</ul>
+					<div id="solutionFuz"></div>
+				</fieldset>
 			</div>
 			<div class="msTab" name="runtime">
 				<fieldset><legend>Call stack</legend><table id="callStack"></table></fieldset>

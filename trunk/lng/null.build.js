@@ -27,29 +27,12 @@ nul.build = {
 		if(value) rv.value = value;
 		return rv;
 	},
-	freedom: function(tp, locals, itm) {
-		if(itm.charact && ['{}','kw'].contains(itm.charact)) {
-			itm.freedom = tp;
-			
-			map(itm, function(i, o) { if('function'== typeof o && 'f_'!= i.substr(0,2))
-				itm['f_'+i] = o; })
-			for(var i in nul.behav.freedom) itm[i] = nul.behav.freedom[i];
-			itm.locals = locals;
-		}
-		return itm;
-	},
 	item: function(ops) {
-		var itm = {};
-		for(var i=1; i<arguments.length; ++i) map(arguments[i],
-			function(i, o) { itm[i] = o; })
+		var itm = clone1(nul.xpr);
+		for(var i=1; i<arguments.length; ++i) merge(itm,arguments[i]);
+
 		itm.x = nul.x();
-		for(var i in nul.xpr) if(!itm[i]) itm[i] = nul.xpr[i];
-		itm.toString = nul.text.toString;
 		
-		if(nul.debug.assert) assert(
-			'{}'== itm.charact || !this.locals || 0>=this.locals.length,
-			'Locals only defined on sets')
-		if(this.locals) itm.locals = this.locals;
 		if(ops) {
 			itm.components = isArray(ops)?[]:{};
 			itm = itm.compose(ops);
@@ -114,11 +97,17 @@ nul.build = {
 	}.perform('nul.build->nmdOp'),
 
 	html_place: function(htmlElement) {
+		var nr = nul.build.html_place.expressed.indexOf(htmlElement);
+		if(0>nr) {
+			nr = nul.build.html_place.expressed.length;
+			nul.build.html_place.expressed.push(htmlElement);
+		}
 		return this.item(null, {
 			charact: '<html>',
 			element: htmlElement,
+			acNdx: '[<'+nr.toString()+'>]',
 			expressionHTML: function() { return '&lt;Element&gt;'; },
-			expressionString: function() { return '&lt;Element&gt;'; }
+			expressionString: function() { return '&lt;Element&gt;'; },
 		}, nul.behav.html_place);
 	},
 
@@ -163,17 +152,22 @@ nul.build = {
 			nul.behav.application,'[-]', {object: obj, applied: apl},'');
 	},
 	kwFreedom: function(value, premices) {	//Knowledge-wide freedom
-		return this.freedom('kw', [], this.item(this.freeval(value, premices), nul.behav.kwFreedom, {
-			charact: 'kw',
-			expressionHTML: function() {
-				if(!this.components) return '<span class="failure">fail</span>';
-				return this.freedomHTML();
-			},
-			expressionString: function() {
-				if(!this.components) return '&lt;fail&gt;';
-				return this.freedomString();
-			},
-		}));
+		return this.item(
+			this.freeval(value, premices), 
+			nul.behav.kwFreedom,
+			nul.behav.freedom,
+			{
+				charact: 'kw',
+				freedom: 'kw',
+				expressionHTML: function() {
+					if(!this.components) return '<span class="failure">fail</span>';
+					return this.freedomHTML();
+				},
+				expressionString: function() {
+					if(!this.components) return '&lt;fail&gt;';
+					return this.freedomString();
+				},
+			});
 	},
 	set: function(value, premices, locals, ctxName) {
 		if(!value) return this.item(null, {
@@ -182,19 +176,25 @@ nul.build = {
 			expressionString: function() { return '&phi;'; },
 			take: function(apl) { nul.fail('Taking from empty set : ' + apl.dbgHTML()); }
 		});
-		return this.freedom('ctx', locals, this.item(this.freeval(value, premices), nul.behav.set, {
-			charact: '{}',
-			ctxName: ctxName,
-			expressionHTML: function() { 
-				return ''+
-					'<span class="big op">{</span>' +
-					this.freedomHTML() +
-					'<span class="big op">}</span>';
-			},
-			expressionString: function() {
-				return '{'+this.freedomString()+'}';
-			},
-		}));
+		return this.item(
+			this.freeval(value, premices),
+			nul.behav.set,
+			nul.behav.freedom,
+			{
+				freedom: 'ctx',
+				charact: '{}',
+				ctxName: ctxName,
+				locals: locals,
+				expressionHTML: function() { 
+					return ''+
+						'<span class="big op">{</span>' +
+						this.freedomHTML() +
+						'<span class="big op">}</span>';
+				},
+				expressionString: function() {
+					return '{'+this.freedomString()+'}';
+				},
+			});
 	},
 	seAppend: function(dst, itms) {
 		return this.nmdOp(nul.behav.seAppend,'<<+', { effected: dst, appended: itms }, '&lt;&lt;=');
@@ -242,9 +242,6 @@ nul.build = {
 			way==-1?':=':'=',
 			ops);
 	},
-	and3: function(ops) {
-		return this.listOp(nul.behav.and3,';', ops);
-	},
 	ior3: function(ops) {
 		return this.listOp(merge(nul.behav.ior3, nul.behav.kwFreedomHolder), '[]', ops, '&#9633;');
 	},
@@ -256,11 +253,14 @@ nul.build = {
 				nul.build.atom(node),
 				nul.build.list(content)
 			);
-		rv.x.attributes = attrs;
+		merge(rv.x.attributes, attrs);
 		rv.toXML = function() {
-			var opn = '<' + this.components.parms.value;
-			for(var a in this.x.attributes) opn += ' ' + a + '=' + this.attributes[a].toHTML();
-			var itms = this.components.value.components;
+			var tag = this.handle().value;
+			if(!tag || 'string'!= typeof tag) throw nul.semanticException('"'+tag.toString()+'" should be a computed string')
+			var opn = '<' + tag;
+			for(var a in this.x.attributes) if('+'!= a.substr(0,1))
+				opn += ' ' + a + '=' + this.x.attributes[a].toString();
+			var itms = this.components;
 			if(0>= itms.length) return opn + ' />';
 			var insd = '';
 			for(var i=0; i<itms.length; ++i) {
@@ -268,7 +268,7 @@ nul.build = {
 				else if(itms[i].toXML) insd += itms[i].toXML();
 				else throw nul.semanticException('XML element is still context dependant.');
 			}
-			return opn+'>'+insd+'</'+this.components.parms.value+'>';
+			return opn+'>'+insd+'</'+tag+'>';
 		};
 		return rv;
 	},
@@ -296,3 +296,4 @@ nul.build = {
 		}, nul.behav.nativeSet);
 	}
 };
+nul.build.html_place.expressed = [];

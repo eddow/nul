@@ -85,22 +85,6 @@ nul.behav = {
 				operable: rvThis
 			};
 		},
-		composed: function() {
-			//var nc = this.components.splice(0);
-			//while(0<nc.length) this.components.pushs(nc.shift().failables());
-			return this.f_composed().summarised();			
-		}.perform('freedom->composed').xKeep(),
-		//This expression climbed.
-		//this' locals are added to <kb>' last context 
-		//ctxDelta-s of outer locals are decremented
-		stpUp: function(kb) {
-			var dlt = kb.addLocals(this.locals);
-			var rv = (this.browse(
-				nul.browse.lclShft(dlt, this.ctxName, kb.contexts[0].ctxName)
-			) || this);
-			kb.knew(rv.components);
-			return rv.components.value
-		}.perform('freedom->stpUp'),
 
 		freedomHTML: function() {
 			var rv = '';
@@ -196,75 +180,16 @@ nul.behav = {
 			return this.frdmMock(kb);
 		}
 	},
-	set: {
-		takeFrdm: function(knwl, ctx) {
-			this.composed().summarised();
-			//Remove local-index-space allocations for unknowns not used anymore
-			var delta = 0, i = 0, tt = {};
-			while(i<ctx.length) {
-				if(!this.used[i+delta]) {
-					++delta;
-					ctx.splice(i,1);
-				} else {
-					if(0<delta) tt[nul.build.local(this.ctxName,i+delta).ndx] =
-						nul.build.local(this.ctxName,i,ctx[i]); 
-					++i;
-				}
-			}
-			return this.contextualise(tt);
-		}.perform('set->takeFrdm'),
-		composed: function() {
-			//TODO: composed : if can enumarate, just enumerate in a list
-			return this;
-		}.perform('set->composed').xKeep(),
-		transform: function() {
-			//TODO: set::transform : if " :- " or " ..[]:-[].. "
-			return true;
-		},
-		take: function(apl, kb, way) {
-			return nul.unify.level(apl, this.clone().stpUp(kb), kb, -1);
-		}.perform('set->take'),
-		fail: function() {
-			return nul.build.set().xadd(this);
-		},
-		extract: function() {
-			//TODO: remember extraction and use it instead from now on
-			var sltns = this.solve();
-			return nul.build.atom(
-				'Solved: '+sltns.solved.length+
-				'\nFuzzies: '+sltns.fuzzy.length);
-			/*TOREDO
-			if(sltns.solved.length) {
-				if(0<sltns.fuzzy.length)
-					sltns.solved.follow = nul.build.set(nul.build.ior3(sltns.fuzzy));
-				return nul.build.list(sltns.sol.xadd(this)s.x);
-			}
-			if(sltns.fuzzy.length)
-				return nul.build.set(nul.build.ior3(sltns.fuz.xadd(this)s.x);
-			return nul.build.s.xadd(this)s.x);
-			*/
-		}.perform('set->extract').xKeep(),
-		isFailable: function() {
-			return false;
-		},
-		makeFrdm: function(kb) {
-			kb.push(nul.knowledge(this.components), {
-				ctxName: this.ctxName,
-				locals: this.locals,
-				addLocals: function(locals) {
-					this.locals.pushs(isArray(locals)?locals:[locals]);
-					return this.locals.length-locals.length;
-				}
-			});
-			return this.frdmMock(kb);
-		}
-	},
+	set: nul.set.behaviour,
 	seAppend: {
 		extract: function() {
-			if(!this.components.effected.append)
-				throw nul.semanticException('Expected appendable : ',
-					this.components.effected.toString());
-			return this.components.effected.append(this.components.appended);
+			var eff = this.components.effected;
+			if(!eff.append)
+				eff = eff.extract();
+			if(!eff.append)
+				throw nul.semanticException('Expected appendable : ' + eff.toString());
+			eff.append(this.components.appended);
+			return eff.xadd(this);
 		}		
 	},
 	cumulExpr: {
@@ -328,10 +253,10 @@ nul.behav = {
 			try{ rvl = nul.unify.orDist(this.components, this.x, apl, kb, way); }
 			catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
 			if(this.components.follow) {
-				try{ rvf = this.components.follow.take(apl,kb,x); }
+				try{ rvf = this.components.follow.take(apl,kb,way); }
 				catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
 			}
-			if(!rvl && !rvf) nul.fail;
+			if(!rvl && !rvf) nul.fail();
 			if(!rvl ^ !rvf) return rvl || rvf;
 			rvl = nul.build.ior3([rvl,rvf]);
 			return rvl?rv.xadd(x, kb):rvl;			
@@ -356,20 +281,14 @@ nul.behav = {
 					this.components[0].toString());
 			if(v) return this.components[0].xadd(this, kb);
 			nul.fail('Assertion not provided');
-		}.perform('assert->operate').xKeep(),
-		composed: function() {
-			/*switch(this.components[0].charact) {
-				//TODO: passe dans le kb ? case '&&': return nul.build.and3(...);
-				case '||': return nul.build.ior3(...);
-			}*/
-			return this;
-		}.perform('assert->composed').xKeep()
+		}.perform('assert->operate').xKeep()
 	},
 	extraction: {
-		operable: nul.xpr.subFixed,
 		operate: function(kb)
 		{
-			return this.components[0].extraction();
+			var rv = this.components[0].extraction();
+			if(!rv) return this.components[0].xadd(this);
+			if(rv) return rv.evaluate(kb).xadd(this);
 		}.perform('extration->operate').xKeep(),
 		extract: function() {}		//Must avoid sub-expr extraction
 	},
@@ -380,15 +299,8 @@ nul.behav = {
 			var rv = nul.unify.multiple(this.components, kb, this.way, this.x)
 			if(rv && 1== rv.length) return rv[0].xadd(this, kb);
 			if(!rv) rv = this.components;
-			return kb.affect(rv, this.way, this.x);
+			return kb.affect(rv, this.way, this.x).xadd(this, kb);
 		}.perform('unification->operate').xKeep()
-	},
-	and3: {
-		composed: function()
-		{
-			this.components = this.failables();
-			return this.summarised();
-		}.perform('and3->composed').xKeep(),
 	},
 	kwFreedomHolder: {
 		composed: function() {
@@ -420,6 +332,10 @@ nul.behav = {
 		}.perform('kwFreedomHolder->operate').xKeep(),
 	},
 	ior3: {
+		possibility: function(n) {
+			if(n<this.components.length) 
+				return nul.build.ior3([this.components[n]]).dirty().xadd(this.x);
+		},
 		isFailable: function() {
 			for(var i=0; i<this.components.length; ++i)
 				if(!this.components[i].flags.failable) return false;

@@ -102,7 +102,6 @@ nul.kb = function(knowledge) {
 			}
 
 			nul.debug.log('knowledge')(['Handles','Equivals','Handled'][1+way], us);
-			//if(nul.debug.watches) nul.debug.kevol.log(a.dbgHTML(), 'as', b.dbgHTML());
 
 			var rv = us[0];
 			var unf = nul.build.unification(us, way).clean().summarised();
@@ -132,9 +131,6 @@ nul.kb = function(knowledge) {
 				} else if('[-]'== premices[i].charact) {
 					nul.debug.log('knowledge')('Known',
 						[premices[i].components.applied,'in',premices[i].components.object]);
-					/*if(nul.debug.watches) nul.debug.kevol.log(
-						premices[i].components.applied.dbgHTML(), 'in',
-						premices[i].components.object.dbgHTML());*/
 					++i;
 				} else if('?'== premices[i].charact) {
 					nul.debug.log('knowledge')('Assert', [premices[i].components[0]]);

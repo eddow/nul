@@ -91,10 +91,11 @@ nul.text = {
 		return strings.join(' '+(oprtr?(oprtr+' '):''));
 	},
 	toHTML: function() {
+		var aShort = this.toString();
 		if(!nul.text.beginDraw(this)) return '<span class="failure">Self contained!</span>';
-		var aLocals = '', aDeps = '', aDepsTtl = '', aShort = this.toString(),
+		var aLocals = '', aDeps = '', aDepsTtl = '',
 			aFlags, aAttr, aAttrTtl, aAutoRef = '';
-		aShort = nul.text.js.tile('shortStr', this.toString(), this.toString());
+		aShort = nul.text.js.tile('shortStr', aShort);
 		if(this.arCtxName) aAutoRef = nul.text.js.tile('autoRef', this.arCtxName);
 		aFlags = nul.text.js.tile('flags',
 			isEmpty(this.flags)?'&phi;':keys(this.flags).join(', '),
@@ -109,7 +110,7 @@ nul.text = {
 			}
 			aDeps = nul.text.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
 		}
-		if(this.freedom && 0<this.locals.length) {
+		if('{}'==this.freedom && 0<this.locals.length) {
 			aLocals = [];
 			for(var i=0; i<this.locals.length; ++i)
 				aLocals.push(this.locals[i]);

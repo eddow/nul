@@ -71,12 +71,6 @@ nul.understanding = {
 		{
 			case ':-':	return nul.build.lambda(ops[0], ops[1]);
 			case ',':	return nul.build.list(ops);
-			case ',..':
-				if(ops[0].followed) return ops[0].followed(ops[1]);
-				var lst = [ops[0]];
-				lst.follow = ops[1];
-				return nul.build.list(lst);
-
 			case '=':	return nul.build.unification(ops, 0);
 			case ':=':	return nul.build.unification(ops, -1);
 
@@ -136,8 +130,8 @@ nul.understanding = {
 			this.applied.understand(ub) );
 	},
 	set: function(ub) {
+		if(!this.content) return nul.build.set();
 		ub = nul.understanding.emptyBase(ub);
-		if(!this.content) return nul.build.list([]);
 		return ub.asSet(this.content.understand(ub));
 	},
 	
@@ -153,15 +147,14 @@ nul.understanding = {
 			this.value.understand(ub));
 	},
 
+	xml: function(ub) {
+		var attrs = {};
+		for(var a in this.attributes) attrs[a] = this.attributes[a].understand(ub);
+		return nul.build.xml(this.node, attrs,
+			nul.understanding.understandOperands(this.content, ub));
+	},
 
 	/*
-	xml: function(o, ub) {
-		var attrs = {}, content = [];
-		for(var i=0; i<o.content.length; ++i) content[i] = nul.understanding.understand(o.content[i], ub);
-		ub = nul.understanding.emptyBase(ub);
-		for(var a in o.attributes) attrs[a] = nul.understanding.understand(o.attributes[a], ub);
-		return nul.build.xml( o.node, attrs, content );
-	},
 	objectivity: function(o, ub) {
 		var lindx = ub.createFreedom(o.lcl);
 		var sub = nul.understanding.emptyBase(ub);

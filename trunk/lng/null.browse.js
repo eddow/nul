@@ -58,12 +58,12 @@ nul.browse = {
 		var nAttrs, nComps;
 		var isToBrowse = 'undefined'== typeof behav.browse ||
 						('function'== typeof behav.browse && behav.browse(xpr)) ||
-						behav.browse;
+						('function'!= typeof behav.browse && behav.browse);
 		try {
 			if(isToBrowse) nAttrs = map(this.x.attributes, subRecur);
 			try {
 				if(behav.before) xpr = iif(behav.before(xpr), xpr).integre();
-				if(isToBrowse && this.components) nComps = map(this.components, subRecur);
+				if(isToBrowse && xpr.components) nComps = map(xpr.components, subRecur);
 				if(chg) {
 					switch(behav.clone) {
 						case 'itm': xpr = xpr.clone(nComps, nAttrs); break;
@@ -131,6 +131,7 @@ nul.browse = {
 	lclShft: function(inc, orgName, dstName) {
 		return {
 			name: 'local shifting',
+			clone: 'itm',
 			inc: inc,
 			dstName: dstName || orgName,
 			orgName: orgName,

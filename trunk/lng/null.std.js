@@ -34,23 +34,22 @@ var nul = {
 		var ub = nul.understanding.emptyBase();
 		var tt = [];
 		for(var p in nul.globals) tt[ub.createFreedom(p).ndx] = nul.globals[p];
-		return {ub: ub, tt:tt};
+		return {ub: nul.understanding.emptyBase(ub), rub: ub, tt:tt};
 	},
 	expression: function(txt)
 	{
 		nul.erroneus = false;
 		var gu = nul.globalsUse();
-		return gu.ub.asSet(nul.compile(txt).understand(gu.ub)).contextualise(gu.tt);
+		return gu.ub.asSet(nul.compile(txt).understand(gu.ub)).contextualise(gu.tt,'glbls');
 	},
 	html: function(txt)
 	{
 		nul.erroneus = false;
 		var comps = nul.compiler(txt+' </').innerXML();
-		var ub = nul.firstUnderstandBase();
-		var ubl = ub.length;
+		var gu = nul.globalsUse();
 		for(var i=0; i<comps.length; ++i) {
-			comps[i] = ub.asSet(comps[i].understand(ub)).contextualise(gu.tt);
-			ub.splice(ubl);
+			gu.ub = nul.understanding.emptyBase(gu.rub);
+			comps[i] = comps[i].understand(gu.ub).contextualise(gu.tt,'glbls');
 		}
 		return comps;
 	},

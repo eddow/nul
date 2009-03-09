@@ -11,7 +11,6 @@ function init()
 	selectNamedTab($('info'),$('infoTS').value)
 	nul.debug.callStack.table = $('callStack');
 	nul.debug.kbase.table = $('kbase');
-	nul.debug.kevol.table = $('kevol');
 	nul.debug.logs.table = $('logs');
 	if(!nul.debug.acts) $('shwLoggingActs').disabled = true;
 	src = document.getElementById('source');
@@ -19,8 +18,26 @@ function init()
 	evd = document.getElementById('evaled');
 	rcr = document.getElementById('recur');
 	sbx = document.getElementById('sandBox');
-	//nl.globals.sandBox = nul.build.html_place(sbx);
+	nul.globals.sandBox = nul.build.html_place(sbx);
 	for(var i in this) knGlobs[i] = true;
+}
+
+var toSolve = null;
+function extractThis() {
+	$('solutionFuz').innerHTML = $('solutionLst').innerHTML = '';
+	var v = toSolve.extraction();
+	if(','!= v.charact)
+		return $('solutionFuz').innerHTML = 'Unexpected solution :<br />' + v.toHTML();
+	if(v.components.follow) $('solutionFuz').innerHTML = v.components.follow.toHTML();
+	for(var n=0; n<v.components.length; ++n)
+		$('solutionLst').insert(new Element('li').update(v.components[n].toHTML()));
+}
+
+function setToSolve(v) {
+	$('extractBu').disabled = !v;
+	$('solutionFuz').innerHTML = $('solutionLst').innerHTML = '';
+	toSolve = v;
+	if($('extractChk').checked && v) extractThis();
 }
 
 function evaluate()
@@ -35,6 +52,7 @@ function evaluate()
 		v = v.evaluate();
 	});
 	evd.innerHTML = v.toHTML();
+	setToSolve(v);
 }
 
 function testEvaluation()

@@ -92,7 +92,6 @@ function tableStack(nm, tbl) {
 nul.debug = {
 	callStack: tableStack('callStack'),
 	kbase: tableStack('kb'),
-	kevol: tableStack('ke'),
 	logs: tableStack('logs'),
 	jsDebug: false,
 	levels: true,
@@ -149,17 +148,13 @@ nul.debug = {
 		nul.debug.logs.clear();
 		nul.debug.callStack.clear();
 		nul.debug.kbase.clear();
-		nul.debug.kevol.clear();
 		nul.debug.lc = 0;
 		nul.debug.lcs = nul.text.clpsSstm(this.logs.table, 'dn', function() { return nul.debug.lc; });
 		nul.debug.lcNextLimit = nul.debug.lcLimit;
 	},
 	
 	applyTables: function() {
-		if(nul.debug.logging) {
-			nul.debug.logs.apply();
-			nul.debug.kevol.apply();
-		}
+		if(nul.debug.logging) nul.debug.logs.apply();
 		if(nul.debug.watches) {
 			nul.debug.callStack.apply();
 			nul.debug.kbase.apply();

@@ -20,6 +20,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return this.clone(clone1(this.components),clone1(this.x.attributes));
 	}.perform('nul.xpr->clone').xKeep(),
 	toHTML: nul.text.toHTML,
+	toString: nul.text.toString,
 	dbgHTML: function() {
 		if(!nul.debug.logging) return 'dbg';
 		var str = this.toString();
@@ -71,8 +72,8 @@ nul.xpr = {	//Main interface implemented by all expressions
 		map(this.x.attributes, sumSubs);
 		if(this.acNdx) this.ndx = this.acNdx;
 		else this.ndx = '[' + this.charact + ndx + ']';
-		if(['{}', ';'].contains(this.charact)) delete flags.fuzzy;
-		if(['[-]','[]'].contains(this.charact)) flags.fuzzy = true;
+		if(['{}'].contains(this.charact)) delete flags.fuzzy;
+		if(['[-]','[]','!'].contains(this.charact)) flags.fuzzy = true;
 		
 		if(this.makeDeps) dps.push(this.makeDeps());
 		this.deps = nul.lcl.dep.mix(dps);
@@ -93,23 +94,6 @@ nul.xpr = {	//Main interface implemented by all expressions
 	}.perform('nl.xpr->summarised').xKeep(),
 	//Be sure the expression is operated until it's not dirty anymore
 	composed: function() { return this.integre(); },	
-	//Get a list of non-fuzzy expressions
-	solve: function() {
-		//if(nul.debug) nul.debug.log('kbLog')(
-		//	nul.debug.lcs.collapser('Solving'), nul.debug.logging?this.dbgHTML():'');
-		var sltn;
-		try {
-			sltn = nul.solve.solve(this.integre());
-		} finally {
-			/*if(nul.debug) {
-				if(sltn) nul.debug.log('kbLog')(
-					nul.debug.lcs.endCollapser('Solved', 'Solved'), sltn.length + ' possibiliti(es)');
-				else nul.debug.log('kbLog')(
-					nul.debug.lcs.endCollapser('Aborted', 'Unsolvable'), nul.debug.logging?this.dbgHTML():'');
-			}*/			
-		}
-		return sltn;
-	}.perform('nul.xpr->solve'),
 	//Gets the value of this expression after operations effect (unifications, '+',  ...)
 	evaluate: function(kb) {
 		if(!kb) kb = nul.kb();
