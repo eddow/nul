@@ -77,5 +77,5 @@ td.ke.c0 {
 #logs .evals.log { background-color: lightblue; }
 #logs .error.log { background-color: red; }
 #logs .fail.log { background-color: pink; }
-#logs .info.log { background-color: papayawhip; }
+#logs .solve.log { background-color: papayawhip; }
 #logs .acts.log { background-color: lightgreen; }

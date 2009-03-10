@@ -1,15 +1,26 @@
 nul.set = {
-	unionCtxName: 0,
+	/*
 	union: function(sets, x) {
 		if(!sets.length) return nul.build.set();
 		if(1==sets.length) return sets[0];
-		var ctxName = 'u'+(++nul.set.unionCtxName)
 		var locals = [];
 		var iors = [];
 		while(sets.length) iors.push(sets.pop().into(ctxName, locals));
 		return nul.build.set(nul.build.ior3(iors), [], locals, ctxName).xadd(x);
 	},
+
+	*/
 	behaviour: {
+		asUnion: function(vals) {
+			if(1==vals.length) {
+				this.components = vals[0].components;
+			} else {
+				var iors = [];
+				while(vals.length) iors.push(vals.pop().into());
+				this.components.value = nul.build.ior3(iors).clean();
+			}
+			return this;
+		},
 		//This expression out of the set
 		//this' locals are added to <kb>' last context 
 		//This ctxName is not referenced anymore
@@ -25,28 +36,34 @@ nul.set = {
 		//this' locals are added to <kb>' last context 
 		//This ctxName is not referenced anymore
 		into: function(ctxName, lcls) {
-			var dlt = lcls.length;
-			lcls.pushs(this.locals);
-			var rv = (this.browse(
-				nul.browse.lclShft(dlt, this.ctxName, ctxName)
-			) || this);
+			var rv;
+			if(ctxName) {
+				var dlt = lcls.length;
+				lcls.pushs(this.locals);
+				rv = (this.browse(
+					nul.browse.lclShft(dlt, this.ctxName, ctxName)
+				) || this);
+			} else rv = this;
 			return nul.build.kwFreedom(rv.components.value, rv.components);
 		}.perform('freedom->stpUp'),
 		takeFrdm: function(knwl, ctx) {
-			this.composed().summarised();
-			//Remove local-index-space allocations for unknowns not used anymore
-			var delta = 0, i = 0, tt = {};
-			while(i<ctx.length) {
-				if(!this.used[i+delta]) {
-					++delta;
-					ctx.splice(i,1);
-				} else {
-					if(0<delta) tt[nul.build.local(this.ctxName,i+delta).ndx] =
-						nul.build.local(this.ctxName,i,ctx[i]); 
-					++i;
-				}
+			//return this.removeUnused();
+			var rv = nul.solve.solve(this);
+
+			if(rv.solved.length) {
+				if(0<rv.fuzzy.length)
+					rv.solved.follow = this.asUnion(rv.fuzzy);
+				rv = nul.build.list(rv.solved).xadd(this);
 			}
-			return this.contextualise(tt);
+			else if(rv.fuzzy.length) rv = this.asUnion(rv.fuzzy, this.x);
+			else return nul.build.set().xadd(this);
+
+			if('{}'== rv.charact) return rv.removeUnused().clean();
+			delete this.arCtxName;	//arCtxName went to the containing list
+			rv.xadd(this);
+			if(nul.debug.assert) assert(','== rv.charact, 'Solution value is set or list');
+			if(rv.components.follow) rv.components.follow.removeUnused();
+			return rv;
 		}.perform('set->takeFrdm'),
 		composed: function() {
 			//TODO: composed : if can enumerate, just enumerate in a list
@@ -67,19 +84,6 @@ nul.set = {
 		fail: function() {
 			return nul.build.set().xadd(this);
 		},
-		extract: function() {
-			//TODO: remember extraction and use it instead from now on
-			var sltns = nul.solve.solve(this);
-			//return nul.build.atom('Solved: '+sltns.solved.length+'\nFuzzies: '+sltns.fuzzy.length);
-
-			if(sltns.solved.length) {
-				if(0<sltns.fuzzy.length)
-					sltns.solved.follow = nul.set.union(sltns.fuzzy, this.x);
-				return nul.build.list(sltns.solved).xadd(this);
-			}
-			if(sltns.fuzzy.length) return nul.set.union(sltns.fuzzy, this.x);
-			return nul.build.set().xadd(this);
-		}.perform('set->extract').xKeep(),
 		isFailable: function() {
 			return false;
 		},
@@ -92,7 +96,87 @@ nul.set = {
 					return this.locals.length-locals.length;
 				}
 			});
-			return this.frdmMock(kb);
+			return this;
+		},
+		removeUnusedKnowledge: function() {
+			//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
+			var ctxn = this.ctxName;
+			/*TODO:
+			 * we could eliminate more : (a+1=b) should forget a+1=b letting (a+1) or b
+			 * even group the equivalent locals to express in one only : v; (z=1 [] z=2); v=z
+			*/
+			var usefulLocals = this.components.value.deps[ctxn];
+			if(!usefulLocals) this.components.splice(0);
+			else {
+				var forgottenPrmcs = [];
+				for(var i=0; i<this.components.length; ++i)
+					if(isEmpty(this.components[i].deps, [ctxn]))
+						forgottenPrmcs.push(i);
+				do {
+					var ds;
+					for(var i=0; i<forgottenPrmcs.length; ++i) {
+						ds = this.components[forgottenPrmcs[i]].deps[ctxn];
+						if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
+					}
+					if(i>=forgottenPrmcs.length) ++i;
+					else {
+						merge(usefulLocals, ds);
+						forgottenPrmcs.splice(i,1);
+					}
+				} while(i<=forgottenPrmcs.length);
+				//Remove in inverse orders to have valid indices.
+				// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
+				//  first remove 3 then 1.
+				while(0<forgottenPrmcs.length) this.components.splice(forgottenPrmcs.pop(), 1);
+			}
+			return this;
+		},
+		removeUnused: function() {
+			this.removeUnusedKnowledge();
+			//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
+			var ctxn = this.ctxName;
+			/*TODO:
+			 * we could eliminate more : (a+1=b) should forget a+1=b letting (a+1) or b
+			 * even group the equivalent locals to express in one only : v; (z=1 [] z=2); v=z
+			*/
+			var usefulLocals = this.components.value.deps[ctxn];
+			if(!usefulLocals) this.components.splice(0);
+			else {
+				var forgottenPrmcs = [];
+				for(var i=0; i<this.components.length; ++i)
+					if(isEmpty(this.components[i].deps, [ctxn]))
+						forgottenPrmcs.push(i);
+				do {
+					var ds;
+					for(var i=0; i<forgottenPrmcs.length; ++i) {
+						ds = this.components[forgottenPrmcs[i]].deps[ctxn];
+						if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
+					}
+					if(i>=forgottenPrmcs.length) ++i;
+					else {
+						merge(usefulLocals, ds);
+						forgottenPrmcs.splice(i,1);
+					}
+				} while(i<=forgottenPrmcs.length);
+				//Remove in inverse orders to have valid indices.
+				// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
+				//  first remove 3 then 1.
+				while(0<forgottenPrmcs.length) this.components.splice(forgottenPrmcs.pop(), 1);
+			}
+			this.summarised();
+			//Remove local-index-space allocations for unknowns not used anymore
+			var delta = 0, i = 0, tt = {};
+			while(i<this.locals.length) {
+				if(!this.used[i+delta]) {
+					++delta;
+					this.locals.splice(i,1);
+				} else {
+					if(0<delta) tt[nul.build.local(this.ctxName,i+delta).ndx] =
+						nul.build.local(this.ctxName,i,this.locals[i]); 
+					++i;
+				}
+			}
+			return this.contextualise(tt);
 		}
 	}
 };

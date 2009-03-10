@@ -17,13 +17,22 @@ nul.solve = {
 			solved:xpr.components,
 			fuzzy:xpr.components.follow?[xpr.components.follow]:[]
 		};
+		if(nul.debug.assert) assert('{}'== xpr.charact, 'We dont solve additions...');
 		var rv = {solved:[], fuzzy:[]}, tryed, cn;
-		for(cn=0; tryed=nul.solve.tryed(xpr, cn); ++cn) try {
+		if(!xpr.components) return rv;
+		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn); ++cn) try {
+			nul.debug.log('solve')(nul.debug.lcs.collapser('Trying'),tryed);
 			tryed = nul.solve.solve(tryed.evaluate()||tryed);
 			rv.solved.pushs(tryed.solved);
 			rv.fuzzy.pushs(tryed.fuzzy);
+			nul.debug.log('solve')(nul.debug.lcs.endCollapser('Tried', 'Tried'),
+				['solved: ',tryed.solved, ' fuzzies: ', tryed.fuzzy]);
 		} catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
-		if(0== cn) rv.fuzzy.push(xpr);
+		if(0== cn) {
+			if(xpr.components.value.deps[xpr.ctxName] || xpr.components.length)
+				rv.fuzzy.push(xpr);
+			else rv.solved.push(xpr.components.value);
+		}
 		return rv;
 	},
 	tryed: function(xpr, cn) {
@@ -32,17 +41,29 @@ nul.solve = {
 			name: 'solve try',
 			browse: true,
 			cn: cn,
-			enter: 0,
 			before: function(xpr) {
-				if(!this.browse || ('{}'==xpr.charact && 0<(this.enter++)))
+				if(!this.browse || ('{}'==xpr.charact && this.kb))
 					throw nul.browse.abort;
+				if('{}'==xpr.charact) {
+					this.kb = nul.kb();
+					return xpr.makeFrdm(this.kb);
+				}
 				if(xpr.possibility) {
 					this.browse = false;
-					return xpr.possibility(this.cn);
+					var rv = xpr.possibility(this.cn, this.kb);
+					if(rv) return rv;
+					this.cn = 'end';
 				} 
 			},
-			finish: function(xpr, chgd) {
-				if(chgd) return xpr.summarised().dirty();
+			finish: function(xpr, chgd, orig) {
+				if('{}'== orig.charact) {
+					this.kb.pop('ctx');
+					delete this.kb;
+				}
+				if(!this.browse && 'end'!= this.cn) return xpr.dirty();
+			},
+			abort: function(xpr, err, orig) {
+				if(nul.browse.abort== err) return xpr.summarised().dirty();
 			}
 		});
 	}

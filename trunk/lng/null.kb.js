@@ -157,13 +157,11 @@ nul.kb = function(knowledge) {
 		//Context pop
 		pop: function(frdm) {
 			if(frdm.freedom)
-				frdm.takeFrdm(
+				return frdm.takeFrdm(
 					this.knowledge.shift().premices,
 					'ctx'==frdm.freedom?this.contexts.shift().locals:null);
-			else {
-				this.knowledge.shift();
-				if('ctx'== frdm) this.contexts.shift();
-			}
+			this.knowledge.shift();
+			if('ctx'== frdm) this.contexts.shift();
 		}
 	};
 };

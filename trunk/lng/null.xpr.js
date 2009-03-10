@@ -72,7 +72,10 @@ nul.xpr = {	//Main interface implemented by all expressions
 		map(this.x.attributes, sumSubs);
 		if(this.acNdx) this.ndx = this.acNdx;
 		else this.ndx = '[' + this.charact + ndx + ']';
-		if(['{}'].contains(this.charact)) delete flags.fuzzy;
+		if(['{}'].contains(this.charact)) {
+			delete flags.fuzzy;
+			delete flags.failable;
+		}
 		if(['[-]','[]','!'].contains(this.charact)) flags.fuzzy = true;
 		
 		if(this.makeDeps) dps.push(this.makeDeps());

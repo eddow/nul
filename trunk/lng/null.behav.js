@@ -9,82 +9,9 @@
 nul.behav = {
 	freedom: {
 		finalise: function(kb) {
-			if(nul.debug.assert) assert(kb.knowledge[0].premices === this.components,
-				'Finalise freedom while knowing it')
-			this.known(this.components);
-			while(this.flags.dirty) {
-				var nprms = this.components.splice(0);
-				kb.forget();
-				while(0<nprms.length) {
-					var prms = nprms.pop().evaluate(kb);
-					if(prms.flags.failable) kb.knew(prms);
-				}
-				this.components.value = this.components.value.evaluate(kb);
-				this.summarised();
-				this.known(this.components);
-			}
-			//TODO: knowledge must be forgotten in OR premice if not used in containing set : n=(1[]2) should give (1[]2)
-			if('ctx'== this.freedom) {
-				//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
-				var ctxn = kb.contexts[0].ctxName;
-				/*TODO:
-				 * we could eliminate more : (a+1=b) should forget a+1=b
-				 * even group the equivalent locals to express in one only : v; (z=1 [] z=2); v=z
-				*/
-				var usefulLocals = this.components.value.deps[ctxn];
-				if(!usefulLocals) kb.forget();
-				else {
-					var forgottenPrmcs = [];
-					for(var i=0; i<this.components.length; ++i)
-						if(isEmpty(this.components[i].deps, [ctxn]))
-							forgottenPrmcs.push(i);
-					do {
-						var ds;
-						for(var i=0; i<forgottenPrmcs.length; ++i) {
-							ds = this.components[forgottenPrmcs[i]].deps[ctxn];
-							if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
-						}
-						if(i>=forgottenPrmcs.length) ++i;
-						else {
-							merge(usefulLocals, ds);
-							forgottenPrmcs.splice(i,1);
-						}
-					} while(i<=forgottenPrmcs.length);
-					//Remove in inverse orders to have valid indices.
-					// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
-					//  first remove 3 then 1.
-					while(0<forgottenPrmcs.length) kb.forget(forgottenPrmcs.pop());
-				}
-			}
-			return this;
+			if(this.removeUnusedKnowledge) this.removeUnusedKnowledge();
+			return this.composed();
 		}.perform('freedom->finalise').xKeep(),
-		frdmMock: function(kb) {
-			var fv = this;
-			var rvThis = function() { return this; };
-			return {
-				components: clone1(this.components),
-				kb: kb,
-				operate: function() {
-					fv.components.value = this.components.value;
-					for(var i=0; i<this.components.length; ++i)
-						if(['[]',':'].contains(this.components[i].charact) &&
-							this.components[i].flags.failable) {
-							var ior = nul.build.ior3(this.components[i].components).clean();
-							for(var c=0; c<ior.components.length; ++c)
-								delete ior.components[c].components.value;
-							this.kb.knew(ior);
-						}
-					return fv;
-				},
-				x : { attributes: {} },
-				integre: rvThis,
-				summarised: rvThis,
-				compose: rvThis,
-				composed: rvThis,
-				clone: rvThis,
-				operable: rvThis
-			};
-		},
 
 		freedomHTML: function() {
 			var rv = '';
@@ -148,6 +75,7 @@ nul.behav = {
 			if(rv) {
 				//TODO: optimise recursion
 				while(selfRef && rv.deps[selfRef]) {
+					for(var v in srTt) srTt[v] = srTt[v].clone();
 					rv = rv.contextualise(srTt,'self').evaluate(kb);
 				}
 				return rv.xadd(this, kb);
@@ -160,6 +88,7 @@ nul.behav = {
 	},
 	kwFreedom: {
 		takeFrdm: function(knwl, ctx) {
+			//TODO: cela vaut-il vraiment la peine ?
 			return this.composed().summarised();
 		}.perform('kwFreedom->takeFrdm'),
 		composed: function() {
@@ -177,7 +106,7 @@ nul.behav = {
 		},
 		makeFrdm: function(kb) {
 			kb.push(nul.knowledge(this.components));
-			return this.frdmMock(kb);
+			return this;
 		}
 	},
 	set: nul.set.behaviour,
@@ -249,17 +178,27 @@ nul.behav = {
 			return this;
 		}.perform('list->composed').xKeep(),
 		take: function(apl, kb, way) {
-			var rvl, rvf;
-			try{ rvl = nul.unify.orDist(this.components, this.x, apl, kb, way); }
+			var rv = [];
+			var xpr = this.clone();	//TODO: please kill me :'(
+			try{ rv = nul.unify.orDist(xpr.components, xpr.x, apl, kb, way); }
 			catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
-			if(this.components.follow) {
-				try{ rvf = this.components.follow.take(apl,kb,way); }
-				catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
+			if(xpr.components.follow) {
+				var kwf = nul.build.kwFreedom();
+				kwf.makeFrdm(kb);
+				try {
+					kwf.components.value = xpr.components.follow.take(apl,kb,way).dirty();
+				} catch(err) {
+					kb.pop('kw');
+					if(nul.failure!= err) throw nul.exception.notice(err);
+				}
+				if(kwf.components.value) {
+					kwf = kb.pop(kwf).dirty();
+					rv.push(kwf.evaluate(kb)||kwf);
+				}
 			}
-			if(!rvl && !rvf) nul.fail();
-			if(!rvl ^ !rvf) return rvl || rvf;
-			rvl = nul.build.ior3([rvl,rvf]);
-			return rvl?rv.xadd(x, kb):rvl;			
+			if(!rv.length) nul.fail();
+			rv = nul.build.ior3(rv)
+			return rv.operate(kb)||rv;
 		}.perform('list->take')
 	},
 	preceded: {
@@ -327,14 +266,19 @@ nul.behav = {
 					kb.knew(rv.components);
 					rv = rv.components.value;
 				}
-				return rv.xadd(this, kb);
+				//TODO: retourner un truc inimportant ou "vide" pour "inchangé" ?????
+				if(rv) return rv.xadd(this, kb);
+				//Si "vide" pour inchangé, le 'possibility' tried de "a [] b" va retourner " [] b"
+				// Quand a donne "Ok"
+				// Car le "a" sera évalué et le tout sera retourné tel quel
+				return nul.build.set().xadd(this, kb);
 			}
 		}.perform('kwFreedomHolder->operate').xKeep(),
 	},
 	ior3: {
-		possibility: function(n) {
-			if(n<this.components.length) 
-				return nul.build.ior3([this.components[n]]).dirty().xadd(this.x);
+		possibility: function(n, kb) {
+			if(n<this.components.length)
+				return nul.build.ior3([this.components[n]])/*.evaluate(kb)*/.xadd(this);
 		},
 		isFailable: function() {
 			for(var i=0; i<this.components.length; ++i)

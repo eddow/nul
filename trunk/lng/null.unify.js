@@ -128,7 +128,14 @@ nul.unify = {
 	//returns an expression or nothing if it is sure nothing is manageable or 'unk' if this function couldn't manage
 	vcvs: function(a, b, kb, way) {
 		if('='== a.charact && !way) return nul.unify.andDist(a.components, a.x, b, kb, way);
-		if('[]'== a.charact) return nul.unify.orDist(a.components, a.x, b, kb, way);
+		//Distribution in 'solve' but need here too. Epimenide forget premice if not
+		if('[]'== a.charact) {
+			var rv = nul.unify.orDist(a.components, a.x, b, kb, way);
+			if(!rv) return;
+			rv = nul.build.ior3(rv).xed(kb, way, a.x, b.x);
+			return rv.operate(kb)||rv;
+			
+		}
 
 		if('[-]'== a.charact && a.components.object.finalRoot()) {
 			if(!a.components.object.take)
@@ -195,8 +202,9 @@ nul.unify = {
 			} else kwf = nul.build.kwFreedom(nul.build.unification([oa, ob], way)).dirty();
 			rv.push(kwf.evaluate(kb));
 		}
-		rv = nul.build.ior3(rv).xed(kb, way, ax, b.x);
-		return rv.operate(kb)||rv;
+		return rv;
+//		rv = nul.build.ior3(rv).xed(kb, way, ax, b.x);
+//		return rv.operate(kb)||rv;
 	}.perform('nul.unify.orDist'),
 	
 	//unification of <b> with each member of table <as>
