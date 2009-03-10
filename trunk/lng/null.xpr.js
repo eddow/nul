@@ -139,8 +139,24 @@ nul.xpr = {	//Main interface implemented by all expressions
 	},
 	//Take the side-effected value of this expression
 	extraction: function() {
-		return this.browse(nul.browse.extraction);
+		var rv = this.browse(nul.browse.extraction);
+		if(rv) return rv.evaluate()||rv;
 	}.perform('nul.xpr->extraction').xKeep(),
+
+	//Until the function <forApi> is available or no extraction can be done anymore
+	//Until the function <forApi> is available or no extraction can be done anymore
+	extractInterface: function(forApi) {
+		var rv = this;
+		while(!rv[forApi]) {
+			var nt = rv.extraction();
+			if(!nt) throw nul.semanticException('Expected interface to '+forApi+' : ' + rv.toString());
+			rv = nt;
+		}
+		return function() {
+			return rv[forApi].apply(rv, arrg(arguments));
+		}
+	}.perform('nul.xpr->extraction').xKeep(),
+
 
 	//Shortcut: Weither this epression is free of dependance toward external locals
 	free: function() { return nul.lcl.dep.free(this.deps); }.perform('nul.xpr->free'),

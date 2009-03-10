@@ -39,7 +39,7 @@ nul.behav = {
 			return this.charact == {kw:'kw', ctx:'{}'}[this.freedom];
 		}
 	},
-	html_place: {
+	htmlPlace: {
 		transform: function() { return true; },
 		take: function() {},
 		extract: function() {
@@ -48,7 +48,7 @@ nul.behav = {
 		append: function(itm) {
 			if(itm.toXML) {
 				this.element.innerHTML += itm.toXML();
-				return itm.components.parms;
+				return itm;
 			}
 			if(itm.value) {
 				this.element.innerHTML += itm.value;
@@ -58,6 +58,13 @@ nul.behav = {
 		},
 		isFailable: function() { return false; }
 	},
+	dataTable: {
+		transform: function() { return true; },
+//		take: function() {},
+//		append: function(itm) {},
+		isFailable: function() { return false; }
+	},
+
 	application: {
 		operable: function() {
 			return this.components.object.finalRoot();
@@ -112,13 +119,8 @@ nul.behav = {
 	set: nul.set.behaviour,
 	seAppend: {
 		extract: function() {
-			var eff = this.components.effected;
-			if(!eff.append)
-				eff = eff.extract();
-			if(!eff.append)
-				throw nul.semanticException('Expected appendable : ' + eff.toString());
-			eff.append(this.components.appended);
-			return eff.xadd(this);
+			return this.components.effected.extractInterface('append')
+				(this.components.appended).xadd(this);
 		}		
 	},
 	cumulExpr: {

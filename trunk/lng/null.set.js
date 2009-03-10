@@ -19,7 +19,7 @@ nul.set = {
 				while(vals.length) iors.push(vals.pop().into());
 				this.components.value = nul.build.ior3(iors).clean();
 			}
-			return this;
+			return this.summarised().clean();
 		},
 		//This expression out of the set
 		//this' locals are added to <kb>' last context 
@@ -47,11 +47,11 @@ nul.set = {
 			return nul.build.kwFreedom(rv.components.value, rv.components);
 		}.perform('freedom->stpUp'),
 		takeFrdm: function(knwl, ctx) {
-			if(!this.locals.protect) this.locals.protect = 0;
-			++this.locals.protect;
-			var rv = nul.solve.solve(this);
-			--this.locals.protect;
-
+			if(this.solving) return this;
+			this.solving = true;
+			try { var rv = nul.solve.solve(this);
+			} finally { delete this.solving; }
+	
 			if(rv.solved.length) {
 				if(0<rv.fuzzy.length)
 					rv.solved.follow = this.asUnion(rv.fuzzy);
@@ -135,7 +135,7 @@ nul.set = {
 		},
 		removeUnused: function() {
 			this.removeUnusedKnowledge();
-			if(this.locals.protect) return this;
+			if(this.solving) return this;
 			this.summarised();
 			//Remove local-index-space allocations for unknowns not used anymore
 			var delta = 0, i = 0, tt = {};

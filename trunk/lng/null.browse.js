@@ -197,7 +197,8 @@ nul.browse = {
 							kb.knew(prms);
 						}
 					}
-					xpr.components.value = xpr.components.value.evaluate(kb);
+					if(xpr.components.value)
+						xpr.components.value = xpr.components.value.evaluate(kb);
 					xpr.summarised();
 					xpr.known(xpr.components);
 				}

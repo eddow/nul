@@ -21,6 +21,7 @@ nul.solve = {
 		var rv = {solved:[], fuzzy:[]}, tryed, cn;
 		if(!xpr.components) return rv;
 		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn); ++cn) try {
+			if(nul.debug.assert) assert(-1<xpr.ndx.indexOf('[[]|'), 'Try if choice')
 			nul.debug.log('solve')(nul.debug.lcs.collapser('Trying'),tryed);
 			tryed = nul.solve.solve(tryed.evaluate()||tryed);
 			rv.solved.pushs(tryed.solved);
@@ -50,6 +51,7 @@ nul.solve = {
 				}
 				if(xpr.possibility) {
 					this.browse = false;
+					nul.debug.log('solve')('Choose',[cn, 'out of', xpr]);
 					var rv = xpr.possibility(this.cn, this.kb);
 					if(rv) return rv;
 					this.cn = 'end';

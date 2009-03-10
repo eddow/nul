@@ -96,11 +96,11 @@ nul.build = {
 		return this.item(ops, itm);
 	}.perform('nul.build->nmdOp'),
 
-	html_place: function(htmlElement) {
-		var nr = nul.build.html_place.expressed.indexOf(htmlElement);
+	htmlPlace: function(htmlElement) {
+		var nr = nul.build.htmlPlace.expressed.indexOf(htmlElement);
 		if(0>nr) {
-			nr = nul.build.html_place.expressed.length;
-			nul.build.html_place.expressed.push(htmlElement);
+			nr = nul.build.htmlPlace.expressed.length;
+			nul.build.htmlPlace.expressed.push(htmlElement);
 		}
 		return this.item(null, {
 			charact: '<html>',
@@ -108,7 +108,20 @@ nul.build = {
 			acNdx: '[<'+nr.toString()+'>]',
 			expressionHTML: function() { return '&lt;Element&gt;'; },
 			expressionString: function() { return '&lt;Element&gt;'; },
-		}, nul.behav.html_place);
+		}, nul.behav.htmlPlace);
+	},
+	dataTable: function(dataSource) {
+		var nr = nul.build.dataTable.expressed.indexOf(dataSource);
+		if(0>nr) {
+			nr = nul.build.dataTable.expressed.length;
+			nul.build.dataTable.expressed.push(dataSource);
+		}
+		return this.item(null, {
+			charact: '<db>',
+			acNdx: '[<'+nr.toString()+'>]',
+			expressionHTML: function() { return '&lt;DB&gt;'; },
+			expressionString: function() { return '&lt;DB&gt;'; },
+		}, nul.behav.htmlPlace);
 	},
 
 	atom: function(value) {
@@ -197,7 +210,7 @@ nul.build = {
 			});
 	},
 	seAppend: function(dst, itms) {
-		return this.nmdOp(nul.behav.seAppend,'<<+', { effected: dst, appended: itms }, '&lt;&lt;=');
+		return this.nmdOp(nul.behav.seAppend,'<<+', { effected: dst, appended: itms }, '&lt;&lt;+');
 	},
 	cumulExpr: function(oprtr, oprnds) {
 		return this.listOp(nul.behav.cumulExpr,oprtr, oprnds, mathSymbol(oprtr));
@@ -296,4 +309,5 @@ nul.build = {
 		}, nul.behav.nativeSet);
 	}
 };
-nul.build.html_place.expressed = [];
+nul.build.htmlPlace.expressed = [];
+nul.build.dataTable.expressed = [];

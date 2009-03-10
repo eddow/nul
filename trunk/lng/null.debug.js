@@ -101,7 +101,7 @@ nul.debug = {
 	perf: 0> window.location.href.indexOf('noperf'),
 	xTest: 0> window.location.href.indexOf('noxtest'),
 	acts: 0<= window.location.href.indexOf('actLog'),
-	lcLimit: 200,
+	lcLimit: 50,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
 		return nul.debug.callStack.item().get()[0];

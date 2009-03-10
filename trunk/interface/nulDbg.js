@@ -18,14 +18,29 @@ function init()
 	evd = document.getElementById('evaled');
 	rcr = document.getElementById('recur');
 	sbx = document.getElementById('sandBox');
-	nul.globals.sandBox = nul.build.html_place(sbx);
+	nul.globals.sandBox = nul.build.htmlPlace(sbx);
 	for(var i in this) knGlobs[i] = true;
 }
 
 var toSolve = null;
 function extractThis() {
 	$('solutionFuz').innerHTML = $('solutionLst').innerHTML = '';
-	var v = toSolve.extraction();
+
+	var v;
+	if(nul.debug && nul.debug.jsDebug) {
+		v = toSolve.extraction();
+		evd.innerHTML = toSolve.toHTML();
+	} else try { v = toSolve.extraction() }
+	catch( err ) {
+		nul.exception.notice(err);
+		evd.innerHTML = err.message;
+		if(nul.debug.watches && err.callStack) nul.debug.callStack.draw(err.callStack);
+		if(nul.debug.watches && err.kb) nul.debug.kbase.draw(err.kb);
+		if(nul.erroneusJS) throw nul.erroneusJS;
+		//Forward JS errors to Firebug
+		return;
+	}
+
 	if(','!= v.charact)
 		return $('solutionFuz').innerHTML = 'Unexpected solution :<br />' + v.toHTML();
 	if(v.components.follow) $('solutionFuz').innerHTML = v.components.follow.toHTML();
