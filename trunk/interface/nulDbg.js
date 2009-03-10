@@ -64,6 +64,7 @@ function testEvaluation()
 		if($('shwLogging').checked) {
 			nul.debug.logging = {error: true};
 			nul.debug.logging.knowledge = nul.debug.watches = $('shwWatches').checked;
+			nul.debug.logging.ctxs = $('shwLoggingCtxs').checked;
 			nul.debug.logging.evals = $('shwLoggingEvals').checked;
 			nul.debug.logging.solve = $('shwLoggingSolve').checked;
 			nul.debug.logging.acts = $('shwLoggingActs').checked;

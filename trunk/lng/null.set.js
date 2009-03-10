@@ -47,8 +47,10 @@ nul.set = {
 			return nul.build.kwFreedom(rv.components.value, rv.components);
 		}.perform('freedom->stpUp'),
 		takeFrdm: function(knwl, ctx) {
-			//return this.removeUnused();
+			if(!this.locals.protect) this.locals.protect = 0;
+			++this.locals.protect;
 			var rv = nul.solve.solve(this);
+			--this.locals.protect;
 
 			if(rv.solved.length) {
 				if(0<rv.fuzzy.length)
@@ -133,36 +135,7 @@ nul.set = {
 		},
 		removeUnused: function() {
 			this.removeUnusedKnowledge();
-			//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
-			var ctxn = this.ctxName;
-			/*TODO:
-			 * we could eliminate more : (a+1=b) should forget a+1=b letting (a+1) or b
-			 * even group the equivalent locals to express in one only : v; (z=1 [] z=2); v=z
-			*/
-			var usefulLocals = this.components.value.deps[ctxn];
-			if(!usefulLocals) this.components.splice(0);
-			else {
-				var forgottenPrmcs = [];
-				for(var i=0; i<this.components.length; ++i)
-					if(isEmpty(this.components[i].deps, [ctxn]))
-						forgottenPrmcs.push(i);
-				do {
-					var ds;
-					for(var i=0; i<forgottenPrmcs.length; ++i) {
-						ds = this.components[forgottenPrmcs[i]].deps[ctxn];
-						if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
-					}
-					if(i>=forgottenPrmcs.length) ++i;
-					else {
-						merge(usefulLocals, ds);
-						forgottenPrmcs.splice(i,1);
-					}
-				} while(i<=forgottenPrmcs.length);
-				//Remove in inverse orders to have valid indices.
-				// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
-				//  first remove 3 then 1.
-				while(0<forgottenPrmcs.length) this.components.splice(forgottenPrmcs.pop(), 1);
-			}
+			if(this.locals.protect) return this;
 			this.summarised();
 			//Remove local-index-space allocations for unknowns not used anymore
 			var delta = 0, i = 0, tt = {};
@@ -176,7 +149,10 @@ nul.set = {
 					++i;
 				}
 			}
-			return this.contextualise(tt);
+			if(!delta) return this;
+			var rv = this.contextualise(tt);
+			nul.debug.log('ctxs')('Relocated', rv);
+			return rv;
 		}
 	}
 };

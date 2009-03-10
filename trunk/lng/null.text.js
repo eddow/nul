@@ -110,7 +110,7 @@ nul.text = {
 			}
 			aDeps = nul.text.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
 		}
-		if('{}'==this.freedom && 0<this.locals.length) {
+		if('ctx'==this.freedom && 0<this.locals.length) {
 			aLocals = [];
 			for(var i=0; i<this.locals.length; ++i)
 				aLocals.push(this.locals[i]);

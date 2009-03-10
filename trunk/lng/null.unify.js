@@ -200,6 +200,8 @@ nul.unify = {
 				kwf = oa.dirty();
 				kwf.components.value = nul.build.unification([oa.components.value, ob], way);
 			} else kwf = nul.build.kwFreedom(nul.build.unification([oa, ob], way)).dirty();
+			//TODO: if kw:fail, don't push do you ?
+			//But react then nicely if rv == []
 			rv.push(kwf.evaluate(kb));
 		}
 		return rv;

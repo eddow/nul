@@ -142,8 +142,8 @@ nul.browse = {
 			},
 			before: function(xpr) {
 				if(!xpr.flags.dirty) throw nul.browse.abort;
-				nul.debug.log('evals')(nul.debug.lcs.collapser('Entering'),xpr);
-				if(xpr.freedom) return xpr.makeFrdm(this.kb);
+				try { if(xpr.freedom) return xpr.makeFrdm(this.kb); }
+				finally { nul.debug.log('evals')(nul.debug.lcs.collapser('Entering'),xpr); }
 			},
 			finish: function(xpr, chgd, orig) {
 				var assertKbLen, assertLc;
@@ -175,11 +175,11 @@ nul.browse = {
 			},
 			abort: function(xpr, err, orig) {
 				if(nul.browse.abort== err) return;
-				if(orig.freedom) this.kb.pop(orig.freedom);
 				var abrtXpr;
 				if(nul.failure== err && orig.fail) abrtXpr = orig.fail();
 				nul.debug.log('evals')(nul.debug.lcs.endCollapser('Abort', 'Fail'),
 					abrtXpr?(abrtXpr!=orig?[abrtXpr, 'after', orig]:['modified', abrtXpr]):orig);
+				if(orig.freedom) this.kb.pop(orig.freedom);
 				return abrtXpr;
 			},
 			browse: function(xpr) { return !xpr.freedom; },

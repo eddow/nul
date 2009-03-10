@@ -24,7 +24,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	dbgHTML: function() {
 		if(!nul.debug.logging) return 'dbg';
 		var str = this.toString();
-		if(str.length < 150) return this.toHTML();
+		if(str.length < 250) return this.toHTML();
 		return str;
 	},
 	browse: nul.browse.recursion.xKeep(),

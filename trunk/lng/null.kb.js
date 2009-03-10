@@ -151,11 +151,14 @@ nul.kb = function(knowledge) {
 		},
 		//Context push
 		push: function(knl, ctx) {
+			nul.debug.log('ctxs')(nul.debug.lcs.collapser('Entering'),knl.premices);			
 			this.knowledge.unshift(knl);
 			if(ctx) this.contexts.unshift(ctx);
 		},
 		//Context pop
 		pop: function(frdm) {
+			nul.debug.log('ctxs')(nul.debug.lcs.endCollapser('Leave', 'Ctx'),
+				frdm.freedom||frdm);
 			if(frdm.freedom)
 				return frdm.takeFrdm(
 					this.knowledge.shift().premices,
