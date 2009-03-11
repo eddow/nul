@@ -135,4 +135,3 @@ function assertSmGlobals() {
 		}
 	if(0<nwGlb.length) alert('Unexpected global(s) created : ' + nwGlb.join(', ')); 
 }
-//TODO: store this.keys to see if no globals are created by mistake

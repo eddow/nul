@@ -21,7 +21,7 @@ nul.solve = {
 		var rv = {solved:[], fuzzy:[]}, tryed, cn;
 		if(!xpr.components) return rv;
 		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn); ++cn) try {
-			if(nul.debug.assert) assert(-1<xpr.ndx.indexOf('[[]|'), 'Try if choice')
+			if(nul.debug.assert) assert(xpr.contains('[[]|'), 'Try if choice')
 			nul.debug.log('solve')(nul.debug.lcs.collapser('Trying'),tryed);
 			tryed = nul.solve.solve(tryed.evaluate()||tryed);
 			rv.solved.pushs(tryed.solved);

@@ -189,7 +189,7 @@ nul.browse = {
 					var nprms = xpr.components.splice(0);
 					kb.forget();
 					while(0<nprms.length) {
-						var prms = nprms.pop().evaluate(kb);
+						var prms = nprms.shift().evaluate(kb);
 						if(prms.flags.failable) {
 							if(['[]',':'].contains(prms.charact))
 								for(var c=0; c<prms.components.length; ++c)

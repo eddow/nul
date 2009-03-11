@@ -61,17 +61,20 @@ nul.xpr = {	//Main interface implemented by all expressions
 		//TODO: vérifier qu'il n'y a pas de redondance : NE PAS TROP SUMMARISER
 		var dps = [];
 		var flags = {};
-		var ndx = '';
+		var ndx = '', attrNdx = '';
 		var sumSubs = function() {
 			if(nul.debug.assert) assert(this.deps,'Subs summarised.'); 
 			dps.push(this.deps);
 			for(var f in this.flags) flags[f] = true;
 			ndx += '|' + this.ndx;
+			attrNdx += '|' + this.attrNdx;
 		};
 		if(this.components) map(this.components, sumSubs);
-		map(this.x.attributes, sumSubs);
 		if(this.acNdx) this.ndx = this.acNdx;
 		else this.ndx = '[' + this.charact + ndx + ']';
+		ndx = '';
+		map(this.x.attributes, sumSubs);
+		this.attrNdx = ndx + attrNdx;
 		if(['{}'].contains(this.charact)) {
 			delete flags.fuzzy;
 			delete flags.failable;
@@ -134,8 +137,10 @@ nul.xpr = {	//Main interface implemented by all expressions
 		tt[xpr.ndx] = nul.build.local(this.arCtxName,nul.lcl.slf, xpr.dbgName?xpr.dbgName:null);
 		return this.contextualise(tt);
 	},
+	//Weither an expression contains another one or not
 	contains: function(xpr) {
-		return -1<this.ndx.indexOf(xpr.ndx);
+		if('string'!= typeof xpr) xpr = xpr.ndx;
+		return -1<(this.ndx+this.attrNdx).indexOf(xpr);
 	},
 	//Take the side-effected value of this expression
 	extraction: function() {
@@ -177,7 +182,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 			if(!this.components) return this.composed();
 			nComps = this.components;
 		}
-		//TODO: '[]',':' use sub-components
+		//TODO: '[]',':' use sub-components : distribué au solve
 		if(['[]',':','=','&','|','^','+','*','&&','||'].contains(this.charact)) {
 			var nc = [];
 			while(0<nComps.length) {

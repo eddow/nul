@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+
 nul.x = function() {
 	rv = {};
 	rv.attributes = {};

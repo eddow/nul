@@ -9,7 +9,7 @@
 nul.behav = {
 	freedom: {
 		finalise: function(kb) {
-			if(this.removeUnusedKnowledge) this.removeUnusedKnowledge();
+			if('{}'== this.charact) this.removeUnusedKnowledge();
 			return this.composed();
 		}.perform('freedom->finalise').xKeep(),
 
@@ -268,11 +268,7 @@ nul.behav = {
 					kb.knew(rv.components);
 					rv = rv.components.value;
 				}
-				//TODO: retourner un truc inimportant ou "vide" pour "inchangé" ?????
 				if(rv) return rv.xadd(this, kb);
-				//Si "vide" pour inchangé, le 'possibility' tried de "a [] b" va retourner " [] b"
-				// Quand a donne "Ok"
-				// Car le "a" sera évalué et le tout sera retourné tel quel
 				return nul.build.set().xadd(this, kb);
 			}
 		}.perform('kwFreedomHolder->operate').xKeep(),

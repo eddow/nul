@@ -88,13 +88,6 @@ function keys(ass) {
 	return rv;
 }
 
-//Get <arr> shifted with <itm> but don't modify <arr>
-function unshifted(itm, arr) {	//TODO: virer les unshifted inutiles (après les clones)
-	arr = clone1(arr);
-	arr.unshift(itm);
-	return arr;
-}
-
 //If elements of <t> are tables, they become part of <t>
 // [ 1, [2, [3, 4]], 5 ] ==> [ 1, 2, 3, 4, 5 ]
 function oneFlatTable(t) {
