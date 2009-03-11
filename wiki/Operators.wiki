@@ -1,24 +1,25 @@
 #summary List of operators and expression builders
 #labels Featured,Language
 
-||  !  || (up-to come) executor ||
-|| []  || [GreedyMetaOr Greedy meta-or] ||
-||  ;  || [MetaAnd Meta-and] ||
-|| :-  || [Lambda] ||
-||  ,  || [Tuple Tuple creation] ||
-||  =  || [Unification] ||
-||  :  || [ContentMetaOr Content meta-or] ||
-||  ?  || [Assertion] ||
-|| &&  || boolean and ||
-|| | | || boolean or ||
-||  !  || boolean negation ||
-|| < > <= >= || atom comparison ||
-|| <<+ || (up-to come) insert ||
-|| + - `*` / % || atom addition, substraction, multiplication, division, modulo ||
-|| & | ^ || atom and, or, xor ||
+|| {{{[]}}}  || [GreedyMetaOr Greedy meta-or] ||
+||  {{{;}}}  || [MetaAnd Meta-and] ||
+|| {{{:-}}}  || [Lambda] ||
+||  {{{,}}}  || [Tuple Tuple creation] ||
+||  {{{=}}}  || [Unification] ||
+||  {{{:}}}  || [ContentMetaOr Content meta-or] ||
+||  {{{?}}}  || [Assertion] ||
+|| {{{&&}}}  || boolean and ||
+|| {{{|}}}{{{|}}} || boolean or ||
+||  {{{!}}}  || boolean negation ||
+|| {{{< > <= >=}}} || atom comparison ||
+|| {{{<<+}}} || (up-to come) insert ||
+|| {{{+ - * / %}}} || atom addition, substraction, multiplication, division, modulo ||
+|| {{{& | ^}}} || atom and, or, xor ||
 
 Other structures are :
 || {{{\/local ...}}} || [FuzzyExpressions Fuzzy expressions] ||
+<wiki:comment>
 || {{{[local ... ]}}} || [AutoReferences Auto-references] - removed ||
+</wiki:comment>
 || {{{{ ... } }}} || [Sets] ||
 || {{{...(...)}}} || [TakeExpression Token expressions] ||
