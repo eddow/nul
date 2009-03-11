@@ -18,7 +18,10 @@ So, if {{{f}}} is the set representing the factorial, the factorial can be expre
 
 Now, the point is to link this definition to {{{f}}}, to say that this definition _is_ {{{f}}}
 
-One intuitive way is to write {{{\/f f = { 1 [] \/n n > 1 ? n :- n * f[n-1] } }}} .
+One intuitive way is to write {{{f = { 1 [] \/n n > 1 ? n :- n * f[n-1] } }}} .
+
+<wiki:comment>
+NOTE: Following information is discarded, this syntax is not used anymore !
 
 This way works, but there is a shortcut :
 
@@ -32,3 +35,4 @@ Note: Again, outside of {{{"..."}}}, {{{f}}} is not defined.
 
 ===== For fun =====
 {{{ [e!e] }}} : Which famous greek name does this "e" stands for ?
+</wiki:comment>
