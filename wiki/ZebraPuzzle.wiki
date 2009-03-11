@@ -43,7 +43,7 @@ This enigma is especially the kindof problems that declarative languages aim to 
 ; S(1,_,"norwegian",_,_,_)
 ; {S(n,_,_,"Chesterfields",_,_); S((n-1[]n+1),_,_,_,"fox",_)} _
 ; {S(n,_,_,"Kools",_,_); S((n-1[]n+1),_,_,_,"horse",_)} _}}}
-; S(_,_,_,"Lucky Strike",_,"Orange juice")
+; S(_,_,_,"Lucky Strike",_,"orange juice")
 ; S(_,_,"japanese","Parliaments",_,_)
 ; { S(n,_,"norwegian",_,_,_); S((n-1[]n+1),"blue",_,_,_,_) } _
 }}}
@@ -86,7 +86,7 @@ S
 
 ; S(_,_,"japanese","Parliaments",_,_)
 ; S(_,"yellow",_,"Kools",_,_)
-; S(_,_,_,"Lucky Strike",_,"Orange juice")
+; S(_,_,_,"Lucky Strike",_,"orange juice")
 
 ; S(_,_,_,"Old Gold","snails",_)
 ; {S(n,_,_,"Chesterfields",_,_); S((n-1[]n+1),_,_,_,"fox",_)} _
