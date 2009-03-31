@@ -132,7 +132,8 @@ nul.unify = {
 		if('[]'== a.charact) {
 			var rv = nul.unify.orDist(a.components, a.x, b, kb, way);
 			if(!rv) return;
-			rv = nul.build.ior3(rv).xed(kb, way, a.x, b.x);
+			rv = nul.build.ior3(rv).xadd(a.x, kb);
+			if(1> way) rv.xadd(b.x, kb);
 			return rv.operate(kb)||rv;
 			
 		}

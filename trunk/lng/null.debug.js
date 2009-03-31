@@ -101,7 +101,7 @@ nul.debug = {
 	perf: 0> window.location.href.indexOf('noperf'),
 	xTest: 0> window.location.href.indexOf('noxtest'),
 	acts: 0<= window.location.href.indexOf('actLog'),
-	lcLimit: 500,
+	lcLimit: 5000,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
 		return nul.debug.callStack.item().get()[0];
@@ -131,7 +131,7 @@ nul.debug = {
 			else v.push();
 			v.unshift(nul.debug.logCount());
 			return nul.debug.logs.log(v).addClassName(tp+' log');
-		} : function() {};
+		} : nul.debug.logCount;
 	},
 	warnRecursion: function(v)
 	{
@@ -149,7 +149,8 @@ nul.debug = {
 		nul.debug.callStack.clear();
 		nul.debug.kbase.clear();
 		nul.debug.lc = 0;
-		nul.debug.lcs = nul.text.clpsSstm(this.logs.table, 'dn', function() { return nul.debug.lc; });
+		nul.debug.lcs = nul.text.clpsSstm(this.logs.table, 'dn',
+			function() { return nul.debug.logs.buffer.rows.length; });
 		nul.debug.lcNextLimit = nul.debug.lcLimit;
 	},
 	

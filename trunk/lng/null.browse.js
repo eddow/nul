@@ -6,6 +6,10 @@
  *
  *--------------------------------------------------------------------------*/
 
+/*TODO:
+ * don't solve attributes ! only when used !
+*/
+
 /* browse behaviour defines:
 - browse
 - before(xpr) : returns nothing to remain unchanged or something as new value to browse
@@ -44,7 +48,7 @@ nul.browse = {
 					switch(behav.clone) {
 						case 'itm': xpr = xpr.clone(null, nAttrs); break;
 						case 'sub': xpr.x.attributes = nAttrs; break;
-						default: merge(xpr.x.attributes, nAttrs);
+						default: xpr.x.matt(nAttrs);
 					}
 					chg = false;
 					attrChg = xpr;
@@ -184,6 +188,7 @@ nul.browse = {
 			},
 			browse: function(xpr) { return !xpr.freedom; },
 			'kw': function(xpr) {
+				if(!xpr.components) return;	//Phi
 				xpr.known(xpr.components);
 				while(xpr.flags.dirty) {
 					var nprms = xpr.components.splice(0);

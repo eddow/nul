@@ -139,7 +139,7 @@ nul.kb = function(knowledge) {
 					nul.debug.log('knowledge')('Choice', premices[i].components);
 					++i;
 				} else {
-					//TODO: assert there are some attributes to verify
+					//TODO: assert there are some attributes to verify : separate into unifications if possible?
 					nul.debug.log('knowledge')('Attributed', premices[i]);
 					++i;
 				}

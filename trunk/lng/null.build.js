@@ -9,14 +9,17 @@
 nul.x = function() {
 	rv = {};
 	rv.attributes = {};
+	rv.matt = function(attrs, kb, unify) {
+		merge(this.attributes, attrs, unify?function(a,b) { return nul.unify.level(a,b, kb); }:null);
+		return this;
+	}.perform('nul.xpr->matt');
 	rv.xadd = function(x, kb) {
 		//TODO: avoid too much xadd
 		//if(nul.debug.xTest) assert(this.dbg!= x.dbg, 'X doesnt merge to itself');
-		merge(this.attributes, x.attributes, function(a,b) { return nul.unify.level(a,b, kb); });
 		for(var i in x) if(!['attributes'].contains(i))
 			this[i] = x[i];
-		return this;
-	}.perform('nul.xpr->xadd');
+		return this.matt(x.attributes, kb, 'unify');
+	};
 	if(nul.debug.xTest) rv.dbg = ++nul.x.cpt;
 	return rv;
 };
@@ -104,12 +107,12 @@ nul.build = {
 			nul.build.htmlPlace.expressed.push(htmlElement);
 		}
 		return this.item(null, {
-			charact: '<html>',
-			element: htmlElement,
-			acNdx: '[<'+nr.toString()+'>]',
-			expressionHTML: function() { return '&lt;Element&gt;'; },
-			expressionString: function() { return '&lt;Element&gt;'; },
-		}, nul.behav.htmlPlace);
+				charact: '<html>',
+				element: htmlElement,
+				acNdx: '[<'+nr.toString()+'>]',
+				expressionHTML: function() { return '&lt;Element&gt;'; },
+				expressionString: function() { return '&lt;Element&gt;'; },
+			}, nul.behav.htmlPlace);
 	},
 	dataTable: function(dataSource) {
 		var nr = nul.build.dataTable.expressed.indexOf(dataSource);
@@ -118,27 +121,27 @@ nul.build = {
 			nul.build.dataTable.expressed.push(dataSource);
 		}
 		return this.item(null, {
-			charact: '<db>',
-			acNdx: '[<'+nr.toString()+'>]',
-			expressionHTML: function() { return '&lt;DB&gt;'; },
-			expressionString: function() { return '&lt;DB&gt;'; },
-		}, nul.behav.htmlPlace);
+				charact: '<db>',
+				acNdx: '[<'+nr.toString()+'>]',
+				expressionHTML: function() { return '&lt;DB&gt;'; },
+				expressionString: function() { return '&lt;DB&gt;'; },
+			}, nul.behav.htmlPlace);
 	},
 
 	atom: function(value) {
 		return this.item(null, {
-			acNdx: '[' + ('string'==typeof(value)?'"':'') +
-				value.toString().replace('[','[[]').replace(']','[]]').replace('|','[|]') +
-				('string'==typeof(value)?'"':'') + ']',
-			value: value,
-			charact: 'atom',
-			expressionHTML: 'string'==typeof(value)?
-				function() { return escapeHTML('"'+this.value+'"'); }:
-				function() { return ''+this.value; },
-			expressionString: 'string'==typeof(value)?
-				function() { return escapeHTML('"'+this.value+'"'); }:
-				function() { return ''+this.value; },
-		});
+				acNdx: '[' + ('string'==typeof(value)?'"':'') +
+					value.toString().replace('[','[[]').replace(']','[]]').replace('|','[|]') +
+					('string'==typeof(value)?'"':'') + ']',
+				value: value,
+				charact: 'atom',
+				expressionHTML: 'string'==typeof(value)?
+					function() { return escapeHTML('"'+this.value+'"'); }:
+					function() { return ''+this.value; },
+				expressionString: 'string'==typeof(value)?
+					function() { return escapeHTML('"'+this.value+'"'); }:
+					function() { return ''+this.value; },
+			});
 	},
 	local: function(ctxName, lindx, dbgName) {
 		return this.item(null, {
@@ -221,21 +224,21 @@ nul.build = {
     },
 	list: function(oprnds) {
 		return this.listOp(nul.behav.list,',', oprnds,[
-			function() {
-				if(1==this.components.length && !this.components.follow)
-					return '<span class="op">{</span>'+this.components[0].toHTML()+'<span class="op">}</span>';
-				var rv = nul.text.expressionHTML('<span class="op">,</span>', this.components);
-				if(!this.components.follow) return rv;
-				return rv+'<span class="op">,..</span>'+this.components.follow.toHTML();
-			},
-			function() {
-				if(1==this.components.length && !this.components.follow)
-					return '{'+this.components[0].toString()+'}';
-				var rv = '('+nul.text.expressionString(',', this.components);
-				if(!this.components.follow) return rv + ')';
-				return rv +' ,.. '+this.components.follow.toString()+')';
-			}			
-		]);
+				function() {
+					if(1==this.components.length && !this.components.follow)
+						return '<span class="op">{</span>'+this.components[0].toHTML()+'<span class="op">}</span>';
+					var rv = nul.text.expressionHTML('<span class="op">,</span>', this.components);
+					if(!this.components.follow) return rv;
+					return rv+'<span class="op">,..</span>'+this.components.follow.toHTML();
+				},
+				function() {
+					if(1==this.components.length && !this.components.follow)
+						return '{'+this.components[0].toString()+'}';
+					var rv = '('+nul.text.expressionString(',', this.components);
+					if(!this.components.follow) return rv + ')';
+					return rv +' ,.. '+this.components.follow.toString()+')';
+				}			
+			]);
 	},
 	preceded: function(oprtr, oprnd) {
 		return this.prec(nul.behav.preceded,oprtr, oprnd);
@@ -267,7 +270,7 @@ nul.build = {
 				nul.build.atom(node),
 				nul.build.list(content)
 			);
-		merge(rv.x.attributes, attrs);
+		rv.x.matt(attrs);
 		rv.toXML = function() {
 			var tag = this.handle().value;
 			if(!tag || 'string'!= typeof tag) throw nul.semanticException('"'+tag.toString()+'" should be a computed string')
@@ -301,13 +304,16 @@ nul.build = {
 	},
 	nativeSet: function(name, fct) {
 		return this.item(null, {
-			callback: fct,
-			charact: 'native',
-			name: name,
-			acNdx: '['+name+']',
-			expressionHTML: function() { return '<span class="global">'+this.name+'</span>'; },
-			expressionString: function() { return this.name; }
-		}, nul.behav.nativeSet);
+				callback: fct,
+				charact: 'native',
+				name: name,
+				acNdx: '['+name+']',
+				expressionHTML: function() { return '<span class="global">'+this.name+'</span>'; },
+				expressionString: function() { return this.name; }
+			}, nul.behav.nativeSet);
+	},
+	object: function() {
+		return this.item();
 	}
 };
 nul.build.htmlPlace.expressed = [];

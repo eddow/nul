@@ -171,6 +171,7 @@ nul.compiler = function(txt)
 				}
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 				//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
+				if(this.tknzr.take('::')) return this.attributed();
 				if(!lax) {
 					if(this.tknzr.take('<')) return this.xml();
 					for(var p= 0; p<nul.operators.length; ++p) {

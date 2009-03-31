@@ -97,8 +97,9 @@ nul.text = {
 			aFlags, aAttr, aAttrTtl, aAutoRef = '';
 		aShort = nul.text.js.tile('shortStr', aShort);
 		if(this.arCtxName) aAutoRef = nul.text.js.tile('autoRef', this.arCtxName);
+		aFlags = isEmpty(this.flags)?'&phi;':keys(this.flags).join(', ');
 		aFlags = nul.text.js.tile('flags',
-			isEmpty(this.flags)?'&phi;':keys(this.flags).join(', '),
+			aFlags,
 			keys(this.flags));
 		if(this.deps && !isEmpty(this.deps)) {
 			for(var i in this.deps) {
@@ -162,6 +163,7 @@ nul.text = {
 			},
 			endCollapser: function(opnd, clsd) {
 				var plc = this.toPair.pop();
+				if('undefined'!= typeof this.collapsing[plc]) return '';	//Collaper was not drawn
 				this.collapsing[plc] = this.lineCount();
 				return '<span class="collapser end">' +
 					'<a class="collapser" ' +

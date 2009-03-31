@@ -198,7 +198,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 		}
 		return this.integre().summarised().composed().integre();
 	}.perform('nul.xpr->compose').xKeep(),
-	xed : function(kb, way, axs) {
+	xed: function(kb, way, axs) {
 		var i, xpr = this;
 		if(0<way) for(i=2; i<arguments.length; ++i) xpr = xpr.xadd(arguments[i], kb);
 		else for(i=arguments.length-1; i>=2; --i) xpr = xpr.xadd(arguments[i], kb);

@@ -142,7 +142,7 @@ nul.understanding = {
 	},
 	attributed: function(ub) {
 		return nul.build.attributed(
-			this.applied.understand(ub),
+			this.applied?this.applied.understand(ub):nul.build.object(),
 			this.name,
 			this.value.understand(ub));
 	},

@@ -5,7 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
+
 nul.natives = {
 	Q: nul.build.nativeSet('&#x211a;',
 		function(xpr) {

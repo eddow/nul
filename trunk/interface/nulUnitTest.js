@@ -93,8 +93,11 @@ tests = [
 		rslt: '5'}*/
 	].named('Recursive algorithms'),
 	[
-		/*{xpr: '{\\/a \\/b \\/c {{ (1,a) [] (2,b) [] (3,c) }} S S[1,8]; \\/x S[x,9]; x}!',
-		rslt: '{(2 &#9633; 3)}'}*/
+		{xpr: 'S = ((1, _, _), (2, _, _), (3, _, _)); S(1,_,"a"); S(3,"b",_); S(_,"c","d")',
+		desc: 'Solution 3 items/3 components',
+		rslt: '{((1 , _[0|c2] , "a") , (2 , "c" , "d") , (3 , "b" , _[1|c2]))}'},
+		{xpr: '\\/a \\/b \\/c x; S={ (1,a) [] (2,b) [] (3,c) }; S(1,8); S(x,9)',
+		rslt: '(2 , 3)'}
 	].named('Resolutions')
 ].named('Unit testing');
 
