@@ -10,16 +10,12 @@
 // <us>s locals are distinct
 //returns an expression or nothing if unification unchanged 
 nul.unify = {
-	multiple: function(us, kb, way, x) {
-		if(!way) return nul.unify.commutative(us, kb, x)
+	multiple: function(us, kb, way) {
+		if(!way) return nul.unify.commutative(us, kb)
 		return nul.unify.ncommutative(us, kb, way);
 	}.describe(function(us, kb, way, x){ return ['Unification', [':=','=','=:'][1+(way||0)], us]; }),
 	//Commutative algorithm
-	commutative: function(us, kb, x) {
-		var lx = nul.x();
-		map(us, function() { lx.xadd(this.x, kb); })
-		if(x) lx.xadd(x, kb);
-		us = map(us, function() { return this.xadd(lx, kb); });
+	commutative: function(us, kb) {
 		//<us> : to try to unify
 		//<uu> : cannot unify with unifion
 		//<rv> : cannot unify with any past unifion
@@ -38,8 +34,7 @@ nul.unify = {
 				unifion = unirv;
 				us.pushs(uu, rv);
 				uu = [];
-				rv = []
-				//map(us, function(i) { us[i] = us[i].finalise(kb) || us[i]; });
+				rv = [];
 			} else {
 				rv.unshift(unifion);
 				us.pushs(uu);
@@ -111,7 +106,7 @@ nul.unify = {
 				if(a.components.follow)
 					rv.follow = nul.unify.level(a.components.follow, b, kb)
 				else if(b)
-					rv.follow = nul.unify.level(nul.build.set(), b, kb)
+					rv.follow = nul.unify.level(nul.build.definition(), b, kb)
 				rv = a.compose(rv).summarised().xadd(bx, kb);
 				if(b) rv = rv.xadd(b, kb);
 				return rv;
@@ -217,7 +212,7 @@ nul.unify = {
 		//TODO: wayed distribution
 		if('='!= b.charact) as.push(b); else as.pushs(b.components);
 		var fl = as.length;
-		as = nul.unify.multiple(as, kb, way, ax) || as;
+		as = nul.unify.multiple(as, kb, way) || as;
 
 		if(as) switch(as.length) {
 			case 1: return as[0].xed(kb, way, ax, b.x);

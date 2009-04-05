@@ -121,16 +121,14 @@ nul.text = {
 		}
 		aAttrTtl = [];
 		aAttr = [];
-		for(var i in this.x.attributes) if('+'!=i.substr(0,1)) {
-			aAttr.push('<b>'+i+'</b>&nbsp;'+this.x.attributes[i].toString());
+		for(var i in this.x) if('"'!=i.substr(0,1)) {
+			aAttr.push('<b>'+i+'</b>&nbsp;'+(
+				nul.differ(this.x[i])?'differed':this.x[i].toString()));
 			aAttrTtl.push(i);
 		}
 		if(0>= aAttr.length) aAttr = '';
 		else aAttr = nul.text.js.tile('attributes', aAttr.join('<hr />'), aAttrTtl.join(','));
 		var rv = aShort+aAutoRef+aLocals+aDeps+aFlags+aAttr+nul.text.js.tiled();
-		if('undefined'!= typeof this.x.lvl)
-			rv += '<div class="shortStr level" style="display: none;" >' +
-				this.x.lvl + '</div>';
 		if(this.handle()) rv += this.handle().toHTML() + '<span class="op">&rArr;</span>'; 
 		rv += this.expressionHTML();
 		var cls = this.freedom?' freedom':'';

@@ -1,12 +1,12 @@
 nul.set = {
 	/*
 	union: function(sets, x) {
-		if(!sets.length) return nul.build.set();
+		if(!sets.length) return nul.build.definition();
 		if(1==sets.length) return sets[0];
 		var locals = [];
 		var iors = [];
 		while(sets.length) iors.push(sets.pop().into(ctxName, locals));
-		return nul.build.set(nul.build.ior3(iors), [], locals, ctxName).xadd(x);
+		return nul.build.definition(nul.build.ior3(iors), [], locals, ctxName).xadd(x);
 	},
 
 	*/
@@ -55,14 +55,14 @@ nul.set = {
 			if(rv.solved.length) {
 				if(0<rv.fuzzy.length)
 					rv.solved.follow = this.asUnion(rv.fuzzy);
-				rv = nul.build.list(rv.solved).xadd(this);
+				rv = nul.build.list(rv.solved).xadd(this.x);
 			}
 			else if(rv.fuzzy.length) rv = this.asUnion(rv.fuzzy, this.x);
-			else return nul.build.set().xadd(this);
+			else return nul.build.definition().xadd(this.x);
 
 			if('{}'== rv.charact) return rv.removeUnused().clean();
 			delete this.arCtxName;	//arCtxName went to the containing list
-			rv.xadd(this);
+			rv.xadd(this.x);
 			if(nul.debug.assert) assert(','== rv.charact, 'Solution value is set or list');
 			if(rv.components.follow) rv.components.follow.removeUnused();
 			return rv;
@@ -71,7 +71,7 @@ nul.set = {
 			if(!this.components.value.flags.fuzzy &&
 			isEmpty(this.components.value.deps) &&
 			0>= this.components.length)
-				return nul.build.list([this.components.value]).xadd(this);
+				return nul.build.list([this.components.value]).xadd(this.x);
 			return this;
 		}.perform('set->composed').xKeep(),
 		transform: function() {
@@ -83,7 +83,7 @@ nul.set = {
 			return nul.unify.level(apl, this.clone().stpUp(kb), kb, -1);
 		}.perform('set->take'),
 		fail: function() {
-			return nul.build.set().xadd(this);
+			return nul.build.definition().xadd(this.x);
 		},
 		isFailable: function() {
 			return false;

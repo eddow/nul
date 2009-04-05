@@ -5,6 +5,79 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+nul.nativeFunction = {
+	/**
+	 * Gets an expression, operation on atoms
+	 * op (operator)
+	 * itm (item): first component
+	 * tp (type): expected component type (a native function)
+	 * tpn (type name): expected component type name (a JS string)
+	 */
+	atomOp: function(op, itm, tp, tpn) {
+		return nul.build.nativeFunction(tpn+op, function(o) {
+			tp.callback(o);
+			return nul.build.atom(eval( ''+nul.jsVal(itm.value) + op + nul.jsVal(nul.asJs(o, op)) ));
+		});
+	},
+	///Function given as attribute, that give the atomOp if needed
+	atomOpDifferer: function(op, tp, tpn) {
+		return function(itm) { return nul.nativeFunction.atomOp(op, itm, tp, tpn); };
+	},
+	/**
+	 * Makes a function that manages two NUL set (list, set, ...) out of a function managing two
+	 * lists in a common local space
+	 */
+	setItmFct: function(f) {
+		return function(o) {	//The returned function is the operation : <this> is the item
+			if(
+			!nul.natives.set.callback(o) ||	//If undefined other operands, wait
+			//If one 'follow' is not fixed, wait
+			','== this.charact && this.components.follow && '{}'!= this.components.follow.charact ||
+			','== o.charact && o.components.follow && '{}'!= o.components.follow.charact)
+				return;
+		};
+	}
+}
+nul.primitive = {
+	'set': function() {
+		return {
+			/*'"op+': nul.build.nativeFunction('set+set', function(o) {
+				nul.natives.set.callback(o);
+				var ns = '';
+				for(var i=0; i<o.value; ++i) ns += itm.value;
+				return nul.build.atom(ns);
+			})*/
+		};
+	},
+	'number': function() {
+		return {
+			'"op+': nul.nativeFunction.atomOpDifferer('+', nul.natives.Q, 'number'),
+			'"op-': nul.nativeFunction.atomOpDifferer('-', nul.natives.Q, 'number'),
+			'"op*': nul.nativeFunction.atomOpDifferer('*', nul.natives.Q, 'number'),
+			'"op/': nul.nativeFunction.atomOpDifferer('/', nul.natives.Q, 'number'),
+			'"op%': nul.nativeFunction.atomOpDifferer('%', nul.natives.Q, 'number')
+		};
+	},
+	'string': function() {
+		return {
+			'"op+': nul.nativeFunction.atomOpDifferer('+', nul.natives.str, 'string'),
+			//TODO: here, we really have to specify it is commutative !
+			'"op*': function(itm) {
+				return nul.build.nativeFunction('string*integer', function(o) {
+					nul.natives.N.callback(o);
+					var ns = '';
+					for(var i=0; i<o.value; ++i) ns += itm.value;
+					return nul.build.atom(ns);
+				});
+			}
+		};
+	},
+	'boolean': function(itm) {
+		return {
+			
+		};
+	}
+};
 
 nul.natives = {
 	Q: nul.build.nativeSet('&#x211a;',
@@ -37,4 +110,18 @@ nul.natives = {
 			return;
 		}
 	),
+	bool: nul.build.nativeSet('bool',
+		function(xpr) {
+			if('boolean'== typeof xpr.value) return xpr;
+			if(xpr.fixed()) nul.fail('Not a boolean : '+xpr.dbgHTML());
+			return;
+		}
+	),
+	set: nul.build.nativeSet('set',
+		function(xpr) {
+			if([',','{}'].contains(xpr.charact)) return xpr;
+			if(xpr.fixed()) nul.fail('Not a set : '+xpr.dbgHTML());
+			return;
+		}
+	)
 };

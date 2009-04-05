@@ -99,9 +99,8 @@ nul.debug = {
 	logging: false,
 	watches: false,
 	perf: 0> window.location.href.indexOf('noperf'),
-	xTest: 0> window.location.href.indexOf('noxtest'),
 	acts: 0<= window.location.href.indexOf('actLog'),
-	lcLimit: 5000,
+	lcLimit: 10000,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
 		return nul.debug.callStack.item().get()[0];
@@ -191,20 +190,7 @@ nul.debug = {
 if(nul.debug.acts) Function.prototype.describe = nul.debug.described;
 else Function.prototype.describe = function() { return this; };
 
-if(nul.debug.xTest)
-	Function.prototype.xKeep = function() {
-		var ftc = this;
-		return function() {
-			var args = arrg(arguments);
-			var oldX = (this&&this.x)?this.x.dbg:
-				(args[0]&&args[0].x)?args[0].x.dbg:
-				null;
-			var rv = ftc.apply(this,args);
-			assert(!rv || !oldX || rv.x.dbg==oldX, 'X miss-kept');
-			return rv;
-		}
-	};
-else Function.prototype.xKeep = function() { return this; };
+Function.prototype.xKeep = function() { return this; };	//TODO: Test if 'x' was preserved ? or remove these
 	
 function assert(cnd, str) {
 	if(!cnd)

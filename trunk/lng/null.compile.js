@@ -133,7 +133,7 @@ nul.compiler = function(txt)
 			} while(true);
 		},
 		attributed: function(appl) {
-			return nul.compiled.attributed(appl, this.alphanum(), this.tknzr.expect('.', this.expression()));
+			return nul.compiled.attributed(appl, this.alphanum(), this.item());
 		},
 		innerXML: function() {
 			var comps = [];
@@ -171,7 +171,6 @@ nul.compiler = function(txt)
 				}
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 				//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
-				if(this.tknzr.take('::')) return this.attributed();
 				if(!lax) {
 					if(this.tknzr.take('<')) return this.xml();
 					for(var p= 0; p<nul.operators.length; ++p) {

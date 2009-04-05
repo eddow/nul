@@ -40,13 +40,17 @@ function iif(a, b) {
 function trys(itm, fct) {
 	var rv;
 	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i])
-		if(rv = fct.apply('object'== typeof itm[i]?itm[i]:null, [reTyped(i), itm[i]])) return rv;
+		if(rv = fct.apply(
+			['object','function'].contains(typeof itm[i])?itm[i]:null,
+			[reTyped(i), itm[i]])) return rv;
 }
 //Returns the same item as <itm> where each member went through <fct>
 function map(itm, fct) {
 	var rv = isArray(itm)?[]:{};
 	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) 
-		rv[i] = fct.apply('object'== typeof itm[i]?itm[i]:null, [reTyped(i), itm[i]]);
+		rv[i] = fct.apply(
+			['object','function'].contains(typeof itm[i])?itm[i]:null,
+			[reTyped(i), itm[i]]);
 	return rv;
 }
 

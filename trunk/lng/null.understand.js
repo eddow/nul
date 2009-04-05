@@ -20,7 +20,7 @@ nul.understanding = {
 			prntUb: prntUb,
 			name: 'c'+(++nul.understanding.ctxNames),
 			asSet: function(xpr) {
-				return nul.build.set(xpr, this.premices, this.locals, this.name);
+				return nul.build.definition(xpr, this.premices, this.locals, this.name);
 			},
 			asKwFrdm: function(xpr) {
 				return nul.build.kwFreedom(xpr, this.premices);
@@ -92,7 +92,7 @@ nul.understanding = {
 		var op = this.operand.understand(ub);
 		if(this.operator == '?') {
 			ub.know(nul.build.assert(op));
-			return nul.build.set();
+			return nul.build.definition();
 		}
 		return nul.build.preceded(this.operator,op);
 	},
@@ -130,7 +130,7 @@ nul.understanding = {
 			this.applied.understand(ub) );
 	},
 	set: function(ub) {
-		if(!this.content) return nul.build.set();
+		if(!this.content) return nul.build.definition();
 		ub = nul.understanding.emptyBase(ub);
 		return ub.asSet(this.content.understand(ub));
 	},
@@ -142,7 +142,7 @@ nul.understanding = {
 	},
 	attributed: function(ub) {
 		return nul.build.attributed(
-			this.applied?this.applied.understand(ub):nul.build.object(),
+			this.applied.understand(ub),
 			this.name,
 			this.value.understand(ub));
 	},

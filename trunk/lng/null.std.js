@@ -23,11 +23,20 @@ var nul = {
 	jsVal: function(v) {
 		return ('string'== typeof v)?('"'+v+'"'):v;
 	},
-	asBoolean: function(v)
-	{
-		if('undefined'== typeof v.value) throw nul.semanticException('Boolean expected: '+v.toHTML());
-		return null!== v && false!== v;
+///////////	Attribute differing : to post-pone evaluation to evaluate it only if needed
+	differ: function(v) {
+		return 'function'== typeof v;	//differed attributes are given as functions
 	},
+	adCmp: function(itm, a, b) {	//Compare attributes : differed or not
+		if(a===b) return true;
+		if('function'== typeof a) {
+			if('function'== typeof b) return false;
+			return b.cmp(a(itm));
+		}
+		if('function'== typeof b) return a.cmp(b(itm));
+		return a.cmp(b);
+	},
+
 	globalsUse: function() {
 		nul.understanding.ctxNames = 0;
 		nul.understanding.srCtxNames = 0;

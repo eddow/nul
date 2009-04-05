@@ -13,11 +13,11 @@ nul.xpr = {	//Main interface implemented by all expressions
 		if(nComps) rv.components = nComps;
 		else if(rv.components) rv.components = map(this.components, function() { return this.clone(); });
 		rv.x = clone1(rv.x);
-		rv.x.attributes = nAttrs || map(this.x.attributes, function() { return this.clone(); });
+		rv.x = nAttrs || map(this.x, function() { return nul.differ(this)?this:this.clone(); });
 		return rv.integre();
 	}.perform('nul.xpr->clone').xKeep(),
 	clone1: function() {
-		return this.clone(clone1(this.components),clone1(this.x.attributes));
+		return this.clone(clone1(this.components),clone1(this.x));
 	}.perform('nul.xpr->clone').xKeep(),
 	toHTML: nul.text.toHTML,
 	toString: nul.text.toString,
@@ -32,10 +32,10 @@ nul.xpr = {	//Main interface implemented by all expressions
 	cmp: function(xpr) {
 		if(xpr.integre().charact != this.integre().charact) return false;
 		var txpr = this;
-		if((trys(xpr.x.attributes, function(i) {
-			return !txpr.x.attributes[i];
-		}) || trys(this.x.attributes, function(i) {
-			return !xpr.x.attributes[i] || !this.cmp(xpr.x.attributes[i]);
+		if((trys(xpr.x, function(i) {
+			return !txpr.x[i];
+		}) || trys(this.x, function(i) {
+			return !xpr.x[i] || !nul.adCmp(txpr, this, xpr.x[i]);
 		}))) return false;
 		if( this.components || xpr.components ) {
 			if(!this.components || !xpr.components || this.components.length != xpr.components.length)
@@ -63,6 +63,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 		var flags = {};
 		var ndx = '', attrNdx = '';
 		var sumSubs = function() {
+			if(nul.differ(this)) return;	//if differed attribute
 			if(nul.debug.assert) assert(this.deps,'Subs summarised.'); 
 			dps.push(this.deps);
 			for(var f in this.flags) flags[f] = true;
@@ -73,7 +74,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 		if(this.acNdx) this.ndx = this.acNdx;
 		else this.ndx = '[' + this.charact + ndx + ']';
 		ndx = '';
-		map(this.x.attributes, sumSubs);
+		map(this.x, sumSubs);
 		this.attrNdx = ndx + attrNdx;
 		if(['{}'].contains(this.charact)) {
 			delete flags.fuzzy;
@@ -187,7 +188,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 			var nc = [];
 			while(0<nComps.length) {
 				var tc = nComps.pop();
-				if(tc.charact == this.charact) nComps.pushs(tc.xadd(this).components);
+				if(tc.charact == this.charact) nComps.pushs(tc.xadd(this.x).components);
 				else nc.unshift(tc);
 			}
 			nComps = nc;
@@ -198,6 +199,14 @@ nul.xpr = {	//Main interface implemented by all expressions
 		}
 		return this.integre().summarised().composed().integre();
 	}.perform('nul.xpr->compose').xKeep(),
+
+////////// Attributes management
+
+	attribute: function(anm) {
+		if(!this.x[anm]) return;
+		if('function'== typeof this.x[anm]) return this.x[anm](this);
+		return this.x[anm];
+	},
 	xed: function(kb, way, axs) {
 		var i, xpr = this;
 		if(0<way) for(i=2; i<arguments.length; ++i) xpr = xpr.xadd(arguments[i], kb);
@@ -205,11 +214,20 @@ nul.xpr = {	//Main interface implemented by all expressions
 		return xpr;
 	},
 	xadd: function(x, kb) {
-		var tx = this.integre().x;
-		if(x.x) x = x.x;
+		//TODO: remove this test after to allow attribute named "isXpr"
+		if(nul.debug.assert) assert(!x.isXpr,'X shouldnt be an expression anymore');
+		var ti = this.integre();
 		//This dirty comes from the unification created (just the line under) in the attributes
-		if(!kb && trys(x.attributes, function(i) { return !tx.attributes[i]; } )) this.dirty();
-		this.x.xadd(x,kb);
+		if(!kb && trys(x, function(i) { return !ti.x[i]; } )) this.dirty();
+		merge(ti.x, x, 'overwrite'==kb?null:function(a,b) {
+			if(a===b) return a;
+			if('function'== typeof a) {
+				if('function'== typeof b) fail('Attributes dont match');
+				return nul.unify.level(a(ti),b,kb);
+			}
+			if('function'== typeof b) return nul.unify.level(a,b(ti),kb);
+			return nul.unify.level(a,b,kb);
+		});
 		return this.summarised();
 	}.perform('nul.xpr->xadd'),
 	
@@ -218,7 +236,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	//Gets weither this expresion i failable by itself (cf. attributes, ...)
 	failableNature: function() {
 		return ['<<+','=',':=','?','[-]'].contains(this.charact) ||
-			(!this.fixed() && !isEmpty(this.x.attributes));
+			(!this.fixed() && !isEmpty(this.x));
 	},
 	//Return the failable parts of this expression in an array
 	// The ones the inner expression doesn't know, depending on attributes and generic props
@@ -228,21 +246,20 @@ nul.xpr = {	//Main interface implemented by all expressions
 		if(this.isFailable && this.isFailable()) {
 			//Add 'this' but without the attributes
 			rv = [clone1(this)];
-			rv[0].x = clone1(this.x);
-			rv[0].x.attributes = {};
+			rv[0].x = {};
 		} else if(!this.isFailable)
 			map(this.components, function() {
 				if(nul.debug.assert) assert(this.failables, 'Only xprs')
 				rv.pushs(this.failables());
 			});
-		map(this.x.attributes, function() { rv.pushs(this.failables()); });
+		map(this.x, function() { rv.pushs(this.failables()); });
 
 		return rv;
 	},
-	handle: function() { return this.x.attributes['+handle']; },
+	handle: function() { return this.attribute('"handle'); },
 	handled: function(k) {
-		if(k) this.x.attributes['+handle'] = k;
-		else delete this.x.attributes['+handle'];
+		if(k) this.x['"handle'] = k;
+		else delete this.x['"handle'];
 		return this;
 	},
 //Debug purpose

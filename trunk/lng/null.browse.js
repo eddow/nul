@@ -33,6 +33,7 @@ nul.browse = {
 		}
 
 		var subRecur = function() {
+			if(nul.differ(this)) return;	//if differed attribute
 			if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
 			var co = iif(this.browse(behav), this);
 			if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
@@ -43,12 +44,12 @@ nul.browse = {
 						('function'!= typeof behav.browse && behav.browse);
 		try {
 			if(isToBrowse) {
-				var nAttrs = map(this.x.attributes, subRecur);
+				var nAttrs = map(this.x, subRecur);
 				if(chg) {
 					switch(behav.clone) {
 						case 'itm': xpr = xpr.clone(null, nAttrs); break;
-						case 'sub': xpr.x.attributes = nAttrs; break;
-						default: xpr.x.matt(nAttrs);
+						case 'sub': xpr.x = nAttrs; break;
+						default: xpr.xadd(nAttrs, 'overwrite');
 					}
 					chg = false;
 					attrChg = xpr;
@@ -105,7 +106,7 @@ nul.browse = {
 				xpr.summarised();
 				if(chgd && this.act) xpr.dirty();
 				if((0!= ++this.eqProtect[0] || 'knwl'!= this.act) && this.rpl[xpr.ndx])
-					return this.rpl[xpr.ndx].xadd(xpr);
+					return this.rpl[xpr.ndx].xadd(xpr.x);
 				if(orig.unification) this.eqProtect.shift();
 				if(chgd) return xpr;
 			}
@@ -130,7 +131,7 @@ nul.browse = {
 			orgName: orgName,
 			local: function(xpr) {
 				if(xpr.ctxName == this.orgName)
-					return nul.build.local(this.dstName, xpr.lindx + this.inc, xpr.dbgName).xadd(xpr);
+					return nul.build.local(this.dstName, xpr.lindx + this.inc, xpr.dbgName).xadd(xpr.x);
 			}.perform('nul.lclShft->local')
 		};
 	},

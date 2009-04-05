@@ -43,7 +43,7 @@ nul.behav = {
 		transform: function() { return true; },
 		take: function() {},
 		extract: function() {
-			return nul.build.list(nul.html(this.element.innerHTML)).xadd(this);
+			return nul.build.list(nul.html(this.element.innerHTML)).xadd(this.x);
 		}.xKeep(),
 		append: function(itm) {
 			if(itm.toXML) {
@@ -85,11 +85,11 @@ nul.behav = {
 					for(var v in srTt) srTt[v] = srTt[v].clone();
 					rv = rv.contextualise(srTt,'self').evaluate(kb);
 				}
-				return rv.xadd(this, kb);
+				return rv.xadd(this.x, kb);
 			}
 			if(!this.components.object.transform()) {
 				kb.knew(this.clean().clone());
-				return this.components.applied.xadd(this, kb);
+				return this.components.applied.xadd(this.x, kb);
 			}
 		}.perform('application->operate').xKeep()
 	},
@@ -103,7 +103,7 @@ nul.behav = {
 			this.components.value &&	//Value is not set when called from within nul.build.item
 			0== this.components.length &&
 			!this.components.value.flags.failable)
-				return this.components.value.xadd(this);
+				return this.components.value.xadd(this.x);
 			return this;
 		},
 		fail: function() {
@@ -116,11 +116,11 @@ nul.behav = {
 			return this;
 		}
 	},
-	set: nul.set.behaviour,
+	definition: nul.set.behaviour,
 	seAppend: {
 		extract: function() {
 			return this.components.effected.extractInterface('append')
-				(this.components.appended).xadd(this);
+				(this.components.appended).xadd(this.x);
 		}		
 	},
 	cumulExpr: {
@@ -131,18 +131,18 @@ nul.behav = {
 			while(o || 0< cps.length) {
 				var c = o || cps.pop();
 				if(c.fixed()) {
-					c = nul.asJs(c, this.charact);
 					o = cps.pop();
 					while(o && o.fixed()) {
-						o = nul.asJs(o, this.charact);
-						c = eval( ''+nul.jsVal(o) + this.charact + nul.jsVal(c) );
+						var opFct = o.attribute('"op'+this.charact);
+						if(!opFct)	//TODO: semantic? failure? ... ?
+							throw nul.semanticException('Operator '+this.charact+' is not defined for ' + o.toHTML());
+						c = opFct.take(c, kb, 1);
 						o = cps.pop();
 					}
-					c = nul.build.atom(c);
 				} else o = null;
 				ncps.unshift(c);
 			}
-			if(1==ncps.length) return ncps[0].xadd(this, kb);
+			if(1==ncps.length) return ncps[0].xadd(this.x, kb);
 			if(ncps.length != this.components.length)
 				return this.compose(ncps).clean();
 		}.perform('cumulExpr->operate').xKeep()
@@ -151,11 +151,10 @@ nul.behav = {
 		operable: nul.xpr.subFixed,
 		operate: function(kb)
 		{
-			return nul.build.atom(eval('' +
-				nul.asJs(this.components[0], this.charact) +
-				this.charact +
-				nul.asJs(this.components[1], this.charact) ))
-				.xadd(this, kb);
+			var opFct = this.components[0].attribute('"op'+this.charact);
+			if(!opFct)	//TODO: semantic? failure? ... ?
+				throw nul.semanticException('Operator '+this.charact+' is not defined for ' + this.components[0].toHTML());
+			return opFct.take(this.components[1], kb, 1).xadd(this.x, kb);
 		}.perform('biExpr->operate').xKeep()
 	},
 	list: {
@@ -176,7 +175,7 @@ nul.behav = {
 					!this.components.follow.components)
 				delete this.components.follow;
 			if(0== this.components.length)
-				return this.components.follow || nul.build.set();
+				return this.components.follow || nul.build.definition();
 			return this;
 		}.perform('list->composed').xKeep(),
 		take: function(apl, kb, way) {
@@ -209,7 +208,7 @@ nul.behav = {
 		{
 			return nul.build
 				.atom(eval( this.charact + nul.asJs(this.components[0],this.charact) ))
-				.xadd(this, kb);
+				.xadd(this.x, kb);
 		}.perform('preceded->operate').xKeep()
 	},
 	assert: {
@@ -220,7 +219,7 @@ nul.behav = {
 			if('boolean'!= typeof v)
 				throw nul.semanticException('Boolean expected instead of ' +
 					this.components[0].toString());
-			if(v) return this.components[0].xadd(this, kb);
+			if(v) return this.components[0].xadd(this.x, kb);
 			nul.fail('Assertion not provided');
 		}.perform('assert->operate').xKeep()
 	},
@@ -228,8 +227,8 @@ nul.behav = {
 		operate: function(kb)
 		{
 			var rv = this.components[0].extraction();
-			if(!rv) return this.components[0].xadd(this);
-			if(rv) return rv.evaluate(kb).xadd(this);
+			if(!rv) return this.components[0].xadd(this.x);
+			if(rv) return rv.evaluate(kb).xadd(this.x);
 		}.perform('extration->operate').xKeep(),
 		extract: function() {}		//Must avoid sub-expr extraction
 	},
@@ -237,10 +236,10 @@ nul.behav = {
 		operate: function(kb)
 		{
 			var fl = this.components.length;
-			var rv = nul.unify.multiple(this.components, kb, this.way, this.x)
-			if(rv && 1== rv.length) return rv[0].xadd(this, kb);
+			var rv = nul.unify.multiple(this.components, kb, this.way)
+			if(rv && 1== rv.length) return rv[0].xadd(this.x, kb);
 			if(!rv) rv = this.components;
-			return kb.affect(rv, this.way, this.x).xadd(this, kb);
+			return kb.affect(rv, this.way, this.x).xadd(this.x, kb);
 		}.perform('unification->operate').xKeep()
 	},
 	kwFreedomHolder: {
@@ -268,15 +267,15 @@ nul.behav = {
 					kb.knew(rv.components);
 					rv = rv.components.value;
 				}
-				if(rv) return rv.xadd(this, kb);
-				return nul.build.set().xadd(this, kb);
+				if(rv) return rv.xadd(this.x, kb);
+				return nul.build.definition().xadd(this.x, kb);
 			}
 		}.perform('kwFreedomHolder->operate').xKeep(),
 	},
 	ior3: {
 		possibility: function(n, kb) {
 			if(n<this.components.length)
-				return nul.build.ior3([this.components[n]])/*.evaluate(kb)*/.xadd(this);
+				return nul.build.ior3([this.components[n]])/*.evaluate(kb)*/.xadd(this.x);
 		},
 		isFailable: function() {
 			for(var i=0; i<this.components.length; ++i)
@@ -291,6 +290,13 @@ nul.behav = {
 	},
 	nativeSet : {
 		transform: function() { return false; },
+		take: function(apl, kb, way) {
+			return this.callback(apl, kb);
+		}.perform('nativeSet->take'),
+		isFailable: function() { return false; }
+	},
+	nativeFunction : {
+		transform: function() { return true; },
 		take: function(apl, kb, way) {
 			return this.callback(apl, kb);
 		}.perform('nativeFunction->take'),
