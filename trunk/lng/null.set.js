@@ -70,7 +70,8 @@ nul.set = {
 		composed: function() {
 			if(!this.components.value.flags.fuzzy &&
 			isEmpty(this.components.value.deps) &&
-			0>= this.components.length)
+			0>= this.components.length &&
+			!this.components.value.flags.failable)
 				return nul.build.list([this.components.value]).xadd(this.x);
 			return this;
 		}.perform('set->composed').xKeep(),

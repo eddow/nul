@@ -6,6 +6,9 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO: verify we don't use failables in solved : it must remains in a ior3
+// If one element of a list fails, the whole fails !
+
 /* Stupid first-choice is tryed algorithm.
  * variants can be :
  *  - Take the choice that involve most other choices in dependances

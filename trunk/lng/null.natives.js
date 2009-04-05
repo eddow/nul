@@ -20,8 +20,9 @@ nul.nativeFunction = {
 		});
 	},
 	///Function given as attribute, that give the atomOp if needed
+	//tp is the string key of native set
 	atomOpDifferer: function(op, tp, tpn) {
-		return function(itm) { return nul.nativeFunction.atomOp(op, itm, tp, tpn); };
+		return function(itm) { return nul.nativeFunction.atomOp(op, itm, nul.natives[tp], tpn); };
 	},
 	/**
 	 * Makes a function that manages two NUL set (list, set, ...) out of a function managing two
@@ -37,45 +38,36 @@ nul.nativeFunction = {
 				return;
 		};
 	}
-}
+};
 nul.primitive = {
-	'set': function() {
-		return {
-			/*'"op+': nul.build.nativeFunction('set+set', function(o) {
-				nul.natives.set.callback(o);
+	'set': {
+		/*'"op+': nul.build.nativeFunction('set+set', function(o) {
+			nul.natives.set.callback(o);
+			var ns = '';
+			for(var i=0; i<o.value; ++i) ns += itm.value;
+			return nul.build.atom(ns);
+		})*/
+	},
+	'number': {
+		'"op+': nul.nativeFunction.atomOpDifferer('+', 'Q', 'number'),
+		'"op-': nul.nativeFunction.atomOpDifferer('-', 'Q', 'number'),
+		'"op*': nul.nativeFunction.atomOpDifferer('*', 'Q', 'number'),
+		'"op/': nul.nativeFunction.atomOpDifferer('/', 'Q', 'number'),
+		'"op%': nul.nativeFunction.atomOpDifferer('%', 'Q', 'number')
+	},
+	'string': {
+		'"op+': nul.nativeFunction.atomOpDifferer('+', 'str', 'string'),
+		//TODO: here, we really have to specify it is commutative !
+		'"op*': function(itm) {
+			return nul.build.nativeFunction('string*integer', function(o) {
+				nul.natives.N.callback(o);
 				var ns = '';
 				for(var i=0; i<o.value; ++i) ns += itm.value;
 				return nul.build.atom(ns);
-			})*/
-		};
+			});
+		}
 	},
-	'number': function() {
-		return {
-			'"op+': nul.nativeFunction.atomOpDifferer('+', nul.natives.Q, 'number'),
-			'"op-': nul.nativeFunction.atomOpDifferer('-', nul.natives.Q, 'number'),
-			'"op*': nul.nativeFunction.atomOpDifferer('*', nul.natives.Q, 'number'),
-			'"op/': nul.nativeFunction.atomOpDifferer('/', nul.natives.Q, 'number'),
-			'"op%': nul.nativeFunction.atomOpDifferer('%', nul.natives.Q, 'number')
-		};
-	},
-	'string': function() {
-		return {
-			'"op+': nul.nativeFunction.atomOpDifferer('+', nul.natives.str, 'string'),
-			//TODO: here, we really have to specify it is commutative !
-			'"op*': function(itm) {
-				return nul.build.nativeFunction('string*integer', function(o) {
-					nul.natives.N.callback(o);
-					var ns = '';
-					for(var i=0; i<o.value; ++i) ns += itm.value;
-					return nul.build.atom(ns);
-				});
-			}
-		};
-	},
-	'boolean': function(itm) {
-		return {
-			
-		};
+	'boolean': {
 	}
 };
 

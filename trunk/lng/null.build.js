@@ -25,7 +25,7 @@ nul.build = {
 		return itm.summarised();
 	}.perform('nul.build->item'),
 	primitived: function(itm, prmNm) {
-		itm.xadd(nul.primitive[prmNm](itm),'overwrite');
+		itm.xadd(nul.primitive[prmNm],'overwrite');
 		return itm;
 	},
 	listOp: function(itm, chrct, ops, strC) {
