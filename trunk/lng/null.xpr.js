@@ -61,21 +61,19 @@ nul.xpr = {	//Main interface implemented by all expressions
 		//TODO: vérifier qu'il n'y a pas de redondance : NE PAS TROP SUMMARISER
 		var dps = [];
 		var flags = {};
-		var ndx = '', attrNdx = '';
+		var ndx = '';
 		var sumSubs = function() {
 			if(nul.differ(this)) return;	//if differed attribute
 			if(nul.debug.assert) assert(this.deps,'Subs summarised.'); 
 			dps.push(this.deps);
 			for(var f in this.flags) flags[f] = true;
 			ndx += '|' + this.ndx;
-			attrNdx += '|' + this.attrNdx;
 		};
 		if(this.components) map(this.components, sumSubs);
 		if(this.acNdx) this.ndx = this.acNdx;
 		else this.ndx = '[' + this.charact + ndx + ']';
 		ndx = '';
 		map(this.x, sumSubs);
-		this.attrNdx = ndx + attrNdx;
 		if(['{}'].contains(this.charact)) {
 			delete flags.fuzzy;
 			delete flags.failable;
@@ -141,7 +139,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	//Weither an expression contains another one or not
 	contains: function(xpr) {
 		if('string'!= typeof xpr) xpr = xpr.ndx;
-		return -1<(this.ndx+this.attrNdx).indexOf(xpr);
+		return -1<this.ndx.indexOf(xpr);
 	},
 	//Take the side-effected value of this expression
 	extraction: function() {
@@ -202,7 +200,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 
 ////////// Attributes management
 
-	attribute: function(anm) {
+	ext: function(anm) {
 		if(!this.x[anm]) return;
 		if('function'== typeof this.x[anm]) return this.x[anm](this);
 		return this.x[anm];
@@ -256,10 +254,10 @@ nul.xpr = {	//Main interface implemented by all expressions
 
 		return rv;
 	},
-	handle: function() { return this.attribute('"handle'); },
+	handle: function() { return this.ext('handle'); },
 	handled: function(k) {
-		if(k) this.x['"handle'] = k;
-		else delete this.x['"handle'];
+		if(k) this.x['handle'] = k;
+		else delete this.x['handle'];
 		return this;
 	},
 //Debug purpose

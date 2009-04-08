@@ -94,7 +94,7 @@ nul.text = {
 		var aShort = this.toString();
 		if(!nul.text.beginDraw(this)) return '<span class="failure">Self contained!</span>';
 		var aLocals = '', aDeps = '', aDepsTtl = '',
-			aFlags, aAttr, aAttrTtl, aAutoRef = '';
+			aFlags, aAutoRef = '';
 		aShort = nul.text.js.tile('shortStr', aShort);
 		if(this.arCtxName) aAutoRef = nul.text.js.tile('autoRef', this.arCtxName);
 		aFlags = isEmpty(this.flags)?'&phi;':keys(this.flags).join(', ');
@@ -119,16 +119,7 @@ nul.text = {
 				aLocals = nul.text.js.tile('locals', this.ctxName + ': ' + aLocals.join(', '));
 			else aLocals = '';
 		}
-		aAttrTtl = [];
-		aAttr = [];
-		for(var i in this.x) if('"'!=i.substr(0,1)) {
-			aAttr.push('<b>'+i+'</b>&nbsp;'+(
-				nul.differ(this.x[i])?'differed':this.x[i].toString()));
-			aAttrTtl.push(i);
-		}
-		if(0>= aAttr.length) aAttr = '';
-		else aAttr = nul.text.js.tile('attributes', aAttr.join('<hr />'), aAttrTtl.join(','));
-		var rv = aShort+aAutoRef+aLocals+aDeps+aFlags+aAttr+nul.text.js.tiled();
+		var rv = aShort+aAutoRef+aLocals+aDeps+aFlags+nul.text.js.tiled();
 		if(this.handle()) rv += this.handle().toHTML() + '<span class="op">&rArr;</span>'; 
 		rv += this.expressionHTML();
 		var cls = this.freedom?' freedom':'';

@@ -261,7 +261,7 @@ nul.build = {
 			if(!tag || 'string'!= typeof tag) throw nul.semanticException('"'+tag.toString()+'" should be a computed string')
 			var opn = '<' + tag;
 			for(var a in this.x) if('"'!= a.substr(0,1))
-				opn += ' ' + a + '=' + this.attribute(a).toString();
+				opn += ' ' + a + '=' + this.ext(a).toString();
 			var itms = this.components;
 			if(0>= itms.length) return opn + ' />';
 			var insd = '';
@@ -275,8 +275,25 @@ nul.build = {
 		return rv;
 	},
 
-	attributed: function(applied, name, value) {
-		applied.x[name] = value;
+	object: function() {
+		return this.nmdOp(nul.behav.object, '[.]', {}, [
+			function() {
+				var rv = '';
+				for(var i in this.components) rv +=
+					'<tr><th>'+i+'</th><td>'+this.components[i].toHTML()+'</td></tr>';
+				return '<table class="object">'+rv+'</table>';
+			},
+			function() { 
+				var rv = '';
+				for(var i in this.components) rv +=
+					'::'+i+' '+this.components[i].toString()+' ';
+				return '('+rv+')';
+			}]
+		);
+	},
+	composed: function(applied, name, value) {
+		if('[.]'!= applied.charact) throw nul.semanticException('Cant compose non-object '+applied.toString());
+		applied.components[name] = value;
 		return applied.summarised();
 	},
 	lambda: function(parms, value) {

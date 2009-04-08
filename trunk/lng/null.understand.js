@@ -140,9 +140,9 @@ nul.understanding = {
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
 	},
-	attributed: function(ub) {
-		return nul.build.attributed(
-			this.applied.understand(ub),
+	composed: function(ub) {
+		return nul.build.composed(
+			this.applied?this.applied.understand(ub):nul.build.object(),
 			this.name,
 			this.value.understand(ub));
 	},

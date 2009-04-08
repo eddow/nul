@@ -16,7 +16,7 @@ nul.nativeFunction = {
 	atomOp: function(op, itm, tp, tpn) {
 		return nul.build.nativeFunction(tpn+op, function(o) {
 			tp.callback(o);
-			return nul.build.atom(eval( ''+nul.jsVal(itm.value) + op + nul.jsVal(nul.asJs(o, op)) ));
+			if(itm.finalRoot() && o.finalRoot()) return nul.build.atom(eval( ''+nul.jsVal(itm.value) + op + nul.jsVal(nul.asJs(o, op)) ));
 		});
 	},
 	///Function given as attribute, that give the atomOp if needed
@@ -41,7 +41,7 @@ nul.nativeFunction = {
 };
 nul.primitive = {
 	'set': {
-		/*'"op+': nul.build.nativeFunction('set+set', function(o) {
+		/*'op+': nul.build.nativeFunction('set+set', function(o) {
 			nul.natives.set.callback(o);
 			var ns = '';
 			for(var i=0; i<o.value; ++i) ns += itm.value;
@@ -49,18 +49,19 @@ nul.primitive = {
 		})*/
 	},
 	'number': {
-		'"op+': nul.nativeFunction.atomOpDifferer('+', 'Q', 'number'),
-		'"op-': nul.nativeFunction.atomOpDifferer('-', 'Q', 'number'),
-		'"op*': nul.nativeFunction.atomOpDifferer('*', 'Q', 'number'),
-		'"op/': nul.nativeFunction.atomOpDifferer('/', 'Q', 'number'),
-		'"op%': nul.nativeFunction.atomOpDifferer('%', 'Q', 'number')
+		'op+': nul.nativeFunction.atomOpDifferer('+', 'Q', 'number'),
+		'op-': nul.nativeFunction.atomOpDifferer('-', 'Q', 'number'),
+		'op*': nul.nativeFunction.atomOpDifferer('*', 'Q', 'number'),
+		'op/': nul.nativeFunction.atomOpDifferer('/', 'Q', 'number'),
+		'op%': nul.nativeFunction.atomOpDifferer('%', 'Q', 'number')
 	},
 	'string': {
-		'"op+': nul.nativeFunction.atomOpDifferer('+', 'str', 'string'),
+		'op+': nul.nativeFunction.atomOpDifferer('+', 'str', 'string'),
 		//TODO: here, we really have to specify it is commutative !
-		'"op*': function(itm) {
+		'op*': function(itm) {
 			return nul.build.nativeFunction('string*integer', function(o) {
 				nul.natives.N.callback(o);
+				if(!o.finalRoot() || !itm.finalRoot()) return;
 				var ns = '';
 				for(var i=0; i<o.value; ++i) ns += itm.value;
 				return nul.build.atom(ns);
@@ -115,5 +116,10 @@ nul.natives = {
 			if(xpr.fixed()) nul.fail('Not a set : '+xpr.dbgHTML());
 			return;
 		}
-	)
+	),
+	object: nul.build.nativeSet('object',
+		function(xpr, kb) {
+			return nul.unify.level(xpr, nul.build.object(), kb);
+		}
+	),
 };

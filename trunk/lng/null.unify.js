@@ -92,6 +92,7 @@ nul.unify = {
 	//locals are distinct
 	//returns an expression or nothing if it is sure nothing is manageable or 'unk' if this function couldn't manage 
 	subs: function(a, b, kb, way) {
+		if('[.]'== a.charact && '[.]'== b.charact) return a;
 		if(','== a.charact && ','== b.charact) {
 			//Lists are affected comps by comps without way. The handle stuff was on the list
 			if(a.components.length > b.components.length) { var t=a; a=b; b=t; }

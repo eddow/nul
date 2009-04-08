@@ -29,7 +29,9 @@ ul.tableContent {
 	margin: 0;
 	display: inline-block;
 }
-
+table.object {
+	display: inline-block;
+}
 span.op {
 	color: #400000;
 	font-weight: bolder;
@@ -93,7 +95,7 @@ span.local .desc  .sub {
 	display: table-row;
 }
 
-a.shortStr, a.locals, a.dependances, a.flags, a.attributes, a.autoRef {
+a.shortStr, a.locals, a.dependances, a.flags, a.autoRef {
 	display: table-cell;
 	font-size: 4px;
 	cursor: none;
@@ -106,7 +108,7 @@ a.shortStr, a.locals, a.dependances, a.flags, a.attributes, a.autoRef {
 	vertical-align: top;
 }
 
-div.shortStr, div.locals, div.dependances, div.flags, div.attributes, div.autoRef {
+div.shortStr, div.locals, div.dependances, div.flags, div.autoRef {
 	cursor: default;
 	font-size: 1em;
 	position: absolute;
@@ -149,11 +151,7 @@ a.flags div {
 	background-color: orange;
 }
 
-.attributes {
-	border-color: firebrick;
-	background-color: plum;
-}
-div.attributes, div.dependances {
+div.dependances {
 	top: 0;
 	padding-top: 2.5em;
 }

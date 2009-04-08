@@ -133,7 +133,7 @@ nul.behav = {
 				if(c.fixed()) {
 					o = cps.pop();
 					while(o && o.fixed()) {
-						var opFct = o.attribute('"op'+this.charact);
+						var opFct = o.ext('op'+this.charact);
 						if(!opFct)	//TODO: semantic? failure? ... ?
 							throw nul.semanticException('Operator '+this.charact+' is not defined for ' + o.toHTML());
 						c = opFct.take(c, kb, 1);
@@ -151,7 +151,7 @@ nul.behav = {
 		operable: nul.xpr.subFixed,
 		operate: function(kb)
 		{
-			var opFct = this.components[0].attribute('"op'+this.charact);
+			var opFct = this.components[0].ext('op'+this.charact);
 			if(!opFct)	//TODO: semantic? failure? ... ?
 				throw nul.semanticException('Operator '+this.charact+' is not defined for ' + this.components[0].toHTML());
 			return opFct.take(this.components[1], kb, 1).xadd(this.x, kb);
@@ -287,6 +287,8 @@ nul.behav = {
 		isFailable: function() {
 			return this.components[this.components.length-1].flags.failable;
 		}
+	},
+	object: {
 	},
 	nativeSet : {
 		transform: function() { return false; },

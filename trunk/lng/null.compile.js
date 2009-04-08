@@ -6,7 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
  
- //TODO: un opérateur qui dit "est spécifié". Style une varialbe laissée libre à jamais renvoie faux ou fail
 nul.compiled = {
 	//Compiled just have pure data: operators, operands, stuffs, ...
 	expression: function(oprtr, oprnds) {
@@ -33,8 +32,8 @@ nul.compiled = {
 	xml: function(node, attrs, content) {
 		return { node: node, attributes: attrs, content: content, understand: nul.understanding.xml };
 	},
-	attributed: function(appl, name, value) {
-		return { applied: appl, name: name, value:value, understand: nul.understanding.attributed };
+	composed: function(appl, name, value) {
+		return { applied: appl, name: name, value:value, understand: nul.understanding.composed };
 	},
 	objectivity: function(appl, lcl) {
 		return { applied: appl, lcl: lcl, understand: nul.understanding.objectivity };
@@ -124,7 +123,7 @@ nul.compiler = function(txt)
 			{
 				var tst;
 /*				if(this.tknzr.take('[')) rv = nul.compiled.application(rv, this.tknzr.rawExpect(']',this.expression()));
-				else*/ if(this.tknzr.take('::')) rv = this.attributed(rv);
+				else*/ if(this.tknzr.take('::')) rv = this.composed(rv);
 				else if(this.tknzr.take('->')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
 /*				else if('alphanum'== this.tknzr.token.type)
 					rv = nul.compiled.definition(this.alphanum(), rv);*/
@@ -132,8 +131,8 @@ nul.compiler = function(txt)
 				else return rv;
 			} while(true);
 		},
-		attributed: function(appl) {
-			return nul.compiled.attributed(appl, this.alphanum(), this.item());
+		composed: function(appl) {
+			return nul.compiled.composed(appl, this.alphanum(), this.item());
 		},
 		innerXML: function() {
 			var comps = [];
@@ -171,6 +170,7 @@ nul.compiler = function(txt)
 				}
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 				//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
+				if(this.tknzr.take('::')) return this.composed();
 				if(!lax) {
 					if(this.tknzr.take('<')) return this.xml();
 					for(var p= 0; p<nul.operators.length; ++p) {
