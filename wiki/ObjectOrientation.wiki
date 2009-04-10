@@ -40,4 +40,4 @@ This means, in english that,
 
 = Classes and instances =
 
-As most of the concepts, classes in NUL are just _sets_ of values. The object-orientation comes from the fact that _the unification of several objects unify their attributes too_.
+As most of the concepts, classes in NUL are just _sets_ of values, like the complex class just defined above.
