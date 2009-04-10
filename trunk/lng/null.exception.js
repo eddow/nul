@@ -6,9 +6,10 @@
  *
  *--------------------------------------------------------------------------*/
  
-nul.exception = function(type, msg, chrct)
+nul.exception = function(type, code, msg, chrct)
 {
 	var err = { nul: true, type: type, message: msg,
+		code: code,
 		callStack: nul.debug.watches? nul.debug.callStack.value():null,
 		kb: nul.debug.watches? nul.debug.kbase.value():null,
 		chrct: chrct };
@@ -27,21 +28,15 @@ nul.exception.notice = function(err)
 	return err;
 };
 
-nul.semanticException = function(msg, chrct)
+nul.semanticException = function(code, msg, chrct)
 {
-	return nul.exception('semantic', msg, chrct);
+	return nul.exception('semantic', 'SEM'+code, msg, chrct);
 };
-nul.syntaxException = function(msg, chrct)
+nul.syntaxException = function(code, msg, chrct)
 {
-	return nul.exception('syntax', msg, chrct);
+	return nul.exception('syntax', 'SYN'+code, msg, chrct);
 };
 nul.internalException = function(msg, chrct)
 {
-	return nul.exception('internal', msg, chrct);
-};
-nul.unbrowsableException = function(obj)
-{
-	var rv = nul.exception('internal', 'Cannot browse: '+obj.toHTML());
-	rv.unbrowsable = obj;
-	return rv;
+	return nul.exception('internal', 'INT', msg, chrct);
 };

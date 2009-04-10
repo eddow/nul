@@ -25,40 +25,26 @@ nul.browse = {
 		if(nul.debug.assert && behav.kb) {
 			assertKbLen = behav.kb.knowledge.length; assertLc = nul.debug.lc; } 
 
-		var xpr = this.integre(), chg = false, attrChg;
+		var xpr = this.integre(), chg = false;
 		function iif(nv, ov) {
 			if(!nv) return ov;
 			chg = true;
 			return nv;
 		}
 
-		var subRecur = function() {
-			if(nul.differ(this)) return;	//if differed attribute
-			if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
-			var co = iif(this.browse(behav), this);
-			if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
-			return co;
-		};
 		var isToBrowse = 'undefined'== typeof behav.browse ||
 						('function'== typeof behav.browse && behav.browse(xpr)) ||
 						('function'!= typeof behav.browse && behav.browse);
 		try {
-			if(isToBrowse) {
-				var nAttrs = map(this.x, subRecur);
-				if(chg) {
-					switch(behav.clone) {
-						case 'itm': xpr = xpr.clone(null, nAttrs); break;
-						case 'sub': xpr.x = nAttrs; break;
-						default: xpr.xadd(nAttrs, 'overwrite');
-					}
-					chg = false;
-					attrChg = xpr;
-				}
-			}
 			try {
 				if(behav.before) xpr = (behav.before(xpr)||xpr).integre();
 				if(isToBrowse && xpr.components) {
-					var nComps = map(xpr.components, subRecur);
+					var nComps = map(xpr.components, function() {
+							if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
+							var co = iif(this.browse(behav), this);
+							if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
+							return co;
+						});
 					if(chg) switch(behav.clone) {
 						case 'itm': xpr = xpr.clone(nComps); break;
 						case 'sub': xpr.compose(nComps); break;
@@ -87,10 +73,33 @@ nul.browse = {
 
 		if(xpr) xpr.integre();
 		if(chg && xpr) return xpr;
-		if(attrChg) return attrChg.summarised().dirty();	//TODO: reléguer cette part au <behav>?
 		nul.debug.log('perf')('Useless browse for '+behav.name,this);			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
+	fixTypes: function(types) {
+		return {
+			name: 'type fixing',
+			types: types,
+			finish: function(xpr, chgd, ori) {
+				if(chgd) xpr.dirty();
+				if(this.types[xpr.ndx]) chgd |= xpr.x != xpr.xadd(this.types[xpr.ndx]).x;
+				if(chgd)
+					return xpr;
+			}
+		};
+	},
+	completeTypes: function(types) {
+		return {
+			name: 'type completing',
+			types: types,
+			before: function(xpr) {
+				if('kw'== xpr.charact) throw nul.browse.abort;
+			},
+			finish: function(xpr, chgd, orig) {
+				if(xpr.x) this.types[xpr.ndx] = nul.primitive.mix(this.types[xpr.ndx], xpr.x);
+			}
+		};
+	},
 	contextualise: function(rpl, act) {
 		return {
 			name: 'contextualisation',
@@ -99,7 +108,7 @@ nul.browse = {
 			eqProtect: [0],
 			before: function(xpr) {
 				//TODO: throw stop.browsing ?
-				if(xpr.unification) this.eqProtect.unshift(0);
+				if('='== xpr.charact) this.eqProtect.unshift(0);
 				else --this.eqProtect[0];
 			},
 			finish: function(xpr, chgd, orig) {
@@ -107,7 +116,7 @@ nul.browse = {
 				if(chgd && this.act) xpr.dirty();
 				if((0!= ++this.eqProtect[0] || 'knwl'!= this.act) && this.rpl[xpr.ndx])
 					return this.rpl[xpr.ndx].xadd(xpr.x);
-				if(orig.unification) this.eqProtect.shift();
+				if('='== orig.charact) this.eqProtect.shift();
 				if(chgd) return xpr;
 			}
 		};

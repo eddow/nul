@@ -97,7 +97,9 @@ nul.text = {
 			aFlags, aAutoRef = '';
 		aShort = nul.text.js.tile('shortStr', aShort);
 		if(this.arCtxName) aAutoRef = nul.text.js.tile('autoRef', this.arCtxName);
-		aFlags = isEmpty(this.flags)?'&phi;':keys(this.flags).join(', ');
+		aFlags = 
+			(this.x?this.x.primitive:'free') + ' : ' +
+			(isEmpty(this.flags)?'&phi;':keys(this.flags).join(', '));
 		aFlags = nul.text.js.tile('flags',
 			aFlags,
 			keys(this.flags));
@@ -120,7 +122,6 @@ nul.text = {
 			else aLocals = '';
 		}
 		var rv = aShort+aAutoRef+aLocals+aDeps+aFlags+nul.text.js.tiled();
-		if(this.handle()) rv += this.handle().toHTML() + '<span class="op">&rArr;</span>'; 
 		rv += this.expressionHTML();
 		var cls = this.freedom?' freedom':'';
 		nul.text.endDraw(this);
@@ -130,7 +131,6 @@ nul.text = {
 		if(!nul.text.beginDraw(this)) return '&lt;Self contained!&gt;';
 		var rv = '';
 		if(this.arCtxName) rv += this.arCtxName+':';
-		if(this.handle()) rv += this.handle().toString() + ' :- ';
 		rv += this.expressionString();
 		nul.text.endDraw(this);
 		return rv;

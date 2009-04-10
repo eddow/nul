@@ -58,7 +58,7 @@ nul.operators = [
 	['?','p'],								//?b ==> b if b nor false nor null
 	['&&','m'], ['||','m'],					//booleans:conditionals
 	['!','p'],
-	['<','m'], ['>','m'], ['<=','m'], ['>=','m'],
+	['<','r'], ['>','r'], ['<=','r'], ['>=','r'],
 	['<<+','l'],
 	['+','m'], ['-','l'],
 	['-','p'],
@@ -73,7 +73,7 @@ nul.compiler = function(txt)
 		alphanum: function() {
 			var rv = this.tknzr.pop(['alphanum']);
 			if(!rv)
-				throw nul.syntaxException('Identifier expected');
+				throw nul.syntaxException('IDE', 'Identifier expected');
 			return rv.value;
 		},
 		list: function(firstOp, oprtr, oprtrLvl) {
@@ -122,11 +122,7 @@ nul.compiler = function(txt)
 			do
 			{
 				var tst;
-/*				if(this.tknzr.take('[')) rv = nul.compiled.application(rv, this.tknzr.rawExpect(']',this.expression()));
-				else*/ if(this.tknzr.take('::')) rv = this.composed(rv);
-				else if(this.tknzr.take('->')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
-/*				else if('alphanum'== this.tknzr.token.type)
-					rv = nul.compiled.definition(this.alphanum(), rv);*/
+				if(this.tknzr.take('->')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
 				else if(tst = this.item('lax')) rv = nul.compiled.application(rv, tst);
 				else return rv;
 			} while(true);
@@ -139,12 +135,12 @@ nul.compiler = function(txt)
 			do
 			{
 				var aTxt = this.tknzr.fly('<');
-				if(null=== aTxt) throw nul.syntaxException('XML node not closed');
+				if(null=== aTxt) throw nul.syntaxException('XML', 'XML node not closed');
 				if(''!== aTxt) comps.push(nul.compiled.atom({type:'string', value: aTxt}));
 				if(this.tknzr.rawTake('<(')) comps.push(this.tknzr.rawExpect(')>',this.expression()));
 				else if(this.tknzr.rawTake('</')) return comps;
 				else if(this.tknzr.rawTake('<')) comps.push(this.xml());
-				else throw nul.syntaxException("Don't know what to do with '"+this.tknzr.token.value+"'");
+				else throw nul.syntaxException('UEI', "Don't know what to do with '"+this.tknzr.token.value+"'");
 			} while(true);
 		},
 		xml: function() {
@@ -170,7 +166,11 @@ nul.compiler = function(txt)
 				}
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 				//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
-				if(this.tknzr.take('::')) return this.composed();
+				if(this.tknzr.take('::')) {
+					var rv = this.composed();
+					while(this.tknzr.take('::')) rv = this.composed(rv);
+					return rv;
+				}
 				if(!lax) {
 					if(this.tknzr.take('<')) return this.xml();
 					for(var p= 0; p<nul.operators.length; ++p) {
@@ -181,7 +181,7 @@ nul.compiler = function(txt)
 				}
 				rv = this.tknzr.pop(['alphanum', 'number', 'string']);
 			}
-			if(!rv && !lax) throw nul.syntaxException("Item expected");
+			if(!rv && !lax) throw nul.syntaxException('ITE', 'Item expected');
 			if(rv) return nul.compiled.atom(rv);
 		}
 	};
@@ -190,6 +190,6 @@ nul.compile = function(txt)
 {
 	var rv = nul.compiler(txt);
 	var ev = rv.expression();
-	if(rv.tknzr.token.type != 'eof') throw nul.syntaxException('Unexpected: "'+rv.tknzr.token.value+"'.");
+	if(rv.tknzr.token.type != 'eof') throw nul.syntaxException('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.");
 	return ev;
 };

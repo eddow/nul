@@ -31,6 +31,9 @@ ul.tableContent {
 }
 table.object {
 	display: inline-block;
+	border-width: 0 1px;
+	border-color: black;
+	border-style: solid;
 }
 span.op {
 	color: #400000;

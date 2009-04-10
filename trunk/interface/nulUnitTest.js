@@ -11,21 +11,21 @@ Array.prototype.named = function(nm) { this.name = nm; return this; };
 
 tests = [
 	[
-		{xpr: '{ N x :- 2*x }({4} _)',
+		{xpr: '{ Q x :- 2*x } 4',
 		rslt: '{8}'},
-		{xpr: 'N x; (y+1, y) = (x, 4)',
+		{xpr: 'Q x; (y+1, y) = (x, 4)',
 		rslt: '{5}'},
-		{xpr: '(z+1, z+2) = (N a, N b)',
-		rslt: '{((z[0|c2] + 1) , (z[0|c2] + 2)); (&#x2115; (z[0|c2] + 1)) ; (&#x2115; (z[0|c2] + 2))}'},
+		{xpr: '(z+1, z+2) = (Q a, Q b)',
+		rslt: '{((z[0|c2] + 1) , (z[0|c2] + 2))}'},
 		{xpr: '((a+1)=(b+2))= z, (c+3)=z, a=2',
 		rslt: '{(3 , 3 , 2)}'},
-		{xpr: '(z+1, z+2) = (N a, N b); z=3',
+		{xpr: '(z+1, z+2) = (Q a, Q b); z=3',
 		rslt: '{(4 , 5)}'},
-		{xpr: 'd 4; d = { N x :- x * 2 }',
+		{xpr: 'd 4; d = { Q x :- x * 2 }',
 		rslt: '{8}'},
 		{xpr: '(a+1)=(a+2)=(a+3)',
 		rslt: '{(a[0|c2] + 1); ((a[0|c2] + 1) = (a[0|c2] + 2) = (a[0|c2] + 3))}'},
-		{xpr: 'S(n+1,"str"); S= {1, c}; N n',
+		{xpr: 'S(n+1,"str"); S= {1, c}; Q n',
 		rslt: '{(1 , "str")}'},
 		{xpr: '{n :- {(Q x, Q y) :- x+y} (1, n)} 10',
 		rslt: '{11}'}
@@ -35,22 +35,20 @@ tests = [
 		rslt: '(1 , 2)'},
 		{xpr: '(z+1)=(1 [] 2)',
 		rslt: '(1 , 2)'},
-		{xpr: 'mx(5,3), mx(3,5); mx={ (Q a, Q b) :- a ? a > b : b }', //fonction MAX
-		rslt: '{(5 , 5)}'},
 		
-		{xpr: '\\/a \\/b { a [] b } 5, a, b',
-		rslt: '{((5 , a[0|c2] , b[1|c2]); (5 := b[1|c2]) &#9633; (5 , a[0|c2] , b[1|c2]); (5 := a[0|c2]))}'},
-		{xpr: '{ a [] b } 5, a, b',
+		{xpr: '\\/a \\/b { a [] b } 5, Q a, Q b',
+		rslt: '{((5 , a[0|c2] , 5) &#9633; (5 , 5 , b[1|c2]))}'},
+		{xpr: '{ Q a [] Q b } 5, a, b',
 		rslt: '{((5 , a[0|c2] , b[1|c2]) &#9633; (5 , a[0|c2] , b[1|c2]))}'},
 		{xpr: '(z*1)=(((a+1=a+2);(z = 1)) [] z = 2)',
 		rslt: '(1 , 2)'},
 		{xpr: '{ (a,b,c) [] (d,e,f) }(_,1,2)',
-		rslt: '{((a[0|c2] , 1 , 2) &#9633; (d[1|c2] , 1 , 2))}'},
+		rslt: '{((_[0|c2] , 1 , 2) &#9633; (_[0|c2] , 1 , 2))}'},
 	].named('OR-s management'),
 	[
 		{xpr: '(z+2)=z=1',
 		rslt: '&phi;'},
-		{xpr: '(e= !e) = (1>0 [] 1<0)',
+		{xpr: '(e= 1-e) = (0 [] 1)',
 		rslt: '&phi;'},
 		{xpr: '(y, y+1) = (x, x), x',
 		rslt: '{((ar1:(y[&crarr;|ar1] + 1) , ar1:(y[&crarr;|ar1] + 1)) , ar1:(y[&crarr;|ar1] + 1))}'},
@@ -71,19 +69,19 @@ tests = [
 		rslt: '4'}
 	].named('Attributes management'),*/
 	[
-		{xpr: '(p(1,1) [] p(1,2) [] p(2,5)) ; p= ((1,5), (2,5),.. { N x, x })',
+		{xpr: '(p(1,1) [] p(1,2) [] p(2,5)) ; p= ((1,5), (2,5),.. { Q x, x })',
 		rslt: '((1 , 1) , (2 , 5))'},
-		{xpr: 'ld 5 ; ld={ 0 :- {} [] (N n) :- ((n, _) ,.. ld (n-1)) }',
+		{xpr: 'ld 5 ; ld={ 0 :- {} [] (Q n > 0) :- ((n, _) ,.. ld (n-1)) }',
 		rslt: '{((5 , _[0|c2]) , (4 , _[1|c2]) , (3 , _[2|c2]) , (2 , _[3|c2]) , (1 , _[4|c2]))}'}
 	].named('Lists management'),
 	[
-		{xpr: 'f 5; f={ 0 :- 1 [] N n :- n * f(n-1)}',
+		{xpr: 'f 5; f={ 0 :- 1 [] Q n > 0 :- n * f(n-1)}',
 		desc: 'Factorial of 5',
 		rslt: '{120}'},
-		{xpr: 'fib 5; fib={ (0 [] 1) :- 1 [] N n :- fib(n-1) + fib(n-2) }',
+		{xpr: 'fib 5; fib={ (0 [] 1) :- 1 [] Q n > 0 :- fib(n-1) + fib(n-2) }',
 		desc: 'Unoptimised Fibbonacci on 5',
 		rslt: '{8}'},
-		{xpr: 'fib 5 ; fib = {N n :- (fibaux={ (N x, _, 0) :- x [] (N x, N y, N z) :-  fibaux(y, x+y, z-1) }) (1, 1, n) }',
+		{xpr: 'fib 5 ; fib = {Q n > 0 :- (fibaux={ (Q x, _, 0) :- x [] (Q x, Q y, Q z > 0) :- fibaux(y, x+y, z-1) }) (1, 1, n) }',
 		desc: 'Accumulated Fibbonacci on 5',
 		rslt: '{8}'}
 		/*{xpr: '[f{ 1 [] ({_}x x>1?x:- x * f[x-1]) }][5]',
@@ -96,7 +94,7 @@ tests = [
 		{xpr: 'S = ((1, _, _), (2, _, _), (3, _, _)); S(1,_,"a"); S(3,"b",_); S(_,"c","d")',
 		desc: 'Solution 3 items/3 components',
 		rslt: '{((1 , _[0|c2] , "a") , (2 , "c" , "d") , (3 , "b" , _[1|c2]))}'},
-		{xpr: '\\/a \\/b \\/c x; S={ (1,a) [] (2,b) [] (3,c) }; S(1,8); S(x,9)',
+		{xpr: 'x; S=( (1,a), (2,b), (3,c) ); S(x,9); S(1,8)',
 		rslt: '(2 , 3)'}
 	].named('Resolutions')
 ].named('Unit testing');

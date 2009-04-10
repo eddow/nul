@@ -17,25 +17,13 @@ var nul = {
 	asJs: function(o, oprtr)
 	{
 		if('atom'!= o.charact)
-			throw nul.semanticException("Cannot operate '"+oprtr+"' with: "+o.toHTML());
+			throw nul.semanticException('deprecated', "Cannot operate '"+oprtr+"' with: "+o.toHTML());
 		return o.value;
 	},
 	jsVal: function(v) {
 		return ('string'== typeof v)?('"'+v+'"'):v;
 	},
-///////////	Attribute differing : to post-pone evaluation to evaluate it only if needed
-	differ: function(v) {
-		return 'function'== typeof v;	//differed attributes are given as functions
-	},
-	adCmp: function(itm, a, b) {	//Compare attributes : differed or not
-		if(a===b) return true;
-		if('function'== typeof a) {
-			if('function'== typeof b) return false;
-			return b.cmp(a(itm));
-		}
-		if('function'== typeof b) return a.cmp(b(itm));
-		return a.cmp(b);
-	},
+
 
 	globalsUse: function() {
 		nul.understanding.ctxNames = 0;

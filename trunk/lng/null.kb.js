@@ -55,17 +55,14 @@ nul.kb = function(knowledge) {
 
 		//Affect an expression to an other expression.
 		//<unk> and <knwn> are both expressions.
-		affect: function(us, way, x) {
-			way = way||0;
-
+		affect: function(us, x) {
 			//Merge equalities if needed
 			var eqClass = [];
 			var eqClassNdx = {};
 			var merged = false;
 			for(var n=0; n<us.length; ++n) {
 				var fpn, eqi;
-				if('undefined'!= typeof(fpn= this.knowledge[0].access[us[n].ndx]) &&
-					this.knowledge[0].premices[fpn].way == way) {
+				if('undefined'!= typeof(fpn= this.knowledge[0].access[us[n].ndx])) {
 					merged = true;
 					eqi = this.knowledge[0].forget(fpn).components;
 					eqi.push(us[n]);
@@ -79,32 +76,30 @@ nul.kb = function(knowledge) {
 
 			us = eqClass;
 			if(merged) {
-				var rv = nul.unify.multiple(us, this, way, x);
+				var rv = nul.unify.multiple(us, this, x);
 				if(rv && 1== rv.length) return rv[0];
 				if(rv) us = rv;
 			}
 			//Sort to have a nice 'replace-by'. note: replaceBy = left-ward
-			if(!way) {
-				//free variables goes left
-				for(var n=1; n<us.length; ++n)
-					if(isEmpty(us[n].deps))
-						us.unshift(us.splice(n,1)[0]);
-				//If left-ward is a local, try to put another value (not local) leftward
-			 	if('local'== us[0].charact) {
-			 		for(var n=1; n<us.length; ++n) if('local'!= us[n].charact) break;
-			 		if(n<us.length) us.unshift(us.splice(n,1)[0]);
-			 	}
-			 	//Don't replace X by a value that refer X : if it occurs, contextualise into self-reference
-			 	do {
-			 		for(var n=1; n<us.length; ++n) if(us[0].contains(us[n])) break;
-			 		if(n<us.length) us[0].setSelfRef(us[n]);
-			 	} while(n<us.length);
-			}
+			//free variables goes left
+			for(var n=1; n<us.length; ++n)
+				if(isEmpty(us[n].deps))
+					us.unshift(us.splice(n,1)[0]);
+			//If left-ward is a local, try to put another value (not local) leftward
+		 	if('local'== us[0].charact) {
+		 		for(var n=1; n<us.length; ++n) if('local'!= us[n].charact) break;
+		 		if(n<us.length) us.unshift(us.splice(n,1)[0]);
+		 	}
+		 	//Don't replace X by a value that refer X : if it occurs, contextualise into self-reference
+		 	do {
+		 		for(var n=1; n<us.length; ++n) if(us[0].contains(us[n])) break;
+		 		if(n<us.length) us[0].setSelfRef(us[n]);
+		 	} while(n<us.length);
 
-			nul.debug.log('knowledge')(['Handles','Equivals','Handled'][1+way], us);
+			nul.debug.log('knowledge')('Equivals', us);
 
 			var rv = us[0];
-			var unf = nul.build.unification(us, way).clean().summarised();
+			var unf = nul.build.unification(us).clean().summarised();
 			this.knowledge[0].knew(unf);
 			return rv;
 		},
@@ -120,28 +115,30 @@ nul.kb = function(knowledge) {
 			if(nul.debug.assert) assert(0<this.contexts.length, 'Add locals in context.');
 			return this.contexts[0].addLocals(locals);
 		},
+		isKnownHigher: function(premice) {
+			return false;	//TODO: isKnownHigher : search higher contexts to see if this premice already exists
+		},
 		knew: function(premices) {
 			if(nul.debug.assert) assert(0<this.knowledge.length, 'Add premice in context.');
 			if(!isArray(premices)) premices = [premices];
 			var i = 0;
 			while(i< premices.length) {
-				if(premices[i].unification) {
+				if('='== premices[i].charact) {
 					var prm = premices.splice(i,1)[0];
-					this.affect(prm.components,':='==prm.charact?-1:0, prm.x);
-				} else if('[-]'== premices[i].charact) {
-					nul.debug.log('knowledge')('Known',
-						[premices[i].components.applied,'in',premices[i].components.object]);
-					++i;
-				} else if('?'== premices[i].charact) {
-					nul.debug.log('knowledge')('Assert', [premices[i].components[0]]);
-					++i;
-				} else if('[]'== premices[i].charact) {
-					nul.debug.log('knowledge')('Choice', premices[i].components);
-					++i;
+					this.affect(prm.components, prm.x);
 				} else {
-					//TODO: assert there are some attributes to verify : separate into unifications if possible?
-					nul.debug.log('knowledge')('Attributed', premices[i]);
-					++i;
+					if('[-]'== premices[i].charact)
+						nul.debug.log('knowledge')('Known',
+							[premices[i].components.applied,'in',premices[i].components.object]);
+					else if('?'== premices[i].charact)
+						nul.debug.log('knowledge')('Assert', premices[i].components[0]);
+					else if('[]'== premices[i].charact)
+						nul.debug.log('knowledge')('Choice', premices[i].components);
+					else
+						nul.debug.log('knowledge')('Type known', premices[i]);
+					//TODO: if('[]'== premices[i].charact), if one of premice higher, don't add
+					if(this.isKnownHigher(premices[i])) premices.splice(i,1);
+					else ++i;
 				}
 			}
 			return this.knowledge[0].knew(premices);

@@ -16,18 +16,18 @@ nul.build = {
 		var itm = clone1(nul.xpr);
 		for(var i=1; i<arguments.length; ++i) merge(itm,arguments[i]);
 
-		itm.x = {};
-		
 		if(ops) {
 			itm.components = isArray(ops)?[]:{};
 			itm = itm.compose(ops);
 		}
+		if('string'== typeof itm.x) {
+			var tmp = itm.x;
+			delete itm.x;
+			itm.xadd(tmp);
+		}
+
 		return itm.summarised();
 	}.perform('nul.build->item'),
-	primitived: function(itm, prmNm) {
-		itm.xadd(nul.primitive[prmNm],'overwrite');
-		return itm;
-	},
 	listOp: function(itm, chrct, ops, strC) {
 		if(!strC) strC = chrct;
 		itm.charact = chrct;
@@ -114,19 +114,20 @@ nul.build = {
 	},
 
 	atom: function(value) {
-		return this.primitived(this.item(null, {
-				acNdx: '[' + ('string'==typeof(value)?'"':'') +
-					value.toString().replace('[','[[]').replace(']','[]]').replace('|','[|]') +
-					('string'==typeof(value)?'"':'') + ']',
-				value: value,
-				charact: 'atom',
-				expressionHTML: 'string'==typeof(value)?
-					function() { return escapeHTML('"'+this.value+'"'); }:
-					function() { return ''+this.value; },
-				expressionString: 'string'==typeof(value)?
-					function() { return escapeHTML('"'+this.value+'"'); }:
-					function() { return ''+this.value; },
-			}), typeof value);
+		return this.item(null, {
+			x: typeof value,
+			acNdx: '[' + ('string'==typeof(value)?'"':'') +
+				value.toString().replace('[','[[]').replace(']','[]]').replace('|','[|]') +
+				('string'==typeof(value)?'"':'') + ']',
+			value: value,
+			charact: 'atom',
+			expressionHTML: 'string'==typeof(value)?
+				function() { return escapeHTML('"'+this.value+'"'); }:
+				function() { return ''+this.value; },
+			expressionString: 'string'==typeof(value)?
+				function() { return escapeHTML('"'+this.value+'"'); }:
+				function() { return ''+this.value; },
+		});
 	},
 	local: function(ctxName, lindx, dbgName) {
 		return this.item(null, {
@@ -172,13 +173,14 @@ nul.build = {
 			});
 	},
 	definition: function(value, premices, locals, ctxName) {
-		if(!value) return this.primitived(this.item(null, {
+		if(!value) return this.item(null, {
+			x: 'set',
 			charact: '{}',
 			expressionHTML: function() { return '&phi;'; },
 			expressionString: function() { return '&phi;'; },
 			take: function(apl) { nul.fail('Taking from empty set : ' + apl.dbgHTML()); }
-		}), 'set');
-		return this.primitived(this.item(
+		});
+		return this.item(
 			this.freeval(value, premices),
 			nul.behav.definition,
 			nul.behav.freedom,
@@ -196,7 +198,7 @@ nul.build = {
 				expressionString: function() {
 					return '{'+this.freedomString()+'}';
 				},
-			}), 'set');
+			});
 	},
 	seAppend: function(dst, itms) {
 		return this.nmdOp(nul.behav.seAppend,'<<+', { effected: dst, appended: itms }, '&lt;&lt;+');
@@ -208,7 +210,7 @@ nul.build = {
             return this.listOp(nul.behav.biExpr,oprtr, oprnds, mathSymbol(oprtr));
     },
 	list: function(oprnds) {
-		return this.primitived(this.listOp(nul.behav.list,',', oprnds,[
+		return this.listOp(nul.behav.list,',', oprnds,[
 				function() {
 					if(1==this.components.length && !this.components.follow)
 						return '<span class="op">{</span>'+this.components[0].toHTML()+'<span class="op">}</span>';
@@ -223,7 +225,7 @@ nul.build = {
 					if(!this.components.follow) return rv + ')';
 					return rv +' ,.. '+this.components.follow.toString()+')';
 				}			
-			]), 'set');
+			]);
 	},
 	preceded: function(oprtr, oprnd) {
 		return this.prec(nul.behav.preceded,oprtr, oprnd);
@@ -234,24 +236,24 @@ nul.build = {
 	extraction: function(oprnd) {
 		return this.post(nul.behav.extraction,' !', oprnd, '!');
 	},
-	unification: function(ops, way) {
-		if(1== way) { var t = ops[0]; ops[0] = ops[1]; ops[1] = t; way = -1; }
-		return this.listOp(
-			merge({
-				way:way||0,
-				unification: true
-			}, nul.behav.unification),
-			way==-1?':=':'=',
-			ops);
+	unification: function(ops) {
+		return this.listOp(nul.behav.unification, '=', ops);
+	},
+	lambda: function(parms, value) {
+		return this.nmdOp(nul.behav.lambda, ':-', {handle:parms, value:value}, '&rArr;');
+	},
+	handle: function(handler, handled) {
+		return this.nmdOp(nul.behav.handle, ':=', {handler:handler, handled:handled}, '&lArr;');
 	},
 	ior3: function(ops) {
+		//TODO! Gather common knowledge (about types too) in parent's !
 		return this.listOp(merge(nul.behav.ior3, nul.behav.kwFreedomHolder), '[]', ops, '&#9633;');
 	},
 	xor3: function(ops) {
 		return this.listOp(merge(nul.behav.xor3, nul.behav.kwFreedomHolder),':', ops);
 	},
 	xml: function(node, attrs, content) {
-		var rv = this.lambda(
+		/*var rv = this.lambda(
 				nul.build.atom(node),
 				nul.build.list(content)
 			);
@@ -260,8 +262,8 @@ nul.build = {
 			var tag = this.handle().value;
 			if(!tag || 'string'!= typeof tag) throw nul.semanticException('"'+tag.toString()+'" should be a computed string')
 			var opn = '<' + tag;
-			for(var a in this.x) if('"'!= a.substr(0,1))
-				opn += ' ' + a + '=' + this.ext(a).toString();
+			for(var a in thisthis.components) if('#'!= a)
+				opn += ' ' + a + '=' + this.components[a].toString();
 			var itms = this.components;
 			if(0>= itms.length) return opn + ' />';
 			var insd = '';
@@ -272,57 +274,51 @@ nul.build = {
 			}
 			return opn+'>'+insd+'</'+tag+'>';
 		};
-		return rv;
+		return rv;*/
 	},
 
-	object: function() {
-		return this.nmdOp(nul.behav.object, '[.]', {}, [
+	object: function(cs) {
+		return this.nmdOp(nul.behav.object, '[.]', cs||{}, [
 			function() {
 				var rv = '';
 				for(var i in this.components) rv +=
 					'<tr><th>'+i+'</th><td>'+this.components[i].toHTML()+'</td></tr>';
+				if(isEmpty(this.components)) rv = '<tr><td>&nbsp;</td></tr>';
 				return '<table class="object">'+rv+'</table>';
 			},
 			function() { 
 				var rv = '';
 				for(var i in this.components) rv +=
 					'::'+i+' '+this.components[i].toString()+' ';
+				if(isEmpty(this.components)) rv = '[Object]';
 				return '('+rv+')';
 			}]
 		);
 	},
 	composed: function(applied, name, value) {
-		if('[.]'!= applied.charact) throw nul.semanticException('Cant compose non-object '+applied.toString());
+		if(nul.debug.assert) assert('[.]'== applied.charact, 'Only compose objects');
 		applied.components[name] = value;
 		return applied.summarised();
 	},
-	lambda: function(parms, value) {
-		if(value.handle()) {
-			nul.build.lambda(parms, value.handle());
-			return value;
-		}
-		return value.handled(parms).summarised();
-		//return this.attributed(value, '"handle', parms);
-	},
 	nativeSet: function(name, fct) {
-		return this.primitived(this.item(null, {
+		return this.item(null, {
 				callback: fct,
 				charact: 'native',
 				name: name,
 				acNdx: '['+name+']',
 				expressionHTML: function() { return '<span class="global">'+this.name+'</span>'; },
 				expressionString: function() { return this.name; }
-			}, nul.behav.nativeSet), 'set');
+			}, nul.behav.nativeSet);
 	},
 	nativeFunction: function(name, fct) {
-		return this.primitived(this.item(null, {
+		return this.item(null, {
 				callback: fct,
 				charact: 'native',
 				name: name,
 				acNdx: '['+name+']',
 				expressionHTML: function() { return '<span class="global">'+this.name+'</span>'; },
 				expressionString: function() { return this.name; }
-			}, nul.behav.nativeFunction), 'set');		
+			}, nul.behav.nativeFunction);		
 	}
 };
 nul.build.htmlPlace.expressed = [];

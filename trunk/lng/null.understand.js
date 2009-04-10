@@ -35,7 +35,7 @@ nul.understanding = {
 			},
 			createFreedom: function(name, value) {
 				if(!this.parms) return this.prntUb.createFreedom(name, value);
-				if(this.parms[name]) throw nul.semanticException('Freedom declared twice: '+name);
+				if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
 				var rv = this.locals.length;
 				this.locals.push(name);
 				if('_'!= name) this.parms[name] = rv;
@@ -65,14 +65,17 @@ nul.understanding = {
 		else ops = nul.understanding.understandOperands(this.operands, ub);
 		if(['&&', '||', '+' ,'-' ,'*' ,'/' ,'%' ,'&' ,'|' ,'^' ,'&&' ,'||'].contains(this.operator))
 			return nul.build.cumulExpr(this.operator, ops);
-		if(['<','>','<=','>='].contains(this.operator))
+		if(['<','>'].contains(this.operator))
 			return nul.build.biExpr(this.operator, ops);
+		if(['<=','>='].contains(this.operator))
+			//TODO: return IOR3
+				throw nul.internalException("not implemented");
 		switch(this.operator)
 		{
 			case ':-':	return nul.build.lambda(ops[0], ops[1]);
 			case ',':	return nul.build.list(ops);
-			case '=':	return nul.build.unification(ops, 0);
-			case ':=':	return nul.build.unification(ops, -1);
+			case '=':	return nul.build.unification(ops);
+			case ':=':	return nul.build.handle(ops[0], ops[1]);
 
 			case '<<+':	return nul.build.seAppend(ops[0], ops[1]);
 
@@ -115,7 +118,6 @@ nul.understanding = {
 				try { return ub.resolve(this.value); }
 				catch(err) {
 					if(nul.understanding.unresolvable!= err) throw err;
-					//throw nul.semanticException('Identifier "'+this.value+'" undefined.');
 					return ub.createFreedom(this.value);
 				}
 				break;
@@ -136,7 +138,7 @@ nul.understanding = {
 	},
 	
 	definition: function(ub) {
-		if('_'== this.decl) throw nul.semanticException('Cannot declare joker !')
+		if('_'== this.decl) throw nul.semanticException('JKD', 'Cannot declare joker !')
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
 	},

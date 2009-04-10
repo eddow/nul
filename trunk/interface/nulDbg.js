@@ -77,7 +77,7 @@ function testEvaluation()
 		
 		nul.debug.assert = $('shwAssert').checked;
 		if($('shwLogging').checked) {
-			nul.debug.logging = {error: true};
+			nul.debug.logging = {error: true, fail: true};
 			nul.debug.logging.knowledge = nul.debug.watches = $('shwWatches').checked;
 			nul.debug.logging.ctxs = $('shwLoggingCtxs').checked;
 			nul.debug.logging.evals = $('shwLoggingEvals').checked;

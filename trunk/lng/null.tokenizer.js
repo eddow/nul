@@ -62,7 +62,7 @@ nul.tokenizer = function(src)
 		},
 		pop: function(accepted)
 		{
-			if('eof'== this.token.type) throw nul.syntaxException("End of file reached.");
+			if('eof'== this.token.type) throw nul.syntaxException('EOF', 'End of file reached.');
 			var rv = this.peek(accepted);
 			if(rv) this.next();
 			return rv;
@@ -76,7 +76,7 @@ nul.tokenizer = function(src)
 		expect: function(value, rv)
 		{
 			if(!this.take(value))
-				throw nul.syntaxException('"'+value+'" expected');
+				throw nul.syntaxException('EXP', '"'+value+'" expected');
 			return rv;
 		},
 		rawTake: function(value)
@@ -90,7 +90,7 @@ nul.tokenizer = function(src)
 		rawExpect: function(value, rv)
 		{
 			if(!this.rawTake(value))
-				throw nul.syntaxException('"'+value+'" expected');
+				throw nul.syntaxException('EXP', '"'+value+'" expected');
 			return rv;
 		},
 		fly: function(seeked)

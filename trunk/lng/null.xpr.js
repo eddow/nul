@@ -8,16 +8,14 @@
  
 nul.xpr = {	//Main interface implemented by all expressions
 	isXpr: true,
-	clone: function(nComps, nAttrs) {
+	clone: function(nComps) {
 		var rv = clone1(this);
 		if(nComps) rv.components = nComps;
 		else if(rv.components) rv.components = map(this.components, function() { return this.clone(); });
-		rv.x = clone1(rv.x);
-		rv.x = nAttrs || map(this.x, function() { return nul.differ(this)?this:this.clone(); });
 		return rv.integre();
 	}.perform('nul.xpr->clone').xKeep(),
 	clone1: function() {
-		return this.clone(clone1(this.components),clone1(this.x));
+		return this.clone(clone1(this.components));
 	}.perform('nul.xpr->clone').xKeep(),
 	toHTML: nul.text.toHTML,
 	toString: nul.text.toString,
@@ -30,28 +28,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	browse: nul.browse.recursion.xKeep(),
 	//Just compare : returns true or false
 	cmp: function(xpr) {
-		if(xpr.integre().charact != this.integre().charact) return false;
-		var txpr = this;
-		if((trys(xpr.x, function(i) {
-			return !txpr.x[i];
-		}) || trys(this.x, function(i) {
-			return !xpr.x[i] || !nul.adCmp(txpr, this, xpr.x[i]);
-		}))) return false;
-		if( this.components || xpr.components ) {
-			if(!this.components || !xpr.components || this.components.length != xpr.components.length)
-				return false;
-			return !(trys(xpr.components, function(i) {
-				return !txpr.components[i];
-			}) || trys(this.components, function(i) {
-				return !xpr.components[i] || !this.cmp(xpr.components[i]);	
-			}));
-		}
-		switch(this.charact) {
-			case 'atom': return this.value == xpr.value;
-			case 'local': return this.lindx == xpr.lindx && this.ctxName==xpr.ctxName;
-			case 'native': return this.name == xpr.name; 
-		}
-		throw nul.internalException('Unknown expression to compare : '+this.charact);
+		return this.ndx == xpr.ndx;
 	}.perform('nul.xpr->cmp'),
 /* Makes a summary of components and characteristics :
  *  Fix flags, dependances, ...
@@ -62,18 +39,15 @@ nul.xpr = {	//Main interface implemented by all expressions
 		var dps = [];
 		var flags = {};
 		var ndx = '';
-		var sumSubs = function() {
-			if(nul.differ(this)) return;	//if differed attribute
+		if(this.components) map(this.components, function() {
 			if(nul.debug.assert) assert(this.deps,'Subs summarised.'); 
 			dps.push(this.deps);
 			for(var f in this.flags) flags[f] = true;
 			ndx += '|' + this.ndx;
-		};
-		if(this.components) map(this.components, sumSubs);
+		});
 		if(this.acNdx) this.ndx = this.acNdx;
 		else this.ndx = '[' + this.charact + ndx + ']';
 		ndx = '';
-		map(this.x, sumSubs);
 		if(['{}'].contains(this.charact)) {
 			delete flags.fuzzy;
 			delete flags.failable;
@@ -128,7 +102,9 @@ nul.xpr = {	//Main interface implemented by all expressions
 		if(isEmpty(tt)) return this;
 		return this.browse(nul.browse.contextualise(tt, prtct)) || this;
 	}.perform('nul.xpr->contextualise').xKeep(),
-
+	fixTypes: function(types) {
+		return this.browse(nul.browse.fixTypes(types)) || this;
+	},
 	//Specify that occurences of <xpr> in <this> expression are indeed self-references
 	setSelfRef: function(xpr) {
 		var tt = {};
@@ -153,7 +129,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 		var rv = this;
 		while(!rv[forApi]) {
 			var nt = rv.extraction();
-			if(!nt) throw nul.semanticException('Expected interface to '+forApi+' : ' + rv.toString());
+			if(!nt) throw nul.semanticException('uh?', 'Expected interface to '+forApi+' : ' + rv.toString());
 			rv = nt;
 		}
 		return function() {
@@ -200,32 +176,10 @@ nul.xpr = {	//Main interface implemented by all expressions
 
 ////////// Attributes management
 
-	ext: function(anm) {
-		if(!this.x[anm]) return;
-		if('function'== typeof this.x[anm]) return this.x[anm](this);
-		return this.x[anm];
-	},
-	xed: function(kb, way, axs) {
-		var i, xpr = this;
-		if(0<way) for(i=2; i<arguments.length; ++i) xpr = xpr.xadd(arguments[i], kb);
-		else for(i=arguments.length-1; i>=2; --i) xpr = xpr.xadd(arguments[i], kb);
-		return xpr;
-	},
-	xadd: function(x, kb) {
-		//TODO: remove this test after to allow attribute named "isXpr"
-		if(nul.debug.assert) assert(!x.isXpr,'X shouldnt be an expression anymore');
-		var ti = this.integre();
-		//This dirty comes from the unification created (just the line under) in the attributes
-		if(!kb && trys(x, function(i) { return !ti.x[i]; } )) this.dirty();
-		merge(ti.x, x, 'overwrite'==kb?null:function(a,b) {
-			if(a===b) return a;
-			if('function'== typeof a) {
-				if('function'== typeof b) fail('Attributes dont match');
-				return nul.unify.level(a(ti),b,kb);
-			}
-			if('function'== typeof b) return nul.unify.level(a,b(ti),kb);
-			return nul.unify.level(a,b,kb);
-		});
+	xadd: function(x) {
+		if('undefined'== typeof x) return this;
+		if('string'== typeof x) x = nul.primitive[x];
+		this.x = this.x?nul.primitive.mix(x,this.x):x;
 		return this.summarised();
 	}.perform('nul.xpr->xadd'),
 	
@@ -233,8 +187,8 @@ nul.xpr = {	//Main interface implemented by all expressions
 	
 	//Gets weither this expresion i failable by itself (cf. attributes, ...)
 	failableNature: function() {
-		return ['<<+','=',':=','?','[-]'].contains(this.charact) ||
-			(!this.fixed() && !isEmpty(this.x));
+		return ['<<+','=',':=','?','[-]','<','>'].contains(this.charact)/* ||
+			(!this.fixed() && !isEmpty(this.x))*/;
 	},
 	//Return the failable parts of this expression in an array
 	// The ones the inner expression doesn't know, depending on attributes and generic props
@@ -254,12 +208,16 @@ nul.xpr = {	//Main interface implemented by all expressions
 
 		return rv;
 	},
-	handle: function() { return this.ext('handle'); },
-	handled: function(k) {
-		if(k) this.x['handle'] = k;
-		else delete this.x['handle'];
-		return this;
+	handled: function(h, kb) {
+		//TODO: si !h.x.handeling alors error : pas dft behav!
+		if(!(this.x && h.x)) return nul.build.handle(h, this).xadd(this.x,kb).clean();
+		return (h.x.handeling || function(hr, hd, vh, kb) {
+			return vh(hr, hd, kb);
+		})(h, this, this.x.valHandle || function(hr, hd, kb) {
+			return nul.unify.level(hr, hd, kb);
+		}, kb);
 	},
+
 //Debug purpose
 	integre: function() {
 		if(nul.debug.assert && this.integrity) assert(this.integrity(),

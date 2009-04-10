@@ -11,10 +11,12 @@ nul.set = {
 
 	*/
 	behaviour: {
+		x: 'set',
 		asUnion: function(vals) {
 			if(1==vals.length) {
 				this.components = vals[0].components;
 			} else {
+				this.components.splice(0);
 				var iors = [];
 				while(vals.length) iors.push(vals.pop().into());
 				this.components.value = nul.build.ior3(iors).clean();
@@ -49,8 +51,8 @@ nul.set = {
 		takeFrdm: function(knwl, ctx) {
 			if(this.solving) return this;
 			this.solving = true;
-			try { var rv = nul.solve.solve(this);
-			} finally { delete this.solving; }
+			try { var rv = nul.solve.solve(this); }
+			finally { delete this.solving; }
 	
 			if(rv.solved.length) {
 				if(0<rv.fuzzy.length)
@@ -81,7 +83,7 @@ nul.set = {
 		},
 		take: function(apl, kb, way) {
 			//TODO: clone:'itm' à l'evaluate et au contextualise pour enlever ici
-			return nul.unify.level(apl, this.clone().stpUp(kb), kb, -1);
+			return this.clone().stpUp(kb).handled(apl, kb);
 		}.perform('set->take'),
 		fail: function() {
 			return nul.build.definition().xadd(this.x);
@@ -106,62 +108,71 @@ nul.set = {
 			//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
 			var ctxn = this.ctxName;
 			var usefulLocals = this.components.value.deps[ctxn];
-			if(!usefulLocals) this.components.splice(0);
-			else {
-				//First eliminate locals found once in an equality of the premices
-				for(var l in this.used) if(1== this.used[l] && !usefulLocals[l]) {
-					//This local is used only once in the premices. Is it as a term of a unification ?
-					var p;
-					for(p=0; p < this.components.length && (
-						!this.components[p].deps[ctxn] ||
-						 !this.components[p].deps[ctxn][l] )
-					; ++p);	///Find the premice containing this local
-					if(p < this.components.length) {	//The premice can have been deleted by this algorithm!
-						var prm = this.components[p];
-						if(prm.unification) {
-							var c;
-							for(c=0; !prm.components[c].deps[ctxn] || !prm.components[c].deps[ctxn][l]; ++c); //Find the term refering the local
-							if('local'== prm.components[c].charact) {
-								if(2== prm.components.length) {
-									this.components.splice(p,1);
-									this.summarised();
-								} else if('='== prm.charact) {
-									prm.components.splice(c,1);
-									this.summarised();
-									this.summarised();
-								} else if(':='== prm.charact) {
-									this.components.push(nul.build.unification(prm.components.splice(c+1),-1));
-									prm.components.splice(c,1);
-									prm.summarised();
-								}
+			if(!usefulLocals) {
+				this.components.splice(0);
+				return this;
+			}
+			//First eliminate locals found once in an equality of the premices
+			for(var l in this.used) if(1== this.used[l] && !usefulLocals[l]) {
+				//This local is used only once in the premices. Is it as a term of a unification ?
+				var p;
+				for(p=0; p < this.components.length && (
+					!this.components[p].deps[ctxn] ||
+					 !this.components[p].deps[ctxn][l] )
+				; ++p);	///Find the premice containing this local
+				if(p < this.components.length) {	//The premice can have been deleted by this algorithm!
+					var prm = this.components[p];
+					if('='== prm.charact) {
+						var c;
+						for(c=0; !prm.components[c].deps[ctxn] || !prm.components[c].deps[ctxn][l]; ++c); //Find the term refering the local
+						if('local'== prm.components[c].charact) {
+							if(2== prm.components.length) {
+								this.components.splice(p,1);
+								this.summarised();
+							} else if('='== prm.charact) {
+								prm.components.splice(c,1);
+								this.summarised();
+								this.summarised();
+							} else if(':='== prm.charact) {
+								this.components.push(nul.build.unification(prm.components.splice(c+1),-1));
+								prm.components.splice(c,1);
+								prm.summarised();
 							}
 						}
 					}
 				}
-				//Second, sort the premices to keep only the ones with no link at all from the value
-				var forgottenPrmcs = [];
-				for(var i=0; i<this.components.length; ++i)
-					if(isEmpty(this.components[i].deps, [ctxn]))
-						forgottenPrmcs.push(i);
-				do {
-					var ds;
-					for(var i=0; i<forgottenPrmcs.length; ++i) {
-						ds = this.components[forgottenPrmcs[i]].deps[ctxn];
-						if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
-					}
-					if(i>=forgottenPrmcs.length) ++i;
-					else {
-						merge(usefulLocals, ds);
-						forgottenPrmcs.splice(i,1);
-					}
-				} while(i<=forgottenPrmcs.length);
-				//Remove in inverse orders to have valid indices.
-				// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
-				//  first remove 3 then 1.
-				while(0<forgottenPrmcs.length) this.components.splice(forgottenPrmcs.pop(), 1);
 			}
-			return this;
-		},		
+			//Second, sort the premices to keep only the ones with no link at all from the value
+			var forgottenPrmcs = [];
+			var types = {};
+			for(var i=0; i<this.components.length; ++i)
+				if(isEmpty(this.components[i].deps, [ctxn]))
+					forgottenPrmcs.push(i);
+			do {
+				var ds;
+				for(var i=0; i<forgottenPrmcs.length; ++i) {
+					ds = this.components[forgottenPrmcs[i]].deps[ctxn];
+					if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
+				}
+				if(i>=forgottenPrmcs.length) ++i;
+				else {
+					merge(usefulLocals, ds);
+					forgottenPrmcs.splice(i,1);
+				}
+			} while(i<=forgottenPrmcs.length);
+			//Remove in inverse orders to have valid indices.
+			// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
+			//  first remove 3 then 1.
+			while(0<forgottenPrmcs.length) this.components.splice(forgottenPrmcs.pop(), 1);
+			
+			this.browse(nul.browse.completeTypes(types));
+			for(var l in this.used) {
+				var ndx = nul.build.local(this.ctxName, l).acNdx;
+				if(!types[ndx]) types[ndx] = nul.primitive[''];
+			}
+			return this.fixTypes(types);
+		},
+		//Remove locals not used anymore
 		removeUnused: function() {
 			this.summarised();
 			this.removeUnusedKnowledge();

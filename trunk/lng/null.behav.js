@@ -54,7 +54,7 @@ nul.behav = {
 				this.element.innerHTML += itm.value;
 				return nul.build.atom('#text');
 			}
-			throw nul.semanticException('XML element expected for appending');
+			throw nul.semanticException('htmlPlace', 'XML element expected for appending');	//TODO: make it a type def	
 		},
 		isFailable: function() { return false; }
 	},
@@ -71,7 +71,7 @@ nul.behav = {
 		},
 		operate: function(kb) {
 			if(!this.components.object.take)
-				throw nul.semanticException('Not a set : '+ this.components.object.toHTML());
+				throw nul.semanticException('OPM', 'Cannot take from '+ this.components.object.toHTML());
 			var selfRef = this.components.object.arCtxName, srTt;
 			if(selfRef) {
 				srTt = {};
@@ -103,11 +103,11 @@ nul.behav = {
 			this.components.value &&	//Value is not set when called from within nul.build.item
 			0== this.components.length &&
 			!this.components.value.flags.failable)
-				return this.components.value.xadd(this.x);
+				return this.components.value;
 			return this;
 		},
 		fail: function() {
-			delete this.components;
+			delete this. components;
 			this.flags = this.deps = {};
 			return this;
 		},
@@ -133,10 +133,10 @@ nul.behav = {
 				if(c.fixed()) {
 					o = cps.pop();
 					while(o && o.fixed()) {
-						var opFct = o.ext('op'+this.charact);
+						var opFct = o.x[this.charact];
 						if(!opFct)	//TODO: semantic? failure? ... ?
-							throw nul.semanticException('Operator '+this.charact+' is not defined for ' + o.toHTML());
-						c = opFct.take(c, kb, 1);
+							throw nul.semanticException('OPM', 'Operator '+this.charact+' is not defined for ' + o.toHTML());
+						c = opFct.apply(o, [c, kb]);
 						o = cps.pop();
 					}
 				} else o = null;
@@ -151,13 +151,20 @@ nul.behav = {
 		operable: nul.xpr.subFixed,
 		operate: function(kb)
 		{
-			var opFct = this.components[0].ext('op'+this.charact);
+			var opInv = {'>': '<'};
+			var a = this.components[0], b = this.components[1], op = this.charact;
+			if(opInv[op]) { a = b; b = this.components[0]; op = opInv[op]; } 
+			var opFct = a.x[op];
 			if(!opFct)	//TODO: semantic? failure? ... ?
-				throw nul.semanticException('Operator '+this.charact+' is not defined for ' + this.components[0].toHTML());
-			return opFct.take(this.components[1], kb, 1).xadd(this.x, kb);
+				throw nul.semanticException('OPM', 'Operator '+op+' is not defined for ' + a.toHTML());
+			var rv = opFct.apply(a, [b, kb]);
+			if(true=== rv) return this.components[0];
+			if(rv) return rv.xadd(this.x, kb);
+			return rv;
 		}.perform('biExpr->operate').xKeep()
 	},
 	list: {
+		x: 'set',
 		followed: function(flw) {
 			if(flw) this.components.follow = flw;
 			else delete this.components.follow;
@@ -181,8 +188,20 @@ nul.behav = {
 		take: function(apl, kb, way) {
 			var rv = [];
 			var xpr = this.clone();	//TODO: please kill me :'(
-			try{ rv = nul.unify.orDist(xpr.components, xpr.x, apl, kb, way); }
-			catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
+			for(var i=0; i<xpr.components.length; ++i) {
+				var kwf = nul.build.kwFreedom();
+				kwf.makeFrdm(kb);
+				try {
+					kwf.components.value = xpr.components[i].handled(apl.clone(), kb);
+				} catch(err) {
+					kb.pop('kw');
+					if(nul.failure!= err) throw nul.exception.notice(err);
+				}
+				if(kwf.components.value) {
+					kwf = kb.pop(kwf).dirty();
+					rv.push(kwf.evaluate(kb)||kwf);
+				}
+			}
 			if(xpr.components.follow) {
 				var kwf = nul.build.kwFreedom();
 				kwf.makeFrdm(kb);
@@ -205,7 +224,7 @@ nul.behav = {
 	preceded: {
 		operable: nul.xpr.subFixed,
 		operate: function(kb)
-		{
+		{	//TODO: make a X op
 			return nul.build
 				.atom(eval( this.charact + nul.asJs(this.components[0],this.charact) ))
 				.xadd(this.x, kb);
@@ -217,7 +236,7 @@ nul.behav = {
 		{
 			var v = nul.asJs(this.components[0],'?');
 			if('boolean'!= typeof v)
-				throw nul.semanticException('Boolean expected instead of ' +
+				throw nul.semanticException('deprecated', 'Boolean expected instead of ' +
 					this.components[0].toString());
 			if(v) return this.components[0].xadd(this.x, kb);
 			nul.fail('Assertion not provided');
@@ -236,10 +255,10 @@ nul.behav = {
 		operate: function(kb)
 		{
 			var fl = this.components.length;
-			var rv = nul.unify.multiple(this.components, kb, this.way)
+			var rv = nul.unify.multiple(this.components, kb)
 			if(rv && 1== rv.length) return rv[0].xadd(this.x, kb);
 			if(!rv) rv = this.components;
-			return kb.affect(rv, this.way, this.x).xadd(this.x, kb);
+			return kb.affect(rv, this.x).xadd(this.x, kb);
 		}.perform('unification->operate').xKeep()
 	},
 	kwFreedomHolder: {
@@ -267,8 +286,8 @@ nul.behav = {
 					kb.knew(rv.components);
 					rv = rv.components.value;
 				}
-				if(rv) return rv.xadd(this.x, kb);
-				return nul.build.definition().xadd(this.x, kb);
+				if(rv) return rv;
+				return nul.build.definition();
 			}
 		}.perform('kwFreedomHolder->operate').xKeep(),
 	},
@@ -281,16 +300,53 @@ nul.behav = {
 			for(var i=0; i<this.components.length; ++i)
 				if(!this.components[i].flags.failable) return false;
 			return true;
-		}
+		}/*,
+		handled: function(h, kb) {
+			var rv = [], tmp;
+			for(var i=0; i<hd.components.length; ++i) {
+				var kwf = hd.components[i].clone();
+				if('kw'!= kwf.charact) {
+					tmp = kwf;
+					kwf = nul.build.kwFreedom();
+					kwf.components.value = tmp;
+				}
+				kwf.makeFrdm(kb);
+				try {
+					tmp = kwf.components.value;
+					delete kwf.components.value;
+					kwf.components.value = tmp.x.valHandle(hr, tmp, kb);
+				} catch(err) {
+					kb.pop('kw');
+					if(nul.failure!= err) throw nul.exception.notice(err);
+				}
+				if(kwf.components.value) {
+					kwf = kb.pop(kwf).dirty();
+					rv.push(kwf.evaluate(kb)||kwf);
+				}
+			}
+			return nul.build.ior3(rv).xadd(hd.x, kb);
+		}*/
 	},
 	xor3: {
 		isFailable: function() {
 			return this.components[this.components.length-1].flags.failable;
 		}
 	},
+	lambda: {
+		x: ':-'
+	},
+	handle: {
+		operable: function() {
+			return this.components.handler.finalRoot() && this.components.handled.x;
+		},
+		operate: function(kb) {
+			return this.components.handled.handled(this.components.handler, kb);
+		}
+	},
 	object: {
 	},
 	nativeSet : {
+		x: 'set',
 		transform: function() { return false; },
 		take: function(apl, kb, way) {
 			return this.callback(apl, kb);
@@ -298,10 +354,11 @@ nul.behav = {
 		isFailable: function() { return false; }
 	},
 	nativeFunction : {
+		x: 'set',
 		transform: function() { return true; },
 		take: function(apl, kb, way) {
 			return this.callback(apl, kb);
 		}.perform('nativeFunction->take'),
 		isFailable: function() { return false; }
-	}
+	},
 };
