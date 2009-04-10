@@ -16,12 +16,6 @@ The handeling unification is not commutative.
 
 = Details =
 
-The handeling unification follows this schema :
- * {{{ a :- b  :=  c :- d }}} has the value {{{ a :- d }}} while {{{ b = c }}}
- * {{{ b  :=  c :- d }}} has the value {{{ d }}} while {{{ b = c }}}
- * {{{ a :- b  :=  d }}} has the value {{{ a :- d }}} while {{{ b = d }}}
- * {{{ a :=  d }}} has the value {{{ d }}} while {{{ a = d }}}
-
 The handeling unification is not ment to be used as this. The handle is created to deal with sets and tables; for instance, the "index" of a table gives the handle of each row.
 
 The 'object taking' or 'set application' involve the handeling unification. Indeed, {{{ { x } a }}} ({{{a}}} taken out of the sets of {{{x}}}) involve it statusing {{{a := x}}}
