@@ -4,5 +4,5 @@
 
 Assertion with the operator {{{?}}} use to help write ternary operations C++-like and pretty set definitions.
 
-{{{? a}}} is the equivalent of {{{a = true}}}
-{{{a ? b}}} is the equivalent of {{{a; b = true}}}
+ * {{{? a}}} is the equivalent of {{{a = true}}}
+ * {{{a ? b}}} is the equivalent of {{{a; b = true}}}
