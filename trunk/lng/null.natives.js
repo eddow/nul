@@ -11,6 +11,15 @@ nul.natives = {
 			return xpr.xadd('number');
 		}
 	),
+	Z: nul.build.nativeSet('&#x2124;',
+		function(xpr) {
+	        xpr.xadd('number');
+	        if(xpr.fixed()) {
+	        	if(Math.floor(xpr.value)!= xpr.value) nul.fail('Not an integer : '+xpr.dbgHTML());
+            	return xpr;
+	        }
+	    }
+	),
 	'true': nul.build.atom(true),
 	'false': nul.build.atom(false),
 	str: nul.build.nativeSet('str',

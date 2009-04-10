@@ -28,7 +28,9 @@ tests = [
 		{xpr: 'S(n+1,"str"); S= {1, c}; Q n',
 		rslt: '{(1 , "str")}'},
 		{xpr: '{n :- {(Q x, Q y) :- x+y} (1, n)} 10',
-		rslt: '{11}'}
+		rslt: '{11}'},
+		{xpr: 'Z x > 0',
+		rslt: '{(x[0|c2] &gt; 0); (&#x2124; x[0|c2])}'}
 	].named('Local management'),
 	[
 		{xpr: 'v; (z=1 [] z=2); v=z',
@@ -71,17 +73,17 @@ tests = [
 	[
 		{xpr: '(p(1,1) [] p(1,2) [] p(2,5)) ; p= ((1,5), (2,5),.. { Q x, x })',
 		rslt: '((1 , 1) , (2 , 5))'},
-		{xpr: 'ld 5 ; ld={ 0 :- {} [] (Q n > 0) :- ((n, _) ,.. ld (n-1)) }',
+		{xpr: 'ld 5 ; ld={ 0 :- {} [] (Z n > 0) :- ((n, _) ,.. ld (n-1)) }',
 		rslt: '{((5 , _[0|c2]) , (4 , _[1|c2]) , (3 , _[2|c2]) , (2 , _[3|c2]) , (1 , _[4|c2]))}'}
 	].named('Lists management'),
 	[
-		{xpr: 'f 5; f={ 0 :- 1 [] Q n > 0 :- n * f(n-1)}',
+		{xpr: 'f 5; f={ 0 :- 1 [] Z n > 0 :- n * f(n-1)}',
 		desc: 'Factorial of 5',
 		rslt: '{120}'},
-		{xpr: 'fib 5; fib={ (0 [] 1) :- 1 [] Q n > 0 :- fib(n-1) + fib(n-2) }',
+		{xpr: 'fib 5; fib={ (0 [] 1) :- 1 [] Z n > 0 :- fib(n-1) + fib(n-2) }',
 		desc: 'Unoptimised Fibbonacci on 5',
 		rslt: '{8}'},
-		{xpr: 'fib 5 ; fib = {Q n > 0 :- (fibaux={ (Q x, _, 0) :- x [] (Q x, Q y, Q z > 0) :- fibaux(y, x+y, z-1) }) (1, 1, n) }',
+		{xpr: 'fib 5 ; fib = {Z n > 0 :- (fibaux={ (Z x, _, 0) :- x [] (Z x, Z y, Z z > 0) :- fibaux(y, x+y, z-1) }) (1, 1, n) }',
 		desc: 'Accumulated Fibbonacci on 5',
 		rslt: '{8}'}
 		/*{xpr: '[f{ 1 [] ({_}x x>1?x:- x * f[x-1]) }][5]',
