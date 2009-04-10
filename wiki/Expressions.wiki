@@ -1,38 +1,29 @@
 #summary Some NUL expressions
 #labels Featured,program
 
-= TODO =
-{{{
-\/ c 
-{ \/a \/b (a, b)
-::rl a.
-::img b.
-::sq rl*rl+img*img.
-}[c];
-c = (2,3);
-c->sq
-}}}
-
 = Working =
 
 == Factorial ==
 {{{
-{:f 0:-1 [] ( Z x > 0 :- x * f(x-1)) } 3
+(f={ 0:-1
+ [] Z x > 0 :- x * f(x-1)
+}) 3
 }}}
 
 == Fibonacci ==
 === quick & dirty ===
 {{{
-[fib {1 [] 2:-1 [] \/x x>2?x:- fib[x-1] + fib[x-2] }] [10]
+(fib={ (0 [] 1) :- 1
+    [] Z n > 1 :- fib(n-1) + fib(n-2)
+}) 10
 }}}
 
 === optimised (accmlation) ===
 {{{
-{ \/n n:-
- [fib 
- { \/x x, _, 1 :- x
- [] \/x \/y \/z z > 1 ? (x, y, z) :- fib[y, y+x, z-1]
- }]
- [1, 1, n]
-}[10]
+{ Z n > 0 :-
+  (fibaux={
+      (Z x, _, 0) :- x
+   [] (Z x, Z y, Z z > 0) :- fibaux(y, x+y, z-1)
+  }) (1, 1, n)
+} 10
 }}}
