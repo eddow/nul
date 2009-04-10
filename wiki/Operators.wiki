@@ -4,6 +4,7 @@
 || {{{[]}}}  || [GreedyMetaOr Greedy meta-or] ||
 ||  {{{;}}}  || [MetaAnd Meta-and] ||
 || {{{:-}}}  || [Lambda] ||
+|| {{{:-}}}  || [Assertion] ||
 ||  {{{,}}}  || [Tuple Tuple creation] ||
 ||  {{{=}}}  || [Unification] ||
 ||  {{{:}}}  || [ContentMetaOr Content meta-or] ||
