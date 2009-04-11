@@ -20,15 +20,20 @@ nul.understanding = {
 			prntUb: prntUb,
 			name: 'c'+(++nul.understanding.ctxNames),
 			asSet: function(xpr) {
-				return nul.build.definition(xpr, this.premices, this.locals, this.name);
+				var rv = nul.build.definition(xpr, this.premices, this.locals, this.name);
+				if(this.arCtxName) rv.arCtxName = this.arCtxName;
+				return rv; 
 			},
 			asKwFrdm: function(xpr) {
+				if(nul.debug.assert) assert(!this.arCtxName, 'No self-ref for KW freedoms')
 				return nul.build.kwFreedom(xpr, this.premices);
 			},
 			resolve: function(identifier) {
 				if(this.parms && 'undefined'!= typeof this.parms[identifier]) {
 					var ndx = this.parms[identifier];
-					return nul.build.local(this.name, ndx, (identifier!=ndx)?identifier:null);
+					return nul.build.local(
+						ndx==nul.lcl.slf?this.arCtxName:this.name,
+						ndx, (identifier!=ndx)?identifier:null);
 				}
 				if(this.prntUb) return this.prntUb.resolve(identifier);
 				throw nul.understanding.unresolvable;
@@ -45,6 +50,12 @@ nul.understanding = {
 			},
 			know: function(xpr) {
 				this.premices.push(xpr);
+			},
+			setSelf: function(name) {
+				if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
+				this.parms[name] = nul.lcl.slf;
+				this.arCtxName = 'ar'+(++nul.understanding.srCtxNames);
+				return nul.build.local(this.arCtxName, nul.lcl.slf, name);
 			}
 		};
 	},
@@ -80,7 +91,7 @@ nul.understanding = {
 			case '<<+':	return nul.build.seAppend(ops[0], ops[1]);
 
 			case '?': 
-				ub.know(nul.build.assert(ops[1]));
+				ub.know(nul.build.unification([ops[1],nul.build.atom(true)]));
 				return ops[0];
 			case ';':
 				for(var i=1; i<ops.length; ++i) ub.know(ops[i]);
@@ -94,7 +105,7 @@ nul.understanding = {
 	preceded: function(ub) {
 		var op = this.operand.understand(ub);
 		if(this.operator == '?') {
-			ub.know(nul.build.assert(op));
+			ub.know(nul.build.unification([op,nul.build.atom(true)]));
 			return nul.build.definition();
 		}
 		return nul.build.preceded(this.operator,op);
@@ -134,6 +145,7 @@ nul.understanding = {
 	set: function(ub) {
 		if(!this.content) return nul.build.definition();
 		ub = nul.understanding.emptyBase(ub);
+		if(this.selfRef) ub.setSelf(this.selfRef);
 		return ub.asSet(this.content.understand(ub));
 	},
 	

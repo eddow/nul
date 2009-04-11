@@ -19,7 +19,7 @@ nul.set = {
 				this.components.splice(0);
 				var iors = [];
 				while(vals.length) iors.push(vals.pop().into());
-				this.components.value = nul.build.ior3(iors).clean();
+				this.components[''] = nul.build.ior3(iors).clean();
 			}
 			return this.summarised().clean();
 		},
@@ -32,7 +32,7 @@ nul.set = {
 				nul.browse.lclShft(dlt, this.ctxName, kb.contexts[0].ctxName)
 			) || this);
 			kb.knew(rv.components);
-			return rv.components.value
+			return rv.components['']
 		}.perform('freedom->stpUp'),
 		//This expression in another set
 		//this' locals are added to <kb>' last context 
@@ -46,7 +46,7 @@ nul.set = {
 					nul.browse.lclShft(dlt, this.ctxName, ctxName)
 				) || this);
 			} else rv = this;
-			return nul.build.kwFreedom(rv.components.value, rv.components);
+			return nul.build.kwFreedom(rv.components[''], rv.components);
 		}.perform('freedom->stpUp'),
 		takeFrdm: function(knwl, ctx) {
 			if(this.solving) return this;
@@ -58,23 +58,27 @@ nul.set = {
 				if(0<rv.fuzzy.length)
 					rv.solved.follow = this.asUnion(rv.fuzzy);
 				rv = nul.build.list(rv.solved).xadd(this.x);
+				if(this.arCtxName) {
+					rv.arCtxName = this.arCtxName;
+					delete this.arCtxName;
+					this.summarised();
+				}
 			}
 			else if(rv.fuzzy.length) rv = this.asUnion(rv.fuzzy, this.x);
 			else return nul.build.definition().xadd(this.x);
 
 			if('{}'== rv.charact) return rv.removeUnused().clean();
-			delete this.arCtxName;	//arCtxName went to the containing list
 			rv.xadd(this.x);
 			if(nul.debug.assert) assert(','== rv.charact, 'Solution value is set or list');
 			if(rv.components.follow) rv.components.follow.removeUnused();
 			return rv;
 		}.perform('set->takeFrdm'),
 		composed: function() {
-			if(!this.components.value.flags.fuzzy &&
-			isEmpty(this.components.value.deps) &&
+			if(!this.components[''].flags.fuzzy &&
+			isEmpty(this.components[''].deps) &&
 			0>= this.components.length &&
-			!this.components.value.flags.failable)
-				return nul.build.list([this.components.value]).xadd(this.x);
+			!this.components[''].flags.failable)
+				return nul.build.list([this.components['']]).xadd(this.x);
 			return this;
 		}.perform('set->composed').xKeep(),
 		transform: function() {
@@ -107,7 +111,7 @@ nul.set = {
 			//  so each IOR son is seen as a set
 			//remove useless knowedge : the one that share no deps with 'value' or other useful knowledge
 			var ctxn = this.ctxName;
-			var usefulLocals = this.components.value.deps[ctxn];
+			var usefulLocals = this.components[''].deps[ctxn];
 			if(!usefulLocals) {
 				this.components.splice(0);
 				return this;

@@ -61,17 +61,6 @@ function escapeHTML(str) {
    return div.innerHTML;
 };
 
-var mathSymbols = {
-'>': '&gt;',
-'<': '&lt;',
-'>=': '&ge;',
-'<=': '&le;',
-};
-function mathSymbol(s) {
-	if(mathSymbols[s]) return mathSymbols[s];
-	return s;
-}
-
 //Is <o> an empty association ? (<b>eside the values contained in array <b>) 
 function isEmpty(o, b) {
 	for(var i in o) if(!b || !b.contains(reTyped(i))) return false;

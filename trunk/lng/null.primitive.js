@@ -10,9 +10,10 @@ nul.nativeFunctions = {
 	atomOp: function(op, tp) {
 		return function(o, kb) {
 			nul.natives[tp].callback(o);
+			if(nul.debug.assert) assert('atom'== o.charact, 'Atom operators operate on atoms.');
 			if(this.finalRoot() && o.finalRoot())
 				return nul.build.atom(
-					eval( ''+nul.jsVal(this) + op + nul.jsVal(nul.asJs(o, op)) )
+					eval( ''+nul.jsVal(this.value) + op + nul.jsVal(o.value) )
 				);
 		};
 	}
@@ -47,6 +48,9 @@ nul.primitive = {
 	},
 	'set': {
 		primitive: 'set'
+		/*'<': nul.build.nativeFunction('set+set', function(o) {
+		 * TODO
+		})*/
 		/*'+': nul.build.nativeFunction('set+set', function(o) {
 			nul.natives.set.callback(o);
 			var ns = '';
@@ -61,6 +65,9 @@ nul.primitive = {
 		'*': nul.nativeFunctions.atomOp('*', 'Q'),
 		'/': nul.nativeFunctions.atomOp('/', 'Q'),
 		'%': nul.nativeFunctions.atomOp('%', 'Q'),
+		'-.': function(kb) {
+			if(this.finalRoot()) return nul.build.atom(-this.value);
+		},
 		'<': function(o, kb) {
 				nul.natives.Q.callback(o);
 				if(this.finalRoot() && o.finalRoot()) {
@@ -73,25 +80,26 @@ nul.primitive = {
 		primitive: 'string',
 		'+': nul.nativeFunctions.atomOp('+', 'str'),
 		'<': function(o, kb) {
-				nul.natives.Q.callback(o);
-				if(this.finalRoot() && o.finalRoot()) {
-					if(this.value >= o.value) nul.fail('Bad order');
-					return true;
-				}
+			nul.natives.str.callback(o);
+			if(this.finalRoot() && o.finalRoot()) {
+				if(this.value >= o.value) nul.fail('Bad order');
+				return true;
 			}
+		},
 		//TODO: here, we really have to specify it is commutative !
-		/*'*': function(itm) {
-			return nul.build.nativeFunction('string*integer', function(o) {
-				nul.natives.N.callback(o);
-				if(!o.finalRoot() || !itm.finalRoot()) return;
+		//TODO: 2 'inverses'
+		'*': function(o, kb) {
+			nul.natives.Q.callback(o);
+			if(this.finalRoot() && o.finalRoot()) {
 				var ns = '';
-				for(var i=0; i<o.value; ++i) ns += itm.value;
+				for(var i=0; i<o.value; ++i) ns += this.value;
 				return nul.build.atom(ns);
-			});
-		}*/
+			}
+		}
 	},
 	'boolean': {
 		primitive: 'boolean'
+		//TODO? qq + et - ?
 	},
 	'': {
 		primitive: 'unknown',

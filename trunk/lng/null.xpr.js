@@ -187,7 +187,7 @@ nul.xpr = {	//Main interface implemented by all expressions
 	
 	//Gets weither this expresion i failable by itself (cf. attributes, ...)
 	failableNature: function() {
-		return ['<<+','=',':=','?','[-]','<','>'].contains(this.charact)/* ||
+		return ['<<+','=',':=','[-]','<','>'].contains(this.charact)/* ||
 			(!this.fixed() && !isEmpty(this.x))*/;
 	},
 	//Return the failable parts of this expression in an array

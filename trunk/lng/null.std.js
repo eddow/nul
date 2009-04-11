@@ -14,12 +14,6 @@ var nul = {
 		nul.debug.log('fail')('Failure', msg || '');		
 		throw nul.failure;
 	},
-	asJs: function(o, oprtr)
-	{
-		if('atom'!= o.charact)
-			throw nul.semanticException('deprecated', "Cannot operate '"+oprtr+"' with: "+o.toHTML());
-		return o.value;
-	},
 	jsVal: function(v) {
 		return ('string'== typeof v)?('"'+v+'"'):v;
 	},

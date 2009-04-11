@@ -208,12 +208,12 @@ nul.browse = {
 						if(prms.flags.failable) {
 							if(['[]',':'].contains(prms.charact))
 								for(var c=0; c<prms.components.length; ++c)
-									delete prms.components[c].components.value;
+									delete prms.components[c].components[''];
 							kb.knew(prms);
 						}
 					}
-					if(xpr.components.value)
-						xpr.components.value = xpr.components.value.evaluate(kb);
+					if(xpr.components[''])
+						xpr.components[''] = xpr.components[''].evaluate(kb);
 					xpr.summarised();
 					xpr.known(xpr.components);
 				}

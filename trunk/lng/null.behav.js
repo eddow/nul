@@ -15,22 +15,22 @@ nul.behav = {
 
 		freedomHTML: function() {
 			var rv = '';
-			if(this.components.value) {
+			if(this.components['']) {
 				if(0<this.components.length) return ''+
 					'<table class="xpr freedom"><tr><td class="freedom">' +
-					this.components.value.toHTML() +
+					this.components[''].toHTML() +
 					'</td></tr><tr><th class="freedom">' +
 					nul.text.expressionHTML(';', this.components) +
 					'</th></tr></table>';
-				return this.components.value.toHTML();
+				return this.components[''].toHTML();
 			}
 			if(0<this.components.length) return nul.text.expressionHTML(';', this.components);
 			return '<span class="failure">Ok</span>';
 		},
 		freedomString: function() {
 			var rv = '';
-			if(this.components.value) rv =
-				this.components.value.toString() + (0<this.components.length?'; ':'');
+			if(this.components['']) rv =
+				this.components[''].toString() + (0<this.components.length?'; ':'');
 			if(0<this.components.length)
 				rv += nul.text.expressionString(';', this.components);
 			return rv;
@@ -72,6 +72,7 @@ nul.behav = {
 		operate: function(kb) {
 			if(!this.components.object.take)
 				throw nul.semanticException('OPM', 'Cannot take from '+ this.components.object.toHTML());
+			//TODO: put selfRef dans le .x.take
 			var selfRef = this.components.object.arCtxName, srTt;
 			if(selfRef) {
 				srTt = {};
@@ -100,10 +101,10 @@ nul.behav = {
 		}.perform('kwFreedom->takeFrdm'),
 		composed: function() {
 			if(this.components &&
-			this.components.value &&	//Value is not set when called from within nul.build.item
+			this.components[''] &&	//Value is not set when called from within nul.build.item
 			0== this.components.length &&
-			!this.components.value.flags.failable)
-				return this.components.value;
+			!this.components[''].flags.failable)
+				return this.components[''];
 			return this;
 		},
 		fail: function() {
@@ -134,7 +135,7 @@ nul.behav = {
 					o = cps.pop();
 					while(o && o.fixed()) {
 						var opFct = o.x[this.charact];
-						if(!opFct)	//TODO: semantic? failure? ... ?
+						if(!opFct)
 							throw nul.semanticException('OPM', 'Operator '+this.charact+' is not defined for ' + o.toHTML());
 						c = opFct.apply(o, [c, kb]);
 						o = cps.pop();
@@ -148,20 +149,23 @@ nul.behav = {
 		}.perform('cumulExpr->operate').xKeep()
 	},
 	biExpr: {
+		operate: function(kb)
+		{
+			var knwldg = nul.build.order('<'==this.charact?this.components:
+				[this.components[1],this.components[0]]).evaluate(kb);
+			if('atom'!= knwldg.charact) kb.knew(knwldg);
+			return this.components[0].xadd(this.x, kb);
+		}.perform('order->operate').xKeep()
+	},
+	order: {
 		operable: nul.xpr.subFixed,
 		operate: function(kb)
 		{
-			var opInv = {'>': '<'};
-			var a = this.components[0], b = this.components[1], op = this.charact;
-			if(opInv[op]) { a = b; b = this.components[0]; op = opInv[op]; } 
-			var opFct = a.x[op];
-			if(!opFct)	//TODO: semantic? failure? ... ?
-				throw nul.semanticException('OPM', 'Operator '+op+' is not defined for ' + a.toHTML());
-			var rv = opFct.apply(a, [b, kb]);
-			if(true=== rv) return this.components[0];
-			if(rv) return rv.xadd(this.x, kb);
-			return rv;
-		}.perform('biExpr->operate').xKeep()
+			var opFct = this.components[0].x['<'];
+			if(!opFct)
+				throw nul.semanticException('OPM', 'Operator < is not defined for ' + this.components[0].toHTML());
+			if(opFct.apply(this.components[0], [this.components[1], kb])) return nul.build.atom(true);
+		}.perform('order->operate').xKeep()
 	},
 	list: {
 		x: 'set',
@@ -192,12 +196,12 @@ nul.behav = {
 				var kwf = nul.build.kwFreedom();
 				kwf.makeFrdm(kb);
 				try {
-					kwf.components.value = xpr.components[i].handled(apl.clone(), kb);
+					kwf.components[''] = xpr.components[i].handled(apl.clone(), kb);
 				} catch(err) {
 					kb.pop('kw');
 					if(nul.failure!= err) throw nul.exception.notice(err);
 				}
-				if(kwf.components.value) {
+				if(kwf.components['']) {
 					kwf = kb.pop(kwf).dirty();
 					rv.push(kwf.evaluate(kb)||kwf);
 				}
@@ -206,12 +210,12 @@ nul.behav = {
 				var kwf = nul.build.kwFreedom();
 				kwf.makeFrdm(kb);
 				try {
-					kwf.components.value = xpr.components.follow.take(apl,kb,way).dirty();
+					kwf.components[''] = xpr.components.follow.take(apl,kb,way).dirty();
 				} catch(err) {
 					kb.pop('kw');
 					if(nul.failure!= err) throw nul.exception.notice(err);
 				}
-				if(kwf.components.value) {
+				if(kwf.components['']) {
 					kwf = kb.pop(kwf).dirty();
 					rv.push(kwf.evaluate(kb)||kwf);
 				}
@@ -225,23 +229,14 @@ nul.behav = {
 		operable: nul.xpr.subFixed,
 		operate: function(kb)
 		{	//TODO: make a X op
-			return nul.build
-				.atom(eval( this.charact + nul.asJs(this.components[0],this.charact) ))
-				.xadd(this.x, kb);
+			var opFct = this.components[0].x[this.charact+'.'];
+			if(!opFct)
+				throw nul.semanticException('OPM', 'Precedor '+this.charact+' is not defined for ' + o.toHTML(this.components[0]));
+			var rv = opFct.apply(this.components[0], [kb]);
+			if(rv) return rv.xadd(this.x, kb);
 		}.perform('preceded->operate').xKeep()
 	},
-	assert: {
-		operable: nul.xpr.subFixed,
-		operate: function(kb)
-		{
-			var v = nul.asJs(this.components[0],'?');
-			if('boolean'!= typeof v)
-				throw nul.semanticException('deprecated', 'Boolean expected instead of ' +
-					this.components[0].toString());
-			if(v) return this.components[0].xadd(this.x, kb);
-			nul.fail('Assertion not provided');
-		}.perform('assert->operate').xKeep()
-	},
+
 	extraction: {
 		operate: function(kb)
 		{
@@ -284,7 +279,7 @@ nul.behav = {
 				var rv = this.components[0];
 				if('kw'== rv.charact) {
 					kb.knew(rv.components);
-					rv = rv.components.value;
+					rv = rv.components[''];
 				}
 				if(rv) return rv;
 				return nul.build.definition();
@@ -308,18 +303,18 @@ nul.behav = {
 				if('kw'!= kwf.charact) {
 					tmp = kwf;
 					kwf = nul.build.kwFreedom();
-					kwf.components.value = tmp;
+					kwf.components[''] = tmp;
 				}
 				kwf.makeFrdm(kb);
 				try {
-					tmp = kwf.components.value;
-					delete kwf.components.value;
-					kwf.components.value = tmp.x.valHandle(hr, tmp, kb);
+					tmp = kwf.components[''];
+					delete kwf.components[''];
+					kwf.components[''] = tmp.x.valHandle(hr, tmp, kb);
 				} catch(err) {
 					kb.pop('kw');
 					if(nul.failure!= err) throw nul.exception.notice(err);
 				}
-				if(kwf.components.value) {
+				if(kwf.components['']) {
 					kwf = kb.pop(kwf).dirty();
 					rv.push(kwf.evaluate(kb)||kwf);
 				}

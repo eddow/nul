@@ -26,8 +26,8 @@ nul.compiled = {
 	definition: function(decl, value) {
 		return { decl: decl, value: value, understand: nul.understanding.definition };
 	},
-	set: function(content) {
-		return { content: content, understand: nul.understanding.set };
+	set: function(content, selfRef) {
+		return { content: content, selfRef: selfRef, understand: nul.understanding.set };
 	},
 	xml: function(node, attrs, content) {
 		return { node: node, attributes: attrs, content: content, understand: nul.understanding.xml };
@@ -54,16 +54,12 @@ nul.operators = [
 	[':-','r'],								//lambda
 	['=','m'], [':=','m'],					//unify
 	[':','m'],								//booleans:meta XOR
-	['?','l'],								//a?b ==> if(a) then b else fail (shortcut)
-	['?','p'],								//?b ==> b if b nor false nor null
-	['&&','m'], ['||','m'],					//booleans:conditionals
 	['!','p'],
 	['<','r'], ['>','r'], ['<=','r'], ['>=','r'],
 	['<<+','l'],
 	['+','m'], ['-','l'],
 	['-','p'],
-	['*','m'], ['/','l'], ['%','l'],
-	['&','m'], ['|','m'], ['^','m'],		//booleans:value
+	['*','m'], ['/','l'], ['%','l']
 ];
 
 nul.compiler = function(txt)
@@ -122,7 +118,7 @@ nul.compiler = function(txt)
 			do
 			{
 				var tst;
-				if(this.tknzr.take('->')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
+				if(this.tknzr.take('.')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
 				else if(tst = this.item('lax')) rv = nul.compiled.application(rv, tst);
 				else return rv;
 			} while(true);
@@ -162,10 +158,12 @@ nul.compiler = function(txt)
 				if(this.tknzr.take('\\/')) return nul.compiled.definition(this.alphanum(), this.expression());
 				if(this.tknzr.take('{')) {
 					if(this.tknzr.take('}')) return nul.compiled.set();
-					return this.tknzr.expect('}', nul.compiled.set(this.expression()));
+					var sr;
+					if(this.tknzr.take(':')) sr = this.alphanum();
+					return this.tknzr.expect('}', nul.compiled.set(this.expression(), sr));
 				}
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
-				//if(this.tknzr.take('['))	TODO: on a un crochet de libre dans la syntaxe XD
+				//if(this.tknzr.take('['))	TODO: redo the autoref?
 				if(this.tknzr.take('::')) {
 					var rv = this.composed();
 					while(this.tknzr.take('::')) rv = this.composed(rv);

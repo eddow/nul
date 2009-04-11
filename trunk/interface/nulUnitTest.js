@@ -30,7 +30,7 @@ tests = [
 		{xpr: '{n :- {(Q x, Q y) :- x+y} (1, n)} 10',
 		rslt: '{11}'},
 		{xpr: 'Z x > 0',
-		rslt: '{(x[0|c2] &gt; 0); (&#x2124; x[0|c2])}'}
+		rslt: '{x[0|c2]; (&#x2124; x[0|c2]) ; (0 &lt; x[0|c2])}'}
 	].named('Local management'),
 	[
 		{xpr: 'v; (z=1 [] z=2); v=z',

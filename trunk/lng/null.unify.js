@@ -104,9 +104,6 @@ nul.unify = {
 	//returns an expression or nothing if it is sure nothing is manageable or 'unk' if this function couldn't manage
 	vcvs: function(a, b, kb) {
 		if('='== a.charact) return nul.unify.andDist(a.components, a.x, b, kb);
-		if(['<','>'].contains(a.charact))
-			return a.compose(
-					[nul.unify.level(a.components[0], b, kb), a.components[1]]).dirty().evaluate(kb);
 		//Distribution in 'solve' but need here too. Epimenide forget premice if not
 		if('[]'== a.charact) {
 			var rv = nul.unify.orDist(a.components, a.x, b, kb);
@@ -160,7 +157,7 @@ nul.unify = {
 			var ob = b.clone();
 			if('kw'==oa.charact) {
 				kwf = oa.dirty();
-				kwf.components.value = nul.build.unification([oa.components.value, ob]);
+				kwf.components[''] = nul.build.unification([oa.components[''], ob]);
 			} else kwf = nul.build.kwFreedom(nul.build.unification([oa, ob])).dirty();
 			//TODO: if kw:fail, don't push do you ?
 			//But react then nicely if rv == []

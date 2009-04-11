@@ -130,8 +130,9 @@ nul.kb = function(knowledge) {
 					if('[-]'== premices[i].charact)
 						nul.debug.log('knowledge')('Known',
 							[premices[i].components.applied,'in',premices[i].components.object]);
-					else if('?'== premices[i].charact)
-						nul.debug.log('knowledge')('Assert', premices[i].components[0]);
+					else if(['<','>'].contains(premices[i].charact))
+						nul.debug.log('knowledge')('<'==premices[i].charact?'increasing':'decreasing',
+							premices[i].components);
 					else if('[]'== premices[i].charact)
 						nul.debug.log('knowledge')('Choice', premices[i].components);
 					else

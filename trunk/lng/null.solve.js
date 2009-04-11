@@ -16,6 +16,7 @@
  */ 
 nul.solve = {
 	solve: function(xpr) {
+		//TODO: save& erase arCtxName
 		if(','== xpr.charact) return {
 			solved:xpr.components,
 			fuzzy:xpr.components.follow?[xpr.components.follow]:[]
@@ -24,7 +25,8 @@ nul.solve = {
 		var rv = {solved:[], fuzzy:[]}, tryed, cn;
 		if(!xpr.components) return rv;
 		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn); ++cn) try {
-			if(nul.debug.assert) assert(xpr.contains('[[]|'), 'Try if choice')
+			if(nul.debug.assert) assert(xpr.contains('[[]|'), 'Try if choice');
+			if(tryed.arCtxName) delete tryed.arCtxName;
 			nul.debug.log('solve')(nul.debug.lcs.collapser('Trying'),tryed);
 			tryed = nul.solve.solve(tryed.evaluate()||tryed);
 			rv.solved.pushs(tryed.solved);
@@ -33,9 +35,9 @@ nul.solve = {
 				['solved: ',tryed.solved, ' fuzzies: ', tryed.fuzzy]);
 		} catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
 		if(0== cn) {
-			if(xpr.components.value.deps[xpr.ctxName] || xpr.components.length)
+			if(xpr.components[''].deps[xpr.ctxName] || xpr.components.length)
 				rv.fuzzy.push(xpr);
-			else rv.solved.push(xpr.components.value);
+			else rv.solved.push(xpr.components['']);
 		}
 		return rv;
 	},

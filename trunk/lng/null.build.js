@@ -9,7 +9,7 @@
 nul.build = {
 	freeval: function(value, premices) {
 		var rv = premices || [];
-		if(value) rv.value = value;
+		if(value) rv[''] = value;
 		return rv;
 	},
 	item: function(ops) {
@@ -204,10 +204,13 @@ nul.build = {
 		return this.nmdOp(nul.behav.seAppend,'<<+', { effected: dst, appended: itms }, '&lt;&lt;+');
 	},
 	cumulExpr: function(oprtr, oprnds) {
-		return this.listOp(nul.behav.cumulExpr,oprtr, oprnds, mathSymbol(oprtr));
+		return this.listOp(nul.behav.cumulExpr,oprtr, oprnds);
 	},
     biExpr: function(oprtr, oprnds) {
-            return this.listOp(nul.behav.biExpr,oprtr, oprnds, mathSymbol(oprtr));
+            return this.listOp(nul.behav.biExpr, oprtr, oprnds, {'<':'&lt;','>':'&gt;'}[oprtr]);
+    },
+    order: function(oprnds) {
+            return this.listOp(nul.behav.order, '<', oprnds, '&lt;');
     },
 	list: function(oprnds) {
 		return this.listOp(nul.behav.list,',', oprnds,[
@@ -229,9 +232,6 @@ nul.build = {
 	},
 	preceded: function(oprtr, oprnd) {
 		return this.prec(nul.behav.preceded,oprtr, oprnd);
-	},
-	assert: function(oprnd) {
-		return this.prec(nul.behav.assert,'?', oprnd, '?');
 	},
 	extraction: function(oprnd) {
 		return this.post(nul.behav.extraction,' !', oprnd, '!');
