@@ -3,7 +3,7 @@
 
 A set is a way to transform a fuzzy epression into a "set containing all the values this fuzzy expression can take". It is ment by writing {{{ { ... } }}} around the fuzzy expression.
 
-===== Examples =====
+==== Examples ====
 
 {{{ 5, _ }}} means *a* pair begining by 5.
 
@@ -12,3 +12,28 @@ A set is a way to transform a fuzzy epression into a "set containing all the val
 {{{ 2 [] 3 }}} means either two, either three.
 
 {{{ { 2 [] 3 } }}} means the set containing two and three.
+
+===== Note =====
+
+If the expression is not fuzzy, the set will then be a singleton. As sets and lists are the same entity, this syntax is used to write lists with one elements :
+{{{
+{ 1 }
+1, 2
+1, 2, 3
+...
+}}}
+
+== Self-reference Shortcut ==
+
+To write a recursive set, the set needs a name to specify "himself".
+One way is to create a variable in the upper context and use it in the set :
+
+{{{mySet = { ... mySet ... } }}}
+
+Then, {{{mySet}}} is defined in {{{mySet}}} and, indeed, the containing set (or even higher if declared)
+
+Sometimes, especially for _auxiliary functions_, a recursive set doesn't need to be used more than once : therefore, it is useless to give it a name in the parent context but it still need some to refer itself. This is done by adding a column {{{:}}} and then an identifier at the begining of the set definition.
+
+{{{ {:mySet ... mySet ... } }}}
+
+Here, the set can access himself through the identifier {{{mySet}}} but this identifier is not useable outside of the set - this is then clearly a shortcut used for self-references only.
