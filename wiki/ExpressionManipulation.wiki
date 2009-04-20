@@ -8,9 +8,9 @@ The expressions, in order to be evaluated, to give a computed result instead of 
 
 = By expression type =
 
-== Fuzzy ==
+== FuzzyExpressions ==
 
-FuzzyExpressions can undergo these modifications, that apply to the values and premices.
+Fuzzy expressions can undergo these modifications, that apply to the values and premices.
  * *Simplification*: All the expressions that are in an _equivalence class_ are replaced by the _equivalence class stereotype_
 
 ex: {{{x + 2 ; 3 = x}}}  becomes {{{3 + 2 ; 3 = x}}}
@@ -25,3 +25,9 @@ ex: {{{x + 2 ; 3 = x = y}}}  becomes {{{x + 2 ; 3 = x}}}
 
 ex: {{{x ; 3 = x ; 2 = x}}} fails
 ex: {{{y ; 3 = x ; x = y}}} gives {{{y; 3 = x = y}}}
+
+== [Sets] ==
+
+ * *Resolution*: remove all IOR3 expressions from a set for the set definition to be the only choice-list. Note: it doesn't remove IOR3 from sub-sets.
+
+ex: {{{ { 1 + (2 [] 3) } }}} becomes {{{ { (1 + 2) [] (1 + 3) } }}}
