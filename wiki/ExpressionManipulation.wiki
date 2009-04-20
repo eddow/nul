@@ -1,0 +1,27 @@
+#summary Basic expression manipulations functionnalities
+#labels Phase-Implementation
+
+= Introduction =
+
+The expressions, in order to be evaluated, to give a computed result instead of the half-computed expression given, will have to go through several transformations
+
+
+= By expression type =
+
+== Fuzzy ==
+
+FuzzyExpressions can undergo these modifications, that apply to the values and premices.
+ * *Simplification*: All the expressions that are in an _equivalence class_ are replaced by the _equivalence class stereotype_
+
+ex: {{{x + 2 ; 3 = x}}}  becomes {{{3 + 2 ; 3 = x}}}
+
+ * *Relocation*: 'Local index-space defragmentation'. If the fuzzy expression use 5 locals but effectively use only number 2 and 4, local number 2 is 'renamed' (in sub-expressions) as local number 0, number 4 is renamed as number 1 and the fuzzy expressions knows to use only two locals.
+
+ * *Concentration*: removal of orphan premices. An orphan premice is a premice about a local where the local is only used in the premice. _Concentration_ also remove orphan equivalence elements.
+
+ex: {{{x + 2 ; 3 = x = y}}}  becomes {{{x + 2 ; 3 = x}}}
+
+ * *Reformulation*: After some modification, the premices can contain premices that give a computed result once taken all together. It isa kind of premice-evaluation.
+
+ex: {{{x ; 3 = x ; 2 = x}}} fails
+ex: {{{y ; 3 = x ; x = y}}} gives {{{y; 3 = x = y}}}
