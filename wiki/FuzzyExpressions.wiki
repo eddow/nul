@@ -50,3 +50,15 @@ Later, on _simplification_, the expression {{{x + 2}}} will have its `x` replace
 == Inclusion ==
 
 Inclusions are _take_ expression, when an item is token from a set.
+
+=== Exemple ===
+
+{{{ Q x }}}
+
+== Orders ==
+
+Specify the order between two items. Always on the form {{{ a < b }}}
+
+=== Exemple ===
+
+{{{ x < 5 }}}
