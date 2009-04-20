@@ -26,8 +26,24 @@ ex: {{{x + 2 ; 3 = x = y}}}  becomes {{{x + 2 ; 3 = x}}}
 ex: {{{x ; 3 = x ; 2 = x}}} fails
 ex: {{{y ; 3 = x ; x = y}}} gives {{{y; 3 = x = y}}}
 
+ * *Subjectivisation*: The object item-taking are replaced by the token item. Here, the 'types' are used to have a resoluted object item instead of the objectivity.
+
+ex: {{{ x + y ; Q x ; Q y }}} becomes {{{ (nbr+nbr x) y ; Q x ; Q y }}} where `nbr+nbr` is
+the internal (!JavaScript) function of number addition.
+
 == [Sets] ==
 
  * *Resolution*: remove all IOR3 expressions from a set for the set definition to be the only choice-list. Note: it doesn't remove IOR3 from sub-sets.
 
 ex: {{{ { 1 + (2 [] 3) } }}} becomes {{{ { (1 + 2) [] (1 + 3) } }}}
+
+== [Unification]s ==
+
+ * *Application*: If possible, try to unify sub-elements; try to take the inverse function ({{{5 = function x}}} takes `inv_function` of `5`) or such.
+All the un-evaluable unifications (like {{{x = y}}}) are just added to the present knowledge.
+
+== [TakeExpression]s ==
+
+ * *Application*: If possible, replace the application by the result. If not, add the take-expression in the knowledge.
+
+ex: {{{ double 5 }}} is computed as  {{{ 5 * 2 }}}
