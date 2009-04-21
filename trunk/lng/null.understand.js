@@ -21,13 +21,12 @@ nul.understanding = {
 				});
 				if('fz'!= op.charact || op.components) ops.push(op);
 			}
-			if(0== ops.length) nul.fail('No possible way.');
 		}
 		else ops = map(this.operands, function() { 
 				return this.understand(ub);				
 			});
 		if(['+' ,'-' ,'*' ,'/' ,'%' ,'&' ,'|' ,'^'].contains(this.operator))
-			return new nul.xpr.operation(this.operator, ops);
+			return new nul.xpr.operation.listed(this.operator, ops);
 		if(['<','>', '<=','>='].contains(this.operator)) {
 			ub.kb.knew(new nul.xpr.ordered(this.operator, ops));
 			return ops[0];
@@ -43,17 +42,17 @@ nul.understanding = {
 			case '<<+':	return new nul.xpr.seAppend(ops[0], ops[1]);
 			case ';':
 				return ops[0];
-			case '[]':	return new nul.xpr.ior3(ops);
+			case '[]':	return nul.xpr.build(nul.xpr.ior3, ops);
 			default:	throw nul.internalException('Unknown operator: "'+this.operator+'"');
 		}
 	},
 	preceded: function(ub) {
-		return new nul.xpr.preceded(this.operator,this.operand.understand(ub));
+		return new nul.xpr.operation.preceded(this.operator,this.operand.understand(ub));
 	},
 	postceded: function(ub) {
 		var op = this.operand.understand(ub);
 		//if(this.operator == '!') return nul.todobuild.extraction(op);
-		throw nul.internalException('Unknown postceder');
+		return new nul.xpr.operation.postceded(this.operator,this.operand.understand(ub));
 	},
 	atom: function(ub) {
 		var value;
@@ -120,13 +119,13 @@ nul.understanding = {
 nul.understanding.base = Class.create({
 	initialize: function(prntUb) {
 		this.prntUb = prntUb;
-		this.fzx = new nul.xpr.fuzzy();
-		this.kb = this.fzx.enter();
+		this.kb = new nul.knowledge();
 	},
 	valued: function(cb) {
 		var xpr;
 		try { xpr = cb(this); }
 		catch(err) {
+			this.kb.leave();
 			if(nul.failure!= err) throw nul.exception.notice(err); 
 		}
 		return this.kb.leave(xpr);
@@ -142,34 +141,33 @@ nul.understanding.base = Class.create({
 nul.understanding.base.set = Class.create(nul.understanding.base, {
 	initialize: function($super, prntUb, selfName) {
 		$super(prntUb);
-		this.stx = new nul.xpr.set([this.fzx]);
 		this.parms = {};
 		if(selfName) {
 			this.parms[selfName] = nul.lcl.slf;
-			this.stx.arCtxName = 'ar'+(++nul.understanding.srCtxNames);
+			this.arCtxName = 'ar'+(++nul.understanding.srCtxNames);
 		}
 	},
 	valued: function($super, cb) {
 		var fzx = $super(cb);
-		if('fz'!= fzx.charact || fzx.components) this.stx.components[0] = fzx;
-		else this.stx.components = [];
-		return this.stx.extend();
+		var stx = new nul.xpr.set(('fz'!= fzx.charact || fzx.components)?[fzx]:[]);
+		if(this.arCtxName) stx.arCtxName = this.arCtxName;
+		return stx.extend();
 	},
 	resolve: function($super, identifier) {
 		if('undefined'!= typeof this.parms[identifier]) {
 			var ndx = this.parms[identifier];
 			return new nul.xpr.local(
-				ndx==nul.lcl.slf?this.stx.arCtxName:this.fzx.ctxName,
+				ndx==nul.lcl.slf?this.arCtxName:this.kb.ctxName,
 				ndx, identifier);
 		}
 		return $super(identifier);
 	},
 	createFreedom: function(name, value) {
 		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
-		var rv = this.fzx.locals.length;
-		this.fzx.locals.push(name);
+		var rv = this.kb.locals.length;
+		this.kb.locals.push(name);
 		if('_'!= name) this.parms[name] = rv;
-		rv = new nul.xpr.local(this.fzx.ctxName, rv, name)
+		rv = new nul.xpr.local(this.kb.ctxName, rv, name)
 		if(value) this.premices.push(new nul.xpr.unification([rv, value]));
 		return rv;
 	}

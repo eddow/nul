@@ -20,28 +20,13 @@ nul.xpr.holder = Class.create(nul.xpr.listed, {
 	/**
 	 * Extend expressions and multiply them to be sure no more IOR3s are in.
 	 */
-	extend: function(kb) {
+	extend: function() {
 		var nc = [];
 		while(0< this.components.length)
 			nc.pushs(nul.solve.solve(this.components.shift()));
 		return this.compose(nc);
-	},
-});
-
-/**
- * Set given as a list of item. Each item can be fuzzy 
- */
-nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder,'set'), {
-	transform: function() {
-		//TODO: set::transform : if " :- " or " ..[]:-[].. "
-		return true;
-	},
-	charact: '{}',
-	failable: function() { return false; },
-	fail: function() {
-		return new nul.xpr.set();
-	},
-
+	}.perform('nul.xpr.holder->extend')
+	.describe(function() { return ['Extendinging', this]; }),
 	composed: function() {
 		///	Flattens the follow if needed
 		while(this.components.follow && '{}'== this.components.follow.charact) {
@@ -59,7 +44,22 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder,'set'), {
 		if(0== this.components.length)
 			return this.components.follow || this;
 		return this;
-	}.perform('nul.xpr.set->composed'),
+	}.perform('nul.xpr.holder->composed'),
+});
+
+/**
+ * Set given as a list of item. Each item can be fuzzy 
+ */
+nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder,'set'), {
+	transform: function() {
+		//TODO: set::transform : if " :- " or " ..[]:-[].. "
+		return true;
+	},
+	charact: '{}',
+	failable: function() { return false; },
+	fail: function() {
+		return new nul.xpr.set();
+	},
 
 	take: function(apl, kb, way) {
 		var xpr = this.clone();	//TODO: please kill me :'(
@@ -73,7 +73,7 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder,'set'), {
 			} else ov = trv;
 			nv = new nul.xpr.handle(apl.clone(), ov);
 			if('fz'== trv.charact) trv = nkb.leave(nv);
-			else trv = new nul.xpr.fuzzy(nv);
+			else trv = nul.xpr.build(nul.xpr.fuzzy, nv);
 			rv.push(trv);
 		}
 		if(xpr.components.follow) {
@@ -92,7 +92,7 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder,'set'), {
 			}*/
 		}
 		if(!rv.length) nul.fail();
-		return new nul.xpr.ior3(rv);
+		return nul.xpr.build(nul.xpr.ior3, rv);
 	}.perform('nul.xpr.set->take'),
 /*
 	extension::take: function(apl, kb, way) {

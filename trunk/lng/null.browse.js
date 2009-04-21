@@ -36,25 +36,25 @@ nul.browse = {
 			if(behav.before) xpr = behav.before(xpr, kb)||xpr;
 			if(isToBrowse && xpr.components) {
 				var nkb = (xpr.enter&&(!kb || kb.fzx!== xpr))?xpr.enter():kb;
-				var nComps = map(xpr.components, function() {
-						if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
-						var co = iif(this.browse(behav, nkb), this);
-						if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
-						return co;
-					});
+				try {
+					var nComps = map(xpr.components, function() {
+							if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
+							var co = iif(this.browse(behav, nkb), this);
+							if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
+							return co;
+						});
+				} catch(err) {
+					if(nkb !== kb) nkb.leave();
+					throw nul.exception.notice(err);
+				}
 				if(chg) {
 					if(nkb !== kb)
 						xpr = iif(nkb.leave(nComps.value));
 					else switch(behav.clone) {
 						case 'itm': xpr = xpr.clone(nComps); break;
-						case 'sub': xpr.compose(nComps); break;
-						default:
-							if(nComps) {
-								if(isArray(xpr.components)) xpr.components.splice(0);
-								merge(xpr.components, nComps);
-							}
+						default: xpr = xpr.compose(nComps); break;
 					}
-				}
+				} else if(nkb !== kb) nkb.leave();
 			}
 			if(behav[xpr.charact]) xpr = iif(behav[xpr.charact](xpr, kb), xpr);
 		} catch(err) {

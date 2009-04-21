@@ -25,7 +25,7 @@ var nul = {
 		var ub = new nul.understanding.base.set();
 		var tt = [];
 		for(var p in nul.globals) tt[ub.createFreedom(p).ndx] = nul.globals[p];
-		return {ub: new nul.understanding.base.set(ub), rub: ub, tt:tt};
+		return {ub: ub, tt:tt};
 	},
 	expression: function(txt)
 	{
@@ -41,9 +41,10 @@ var nul = {
 		var comps = nul.compiler(txt+' </').innerXML();
 		var gu = nul.globalsUse();
 		for(var i=0; i<comps.length; ++i) {
-			gu.ub = new nul.understanding.base.set(gu.rub);
-			comps[i] = comps[i].understand(gu.ub).contextualise(null, gu.tt,'glbls');
+			var ub = new nul.understanding.base.set(gu.rub);
+			comps[i] = comps[i].understand(ub).contextualise(null, gu.tt,'glbls');
 		}
+		gu.ub.valued(function(){});
 		return comps;
 	},
 	onload: function() {

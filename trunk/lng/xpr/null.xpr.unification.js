@@ -19,5 +19,6 @@ nul.xpr.unification = Class.create(nul.xpr.associative, {
 		if(rv && 1== rv.length) return rv[0];
 		if(!rv) rv = this.components;
 		return kb.affect(rv, this.x);
-	}
+	}.perform('nul.xpr.unification->apply')
+	.describe(function(kb) { return ['Applying', this]; }),
 });

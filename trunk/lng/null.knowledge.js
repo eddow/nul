@@ -10,29 +10,61 @@
  * Utility functions to access a fuzzy expression as a knowledge
  */
 nul.knowledge = Class.create({
-	initialize: function(fzx) {
+	initialize: function(knowledge, locals, ctxName) {
+		this.knowledge = knowledge || [];
+		this.locals = locals || [];
+		this.ctxName = ctxName || nul.xpr.fuzzy.createCtxName();
 		this.access = {};
-		this.fzx = fzx;
-		for(var n=0; n<this.fzx.components.length; ++n) this.makeAccess(n);
+		for(var n=0; n<this.knowledge.length; ++n) this.makeAccess(n);
+		nul.debug.log('ctxs')(nul.debug.lcs.collapser('Enter'),
+			[this.ctxName, this.knowledge]);
 	},
+	leave: function(value) {
+		nul.debug.log('ctxs')(nul.debug.lcs.endCollapser('Leave', 'Ctx'),
+			[this.ctxName, value||'']);
+		if(!value) return;
+		try {
+			var rv = new nul.xpr.fuzzy(
+				value,
+				this.knowledge,
+				this.locals,
+				this.ctxName);
+	
+			rv = rv.simplify(this);
+			if('fz'!= rv.charact) throw {cpsd: rv};
+			rv = rv.concentrate();
+			if('fz'!= rv.charact) throw {cpsd: rv};
+			rv = rv.relocalise(this);
+			if('fz'!= rv.charact) throw {cpsd: rv};
+			rv = rv.composed();
+		} catch(err) {
+			if(err.cpsd) rv = err.cpsd;
+			else {
+				if(nul.failure!= err) throw nul.exception.notice(err);
+				return new nul.xpr.fuzzy();
+			} 
+		}
+		return rv.browse(nul.browse.subjectivise(), this) || rv;
+	},
+
 /////// Premices management
 	forget: function(sn) {
 		if('undefined'== typeof sn) {
-			this.fzx.components.splice(0);
+			this.knowledge.splice(0);
 			this.access = {};
 		} else {
 			for(var x in this.access) {
 				if(this.access[x] == sn) delete this.access[x];
 				else if(this.access[x] > sn) --this.access[x];
 			}
-			return this.fzx.components.splice(sn, 1)[0];
+			return this.knowledge.splice(sn, 1)[0];
 		}
 	},
 	knew: function(premices) {
 		if(!isArray(premices)) premices = [premices];
 		while(0<premices.length) {
 			var p = premices.pop();
-			if(p.flags.failable) this.fzx.components.push(this.makeAccess(p));
+			if(p.flags.failable) this.knowledge.push(this.makeAccess(p));
 		}
 		return this;
 	},
@@ -40,8 +72,8 @@ nul.knowledge = Class.create({
 		if('undefined'== typeof pval) {
 			if('object'== typeof pn) {
 				pval = pn;
-				pn = this.fzx.components.length;
-			} else pval = this.fzx.components[pn];
+				pn = this.knowledge.length;
+			} else pval = this.knowledge[pn];
 		}
 		if('='== pval.charact)
 			for(var c=0; c<pval.components.length; ++c)
@@ -51,8 +83,8 @@ nul.knowledge = Class.create({
 /////// Locals management
 	addLocals: function(locals) {
 		if(!isArray(locals)) locals = [locals];
-		this.fzx.locals.pushs(locals);
-		return this.fzx.locals.length-locals.length;
+		this.locals.pushs(locals);
+		return this.locals.length-locals.length;
 	},
 /////// Algorythms
 
@@ -107,28 +139,4 @@ nul.knowledge = Class.create({
 		this.knew(unf);
 		return rv;
 	},
-	leave: function(value) {
-		nul.debug.log('ctxs')(nul.debug.lcs.endCollapser('Leave', 'Ctx'));
-		try {
-			if(!value) nul.fail();
-			this.fzx.components.value = value;
-			var rv = this.fzx;
-	
-			rv = rv.simplify(this);
-			if('fz'!= rv.charact) return rv;
-			rv = rv.browse(nul.browse.subjectivise()) || rv;
-			if('fz'!= rv.charact) return rv;
-			rv = rv.concentrate();
-			if('fz'!= rv.charact) return rv;
-			rv = rv.relocalise(this);
-			if('fz'!= rv.charact) return rv;
-			rv = rv.composed();
-		} catch(err) {
-			if(nul.failure!= err) throw nul.exception.notice(err);
-			delete this.fzx.components;
-			this.fzx.locals = [];
-			return this.fzx; 
-		}
-		return rv;
-	}
 });

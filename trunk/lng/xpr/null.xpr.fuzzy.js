@@ -47,12 +47,12 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 
 /////// Ctor
 	initialize: function($super, value, premices, locals, ctxName) {
+		if(!value) $super(); 
 		var comps = premices || [];
-		if(value) comps.value = value;
-		this.ctxName = ctxName || ('fc'+(++nul.xpr.fuzzy.ctxNameCpt));
+		comps.value = value;
+		this.ctxName = ctxName || nul.xpr.fuzzy.createCtxName();
 		this.locals = locals || [];
-		if(comps.value) $super(comps);
-		else this.components = comps;
+		$super(comps);
 	},
 	
 /////// String management
@@ -99,7 +99,8 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 				}
 			}
 		return this.contextualise(kb, tt, 'knwl');
-	}.perform('nul.xpr.fuzzy->simplify'),
+	}.perform('nul.xpr.fuzzy->simplify')
+	.describe(function(kb) { return ['Simplifying', this]; }),
 	/**
 	 * Remove all clauses in the knowledge that share no deps with 'values'
 	 * nor with a useful clause.
@@ -162,7 +163,8 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		//  first remove 3 then 1.
 		while(0<forgottenPrmcs.length) this.components.splice(forgottenPrmcs.pop(), 1);
 		return this;
-	}.perform('nul.xpr.fuzzy->concentrate'),
+	}.perform('nul.xpr.fuzzy->concentrate')
+	.describe(function() { return ['Concentrating', this]; }),
 	/**
 	 * Defragment the local index-space.
 	 */
@@ -182,9 +184,9 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		}
 		if(!delta) return this;
 		var rv = this.contextualise(kb, tt);
-		nul.debug.log('ctxs')('Relocated', rv);
 		return rv;
-	}.perform('nul.xpr.fuzzy->relocalise'),
+	}.perform('nul.xpr.fuzzy->relocalise')
+	.describe(function(kb) { return ['Relocating', this]; }),
 	/**
 	 * This expression out of the set
 	 * this' locals are added to <kb>' last context 
@@ -200,7 +202,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	}.perform('nul.xpr.fuzzy->stpUp'),
 /////// Knowledge
 	enter: function() {
-		return new nul.knowledge(this);
+		return new nul.knowledge(this.components, this.locals, this.ctxName);
 	}
 /*
 		takeFrdm: function(knwl, ctx) {
@@ -240,3 +242,6 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		},*/
 
 });
+nul.xpr.fuzzy.createCtxName = function(hd) {
+	return (hd||'fc')+(++nul.xpr.fuzzy.ctxNameCpt);
+};

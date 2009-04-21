@@ -17,6 +17,10 @@ nul.primitive = {
 		}*/
 	},
 	'set': {
+		'#': function(kb) {
+			return (new nul.xpr.application(
+				nul.nativeFunctions.setLength, this)).operate(kb);
+		}
 	},
 	'number': {
 /*		'+': nul.nativeFunctions.atomOp('+', 'Q'),
@@ -54,8 +58,9 @@ nul.primitive = {
 				return nul.build.atom(ns);
 			}
 		},*/
-		'length': function(kb) {
-			return nul.build.application(nul.nativeFunctions.strLen, this).evaluate(kb);
+		'#': function(kb) {
+			return (new nul.xpr.application(
+				nul.nativeFunctions.strLength, this)).operate(kb);
 		}
 	},
 	'boolean': {
@@ -65,9 +70,8 @@ nul.primitive = {
 
 };
 
-/*
 nul.nativeFunctions = {
-	atomOp: function(op, tp) {
+/*	atomOp: function(op, tp) {
 		return function(o, kb) {
 			nul.natives[tp].callback(o);
 			if(nul.debug.assert) assert('atom'== o.charact, 'Atom operators operate on atoms.');
@@ -76,12 +80,12 @@ nul.nativeFunctions = {
 					eval( ''+nul.jsVal(this.value) + op + nul.jsVal(o.value) )
 				);
 		};
-	},
-	strLength: nul.build.nativeFunction('strLen', function(o, kb, way) {
-		if(way==-1) return; //TODO: implement inverse
-		if(!o.finalRoot()) return;
-		if(nul.debug.assert) assert('string'== typeof o.value, 'strLen should only apply on strings');
-		return nul.build.atom(o.value.length);
-	})
+	},*/
+	strLength: new nul.xpr.javascript.fct('strLen',
+		function(o, kb) {
+			if(!o.finalRoot()) return;
+			if(nul.debug.assert) assert('string'== typeof o.value, 'strLen should only apply on strings');
+			return new nul.xpr.value(o.value.length);
+		}
+	)
 };
-*/

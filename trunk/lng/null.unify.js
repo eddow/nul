@@ -115,7 +115,7 @@ nul.unify = {
 		if('[]'== a.charact) {
 			var rv = nul.unify.orDist(a.components, a.x, b, kb);
 			if(!rv) return;
-			rv = new nul.xpr.ior3(rv);
+			rv = nul.xpr.build(nul.xpr.ior3, rv);
 			return rv.operate(kb)||rv;
 			
 		}
@@ -166,7 +166,8 @@ nul.unify = {
 			if('fz'==oa.charact) {
 				kwf = oa.dirty();
 				kwf.components.value = new nul.xpr.unification([oa.components.value, ob]);
-			} else kwf = new nul.xpr.kwFreedom(new nul.xpr..unification([oa, ob])).dirty();
+			} else	//TODO: y'a plus de kwFreedom !
+				kwf = new nul.xpr.kwFreedom(new nul.xpr..unification([oa, ob])).dirty();
 			//TODO: if kw:fail, don't push do you ?
 			//But react then nicely if rv == []
 			rv.push(kwf.evaluate(kb));

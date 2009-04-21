@@ -22,10 +22,10 @@ nul.xpr.objectivity = Class.create(nul.xpr.ceded, {
 	},
 /////// Objectivity specific
 	subject: function(kb) {
-		var rv = this.components[0].attribute(this.local);
-		if(!rv && this.components[0].free([kb.fzx.ctxName]))
+		var rv = this.components[0].attribute(this.local, kb);
+		if(!rv && this.components[0].free([kb.ctxName]))
 			throw nul.semanticException('AUD',
-				'Attribute '+this.local+' undefined for '+this.components[0].toString());
+				'Attribute '+this.local+' isnt defined for '+this.components[0].toString());
 		return rv;
-	}
+	}.describe(function(kb) { return ['Subjectiving', this]; }),
 });

@@ -15,8 +15,11 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 	},
 /////// Application specific
 	operate: function(kb) {
-		if(!this.components.object.take && this.components.object.finalRoot())
-			throw nul.semanticException('OPM', 'Cannot take from '+ this.components.object.toHTML());
+		if(!this.components.object.take) {
+			if(!this.components.object.finalRoot()) return;
+			throw nul.semanticException(
+				'OPM', 'Cannot take from '+ this.components.object.toHTML());
+		}
 		var rv = this.components.object.take(this.components.applied, kb, 1);
 		if(rv) return rv;
 		if(!this.components.object.transform()) {
@@ -24,4 +27,5 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 			return this.components.applied;
 		}
 	}.perform('nul.xpr.application->apply')
+	.describe(function(kb) { return ['Applying', this]; })
 });

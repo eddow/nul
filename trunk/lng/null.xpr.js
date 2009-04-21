@@ -12,7 +12,7 @@
 nul.xpr = Class.create({
 	initialize: function() {
 	},
-	attribute: function(atn) {
+	attribute: function(atn, kb) {
 	},
 	composed: function() { return this; },
 	clone: function(nComps) {
@@ -136,7 +136,8 @@ nul.xpr.composed = Class.create(nul.xpr, {
 /////// Ctor
 	initialize: function($super, ops) {
 		this.components = {};
-		this.compose(ops||{});
+		var cpsd = this.compose(ops||{});
+		if(cpsd !== this) throw nul.xpr.composition(cpsd);
 		$super();
 	},
 /////// Strings
@@ -162,7 +163,9 @@ nul.xpr.listed = Class.create(nul.xpr, {
 	}.perform('nul.xpr.listed->compose'),
 	initialize: function($super, ops) {
 		this.components = [];
-		this.compose(ops||[]);
+		var cpsd = this.compose(ops||[]);
+		if(cpsd !== this)
+			throw {cpsd:cpsd};
 		$super();
 	},
 /////// Strings
@@ -234,6 +237,10 @@ nul.xpr.primitive = function(root, pnm) {
 		primitive: pnm,
 		finalRoot: function() { return true; },
 		handle: function() { return [null, this, this]; },
+		attribute: function(atn, kb) {
+			var fct = nul.primitive[this.primitive][atn];
+			if(fct) return fct.apply(this,[kb]);
+		}
 	});
 };
 
@@ -242,4 +249,15 @@ nul.xpr.forward = function(root, fkey) {
 		finalRoot: function() { return this.components[fkey].finalRoot(); },
 		handle: function() { return this.components[fkey].handle(); },
 	});
+};
+
+nul.xpr.build = function(xprt) {
+	try {
+		var rv = clone1(xprt.prototype);
+		xprt.apply(rv, arrg(arguments).slice(1));
+		return rv;
+	} catch(err) {
+		if(err.cpsd) return err.cpsd;
+		throw nul.exception.notice(err);
+	}
 };

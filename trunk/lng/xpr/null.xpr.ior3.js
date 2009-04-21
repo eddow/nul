@@ -17,9 +17,13 @@ nul.xpr.ior3 = Class.create(nul.xpr.holder, {
 		return this.canBeEmpty();
 	},
 	composed: function($super) {
-		$super();
-		if(0== this.components.length) nul.fail('No fullfilled possibilities');
-		return this;
+		var rv = $super();
+		if('[]'!= rv.charact) return rv;
+		switch(this.components.length) {
+		case 0: nul.fail('No possibile ways');
+		case 1: return this.components[0];
+		default: return this;
+		}
 	}.perform('nul.xpr.ior3->composed'),
 //Interface to solving engine	
 	possibility: function(n, kb) {

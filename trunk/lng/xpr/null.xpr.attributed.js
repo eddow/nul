@@ -15,8 +15,8 @@ nul.xpr.attributed = Class.create(nul.xpr.forward(nul.xpr.composed,''), {
 		comps[atn] = attr;
 		$super(comps);
 	},
-	attribute: function(atn) {
-		return this.components[atn] || this.components[''].attribute(atn);
+	attribute: function(atn, kb) {
+		return this.components[atn] || this.components[''].attribute(atn, kb);
 	},
 	finalRoot: function() {
 		return this.components[''].finalRoot();
@@ -46,8 +46,9 @@ nul.xpr.attributed = Class.create(nul.xpr.forward(nul.xpr.composed,''), {
 					return a || b;
 				}));
 		for(var i in this.component)
-			if(this.component[''].attribute(i))
+			if(this.component[''].attribute(i, kb))
 				nul.fail('Attribute dont match.');
 		return this;
-	},
+	}
+	.describe(function(kb) { return ['Attributing', this]; }),
 });
