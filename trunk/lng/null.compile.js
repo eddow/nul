@@ -120,6 +120,7 @@ nul.compiler = function(txt)
 				var tst;
 				if(this.tknzr.take('.')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
 				else if(tst = this.item('lax')) rv = nul.compiled.application(rv, tst);
+				else if(this.tknzr.take('::')) rv = this.composed(rv);
 				else return rv;
 			} while(true);
 		},
@@ -163,12 +164,7 @@ nul.compiler = function(txt)
 					return this.tknzr.expect('}', nul.compiled.set(this.expression(), sr));
 				}
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
-				//if(this.tknzr.take('['))	TODO: redo the autoref?
-				if(this.tknzr.take('::')) {
-					var rv = this.composed();
-					while(this.tknzr.take('::')) rv = this.composed(rv);
-					return rv;
-				}
+				//if(this.tknzr.take('['))	TODO: free '[': autoref is '{:'
 				if(!lax) {
 					if(this.tknzr.take('<')) return this.xml();
 					for(var p= 0; p<nul.operators.length; ++p) {

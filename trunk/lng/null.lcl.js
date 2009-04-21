@@ -14,8 +14,8 @@ nul.lcl = {
 		empty: {},
 		//Is the dependances <d> free beside <beside> on the form {ctxDelta : true}
 		free: function(d, beside) {
-			if(!beside) beside=[true];
-			for(var c in d) if(!beside[c]) return false;
+			if(!beside) beside={};
+			for(var c in d) if(!beside.contains(c)) return false;
 			return true;
 		},
 		//Create a one-local dependance

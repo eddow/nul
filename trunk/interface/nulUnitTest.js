@@ -13,7 +13,7 @@ tests = [
 	[
 		{xpr: '{ Q x :- 2*x } 4',
 		rslt: '{8}'},
-		{xpr: 'Q x; (y+1, y) = (x, 4)',
+		{xpr: 'x; (y+1, y) = (x, 4)',
 		rslt: '{5}'},
 		{xpr: '(z+1, z+2) = (Q a, Q b)',
 		rslt: '{((z[0|c2] + 1) , (z[0|c2] + 2))}'},
@@ -58,18 +58,27 @@ tests = [
 		rslt: '{ar1:(y[&crarr;|ar1] + 1)}'},
 		
 		/*
+		 
+		 list = { type :- { {} [] type _,.. list type _ } }
+		 * should be
+		 list = { type :- {:tlist {} [] type _,.. tlist _} }
+
+* 
+	list Q (1, "e") should fail
+* 
+ 
 		{xpr: '{ x= (_, x) }(5,(5,(5,(5,(5,_)))))',
 		rslt:  '(5 , x[&crarr;|1])'},
 		{xpr: '[b [a (a,_)] = (b,5) ]',
 		rslt: '(a[&crarr;|1] , 5)'},
 */
 	].named('Auto-reference'),
-/*	[
-		{xpr: '{_}z (1::d 2.)=(1::d z.) ; z',
-		rslt: '2'},
-		{xpr: '({1::d 2.} x x::d _. ::q d*2.) -> q',
-		rslt: '4'}
-	].named('Attributes management'),*/
+	[
+		{xpr: 'x.a; (5 ::a 7) = x',
+		rslt: '{7}'},
+		{xpr: 'y; (z ::a 4) = (z ::a y)',
+		rslt: '{4}'},
+	].named('Attributes management'),
 	[
 		{xpr: '(p(1,1) [] p(1,2) [] p(2,5)) ; p= ((1,5), (2,5),.. { Q x, x })',
 		rslt: '((1 , 1) , (2 , 5))'},
@@ -77,13 +86,13 @@ tests = [
 		rslt: '{((5 , _[0|c2]) , (4 , _[1|c2]) , (3 , _[2|c2]) , (2 , _[3|c2]) , (1 , _[4|c2]))}'}
 	].named('Lists management'),
 	[
-		{xpr: 'f 5; f={ 0 :- 1 [] Z n > 0 :- n * f(n-1)}',
+		{xpr: '{:f 0 :- 1 [] Z n > 0 :- n * f(n-1)} 5',
 		desc: 'Factorial of 5',
 		rslt: '{120}'},
-		{xpr: 'fib 5; fib={ (0 [] 1) :- 1 [] Z n > 0 :- fib(n-1) + fib(n-2) }',
+		{xpr: '{:fib (0 [] 1) :- 1 [] Z n > 0 :- fib(n-1) + fib(n-2) } 5',
 		desc: 'Unoptimised Fibbonacci on 5',
 		rslt: '{8}'},
-		{xpr: 'fib 5 ; fib = {Z n > 0 :- (fibaux={ (Z x, _, 0) :- x [] (Z x, Z y, Z z > 0) :- fibaux(y, x+y, z-1) }) (1, 1, n) }',
+		{xpr: '{Z n > 0 :- {:fibaux (Z x, _, 0) :- x [] (Z x, Z y, Z z > 0) :- fibaux(y, x+y, z-1) } (1, 1, n) } 5',
 		desc: 'Accumulated Fibbonacci on 5',
 		rslt: '{8}'}
 		/*{xpr: '[f{ 1 [] ({_}x x>1?x:- x * f[x-1]) }][5]',

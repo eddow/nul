@@ -6,8 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO: verify we don't use failables in solved : it must remains in a ior3
-// If one element of a list fails, the whole fails !
 
 /* Stupid first-choice is tryed algorithm.
  * variants can be :
@@ -15,31 +13,23 @@
  *  - 'AI' choice ?
  */ 
 nul.solve = {
+	/**
+	 * Get an expression containing(?) IOR3s.
+	 * Returns a list of expressions without IOR3s.
+	 */
 	solve: function(xpr) {
-		//TODO: save& erase arCtxName
-		if(','== xpr.charact) return {
-			solved:xpr.components,
-			fuzzy:xpr.components.follow?[xpr.components.follow]:[]
-		};
-		if(nul.debug.assert) assert('{}'== xpr.charact, 'We dont solve additions...');
-		var rv = {solved:[], fuzzy:[]}, tryed, cn;
-		if(!xpr.components) return rv;
+		var rv = [], tryed, cn;
 		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn); ++cn) try {
 			if(nul.debug.assert) assert(xpr.contains('[[]|'), 'Try if choice');
 			if(tryed.arCtxName) delete tryed.arCtxName;
 			nul.debug.log('solve')(nul.debug.lcs.collapser('Trying'),tryed);
-			tryed = nul.solve.solve(tryed.evaluate()||tryed);
-			rv.solved.pushs(tryed.solved);
-			rv.fuzzy.pushs(tryed.fuzzy);
+			tryed = nul.solve.solve(tryed);
+			rv.pushs(tryed);
 			nul.debug.log('solve')(nul.debug.lcs.endCollapser('Tried', 'Tried'),
-				['solved: ',tryed.solved, ' fuzzies: ', tryed.fuzzy]);
+				tryed);
 		} catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
-		if(0== cn) {
-			if(xpr.components[''].deps[xpr.ctxName] || xpr.components.length)
-				rv.fuzzy.push(xpr);
-			else rv.solved.push(xpr.components['']);
-		}
-		return rv;
+		if(0< cn) return rv;
+		return [xpr];
 	},
 	tryed: function(xpr, cn) {
 		return xpr.browse({
@@ -50,10 +40,6 @@ nul.solve = {
 			before: function(xpr) {
 				if(!this.browse || ('{}'==xpr.charact && this.kb))
 					throw nul.browse.abort;
-				if('{}'==xpr.charact) {
-					this.kb = nul.kb();
-					return xpr.makeFrdm(this.kb);
-				}
 				if(xpr.possibility) {
 					this.browse = false;
 					nul.debug.log('solve')('Choose',[cn, 'out of', xpr]);
@@ -63,10 +49,6 @@ nul.solve = {
 				} 
 			},
 			finish: function(xpr, chgd, orig) {
-				if('{}'== orig.charact) {
-					this.kb.pop('ctx');
-					delete this.kb;
-				}
 				if(!this.browse && 'end'!= this.cn) return xpr.dirty();
 			},
 			abort: function(xpr, err, orig) {

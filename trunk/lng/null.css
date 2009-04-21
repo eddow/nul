@@ -24,17 +24,17 @@ tr.uncollapsing span.uncollapser.end { display: inline; }
 tr.unsubcollapsing span.collapser.start { display: none; }
 tr.unsubcollapsing span.uncollapser.start { display: inline; }
 
-ul.tableContent {
-	padding-left: 1em;
-	margin: 0;
-	display: inline-block;
-}
 table.object {
 	display: inline-block;
 	border-width: 0 1px;
 	border-color: black;
 	border-style: solid;
 }
+td.objhd {
+	text-align: center;
+	border-bottom: 1px black dotted;
+}
+
 span.op {
 	color: #400000;
 	font-weight: bolder;
@@ -73,7 +73,7 @@ span.local {
 	font-size: large;
 	color: #004000;
 }
-span.global {
+span.native {
 	font-size: large;
 	color: #600060;
 }

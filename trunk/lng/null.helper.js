@@ -81,6 +81,13 @@ function keys(ass) {
 	return rv;
 }
 
+//The array of valuess of association <ass>
+function vals(ass) {
+	var rv = [];
+	for(var i in ass) rv.push(ass[i]);
+	return rv;
+}
+
 //If elements of <t> are tables, they become part of <t>
 // [ 1, [2, [3, 4]], 5 ] ==> [ 1, 2, 3, 4, 5 ]
 function oneFlatTable(t) {
@@ -112,8 +119,8 @@ function beArrg(args) {
 }
 
 function merge(a, b, cb) {
-	for(var i in b) a[i] = cb?cb(a[i],b[i]):b[i];
-	if(cb) for(var i in a) if('undefined'== typeof b[i]) a[i] = cb(a[i]);
+	for(var i in b) a[i] = cb?cb(a[i],b[i], i):b[i];
+	if(cb) for(var i in a) if('undefined'== typeof b[i]) a[i] = cb(a[i], null, i);
 	return a; 
 }
 

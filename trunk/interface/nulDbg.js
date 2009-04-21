@@ -18,7 +18,7 @@ function init()
 	evd = document.getElementById('evaled');
 	rcr = document.getElementById('recur');
 	sbx = document.getElementById('sandBox');
-	nul.globals.sandBox = nul.build.htmlPlace(sbx);
+	//nul.globals.sandBox = nul.?.htmlPlace(sbx);
 	for(var i in this) knGlobs[i] = true;
 }
 

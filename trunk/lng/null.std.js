@@ -20,18 +20,20 @@ var nul = {
 
 
 	globalsUse: function() {
-		nul.understanding.ctxNames = 0;
+		nul.xpr.fuzzy.ctxNameCpt = 0;
 		nul.understanding.srCtxNames = 0;
-		var ub = nul.understanding.emptyBase();
+		var ub = new nul.understanding.base.set();
 		var tt = [];
 		for(var p in nul.globals) tt[ub.createFreedom(p).ndx] = nul.globals[p];
-		return {ub: nul.understanding.emptyBase(ub), rub: ub, tt:tt};
+		return {ub: new nul.understanding.base.set(ub), rub: ub, tt:tt};
 	},
 	expression: function(txt)
 	{
 		nul.erroneus = false;
 		var gu = nul.globalsUse();
-		return gu.ub.asSet(nul.compile(txt).understand(gu.ub)).contextualise(gu.tt,'glbls');
+		return gu.ub.valued(function(ub) {
+			return nul.compile(txt).understand(ub); 
+		}).contextualise(null, gu.tt,'glbls');
 	},
 	html: function(txt)
 	{
@@ -39,8 +41,8 @@ var nul = {
 		var comps = nul.compiler(txt+' </').innerXML();
 		var gu = nul.globalsUse();
 		for(var i=0; i<comps.length; ++i) {
-			gu.ub = nul.understanding.emptyBase(gu.rub);
-			comps[i] = comps[i].understand(gu.ub).contextualise(gu.tt,'glbls');
+			gu.ub = new nul.understanding.base.set(gu.rub);
+			comps[i] = comps[i].understand(gu.ub).contextualise(null, gu.tt,'glbls');
 		}
 		return comps;
 	},

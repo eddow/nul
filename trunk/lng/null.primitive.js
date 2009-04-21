@@ -6,61 +6,20 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.nativeFunctions = {
-	atomOp: function(op, tp) {
-		return function(o, kb) {
-			nul.natives[tp].callback(o);
-			if(nul.debug.assert) assert('atom'== o.charact, 'Atom operators operate on atoms.');
-			if(this.finalRoot() && o.finalRoot())
-				return nul.build.atom(
-					eval( ''+nul.jsVal(this.value) + op + nul.jsVal(o.value) )
-				);
-		};
-	}
-};
-
 nul.primitive = {
-/*
-	/**
-	 * Makes a function that manages two NUL set (list, set, ...) out of a function managing two
-	 * lists in a common local space
-	 * /
-	setItmFct: function(f) {
-		return function(o) {	//The returned function is the operation : <this> is the item
-			if(
-			!nul.natives.set.callback(o) ||	//If undefined other operands, wait
-			//If one 'follow' is not fixed, wait
-			','== this.charact && this.components.follow && '{}'!= this.components.follow.charact ||
-			','== o.charact && o.components.follow && '{}'!= o.components.follow.charact)
-				return;
-		};
-	}
-  */
 	':-': {
-		primitive: 'lambda',
-		valHandle: function(hr, hd, kb) {
+/*		valHandle: function(hr, hd, kb) {
 			nul.unify.level(hr, hd.components.handle, kb);
 			return hd.components.value;
 		},
 		handeling: function(hr, hd, vh, kb) {
 			return nul.build.lambda(hr.components.handle, vh(hr.components.value, hd, kb));
-		}
+		}*/
 	},
 	'set': {
-		primitive: 'set'
-		/*'<': nul.build.nativeFunction('set+set', function(o) {
-		 * TODO
-		})*/
-		/*'+': nul.build.nativeFunction('set+set', function(o) {
-			nul.natives.set.callback(o);
-			var ns = '';
-			for(var i=0; i<o.value; ++i) ns += itm.value;
-			return nul.build.atom(ns);
-		})*/
 	},
 	'number': {
-		primitive: 'number',
-		'+': nul.nativeFunctions.atomOp('+', 'Q'),
+/*		'+': nul.nativeFunctions.atomOp('+', 'Q'),
 		'-': nul.nativeFunctions.atomOp('-', 'Q'),
 		'*': nul.nativeFunctions.atomOp('*', 'Q'),
 		'/': nul.nativeFunctions.atomOp('/', 'Q'),
@@ -69,16 +28,15 @@ nul.primitive = {
 			if(this.finalRoot()) return nul.build.atom(-this.value);
 		},
 		'<': function(o, kb) {
-				nul.natives.Q.callback(o);
-				if(this.finalRoot() && o.finalRoot()) {
-					if(this.value >= o.value) nul.fail('Bad order');
-					return true;
-				}
+			nul.natives.Q.callback(o);
+			if(this.finalRoot() && o.finalRoot()) {
+				if(this.value >= o.value) nul.fail('Bad order');
+				return true;
 			}
-		},
+		}*/
+	},
 	'string': {
-		primitive: 'string',
-		'+': nul.nativeFunctions.atomOp('+', 'str'),
+/*		'+': nul.nativeFunctions.atomOp('+', 'str'),
 		'<': function(o, kb) {
 			nul.natives.str.callback(o);
 			if(this.finalRoot() && o.finalRoot()) {
@@ -95,27 +53,35 @@ nul.primitive = {
 				for(var i=0; i<o.value; ++i) ns += this.value;
 				return nul.build.atom(ns);
 			}
+		},*/
+		'length': function(kb) {
+			return nul.build.application(nul.nativeFunctions.strLen, this).evaluate(kb);
 		}
 	},
 	'boolean': {
-		primitive: 'boolean'
-		//TODO? qq + et - ?
-	},
-	'': {
-		primitive: 'unknown',
-		valHandle: function(hr, hd, kb) {
-			throw nul.semanticException('OPM', 'No knowledge on how to handle '+hd.toString())
-		},
-		handeling: function(hr, hd, vh, kb) {
-			throw nul.semanticException('OPM', 'No knowledge on how to handle with '+hr.toString())
-		}
+		//TODO? qq +, * et - ?
 	},
 	
-	
-	mix: function(a, b) {
-		if(!a || a==nul.primitive['']) return b;
-		if(!b || b==nul.primitive['']) return a;
-		if(a!=b) nul.fail('Type missmatch');
-		return a;
-	}
+
 };
+
+/*
+nul.nativeFunctions = {
+	atomOp: function(op, tp) {
+		return function(o, kb) {
+			nul.natives[tp].callback(o);
+			if(nul.debug.assert) assert('atom'== o.charact, 'Atom operators operate on atoms.');
+			if(this.finalRoot() && o.finalRoot())
+				return nul.build.atom(
+					eval( ''+nul.jsVal(this.value) + op + nul.jsVal(o.value) )
+				);
+		};
+	},
+	strLength: nul.build.nativeFunction('strLen', function(o, kb, way) {
+		if(way==-1) return; //TODO: implement inverse
+		if(!o.finalRoot()) return;
+		if(nul.debug.assert) assert('string'== typeof o.value, 'strLen should only apply on strings');
+		return nul.build.atom(o.value.length);
+	})
+};
+*/

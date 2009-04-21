@@ -190,8 +190,6 @@ nul.debug = {
 if(nul.debug.acts) Function.prototype.describe = nul.debug.described;
 else Function.prototype.describe = function() { return this; };
 
-Function.prototype.xKeep = function() { return this; };	//TODO: Test if 'x' was preserved ? or remove these
-	
 function assert(cnd, str) {
 	if(!cnd)
 		throw nul.internalException('Assertion failed : '+str);

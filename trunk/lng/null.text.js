@@ -113,17 +113,18 @@ nul.text = {
 			}
 			aDeps = nul.text.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
 		}
-		if('ctx'==this.freedom && 0<this.locals.length) {
+		var cls = '';
+		if('fz'==this.charact) {
 			aLocals = [];
 			for(var i=0; i<this.locals.length; ++i)
 				aLocals.push(this.locals[i]);
 			if(0<aLocals.length)
 				aLocals = nul.text.js.tile('locals', this.ctxName + ': ' + aLocals.join(', '));
 			else aLocals = '';
+			cls=' freedom'
 		}
 		var rv = aShort+aAutoRef+aLocals+aDeps+aFlags+nul.text.js.tiled();
 		rv += this.expressionHTML();
-		var cls = this.freedom?' freedom':'';
 		nul.text.endDraw(this);
 		return '<span class="xpr'+cls+'">'+rv+'</span>';
 	}.perform('nul.text->toHTML'),
