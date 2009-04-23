@@ -10,30 +10,43 @@
  * Utility functions to access a fuzzy expression as a knowledge
  */
 nul.knowledge = Class.create({
+	access: function() {
+		this.eqAccess = {};
+		this.tpAccess = {};
+		for(var n=0; n<this.knowledge.length; ++n) this.makeAccess(n);
+	},
 	initialize: function(knowledge, locals, ctxName) {
 		this.knowledge = knowledge || [];
 		this.locals = locals || [];
 		this.ctxName = ctxName || nul.xpr.fuzzy.createCtxName();
-		this.access = {};
-		for(var n=0; n<this.knowledge.length; ++n) this.makeAccess(n);
+		this.access();
 		nul.debug.log('ctxs')(nul.debug.lcs.collapser('Enter'),
 			[this.ctxName, this.knowledge]);
 	},
-	leave: function(value) {
+	leave: function(rv) {
 		nul.debug.log('ctxs')(nul.debug.lcs.endCollapser('Leave', 'Ctx'),
-			[this.ctxName, value||'']);
-		if(!value) return;
+			[this.ctxName, rv||'']);
+		if(rv) return this.asFuzz(rv);
+	},
+	asFuzz: function(rv) {
 		try {
-			var rv = new nul.xpr.fuzzy(
-				value,
-				this.knowledge,
-				this.locals,
-				this.ctxName);
-	
+			if('fz'== rv.charact) {
+				if(nul.debug.assert) assert(this.ctxName == rv.ctxName,
+					'Fuzzy leaves the knowledge it created.')
+				rv.components.pushs(this.knowledge);
+				this.knowledge = rv.components;
+				this.access();
+				rv.locals = this.locals;
+			} else rv = new nul.xpr.fuzzy(
+					rv,
+					this.knowledge,
+					this.locals,
+					this.ctxName);
+			
+			rv.openedKnowledge = this;
 			rv = rv.simplify(this);
 			if('fz'!= rv.charact) throw {cpsd: rv};
-			rv = rv.concentrate();
-			if('fz'!= rv.charact) throw {cpsd: rv};
+			this.concentrate(rv.components.value);
 			rv = rv.relocalise(this);
 			if('fz'!= rv.charact) throw {cpsd: rv};
 			rv = rv.composed();
@@ -43,20 +56,26 @@ nul.knowledge = Class.create({
 				if(nul.failure!= err) throw nul.exception.notice(err);
 				return new nul.xpr.fuzzy();
 			} 
+		} finally {
+			this.knowledge = [];
+			this.access();
 		}
-		return rv.browse(nul.browse.subjectivise(), this) || rv;
+		if(rv.openedKnowledge) delete rv.openedKnowledge;
+		return rv;
 	},
-
 /////// Premices management
 	forget: function(sn) {
 		if('undefined'== typeof sn) {
 			this.knowledge.splice(0);
-			this.access = {};
+			this.eqAccess = {};
+			this.tpAccess = {};
 		} else {
-			for(var x in this.access) {
-				if(this.access[x] == sn) delete this.access[x];
-				else if(this.access[x] > sn) --this.access[x];
+			for(var x in this.eqAccess) {
+				if(this.eqAccess[x] == sn) delete this.eqAccess[x];
+				else if(this.eqAccess[x] > sn) --this.eqAccess[x];
 			}
+			if('[.]'== this.knowledge[sn].charact)
+				delete this.tpAccess[this.knowledge[sn].components.applied.ndx];
 			return this.knowledge.splice(sn, 1)[0];
 		}
 	},
@@ -77,8 +96,15 @@ nul.knowledge = Class.create({
 		}
 		if('='== pval.charact)
 			for(var c=0; c<pval.components.length; ++c)
-				this.access[pval.components[c].ndx] = pn;
+				this.eqAccess[pval.components[c].ndx] = pn;
+		else if('[.]'== pval.charact)
+			this.tpAccess[pval.components.applied.ndx] =
+				pval.components.object;
 		return pval;
+	},
+	primitive: function(xpr) {
+		var rv = this.tpAccess[xpr.ndx];
+		if(rv) return rv.elementPrimitive;
 	},
 /////// Locals management
 	addLocals: function(locals) {
@@ -98,7 +124,7 @@ nul.knowledge = Class.create({
 		var merged = false;
 		for(var n=0; n<us.length; ++n) {
 			var fpn, eqi;
-			if('undefined'!= typeof(fpn= this.access[us[n].ndx])) {
+			if('undefined'!= typeof(fpn= this.eqAccess[us[n].ndx])) {
 				merged = true;
 				eqi = this.forget(fpn).components;
 				eqi.push(us[n]);
@@ -119,7 +145,7 @@ nul.knowledge = Class.create({
 		//Sort to have a nice 'replace-by'. note: replaceBy = left-ward
 		//free variables goes left
 		for(var n=1; n<us.length; ++n)
-			if(isEmpty(us[n].deps))
+			if(isEmpty(us[n].deps) || '::'== us[n].charact)
 				us.unshift(us.splice(n,1)[0]);
 		//If left-ward is a local, try to put another value (not local) leftward
 	 	if('local'== us[0].charact) {
@@ -139,4 +165,68 @@ nul.knowledge = Class.create({
 		this.knew(unf);
 		return rv;
 	},
+
+	/**
+	 * Remove all clauses in the knowledge that share no deps with 'value'
+	 * nor with an useful clause.
+	 * No return value.
+	 */
+	concentrate: function(value) {
+		var ctxn = this.ctxName;
+		var usefulLocals = value.deps[this.ctxName];
+		usefulLocals = usefulLocals?clone1(usefulLocals):{};
+
+		var used = [];
+		map(this.knowledge, function() { used.push(this.deps); });
+		used = nul.lcl.dep.mix(used);
+		
+		//First eliminate locals found once in an equality of the premices
+		for(var l in used) if(1== used[l] && !usefulLocals[l]) {
+			//This local is used only once in the premices.
+			// Is it as a term of a unification ?
+			var p;
+			for(p=0; p < this.knowledge.length && (
+				!this.knowledge[p].deps[this.ctxName] ||
+				 !this.knowledge[p].deps[this.ctxName][l] )
+			; ++p);	///Find the premice containing this local
+			if(p < this.knowledge.length) {	//The premice can have been deleted by this algorithm!
+				var prm = this.knowledge[p];
+				if('='== prm.charact) {
+					var c;
+					for(c=0; !prm.components[c].deps[this.ctxName] ||
+						!prm.components[c].deps[this.ctxName][l]; ++c);
+							//Find the term refering the local
+					if('local'== prm.components[c].charact) {
+						if(2== prm.components.length) {
+							this.knowledge.splice(p,1);
+						} else {
+							prm.components.splice(c,1);
+							prm.summarised();
+						}
+					}
+				}
+			}
+		}
+		//Second, sort the premices to keep only the ones with no link at all from the value
+		var forgottenPrmcs = [];
+		for(var i=0; i<this.knowledge.length; ++i)
+			if(isEmpty(this.knowledge[i].deps, [this.ctxName]))
+				forgottenPrmcs.push(i);
+		do {
+			var ds;
+			for(var i=0; i<forgottenPrmcs.length; ++i) {
+				ds = this.knowledge[forgottenPrmcs[i]].deps[this.ctxName];
+				if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
+			}
+			if(i>=forgottenPrmcs.length) ++i;
+			else {
+				merge(usefulLocals, ds);
+				forgottenPrmcs.splice(i,1);
+			}
+		} while(i<=forgottenPrmcs.length);
+		//Remove in inverse orders to have valid indices.
+		// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
+		//  first remove 3 then 1.
+		while(0<forgottenPrmcs.length) this.forget(forgottenPrmcs.pop());
+	}.perform('nul.knowledge->concentrate'),
 });

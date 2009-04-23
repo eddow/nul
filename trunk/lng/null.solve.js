@@ -19,6 +19,7 @@ nul.solve = {
 	 */
 	solve: function(xpr) {
 		var rv = [], tryed, cn;
+		
 		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn); ++cn) try {
 			if(nul.debug.assert) assert(xpr.contains('[[]|'), 'Try if choice');
 			if(tryed.arCtxName) delete tryed.arCtxName;
@@ -32,28 +33,35 @@ nul.solve = {
 		return [xpr];
 	},
 	tryed: function(xpr, cn) {
-		return xpr.browse({
-			clone: 'itm',
-			name: 'solve try',
-			browse: true,
-			cn: cn,
-			before: function(xpr) {
-				if(!this.browse || ('{}'==xpr.charact && this.kb))
-					throw nul.browse.abort;
-				if(xpr.possibility) {
-					this.browse = false;
-					nul.debug.log('solve')('Choose',[cn, 'out of', xpr]);
-					var rv = xpr.possibility(this.cn, this.kb);
-					if(rv) return rv;
-					this.cn = 'end';
-				} 
-			},
-			finish: function(xpr, chgd, orig) {
-				if(!this.browse && 'end'!= this.cn) return xpr.dirty();
-			},
-			abort: function(xpr, err, orig) {
-				if(nul.browse.abort== err) return xpr.summarised().dirty();
-			}
-		});
+		var rv, klg = xpr.enter();
+		try {
+			rv = xpr.browse({
+				clone: 'itm',
+				name: 'solve try',
+				browse: true,
+				cn: cn,
+				klg: klg,
+				before: function(xpr) {
+					if(!this.browse || ('{}'==xpr.charact && this.klg))
+						throw nul.browse.abort;
+					if(xpr.possibility) {
+						this.browse = false;
+						nul.debug.log('solve')('Choose',[cn, 'out of', xpr]);
+						var rv = xpr.possibility(this.cn, this.klg);
+						if(rv) return rv;
+						this.cn = 'end';
+					} 
+				},
+				finish: function(xpr, chgd, orig) {
+					if(!this.browse && 'end'!= this.cn) return xpr;
+				},
+				abort: function(xpr, err, orig) {
+					if(nul.browse.abort== err) return xpr.summarised();
+				}
+			});
+		} finally {
+			rv = klg.leave(rv);
+		}
+		return rv;
 	}
 };

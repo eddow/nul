@@ -37,7 +37,7 @@ nul.xpr.holder = Class.create(nul.xpr.listed, {
 		}
 		///	Removes empty fuzzy values
 		for(var i = 0; i<this.components.length;)
-			if('fz'== this.components[i].charact && !this.components[i].components)
+			if(this.components[i].flags.failed)
 				this.components.splice(i,1);
 			else ++i;
 		//TODO: if follow, follow->primitive: 'set'
@@ -61,102 +61,36 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder,'set'), {
 		return new nul.xpr.set();
 	},
 
-	take: function(apl, kb, way) {
+	take: function(apl, klg, way) {
 		var xpr = this.clone();	//TODO: please kill me :'(
 		var rv = [];
 		for(var i=0; i<xpr.components.length; ++i) {
-			var trv = xpr.components[i], nkb;
-			var nv, ov
-			if('fz'== trv.charact) {
-				nkb = trv.enter();
-				ov = trv.components.value;
-			} else ov = trv;
-			nv = new nul.xpr.handle(apl.clone(), ov);
-			if('fz'== trv.charact) trv = nkb.leave(nv);
-			else trv = nul.xpr.build(nul.xpr.fuzzy, nv);
-			rv.push(trv);
+			var trv = xpr.components[i].stpUp(klg);
+			try {
+				rv.push((new nul.knowledge())
+					.leave(new nul.xpr.handle(apl.clone(), trv)));
+			} catch(err) {
+				if(nul.failure!= err) throw nul.exception.notice(err);
+			}
 		}
 		if(xpr.components.follow) {
 			//TODO
 /*			var kwf = nul. build.kwFreedom();
-			kwf.makeFrdm(kb);
+			kwf.makeFrdm(klg);
 			try {
-				kwf.components.value = xpr.components.follow.take(apl,kb,way).dirty();
+				kwf.components.value = xpr.components.follow.take(apl,klg,way).dirty();
 			} catch(err) {
-				kb.pop('kw');
+				klg.pop('kw');
 				if(nul.failure!= err) throw nul.exception.notice(err);
 			}
 			if(kwf.components.value) {
-				kwf = kb.pop(kwf).dirty();
-				rv.push(kwf.evaluate(kb)||kwf);
+				kwf = klg.pop(kwf).dirty();
+				rv.push(kwf.evaluate(klg)||kwf);
 			}*/
 		}
 		if(!rv.length) nul.fail();
 		return nul.xpr.build(nul.xpr.ior3, rv);
 	}.perform('nul.xpr.set->take'),
-/*
-	extension::take: function(apl, kb, way) {
-	* 
-		//TODO: put selfRef dans le .x.take
-		//TODO: vérifier si l'argument est libre, pas développer à l'infini
-		var selfRef = this.components.object.arCtxName, srTt;
-		if(selfRef) {
-			srTt = {};
-			srTt[new nul.xpr.local(selfRef,nul.lcl.slf).ndx] = this.components.object;
-		}
-		if(selfRef && !isEmpty(this.components.applied.deps)) return;
-
-	* 
-
-	 * 
-	 * 
-		if(rv) {
-			//TODO: optimise recursion
-			var dbgCpt = 0;
-			while(selfRef && rv.deps[selfRef]) {
-				if(nul.debug.assert) assert(50<++dbgCpt, 'Finite loop')
-				for(var v in srTt) srTt[v] = srTt[v].clone();
-				rv = rv.contextualise(kb, srTt,'self').evaluate(kb);
-			}
-			return rv;
-		}
-
-	 	// TODO: faire des stpUp
-		var rv = [];
-		var xpr = this.clone();	//TODO: please kill me :'(
-		for(var i=0; i<xpr.components.length; ++i) {
-			var kwf = nul. build.kwFreedom();
-			kwf.makeFrdm(kb);
-			try {
-				kwf.components.value = xpr.components[i].handled(apl.clone(), kb);
-			} catch(err) {
-				kb.pop('kw');
-				if(nul.failure!= err) throw nul.exception.notice(err);
-			}
-			if(kwf.components.value) {
-				kwf = kb.pop(kwf).dirty();
-				rv.push(kwf.evaluate(kb)||kwf);
-			}
-		}
-		if(xpr.components.follow) {
-			var kwf = nul. build.kwFreedom();
-			kwf.makeFrdm(kb);
-			try {
-				kwf.components.value = xpr.components.follow.take(apl,kb,way).dirty();
-			} catch(err) {
-				kb.pop('kw');
-				if(nul.failure!= err) throw nul.exception.notice(err);
-			}
-			if(kwf.components.value) {
-				kwf = kb.pop(kwf).dirty();
-				rv.push(kwf.evaluate(kb)||kwf);
-			}
-		}
-		if(!rv.length) nul.fail();
-		rv = nul. build.ior3(rv)
-		return rv.operate(kb)||rv;
-	}.perform('nul.xpr.extension->take')
- */
 /////// String management
 	expressionHTML: function() {
 		if(1>=this.components.length && !this.components.follow) {

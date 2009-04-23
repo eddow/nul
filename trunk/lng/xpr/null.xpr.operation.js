@@ -15,17 +15,44 @@ nul.xpr.operation = function(pos) {
 			this.charact = oprtr;
 			$super(oprnds);
 		},
-		subject: function(kb) {
-			switch(this.components.length) {
-			case 1:
-				var rv = this.components[0].attribute(this.charact, kb);
-				if(!rv && this.components[0].free([kb.ctxName]))
-					throw nul.semanticException('OUD',
-						'Operator '+this.charact+' isnt defined for '+this.components[0].toString());
-				return rv;
-			default:
+		operable: function(klg, cs, rrv, o) {
+			var fct;
+			if(o) fct = o.attribute(this.charact, klg);
+			while(0< cs.length && !fct) {
+				if(o) rrv.unshift(o);
+				o = cs.pop();
+				fct = o.attribute(this.charact, klg);
 			}
-		}.describe(function(kb) { return ['Subjectiving', this]; }),		
+			if(fct) return {o:o, fct:fct};
+		},
+		subject: function(klg) {
+			var ops = [], rrv = [], fct = [], prsntFct = {};
+			while(0<this.components.length) {
+				var o = this.components.shift();
+				var oprtr = o.attribute(this.charact, klg);
+				if(!oprtr) rrv.push(o);
+				else {
+					ops.push(o)
+					if(nul.debug.assert) assert('{}'== oprtr.charact,
+						'Operators are functions');
+					if(!prsntFct[fct.ndx]) {
+						//TODO: redirect 'self' : all self point to the built fct
+						fct.pushs(oprtr.components);
+						prsntFct[fct.ndx] = true;
+					}
+				}
+			}
+			if(0>= ops.length) return;
+			
+			var trv = new nul.xpr.application(
+				new nul.xpr.set(fct),
+				new nul.xpr.set(ops));
+			trv = trv.operate(klg);
+			if(!trv) return;
+			if(!rrv.length) return trv.subjective(klg);
+			rrv.push(trv);
+			return this.compose(rrv);
+		}.describe(function(klg) { return ['Subjectiving', this]; }),		
 	});
 }
 

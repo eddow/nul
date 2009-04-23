@@ -13,12 +13,12 @@ nul.xpr.unification = Class.create(nul.xpr.associative, {
 		$super(ops);
 	},
 /////// Unification specific
-	apply: function(kb) {
+	apply: function(klg) {
 		var fl = this.components.length;
-		var rv = nul.unify.multiple(this.components, kb)
-		if(rv && 1== rv.length) return rv[0];
+		var rv = nul.unify.multiple(this.components, klg)
+		if(rv && 1== rv.length) return rv[0].stpUp(klg);
 		if(!rv) rv = this.components;
-		return kb.affect(rv, this.x);
+		return klg.affect(rv, this.x);
 	}.perform('nul.xpr.unification->apply')
-	.describe(function(kb) { return ['Applying', this]; }),
+	.describe(function(klg) { return ['Applying', this]; }),
 });

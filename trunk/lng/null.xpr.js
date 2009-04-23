@@ -12,7 +12,18 @@
 nul.xpr = Class.create({
 	initialize: function() {
 	},
-	attribute: function(atn, kb) {
+	primitiveAttribute: function(prmtv, atn, klg) {
+		var fct = nul.primitiveTree.attribute(prmtv, atn);
+		if(fct) return fct.apply(this,[klg]);
+	},
+	attribute: function(atn, klg) {
+		var p = klg.primitive(this);
+		if(p) return this.primitiveAttribute(p, atn, klg);
+		if(this.free([klg.ctxName]))
+			throw nul.semanticException('AUD',
+				(nul.tokenizer.isAB(atn, 'alphanum')?'Attribute':'Operator')+
+				' '+atn+' isnt defined for '+this.toString());
+		
 	},
 	composed: function() { return this; },
 	clone: function(nComps) {
@@ -49,14 +60,31 @@ nul.xpr = Class.create({
 		tt[xpr.ndx] = new nul.xpr.local(this.arCtxName,nul.lcl.slf, xpr.dbgName?xpr.dbgName:null);
 		return this.contextualise(null, tt);
 	},
-	contextualise: function(kb, tt, prtct) {
-		if(isEmpty(tt)) return this;
-		return this.browse(nul.browse.contextualise(tt, prtct), kb) || this;
+	contextualise: function(klg, tt, prtct) {
+		//if(isEmpty(tt)) return this;
+		return this.browse(nul.browse.contextualise(klg, tt, prtct)) || this;
 	}.perform('nul.xpr->contextualise'),
-	evaluate: function(kb) {
-		return this;
-	}.perform('nul.xpr->evaluate'),
+	/**
+	 * Makes the components not anymore using objectivities concerning this knowledge.
+	 */
+	subjective: function(klg) {
+		return this.browse(nul.browse.subjectivise(klg)) || this;
+	}.perform('nul.xpr->subjective'),
 
+	stpUp: function(klg) { return this; },
+	aknlgd: function(cb, klg) {
+		return cb(this, klg);
+	},
+	enter: function() {
+		return new nul.knowledge();
+	},
+	/**
+	 * Replace all operable expression by the result of its operation.
+	 */
+	simplify: function(klg) {
+		return this.contextualise(klg, {}, 'knwl') || this;
+	}.perform('nul.xpr->simplify')
+	.describe(function(klg) { return ['Simplifying', this]; }),
 /**
  * Makes a summary of components and characteristics :
  *  Fix flags, dependances, ...
@@ -103,10 +131,9 @@ nul.xpr = Class.create({
 	//If the root expression of this operand will be kept forever
 	//TODO: en faire un flag?
 	finalRoot: function() { return false; },
-	handle: function() {},
-
-	clean: function() { return this; },	//TODO:killme
-	dirty: function() { return this; },	//TODO:killme
+	handle: function(klg) {
+		if(klg.primitive(this)) return [null, this, this];
+	},
 
 
 //shortcuts defined elsewhere
@@ -163,7 +190,7 @@ nul.xpr.listed = Class.create(nul.xpr, {
 	}.perform('nul.xpr.listed->compose'),
 	initialize: function($super, ops) {
 		this.components = [];
-		var cpsd = this.compose(ops||[]);
+		var cpsd = this.compose(ops);
 		if(cpsd !== this)
 			throw {cpsd:cpsd};
 		$super();
@@ -236,18 +263,23 @@ nul.xpr.primitive = function(root, pnm) {
 	return Class.create(root, {
 		primitive: pnm,
 		finalRoot: function() { return true; },
-		handle: function() { return [null, this, this]; },
-		attribute: function(atn, kb) {
-			var fct = nul.primitive[this.primitive][atn];
-			if(fct) return fct.apply(this,[kb]);
+		handle: function(klg) { return [null, this, this]; },
+		attribute: function($super, atn, klg) {
+			return this.primitiveAttribute(this.primitive, atn, klg) ||
+				$super(atn, klg);
 		}
 	});
 };
 
 nul.xpr.forward = function(root, fkey) {
 	return Class.create(root, {
+		initialise: function($super, o) {
+			$super(o);
+			this.primitive = this.components[fkey].primitive;
+		},
 		finalRoot: function() { return this.components[fkey].finalRoot(); },
-		handle: function() { return this.components[fkey].handle(); },
+		jsValue: function() { return this..components[fkey].jsValue; },
+		handle: function(klg) { return this.components[fkey].handle(klg); },
 	});
 };
 

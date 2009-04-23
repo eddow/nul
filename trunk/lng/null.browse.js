@@ -8,20 +8,20 @@
 
 /* browse behaviour defines:
 - browse
-- before(xpr, kb)
+- before(xpr)
 * 	returns nothing to remain unchanged or something as new value to browse
-- newSub(xpr, oldSub, newSub, kb)
+- newSub(xpr, oldSub, newSub)
 * 	A new sub-expression is produced (oldSub can be newSub)
-- finish(xpr, chgd, orig, kb)
+- finish(xpr, chgd, orig)
 * 	returns the final value, knowing the expresion, if it changed and the original expression
-- abort(orig, err, xpr, kb)
+- abort(orig, err, xpr)
 * 	returns nothing. Called instead of 'finish' when a problem occured. <willed> specifies if the abortion had been asked by the behaviour.
-- <charact>(xpr, kb)
+- <charact>(xpr)
 * 	acts on a specific characterised expression
 */
 nul.browse = {
 	abort: 'stopBrowsingPlease',
-	recursion: function(behav, kb) {
+	recursion: function(behav) {
 		var xpr = this, chg = false;
 		function iif(nv, ov) {
 			if(!nv) return ov;
@@ -33,51 +33,42 @@ nul.browse = {
 						('function'== typeof behav.browse && behav.browse(xpr)) ||
 						('function'!= typeof behav.browse && behav.browse);
 		try {
-			if(behav.before) xpr = behav.before(xpr, kb)||xpr;
+			if(behav.before) xpr = behav.before(xpr)||xpr;
 			if(isToBrowse && xpr.components) {
-				var nkb = (xpr.enter&&(!kb || kb.fzx!== xpr))?xpr.enter():kb;
-				try {
-					var nComps = map(xpr.components, function() {
-							if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
-							var co = iif(this.browse(behav, nkb), this);
-							if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
-							return co;
-						});
-				} catch(err) {
-					if(nkb !== kb) nkb.leave();
-					throw nul.exception.notice(err);
+				var nComps = map(xpr.components, function() {
+						if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
+						var co = iif(this.browse(behav), this);
+						if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
+						return co;
+					});
+				if(chg) switch(behav.clone) {
+					case 'itm': xpr = xpr.clone(nComps); break;
+					default: xpr = xpr.compose(nComps); break;
 				}
-				if(chg) {
-					if(nkb !== kb)
-						xpr = iif(nkb.leave(nComps.value));
-					else switch(behav.clone) {
-						case 'itm': xpr = xpr.clone(nComps); break;
-						default: xpr = xpr.compose(nComps); break;
-					}
-				} else if(nkb !== kb) nkb.leave();
 			}
-			if(behav[xpr.charact]) xpr = iif(behav[xpr.charact](xpr, kb), xpr);
+			if(behav[xpr.charact]) xpr = iif(behav[xpr.charact](xpr), xpr);
 		} catch(err) {
 			nul.exception.notice(err);
-			if(behav.abort) xpr = behav.abort(xpr, err, this, kb);
+			if(behav.abort) xpr = behav.abort(xpr, err, this);
 			else xpr = null;
 			if(xpr) return xpr;
 			if(nul.browse.abort== err) return;
 			throw err;
 		}
-		if(behav.finish) { xpr = behav.finish(xpr, chg, this, kb); chg = true; }
+		if(behav.finish) { xpr = behav.finish(xpr, chg, this); chg = true; }
 		if(chg && xpr) xpr = xpr.summarised();
 
 		if(chg && xpr) return xpr;
 		nul.debug.log('perf')('Useless browse for '+behav.name,this);			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
-	subjectivise: function() {
-		return {
+	subjectivise: function(klg) {
+		return {	//TODO: have last knowledge
+			klg: klg,
 			name: 'subjectivisation',
-			finish: function(xpr, chgd, ori, kb) {
+			finish: function(xpr, chgd, ori) {
 				if(xpr.subject) {
-					var rv = xpr.subject(kb);
+					var rv = xpr.subject(this.klg);
 					if(rv) {
 						chgd = true;
 						xpr = rv;
@@ -85,7 +76,7 @@ nul.browse = {
 				}
 				if(chgd) return xpr;
 			},			
-            abort: function(xpr, err, orig, kb) {
+            abort: function(xpr, err, orig) {
                 if(nul.browse.abort== err) return;
                 var abrtXpr;
                 if(nul.failure== err && orig.fail) abrtXpr = orig.fail();
@@ -94,27 +85,37 @@ nul.browse = {
 		};
 	},
 
-	contextualise: function(rpl, act) {
+	contextualise: function(klg, rpl, act) {
 		return {
 			name: 'contextualisation',
 			rpl: rpl,
 			act: act,
+			kb: klg?[klg]:[],
 			eqProtect: [0],
-			before: function(xpr, kb) {
+			before: function(xpr) {
 				//TODO: throw stop.browsing ?
 				if('='== xpr.charact) this.eqProtect.unshift(0);
 				else --this.eqProtect[0];
+				if('fz'== xpr.charact) this.kb.unshift(xpr.enter());
 			},
-			finish: function(xpr, chgd, orig, kb) {
+			finish: function(xpr, chgd, orig) {
 				xpr.summarised();
-				if(chgd && this.act) xpr.dirty();
 				if((0!= ++this.eqProtect[0] || 'knwl'!= this.act) && this.rpl[xpr.ndx])
 					return this.rpl[xpr.ndx];
 				if('='== orig.charact) this.eqProtect.shift();
-				if(chgd) {
-					if(!xpr || !xpr.operate || !kb) return xpr;
-					return xpr.operate(kb) || xpr;
+				if('fz'== orig.charact) {
+					if(chgd) xpr = this.kb.shift().leave(xpr);
+					else this.kb.shift().leave();
 				}
+				if(xpr && xpr.operate && this.kb.length) {
+					var rv = xpr.operate(this.kb[0]);
+					chgd |= rv;
+					xpr = rv || xpr;					
+				}
+				if(chgd) return xpr;
+			},
+			abort: function(xpr, err, orig) {
+				
 			}
 		};
 	},

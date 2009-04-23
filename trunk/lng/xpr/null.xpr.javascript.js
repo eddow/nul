@@ -5,14 +5,15 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-
 /**
  * Native sets : the ones written in javascript
  */
 nul.xpr.javascript = Class.create(nul.xpr.primitive(nul.xpr.uncomposed,'set'), {
 	failable: function() { return false; },
-	initialize: function(name) {
+	initialize: function($super, name) {
 		this.name = name;
+		this.acNdx = '['+name+']';
+		$super();
 	},
 /////// String
 	expressionHTML: function() {
@@ -30,13 +31,14 @@ nul.xpr.javascript = Class.create(nul.xpr.primitive(nul.xpr.uncomposed,'set'), {
  * The callbacks has to fail if the item is not an element
  */
 nul.xpr.javascript.set = Class.create(nul.xpr.javascript, {
-	initialize: function($super, name, callback) {
+	initialize: function($super, name, callback, primitive) {
 		this.callback = callback;
+		this.elementPrimitive = primitive;
 		$super(name);
 	},
 	transform: function() { return false; },
-	take: function(apl, kb, way) {
-		if(this.callback(apl, kb)) return apl;
+	take: function(apl, klg, way) {
+		if(this.callback(apl, klg)) return apl;
 	}.perform('nul.xpr.javascript.set->take'),
 });
 
@@ -53,11 +55,11 @@ nul.xpr.javascript.fct = Class.create(nul.xpr.javascript, {
 		this.invcallback = invcallback;
 		$super(name);
 	},
-	transform: function() { return false; },
-	take: function(apl, kb, way) {
+	transform: function() { return true; },
+	take: function(apl, klg, way) {
 		var cb = (1==way)?this.callback:this.invcallback;
 		var rv;
-		if(cb) rv = cb(apl,kb);
+		if(cb) rv = cb(apl,klg);
 		return rv;
-	}.perform('nul.xpr.javascript.fct->take'),
+	}.perform('nul.xpr.javascript.fct->take')
 });

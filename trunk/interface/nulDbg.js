@@ -60,12 +60,11 @@ function evaluate()
 	rcr.innerHTML = '';
 	prd.innerHTML = 'parsing...';
 	evd.innerHTML = '';
-	var v = nul.expression(src.value);
-	prd.innerHTML = v.toHTML();
-	evd.innerHTML = 'evaluating...';
+	var v;
 	nul.execution.benchmark.measure('*evaluation',function(){
-		v = v.evaluate();
+		v = nul.expression(src.value);
 	});
+	prd.innerHTML = v.toHTML();
 	evd.innerHTML = v.toHTML();
 	setToSolve(v);
 }

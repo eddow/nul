@@ -17,23 +17,22 @@ var nul = {
 	jsVal: function(v) {
 		return ('string'== typeof v)?('"'+v+'"'):v;
 	},
+	isJsInt: function(n) {
+		return n== Math.floor(n);
+	},
 
-
-	globalsUse: function() {
-		nul.xpr.fuzzy.ctxNameCpt = 0;
-		nul.understanding.srCtxNames = 0;
-		var ub = new nul.understanding.base.set();
-		var tt = [];
-		for(var p in nul.globals) tt[ub.createFreedom(p).ndx] = nul.globals[p];
-		return {ub: ub, tt:tt};
+	globalsUse: function(srName) {
+		var ub = new nul.understanding.base.set(null, srName);
+		for(var p in nul.globals) 
+			ub.createFreedom(p, nul.globals[p]);
+		return ub;
 	},
 	expression: function(txt)
 	{
 		nul.erroneus = false;
-		var gu = nul.globalsUse();
-		return gu.ub.valued(function(ub) {
-			return nul.compile(txt).understand(ub); 
-		}).contextualise(null, gu.tt,'glbls');
+		nul.xpr.fuzzy.ctxNameCpt = 0;
+		nul.understanding.srCtxNames = 0;
+		return nul.globalsUse().valued(nul.compile(txt));
 	},
 	html: function(txt)
 	{
@@ -41,10 +40,10 @@ var nul = {
 		var comps = nul.compiler(txt+' </').innerXML();
 		var gu = nul.globalsUse();
 		for(var i=0; i<comps.length; ++i) {
-			var ub = new nul.understanding.base.set(gu.rub);
-			comps[i] = comps[i].understand(ub).contextualise(null, gu.tt,'glbls');
+			var ub = new nul.understanding.base.set(gu);
+			comps[i] = ub.valued(comps[i]);
 		}
-		gu.ub.valued(function(){});
+		gu.valued();
 		return comps;
 	},
 	onload: function() {

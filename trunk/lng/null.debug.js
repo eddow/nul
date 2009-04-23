@@ -100,7 +100,7 @@ nul.debug = {
 	watches: false,
 	perf: 0> window.location.href.indexOf('noperf'),
 	acts: 0<= window.location.href.indexOf('actLog'),
-	lcLimit: 10000,
+	lcLimit: 500,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
 		return nul.debug.callStack.item().get()[0];

@@ -16,19 +16,16 @@ nul.xpr.ior3 = Class.create(nul.xpr.holder, {
 	failable: function() {
 		return this.canBeEmpty();
 	},
-	composed: function($super) {
-		var rv = $super();
-		if('[]'!= rv.charact) return rv;
+	operate: function(klg) {
 		switch(this.components.length) {
 		case 0: nul.fail('No possibile ways');
-		case 1: return this.components[0];
-		default: return this;
+		case 1: return this.components[0].stpUp(klg);
 		}
 	}.perform('nul.xpr.ior3->composed'),
 //Interface to solving engine	
-	possibility: function(n, kb) {
+	possibility: function(n, klg) {
 		if(n<this.components.length)
 		//TODO: if it is a xpr.fuzzy, use 'into' kb (grab 'into' fct over SVN)
-			return this.components[n];
+			return this.components[n].stpUp(klg);
 	},
 });

@@ -8,42 +8,34 @@
 nul.natives = {
 	Q: new nul.xpr.javascript.set('&#x211a;',
 		function(xpr) {
-			return xpr.xadd('number');
-		}
+			if(nul.primitiveTree.is(xpr, 'number', 'a')) return xpr;
+		}, 'number'
 	),
 	Z: new nul.xpr.javascript.set('&#x2124;',
 		function(xpr) {
-	        xpr.xadd('number');
-	        if('value'== xpr.charact) {
-	        	if(Math.floor(xpr.value)!= xpr.value) nul.fail('Not an integer : '+xpr.dbgHTML());
-            	return xpr;
-	        }
-	    }
+			if(nul.primitiveTree.is(xpr, 'integer', 'an')) return xpr;
+	    }, 'integer'
 	),
 	'true': new nul.xpr.atom(true),
 	'false': new nul.xpr.atom(false),
 	str: new nul.xpr.javascript.set('str',
 		function(xpr) {
-			xpr.xadd('string');
-			return;
-		}
+			if(nul.primitiveTree.is(xpr, 'string', 'a')) return xpr;
+		}, 'string'
 	),
 	bool: new nul.xpr.javascript.set('bool',
 		function(xpr) {
-			xpr.xadd('boolean');
-			return;
-		}
+			if(nul.primitiveTree.is(xpr, 'boolean', 'a')) return xpr;
+		}, 'boolean'
 	),
 	set: new nul.xpr.javascript.set('set',
 		function(xpr) {
-			xpr.xadd('set');
-			return;
-		}
+			if(nul.primitiveTree.is(xpr, 'set', 'a')) return xpr;
+		}, 'set'
 	),
 	object: new nul.xpr.javascript.set('object',
-		function(xpr, kb) {
-			xpr.xadd('object');
-			return;
-		}
+		function(xpr) {
+			if(nul.primitiveTree.is(xpr, 'object', 'an')) return xpr;
+		}, 'object'
 	),
 };

@@ -24,17 +24,23 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		return rv;
 	},
 	failable: function() {
-		return 0<this.components.length || this.components.value.flags.failable;
+		return !this.components ||
+			0<this.components.length ||
+			this.components.value.flags.failable;
 	},
 	fail: function() {
-		delete this. components;
-		this.flags = this.deps = {};
+		delete this.components;
+		this.flags = {failed: true};
+		this.deps = {};
 		return this;
 	},
-	summarised: function($super) {
-		if(!this.components) return this;
-		return $super();
-	},
+	compose: function(nComps) {
+		if(nul.debug.assert) assert(!this.openedKnowledge,
+			'Never compose while knowledge opened');
+		this.components = nComps;
+		if(!nComps) this.flags = {failed: true};
+		return this.summarised().composed();
+	}.perform('nul.xpr.fuzzy->compose'),
 	composed: function() {
 		if(this.components &&
 		this.components.value &&	//Value is not set when called from within ctor
@@ -44,10 +50,9 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			return this.components.value;
 		return this;
 	},
-
 /////// Ctor
-	initialize: function($super, value, premices, locals, ctxName) {
-		if(!value) $super(); 
+	initialize: function($super,value, premices, locals, ctxName) {
+		if(!value) return $super(); 
 		var comps = premices || [];
 		comps.value = value;
 		this.ctxName = ctxName || nul.xpr.fuzzy.createCtxName();
@@ -86,8 +91,10 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	 * the class' stereotype.
 	 * exemple: If knowledge contains '3 = x', replace all 'x+2' by '3+2'
 	 * Always returns sth : either a new expression, either this.
+	 * 
+	 * Also replace all operable expression by the result of its operation.
 	 */
-	simplify: function(kb) {
+	simplify: function(klg) {
 		var tt = {};	//Transformation table
 		for(var i= 0; i<this.components.length; ++i)
 			if('='== this.components[i].charact) {
@@ -98,77 +105,13 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 						tt[rplOrg.ndx] = rplBy;
 				}
 			}
-		return this.contextualise(kb, tt, 'knwl');
+		return this.contextualise(klg, tt, 'knwl');
 	}.perform('nul.xpr.fuzzy->simplify')
-	.describe(function(kb) { return ['Simplifying', this]; }),
-	/**
-	 * Remove all clauses in the knowledge that share no deps with 'values'
-	 * nor with a useful clause.
-	 * No return value.
-	 */
-	concentrate: function() {
-		var ctxn = this.ctxName;
-		this.summarised();
-		var usefulLocals = clone1(this.components.value.deps[ctxn]);
-		//TODO: We should keep the premices about another context !!!
-		if(!usefulLocals) {
-			this.components.splice(0);
-			return this;
-		}
-		//First eliminate locals found once in an equality of the premices
-		for(var l in this.used) if(1== this.used[l] && !usefulLocals[l]) {
-			//This local is used only once in the premices. Is it as a term of a unification ?
-			var p;
-			for(p=0; p < this.components.length && (
-				!this.components[p].deps[ctxn] ||
-				 !this.components[p].deps[ctxn][l] )
-			; ++p);	///Find the premice containing this local
-			if(p < this.components.length) {	//The premice can have been deleted by this algorithm!
-				var prm = this.components[p];
-				if('='== prm.charact) {
-					var c;
-					for(c=0; !prm.components[c].deps[ctxn] || !prm.components[c].deps[ctxn][l]; ++c); //Find the term refering the local
-					if('local'== prm.components[c].charact) {
-						if(2== prm.components.length) {
-							this.components.splice(p,1);
-							this.summarised();
-						} else {
-							prm.components.splice(c,1);
-							prm.summarised();
-							this.summarised();
-						}
-					}
-				}
-			}
-		}
-		//Second, sort the premices to keep only the ones with no link at all from the value
-		var forgottenPrmcs = [];
-		for(var i=0; i<this.components.length; ++i)
-			if(isEmpty(this.components[i].deps, [ctxn]))
-				forgottenPrmcs.push(i);
-		do {
-			var ds;
-			for(var i=0; i<forgottenPrmcs.length; ++i) {
-				ds = this.components[forgottenPrmcs[i]].deps[ctxn];
-				if(ds) if(trys(ds, function(d) { return usefulLocals[d] })) break; 
-			}
-			if(i>=forgottenPrmcs.length) ++i;
-			else {
-				merge(usefulLocals, ds);
-				forgottenPrmcs.splice(i,1);
-			}
-		} while(i<=forgottenPrmcs.length);
-		//Remove in inverse orders to have valid indices.
-		// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
-		//  first remove 3 then 1.
-		while(0<forgottenPrmcs.length) this.components.splice(forgottenPrmcs.pop(), 1);
-		return this;
-	}.perform('nul.xpr.fuzzy->concentrate')
-	.describe(function() { return ['Concentrating', this]; }),
+	.describe(function(klg) { return ['Simplifying', this]; }),
 	/**
 	 * Defragment the local index-space.
 	 */
-	relocalise: function(kb) {
+	relocalise: function(klg) {
 		this.summarised();
 		//Remove local-index-space allocations for unknowns not used anymore
 		var delta = 0, i = 0, tt = {};
@@ -183,64 +126,33 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			}
 		}
 		if(!delta) return this;
-		var rv = this.contextualise(kb, tt);
+		var rv = this.contextualise(klg, tt);
 		return rv;
 	}.perform('nul.xpr.fuzzy->relocalise')
-	.describe(function(kb) { return ['Relocating', this]; }),
+	.describe(function(klg) { return ['Relocating', this]; }),
 	/**
 	 * This expression out of the set
-	 * this' locals are added to <kb>' last context 
+	 * this' locals are added to <klg>' last context 
 	 * This ctxName is not referenced anymore
 	 */
-	stpUp: function(kb) {
-		var dlt = kb.addLocals(this.locals);
+	stpUp: function(klg) {
+		var dlt = klg.addLocals(this.locals);
 		var rv = (this.browse(
-			nul.browse.lclShft(dlt, this.ctxName, kb.contexts[0].ctxName)
+			nul.browse.lclShft(dlt, this.ctxName, klg.ctxName)
 		) || this);
-		kb.knew(rv.components);
+		if('fz'!= rv.charact) return rv;
+		klg.knew(rv.components);
 		return rv.components.value;
 	}.perform('nul.xpr.fuzzy->stpUp'),
 /////// Knowledge
 	enter: function() {
-		return new nul.knowledge(this.components, this.locals, this.ctxName);
-	}
-/*
-		takeFrdm: function(knwl, ctx) {
-			if(this.solving) return this;
-			this.solving = true;
-			try { var rv = nul.solve.solve(this); }
-			finally { delete this.solving; }
-	
-			if(rv.solved.length) {
-				if(0<rv.fuzzy.length)
-					rv.solved.follow = this.asUnion(rv.fuzzy);
-				rv = nul. build.list(rv.solved);
-				if(this.arCtxName) {
-					rv.arCtxName = this.arCtxName;
-					delete this.arCtxName;
-					this.summarised();
-				}
-			}
-			else if(rv.fuzzy.length) rv = this.asUnion(rv.fuzzy, this.x);
-			else return nul. build.definition();
-
-			if('{}'== rv.charact) return rv.removeUnused().clean();
-			if(nul.debug.assert) assert(','== rv.charact, 'Solution value is set or list');
-			if(rv.components.follow) rv.components.follow.removeUnused();
-			return rv;
-		}.perform('set->takeFrdm'),
-		makeFrdm: function(kb) {
-			kb.push(nul.knowledge(this.components), {
-				ctxName: this.ctxName,
-				locals: this.locals,
-				addLocals: function(locals) {
-					this.locals.pushs(isArray(locals)?locals:[locals]);
-					return this.locals.length-locals.length;
-				}
-			});
-			return this;
-		},*/
-
+		return new nul.knowledge([], this.locals, this.ctxName);
+	},
+	aknlgd: function(cb, klg) {
+		this.openedKnowledge = new nul.knowledge(this.components, this.locals, this.ctxName);
+		var rv = cb(this.components.value, this.openedKnowledge);
+		return klg.leave(this.openedKnowledge);
+	},
 });
 nul.xpr.fuzzy.createCtxName = function(hd) {
 	return (hd||'fc')+(++nul.xpr.fuzzy.ctxNameCpt);

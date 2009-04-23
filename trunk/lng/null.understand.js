@@ -16,9 +16,7 @@ nul.understanding = {
 			ops = [];
 			for(var i=0; i<this.operands.length; ++i) {
 				var op = this.operands[i];
-				op = (new nul.understanding.base(ub)).valued(function(ub) {
-					return op.understand(ub);
-				});
+				op = (new nul.understanding.base(ub)).valued(op);
 				if('fz'!= op.charact || op.components) ops.push(op);
 			}
 		}
@@ -28,7 +26,7 @@ nul.understanding = {
 		if(['+' ,'-' ,'*' ,'/' ,'%' ,'&' ,'|' ,'^'].contains(this.operator))
 			return new nul.xpr.operation.listed(this.operator, ops);
 		if(['<','>', '<=','>='].contains(this.operator)) {
-			ub.kb.knew(new nul.xpr.ordered(this.operator, ops));
+			ub.klg.knew(new nul.xpr.ordered(this.operator, ops));
 			return ops[0];
 		}
 		switch(this.operator)
@@ -36,7 +34,7 @@ nul.understanding = {
 			case ':-':	return new nul.xpr.lambda(ops[0], ops[1]);
 			case ',':	return new nul.xpr.set(ops);
 			case '=':
-				return (new nul.xpr.unification(ops)).apply(ub.kb);
+				return (new nul.xpr.unification(ops)).apply(ub.klg);
 			case ':=':	return new nul.xpr.handle(ops[0], ops[1]);
 
 			case '<<+':	return new nul.xpr.seAppend(ops[0], ops[1]);
@@ -80,13 +78,13 @@ nul.understanding = {
 		var rv = new nul.xpr.application(
 			this.item.understand(ub),
 			this.applied.understand(ub));
-		return rv.operate(ub.kb) || rv;
+		return rv.operate(ub.klg) || rv;
 	},
 	set: function(ub) {
 		if(!this.content) return new nul.xpr.set();
 		ub = new nul.understanding.base.set(ub, this.selfRef);
 		var cnt = this.content;
-		return ub.valued(function(ub) { return cnt.understand(ub); });
+		return ub.valued(cnt);
 	},
 	
 	definition: function(ub) {
@@ -109,7 +107,7 @@ nul.understanding = {
 			this.applied.understand(ub),
 			this.name,
 			this.value.understand(ub),
-			ub.kb);
+			ub.klg);
 	},
 	objectivity: function(ub) {
 		return new nul.xpr.objectivity(this.applied.understand(ub), this.lcl);
@@ -119,16 +117,20 @@ nul.understanding = {
 nul.understanding.base = Class.create({
 	initialize: function(prntUb) {
 		this.prntUb = prntUb;
-		this.kb = new nul.knowledge();
+		this.klg = new nul.knowledge();
 	},
-	valued: function(cb) {
+	valued: function(tu) {
+		if(!tu) return this.klg.leave();
 		var xpr;
-		try { xpr = cb(this); }
+		try { xpr = tu.understand(this); }
 		catch(err) {
-			this.kb.leave();
-			if(nul.failure!= err) throw nul.exception.notice(err); 
+			this.klg.leave();
+			if(nul.failure!= err) throw nul.exception.notice(err);
+			return new nul.xpr.fuzzy(); 
 		}
-		return this.kb.leave(xpr);
+		xpr = this.klg.asFuzz(xpr);
+		xpr = xpr.subjective(this.klg);
+		return this.klg.leave(xpr);
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);
@@ -142,33 +144,31 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 	initialize: function($super, prntUb, selfName) {
 		$super(prntUb);
 		this.parms = {};
-		if(selfName) {
-			this.parms[selfName] = nul.lcl.slf;
-			this.arCtxName = 'ar'+(++nul.understanding.srCtxNames);
-		}
+		if(selfName)
+			this.parms[selfName] = new nul.xpr.local(
+				this.arCtxName = 'ar'+(++nul.understanding.srCtxNames),
+				nul.lcl.slf, selfName);
 	},
-	valued: function($super, cb) {
-		var fzx = $super(cb);
+	valued: function($super, tu) {
+		var fzx = $super(tu);
 		var stx = new nul.xpr.set(('fz'!= fzx.charact || fzx.components)?[fzx]:[]);
 		if(this.arCtxName) stx.arCtxName = this.arCtxName;
 		return stx.extend();
 	},
 	resolve: function($super, identifier) {
-		if('undefined'!= typeof this.parms[identifier]) {
-			var ndx = this.parms[identifier];
-			return new nul.xpr.local(
-				ndx==nul.lcl.slf?this.arCtxName:this.kb.ctxName,
-				ndx, identifier);
-		}
+		if('undefined'!= typeof this.parms[identifier])
+			return this.parms[identifier];
 		return $super(identifier);
 	},
 	createFreedom: function(name, value) {
 		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
-		var rv = this.kb.locals.length;
-		this.kb.locals.push(name);
-		if('_'!= name) this.parms[name] = rv;
-		rv = new nul.xpr.local(this.kb.ctxName, rv, name)
-		if(value) this.premices.push(new nul.xpr.unification([rv, value]));
-		return rv;
+		if(!value) {
+			var rv = this.klg.locals.length;
+			this.klg.locals.push(name);
+			rv = new nul.xpr.local(this.klg.ctxName, rv, name)
+			if('_'!= name) this.parms[name] = rv;
+			return rv;
+		}
+		return this.parms[name] = value;
 	}
 });

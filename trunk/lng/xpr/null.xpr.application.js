@@ -14,18 +14,29 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 		$super({object: obj, applied: apl});
 	},
 /////// Application specific
-	operate: function(kb) {
+	operate: function(klg) {
 		if(!this.components.object.take) {
 			if(!this.components.object.finalRoot()) return;
 			throw nul.semanticException(
 				'OPM', 'Cannot take from '+ this.components.object.toHTML());
 		}
-		var rv = this.components.object.take(this.components.applied, kb, 1);
+		var rv = this.components.object.take(this.components.applied, klg, 1);
 		if(rv) return rv;
 		if(!this.components.object.transform()) {
-			kb.knew(this.clean().clone());
+			klg.knew(this.clone());
 			return this.components.applied;
 		}
 	}.perform('nul.xpr.application->apply')
-	.describe(function(kb) { return ['Applying', this]; })
+	.describe(function(klg) { return ['Applying', this]; }),
+/////// String special management. TODO:  on garde ou pas ?
+	expressionHTML: function($super) {
+		if(!this.components.object.opChr) return $super();
+		return '<span class="op native">' + this.components.object.opChr +
+			'</span>' + this.components.applied.toHTML();
+	},
+	expressionString: function($super) {
+		if(!this.components.object.opChr) return $super();
+		return this.components.object.opChr +
+			' ' + this.components.applied.toString();
+	},
 });

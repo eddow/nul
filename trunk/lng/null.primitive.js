@@ -6,32 +6,58 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.primitive = {
-	':-': {
-/*		valHandle: function(hr, hd, kb) {
-			nul.unify.level(hr, hd.components.handle, kb);
-			return hd.components.value;
-		},
-		handeling: function(hr, hd, vh, kb) {
-			return nul.build.lambda(hr.components.handle, vh(hr.components.value, hd, kb));
-		}*/
+nul.nativeFunctions = {
+	hardCoded: function(txt, hcFctNm, hcFct) {
+		var ub = new nul.globalsUse(null, 'operation');
+		ub.createFreedom(
+			'hardCoded', new nul.xpr.javascript.fct(hcFctNm,hcFct));
+		return ub.valued(nul.compile(txt));
 	},
+	atomOp: function(op, tp) {
+		return function(klg) {
+			return nul.nativeFunctions.hardCoded(
+				'('+tp+' a, '+tp+' b) :- hardCoded(a,b)',
+				//'{} :- 0 []'+'(a, b,.. c) :- operation(hardCoded(a,b), c)'
+				tp+op+tp,
+				function(o, klg) {
+					var o1 = o.components[0], o2 = o.components[1];
+					if(!o1.finalRoot() || !o2.finalRoot()) return;
+					return new nul.xpr.value(
+						eval(''+o1.jsValue()+op+o2.jsValue()));
+			 	}
+			);
+		}
+	},
+	atomCed: function(fct, op, tp) {
+		return function(klg) {
+			return nul.nativeFunctions.hardCoded(
+				'\\/a {'+tp+' a} :- hardCoded a',
+				op+tp,
+				function(o, klg) {
+					if(o.finalRoot()) return fct(o);
+			 	}
+			);
+		}
+	},
+};
+
+nul.primitive = {
 	'set': {
-		'#': function(kb) {
+		'#': function(klg) {
 			return (new nul.xpr.application(
-				nul.nativeFunctions.setLength, this)).operate(kb);
+				nul.nativeFunctions.setLength, this)).operate(klg);
 		}
 	},
 	'number': {
 /*		'+': nul.nativeFunctions.atomOp('+', 'Q'),
-		'-': nul.nativeFunctions.atomOp('-', 'Q'),
+/*		'-': nul.nativeFunctions.atomOp('-', 'Q'),
 		'*': nul.nativeFunctions.atomOp('*', 'Q'),
 		'/': nul.nativeFunctions.atomOp('/', 'Q'),
 		'%': nul.nativeFunctions.atomOp('%', 'Q'),
-		'-.': function(kb) {
+/*		'-.': function(klg) {
 			if(this.finalRoot()) return nul.build.atom(-this.value);
 		},
-		'<': function(o, kb) {
+		'<': function(o, klg) {
 			nul.natives.Q.callback(o);
 			if(this.finalRoot() && o.finalRoot()) {
 				if(this.value >= o.value) nul.fail('Bad order');
@@ -39,9 +65,12 @@ nul.primitive = {
 			}
 		}*/
 	},
+	'integer': {
+		
+	},
 	'string': {
 /*		'+': nul.nativeFunctions.atomOp('+', 'str'),
-		'<': function(o, kb) {
+		'<': function(o, klg) {
 			nul.natives.str.callback(o);
 			if(this.finalRoot() && o.finalRoot()) {
 				if(this.value >= o.value) nul.fail('Bad order');
@@ -50,7 +79,7 @@ nul.primitive = {
 		},
 		//TODO: here, we really have to specify it is commutative !
 		//TODO: 2 'inverses'
-		'*': function(o, kb) {
+		'*': function(o, klg) {
 			nul.natives.Q.callback(o);
 			if(this.finalRoot() && o.finalRoot()) {
 				var ns = '';
@@ -58,34 +87,33 @@ nul.primitive = {
 				return nul.build.atom(ns);
 			}
 		},*/
-		'#': function(kb) {
-			return (new nul.xpr.application(
-				nul.nativeFunctions.strLength, this)).operate(kb);
-		}
+		'#': nul.nativeFunctions.atomCed(function(o) {
+			return new nul.xpr.value(o.jsValue().length-2);
+				//remove 2 for the "" added by jsValue
+		}, '#', 'str'),
 	},
 	'boolean': {
 		//TODO? qq +, * et - ?
 	},
-	
+	'object': {
+	}
 
 };
 
-nul.nativeFunctions = {
-/*	atomOp: function(op, tp) {
-		return function(o, kb) {
-			nul.natives[tp].callback(o);
-			if(nul.debug.assert) assert('atom'== o.charact, 'Atom operators operate on atoms.');
-			if(this.finalRoot() && o.finalRoot())
-				return nul.build.atom(
-					eval( ''+nul.jsVal(this.value) + op + nul.jsVal(o.value) )
-				);
-		};
-	},*/
-	strLength: new nul.xpr.javascript.fct('strLen',
-		function(o, kb) {
-			if(!o.finalRoot()) return;
-			if(nul.debug.assert) assert('string'== typeof o.value, 'strLen should only apply on strings');
-			return new nul.xpr.value(o.value.length);
-		}
-	)
+nul.primitiveTree = {
+	'integer': 'number',
+	'number': 'object',
+	'string': 'object',
+	'boolean': 'object',
+	'set': 'object',
+	is: function(xpr, pnm, artcl) {
+		var spnm = xpr.primitive;
+		while(spnm) if(spnm == pnm) return true;
+			else spnm = nul.primitiveTree[spnm];
+		if(xpr.primitive) nul.fail('Not '+artcl+' '+pnm+' : '+xpr.toString());
+	},
+	attribute: function(pnm, atn) {
+		while(pnm) if(!nul.primitive[pnm][atn]) pnm = nul.primitiveTree[pnm];
+		else return nul.primitive[pnm][atn];
+	}
 };

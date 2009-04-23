@@ -196,7 +196,7 @@ function doTest(tn) {
 	var v, test = tbody.rows[tn].test;
 	nul.debug.assert = !$('qndTst').checked;
 	try {
-		v = v = nul.expression(test.xpr).evaluate().toString();
+		v = v = nul.expression(test.xpr).toString();
 	} catch(err) {
 		nul.exception.notice(err);
 		if(nul.erroneusJS) throw nul.erroneusJS;

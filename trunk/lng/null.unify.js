@@ -16,7 +16,7 @@ nul.unify = {
 	 * - an array with less expressions: the ones that couldn't be unified 
 	 * - nothing if no expression can be unified.
 	 */
-	multiple: function(us, kb) {
+	multiple: function(us, klg) {
 		//<us> : to try to unify
 		//<uu> : cannot unify with unifion
 		//<rv> : cannot unify with any past unifion
@@ -27,7 +27,7 @@ nul.unify = {
 			var unirv = null;
 			while(0<us.length) {
 				var unitry = us.pop();
-				unirv = nul.unify.chewed(unitry, unifion, kb);
+				unirv = nul.unify.chewed(unitry, unifion, klg);
 				if(unirv) break;
 				uu.unshift(unitry);
 			}
@@ -53,12 +53,11 @@ nul.unify = {
 	 * Unify 'a' and 'b'.
 	 * Returns the stereotype of the equivalence class.
 	 */
-	level: function(a, b, kb) {	//don't touch A & B; gather their ctx0 locals
-		if(!a ^ !b) return a||b;
-		if(nul.debug.assert) assert(kb, 'Level without KB shouldnt happen anymore');
-		var rv = nul.unify.chewed(a, b, kb);
+	level: function(a, b, klg) {	//don't touch A & B; gather their ctx0 locals
+		if(nul.debug.assert) assert(klg, 'Level without KLG shouldnt happen anymore');
+		var rv = nul.unify.chewed(a, b, klg);
 		if(rv) return rv;
-		return kb.affect([a,b]);
+		return klg.affect([a,b]);
 	}.perform('nul.unify.level'),
 
 	
@@ -68,7 +67,7 @@ nul.unify = {
 	 * - an expression
 	 * - nothing if this function couldn't manage
 	 */
-	subs: function(a, b, kb) {
+	subs: function(a, b, klg) {
 		if(a.charact== b.charact) {
 			switch(a.charact) {
 			case '{}':
@@ -77,26 +76,30 @@ nul.unify = {
 					nul.fail('List length already dont fit');
 				var rv = [];
 				for(var i=0; i<a.components.length; ++i)
-					rv.push(nul.unify.level(a.components[i], b.components[i], kb));
+					rv.push(nul.unify.level(a.components[i], b.components[i], klg));
 				b = b.clone1();
 				b.components.splice(0,i);
 				if(0==b.components.length) b = b.components.follow;
 								
 				if(a.components.follow)
-					rv.follow = nul.unify.level(a.components.follow, b, kb)
+					rv.follow = nul.unify.level(a.components.follow, b, klg)
 				else if(b)
-					rv.follow = nul.unify.level(new nul.xpr.set(), b, kb)
+					rv.follow = nul.unify.level(new nul.xpr.set(), b, klg)
 				rv = a.compose(rv);
 				return rv;
 			case '::':
 				return a.compose(merge(a.components, b.components, function(a, b) {
 					if(!a||!b) nul.fail('Attributes dont match');;
-					return nul.unify.level(a, b, kb);
+					return nul.unify.level(a, b, klg);
 				}));
 			case ':-':
 				return a.compose(merge(a.components, b.components, function(a, b) {
-					return nul.unify.level(a, b, kb);
+					return nul.unify.level(a, b, klg);
 				}));
+			case 'fz':
+				return a.aknlgd(function(v, klg) {
+					return nul.unify.level(v, b.stpUp(klg), klg)
+				});
 			}
 		}
 	}.perform('nul.unify.subs'),
@@ -109,25 +112,31 @@ nul.unify = {
 	 * - an expression
 	 * - nothing if this function couldn't manage
 	 */
-	vcvs: function(a, b, kb) {
-		if('='== a.charact) return nul.unify.andDist(a.components, a.x, b, kb);
+	vcvs: function(a, b, klg) {
+		if('fz'== a.charact) {
+			return nul.unify.level(a.stpUp(klg), b, klg);
+			return a.aknlgd(function(v, klg) {
+				return nul.unify.level(v, b, klg);
+			});
+		}
+		if('='== a.charact) return nul.unify.andDist(a.components, a.x, b, klg);
 		//Distribution in 'solve' but need here too. Epimenide forget premice if not
 		if('[]'== a.charact) {
-			var rv = nul.unify.orDist(a.components, a.x, b, kb);
+			var rv = nul.unify.orDist(a.components, a.x, b, klg);
 			if(!rv) return;
 			rv = nul.xpr.build(nul.xpr.ior3, rv);
-			return rv.operate(kb)||rv;
+			return rv.operate(klg)||rv;
 			
 		}
 
 		if('[-]'== a.charact && a.components.object.finalRoot()) {
 			if(!a.components.object.take)
 				throw nul.semanticException('OPM', 'Cannot take from '+ a.components.object.toHTML());
-			var trtk = a.components.object.take(b, kb, -1);
-			if(trtk) return nul.unify.level(trtk, a.components.applied, kb).dirty();
+			var trtk = a.components.object.take(b, klg, -1);
+			if(trtk) return nul.unify.level(trtk, a.components.applied, klg);
 			if(!a.components.object.transform()) {
-				var rv = a.compose({applied: nul.unify.level(a.components.applied, b, kb)});
-				return rv.operate(kb)||rv;
+				var rv = a.compose({applied: nul.unify.level(a.components.applied, b, klg)});
+				return rv.operate(klg)||rv;
 			}
 		}
 	}.perform('nul.unify.vcvs'),
@@ -136,15 +145,15 @@ nul.unify = {
 	 * Unify 'a' and 'b'.
 	 * Returns the unified expression or nothing if it cannot be unified now.
 	 */
-	chewed: function(a, b, kb) {
+	chewed: function(a, b, klg) {
 		if(a.cmp(b)) return a;
 		
-		var rv = nul.unify.subs(a, b, kb);
+		var rv = nul.unify.subs(a, b, klg);
 		if(rv) return rv;
 
-		rv = nul.unify.vcvs(a, b, kb);
+		rv = nul.unify.vcvs(a, b, klg);
 		if(rv) return rv;
-		rv = nul.unify.vcvs(b, a, kb);
+		rv = nul.unify.vcvs(b, a, klg);
 		if(rv) return rv;
 
 		//TODO: try extraction before fail ?
@@ -157,20 +166,17 @@ nul.unify = {
 	 * <b> and <ax>(<as>' parent locals) are distinct
 	 * Always returns an expression
 	 */ 
-	orDist: function(as, ax, b, kb) {
+	orDist: function(as, ax, b, klg) {
 		var rv = [];
 		for(var i=0; i<as.length; ++i) {
-			var kwf;
+			var nklg;
 			var oa = as[i];
-			var ob = b.clone();
 			if('fz'==oa.charact) {
-				kwf = oa.dirty();
-				kwf.components.value = new nul.xpr.unification([oa.components.value, ob]);
-			} else	//TODO: y'a plus de kwFreedom !
-				kwf = new nul.xpr.kwFreedom(new nul.xpr..unification([oa, ob])).dirty();
-			//TODO: if kw:fail, don't push do you ?
-			//But react then nicely if rv == []
-			rv.push(kwf.evaluate(kb));
+				nklg = oa.enter();
+				oa = oa.components.value;
+			} else nklg = new nul.knowledge();
+			oa = nklg.leave(nul.unify.level(oa, b.clone(), nklg)); 
+			if(!oa.flags.failed) rv.push(oa);
 		}
 		return rv;
 	}.perform('nul.unify.orDist'),
@@ -180,10 +186,10 @@ nul.unify = {
 	 * <b> and <ax>(<as>' parent locals) are distinct
 	 * Always returns an expression
 	 */ 
-	andDist: function(as, ax, b, kb) {
+	andDist: function(as, ax, b, klg) {
 		if('='!= b.charact) as.push(b); else as.pushs(b.components);
 		var fl = as.length;
-		as = nul.unify.multiple(as, kb) || as;
+		as = nul.unify.multiple(as, klg) || as;
 
 		if(as) switch(as.length) {
 			case 1: return as[0];

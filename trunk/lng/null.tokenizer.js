@@ -28,7 +28,7 @@ nul.tokenizer = function(src)
 				if(''== this.txt)
 					return this.token = { value: '', type: 'eof' };
 				for(alphabet in nul.alphabets)
-					if(match = (new RegExp('^'+nul.alphabets[alphabet], 'g')).exec(this.txt))
+					if(match = nul.tokenizer.isAB(this.txt, alphabet))
 					{
 						this.token = {
 							value: (1< match.length) ? match[1]: null,
@@ -106,4 +106,7 @@ nul.tokenizer = function(src)
 	};
 	rv.next();
 	return rv;
+};
+nul.tokenizer.isAB = function(v, alphabet) {
+	return (new RegExp('^'+nul.alphabets[alphabet], 'g')).exec(v);
 };

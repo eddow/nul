@@ -21,11 +21,7 @@ nul.xpr.objectivity = Class.create(nul.xpr.ceded, {
 		return this.components[0].toString() + '.' + this.local;
 	},
 /////// Objectivity specific
-	subject: function(kb) {
-		var rv = this.components[0].attribute(this.local, kb);
-		if(!rv && this.components[0].free([kb.ctxName]))
-			throw nul.semanticException('AUD',
-				'Attribute '+this.local+' isnt defined for '+this.components[0].toString());
-		return rv;
-	}.describe(function(kb) { return ['Subjectiving', this]; }),
+	subject: function(klg) {
+		return this.components[0].attribute(this.local, klg);
+	}.describe(function(klg) { return ['Subjectiving', this]; }),
 });

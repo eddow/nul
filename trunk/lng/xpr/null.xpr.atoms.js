@@ -16,6 +16,8 @@ nul.xpr.value = Class.create(nul.xpr.primitive(nul.xpr.atom), {
 	finalRoot: function() { return true; },
 	initialize: function($super, jsValue) {
 		this.primitive = typeof jsValue;
+		if('number'== this.primitive && nul.isJsInt(jsValue))
+			this.primitive = 'integer';
 		this.acNdx = '[' +
 				nul.jsVal(jsValue).toString()
 					.replace('[','[(]')
@@ -25,6 +27,7 @@ nul.xpr.value = Class.create(nul.xpr.primitive(nul.xpr.atom), {
 		this.value = jsValue;
 		$super();
 	},
+	jsValue: function() { return nul.jsVal(this.value); },
 /////// String
 	expressionHTML: function() {
 		return '<span class="value">' + nul.jsVal(this.value) + '</span>';

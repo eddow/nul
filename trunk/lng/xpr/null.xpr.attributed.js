@@ -8,15 +8,17 @@
 
 nul.xpr.attributed = Class.create(nul.xpr.forward(nul.xpr.composed,''), {
 	charact: '::',
-	//failable: function() { return false; },	//TODO: should fail if root not finished?
-	initialize: function($super, value, atn, attr, kb) {
+	failable: function() {
+		return !this.components[''].finalRoot();
+	},
+	initialize: function($super, value, atn, attr) {
 		var comps = {}
 		comps[''] = value;
 		comps[atn] = attr;
 		$super(comps);
 	},
-	attribute: function(atn, kb) {
-		return this.components[atn] || this.components[''].attribute(atn, kb);
+	attribute: function(atn, klg) {
+		return this.components[atn] || this.components[''].attribute(atn, klg);
 	},
 	finalRoot: function() {
 		return this.components[''].finalRoot();
@@ -37,18 +39,18 @@ nul.xpr.attributed = Class.create(nul.xpr.forward(nul.xpr.composed,''), {
             return '('+rv+')';
     },
 /////// Attributed specific
-	operate: function(kb) {
+	operate: function(klg) {
 		if('::'== this.component[''].charact)
 			return this.compose(merge(components[''].components, components,
 				function(a, b, i) {
 					if(''== i) return b;
-					if(a && b) return kb.affect([comps[atn], attr]);
+					if(a && b) return klg.affect([comps[atn], attr]);
 					return a || b;
 				}));
 		for(var i in this.component)
-			if(this.component[''].attribute(i, kb))
+			if(this.component[''].attribute(i, klg))
 				nul.fail('Attribute dont match.');
 		return this;
 	}
-	.describe(function(kb) { return ['Attributing', this]; }),
+	.describe(function(klg) { return ['Attributing', this]; }),
 });
