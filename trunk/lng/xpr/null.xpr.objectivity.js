@@ -22,6 +22,6 @@ nul.xpr.objectivity = Class.create(nul.xpr.ceded, {
 	},
 /////// Objectivity specific
 	subject: function(klg) {
-		return this.components[0].attribute(this.local, klg);
+		return this.replaceBy(this.components[0].attribute(this.local, klg));
 	}.describe(function(klg) { return ['Subjectiving', this]; }),
 });

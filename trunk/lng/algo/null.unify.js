@@ -124,7 +124,7 @@ nul.unify = {
 		if('[]'== a.charact) {
 			var rv = nul.unify.orDist(a.components, a.x, b, klg);
 			if(!rv) return;
-			rv = nul.xpr.build(nul.xpr.ior3, rv);
+			rv = new nul.xpr.ior3(rv);
 			return rv.operate(klg)||rv;
 			
 		}

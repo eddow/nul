@@ -21,6 +21,11 @@
 */
 nul.browse = {
 	abort: 'stopBrowsingPlease',
+	spaces: 0,
+	expression: function(behav, noOwnBS) {
+		if(!noOwnBS) behav.browseSpace = ++nul.browse.spaces;
+		return nul.browse.recursion.apply(this, [behav]);
+	},
 	recursion: function(behav) {
 		var xpr = this, chg = false;
 		function iif(nv, ov) {
@@ -29,21 +34,23 @@ nul.browse = {
 			return nv;
 		}
 
+		if(this.browseSpace== behav.browseSpace) return;
+		this.browseSpace = behav.browseSpace;
 		var isToBrowse = 'undefined'== typeof behav.browse ||
 						('function'== typeof behav.browse && behav.browse(xpr)) ||
 						('function'!= typeof behav.browse && behav.browse);
 		try {
 			if(behav.before) xpr = behav.before(xpr)||xpr;
 			if(isToBrowse && xpr.components) {
-				var nComps = map(xpr.components, function() {
-						if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
-						var co = iif(this.browse(behav), this);
-						if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
-						return co;
-					});
-				if(chg) switch(behav.clone) {
-					case 'itm': xpr = xpr.clone(nComps); break;
-					default: xpr = xpr.compose(nComps); break;
+				var nxpr = xpr.subRecursion(function() {
+					if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
+					var co = iif(this.browse(behav, 'nocs'), this);
+					if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
+					return co;
+				});
+				if(nxpr!== xpr) {
+					xpr = nxpr;
+					chg = true;
 				}
 			}
 			if(behav[xpr.charact]) xpr = iif(behav[xpr.charact](xpr), xpr);
@@ -51,14 +58,20 @@ nul.browse = {
 			nul.exception.notice(err);
 			if(behav.abort) xpr = behav.abort(xpr, err, this);
 			else xpr = null;
-			if(xpr) return xpr;
+			if(xpr) {
+				xpr.browseSpace = behav.browseSpace;
+				return xpr;
+			}
 			if(nul.browse.abort== err) return;
 			throw err;
 		}
 		if(behav.finish) { xpr = behav.finish(xpr, chg, this); chg = true; }
 		if(chg && xpr) xpr = xpr.summarised();
 
-		if(chg && xpr) return xpr;
+		if(chg && xpr) {
+			xpr.browseSpace = behav.browseSpace;
+			return xpr;
+		}
 		nul.debug.log('perf')('Useless browse for '+behav.name,this);			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
@@ -91,7 +104,7 @@ nul.browse = {
 			rpl: rpl,
 			act: act,
 			kb: klg?[klg]:[],
-			eqProtect: [0],
+			eqProtect: [-1],
 			before: function(xpr) {
 				//TODO: throw stop.browsing ?
 				if('='== xpr.charact) this.eqProtect.unshift(0);
@@ -105,7 +118,7 @@ nul.browse = {
 				if('='== orig.charact) this.eqProtect.shift();
 				if('fz'== orig.charact) {
 					if(chgd) xpr = this.kb.shift().leave(xpr);
-					else this.kb.shift().leave();
+					else this.kb.shift().leave(orig);
 				}
 				if(xpr && xpr.operate && this.kb.length) {
 					var rv = xpr.operate(this.kb[0]);

@@ -100,7 +100,7 @@ nul.debug = {
 	watches: false,
 	perf: 0> window.location.href.indexOf('noperf'),
 	acts: 0<= window.location.href.indexOf('actLog'),
-	lcLimit: 500,
+	lcLimit: 10000,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
 		return nul.debug.callStack.item().get()[0];
@@ -196,5 +196,5 @@ function assert(cnd, str) {
 }
 
 //Shortcuts to write in the firebug 'watch' box
-function nw(v) { nul.debug.watch(v); }
-function dat() { nul.debug.applyTables(); }
+function nw(v) { nul.debug.watch(v); return 'drawn'; }
+function dat() { nul.debug.applyTables(); return 'drawn'; }

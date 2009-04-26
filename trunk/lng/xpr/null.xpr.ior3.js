@@ -19,7 +19,7 @@ nul.xpr.ior3 = Class.create(nul.xpr.holder, {
 	operate: function(klg) {
 		switch(this.components.length) {
 		case 0: nul.fail('No possibile ways');
-		case 1: return this.components[0].stpUp(klg);
+		case 1: return this.replaceBy(this.components[0].stpUp(klg));
 		}
 	}.perform('nul.xpr.ior3->composed'),
 //Interface to solving engine	

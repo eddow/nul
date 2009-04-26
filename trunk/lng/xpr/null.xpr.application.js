@@ -21,9 +21,9 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 				'OPM', 'Cannot take from '+ this.components.object.toHTML());
 		}
 		var rv = this.components.object.take(this.components.applied, klg, 1);
-		if(rv) return rv;
+		if(rv) return this.replaceBy(rv);
 		if(!this.components.object.transform()) {
-			klg.knew(this.clone());
+			klg.know(this);
 			return this.components.applied;
 		}
 	}.perform('nul.xpr.application->apply')

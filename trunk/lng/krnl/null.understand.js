@@ -26,7 +26,7 @@ nul.understanding = {
 		if(['+' ,'-' ,'*' ,'/' ,'%' ,'&' ,'|' ,'^'].contains(this.operator))
 			return new nul.xpr.operation.listed(this.operator, ops);
 		if(['<','>', '<=','>='].contains(this.operator)) {
-			ub.klg.knew(new nul.xpr.ordered(this.operator, ops));
+			ub.klg.know(new nul.xpr.ordered(this.operator, ops));
 			return ops[0];
 		}
 		switch(this.operator)
@@ -40,7 +40,7 @@ nul.understanding = {
 			case '<<+':	return new nul.xpr.seAppend(ops[0], ops[1]);
 			case ';':
 				return ops[0];
-			case '[]':	return nul.xpr.build(nul.xpr.ior3, ops);
+			case '[]':	return new nul.xpr.ior3(ops);
 			default:	throw nul.internalException('Unknown operator: "'+this.operator+'"');
 		}
 	},

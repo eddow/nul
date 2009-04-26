@@ -6,19 +6,22 @@
  *
  *--------------------------------------------------------------------------*/
 
+/**
+ * Functions not accessible by name in NUL code but used by operators.
+ */
 nul.nativeFunctions = {
 	hardCoded: function(txt, hcFctNm, hcFct) {
 		var ub = new nul.globalsUse(null, 'operation');
 		ub.createFreedom(
 			'hardCoded', new nul.xpr.javascript.fct(hcFctNm,hcFct));
-		return ub.valued(nul.compile(txt));
-	},
+		return ub.valued(nul.compile(txt));	//TODO: compile once !
+	}.perform('nul.nativeFunctions.hardCoded'),
 	atomOp: function(op, tp) {
-		return function(klg) {
+		return function() {
 			return nul.nativeFunctions.hardCoded(
 				'('+tp+' a, '+tp+' b) :- hardCoded(a,b)',
 				//'{} :- 0 []'+'(a, b,.. c) :- operation(hardCoded(a,b), c)'
-				tp+op+tp,
+				nul.natives[tp].name+op+nul.natives[tp].name,
 				function(o, klg) {
 					var o1 = o.components[0], o2 = o.components[1];
 					if(!o1.finalRoot() || !o2.finalRoot()) return;
@@ -28,8 +31,8 @@ nul.nativeFunctions = {
 			);
 		}
 	},
-	atomCed: function(fct, op, tp) {
-		return function(klg) {
+	atomCeded: function(fct, op, tp) {
+		return function() {
 			return nul.nativeFunctions.hardCoded(
 				'\\/a {'+tp+' a} :- hardCoded a',
 				op+tp,
@@ -43,14 +46,13 @@ nul.nativeFunctions = {
 
 nul.primitive = {
 	'set': {
-		'#': function(klg) {
-			return (new nul.xpr.application(
-				nul.nativeFunctions.setLength, this)).operate(klg);
-		}
+		'#': nul.nativeFunctions.atomCeded(function(o) {
+			return new nul.xpr.value(0/*TODO*/);
+		}, '#', 'set'),
 	},
 	'number': {
-/*		'+': nul.nativeFunctions.atomOp('+', 'Q'),
-/*		'-': nul.nativeFunctions.atomOp('-', 'Q'),
+		'+': nul.nativeFunctions.atomOp('+', 'Q'),
+		'-': nul.nativeFunctions.atomOp('-', 'Q'),
 		'*': nul.nativeFunctions.atomOp('*', 'Q'),
 		'/': nul.nativeFunctions.atomOp('/', 'Q'),
 		'%': nul.nativeFunctions.atomOp('%', 'Q'),
@@ -69,8 +71,8 @@ nul.primitive = {
 		
 	},
 	'string': {
-/*		'+': nul.nativeFunctions.atomOp('+', 'str'),
-		'<': function(o, klg) {
+		'+': nul.nativeFunctions.atomOp('+', 'str'),
+/*		'<': function(o, klg) {
 			nul.natives.str.callback(o);
 			if(this.finalRoot() && o.finalRoot()) {
 				if(this.value >= o.value) nul.fail('Bad order');
@@ -87,19 +89,22 @@ nul.primitive = {
 				return nul.build.atom(ns);
 			}
 		},*/
-		'#': nul.nativeFunctions.atomCed(function(o) {
+		'#': nul.nativeFunctions.atomCeded(function(o) {
 			return new nul.xpr.value(o.jsValue().length-2);
 				//remove 2 for the "" added by jsValue
 		}, '#', 'str'),
 	},
 	'boolean': {
-		//TODO? qq +, * et - ?
+		//TODO? qq +(or), *(and) et -(not/don't imply) ?
 	},
 	'object': {
 	}
 
 };
 
+/**
+ * Primitive types hyerarchy
+ */
 nul.primitiveTree = {
 	'integer': 'number',
 	'number': 'object',

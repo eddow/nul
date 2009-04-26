@@ -29,9 +29,13 @@ nul.xpr = Class.create({
 	clone: function(nComps) {
 		var rv = clone1(this);
 		if(nComps) rv.components = nComps;
-		else if(rv.components) rv.components = map(this.components, function() { return this.clone(); });
+		else if(rv.components) rv.components = map(this.components,
+			function() { return this.clone(); });
 		return rv;
 	}.perform('nul.xpr->clone'),
+	replaceBy: function(xpr) {
+		if(xpr) return merge(this, xpr, function(a,b) { return b; });
+	},
 	clone1: function() {
 		return this.clone(clone1(this.components));
 	},
@@ -70,6 +74,10 @@ nul.xpr = Class.create({
 	subjective: function(klg) {
 		return this.browse(nul.browse.subjectivise(klg)) || this;
 	}.perform('nul.xpr->subjective'),
+
+	subRecursion: function(cb) {
+		return this.compose(map(this.components, cb));
+	},
 
 	stpUp: function(klg) { return this; },
 	aknlgd: function(cb, klg) {
@@ -139,7 +147,10 @@ nul.xpr = Class.create({
 //shortcuts defined elsewhere
 	toHTML: nul.text.toHTML,
 	toString: nul.text.toString,
-	browse: nul.browse.recursion,
+	browse: nul.browse.expression,
+	browsed: function(behav, noOwnBS) {
+		return this.browse(behav, noOwnBS) || this;
+	}
 	
 });
 
@@ -163,8 +174,7 @@ nul.xpr.composed = Class.create(nul.xpr, {
 /////// Ctor
 	initialize: function($super, ops) {
 		this.components = {};
-		var cpsd = this.compose(ops||{});
-		if(cpsd !== this) throw nul.xpr.composition(cpsd);
+		this.compose(ops||{});
 		$super();
 	},
 /////// Strings
@@ -191,8 +201,7 @@ nul.xpr.listed = Class.create(nul.xpr, {
 	initialize: function($super, ops) {
 		this.components = [];
 		var cpsd = this.compose(ops);
-		if(cpsd !== this)
-			throw {cpsd:cpsd};
+		if(cpsd !== this) return this.replaceBy(cpsd);
 		$super();
 	},
 /////// Strings
@@ -218,7 +227,7 @@ nul.xpr.associative = Class.create(nul.xpr.listed, {
 			else nc.unshift(tc);
 		}
 		return $super(nc);
-	}.perform('nul.xpr.associative->compose')
+	},
 });
 
 nul.xpr.ceded = Class.create(nul.xpr.listed, {
@@ -281,15 +290,4 @@ nul.xpr.forward = function(root, fkey) {
 		jsValue: function() { return this..components[fkey].jsValue; },
 		handle: function(klg) { return this.components[fkey].handle(klg); },
 	});
-};
-
-nul.xpr.build = function(xprt) {
-	try {
-		var rv = clone1(xprt.prototype);
-		xprt.apply(rv, arrg(arguments).slice(1));
-		return rv;
-	} catch(err) {
-		if(err.cpsd) return err.cpsd;
-		throw nul.exception.notice(err);
-	}
 };

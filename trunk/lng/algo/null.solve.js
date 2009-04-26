@@ -53,11 +53,9 @@ nul.solve = {
 					} 
 				},
 				finish: function(xpr, chgd, orig) {
-					if(!this.browse && 'end'!= this.cn) return xpr;
+					if(!this.browse && 'end'!= this.cn)
+						return xpr;
 				},
-				abort: function(xpr, err, orig) {
-					if(nul.browse.abort== err) return xpr.summarised();
-				}
 			});
 		} finally {
 			rv = klg.leave(rv);

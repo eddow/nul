@@ -21,6 +21,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	clone: function($super, ncomps) {
 		var rv = $super(ncomps);
 		rv.locals = clone1(rv.locals);
+		if(rv.openedKnowledge) delete rv.openedKnowledge;
 		return rv;
 	},
 	failable: function() {
@@ -34,13 +35,17 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		this.deps = {};
 		return this;
 	},
-	compose: function(nComps) {
-		if(nul.debug.assert) assert(!this.openedKnowledge,
-			'Never compose while knowledge opened');
-		this.components = nComps;
-		if(!nComps) this.flags = {failed: true};
+	compose: function($super, nComps) {
+		if(!nComps) {
+			delete this.components;
+			this.flags = {failed: true};
+		} else {
+			if(!this.components) this.components = [];
+			var rv = $super(nComps);
+			if(rv!== this) return rv;
+		}
 		return this.summarised().composed();
-	}.perform('nul.xpr.fuzzy->compose'),
+	},
 	composed: function() {
 		if(this.components &&
 		this.components.value &&	//Value is not set when called from within ctor
@@ -86,6 +91,34 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		return rv;
 	},
 /////// Fuzzy specific
+	subRecursion: function(cb) {
+		if(this.openedKnowledge) {
+			var ps = this.openedKnowledge.forget();
+			while(ps.length)
+				this.openedKnowledge.know(cb.apply(ps.shift()));
+			return this.openedKnowledge.asFuzz(cb.apply(this.components.value));
+		}
+		var klg = this.enter();
+		while(this.components.length)
+			klg.know(cb.apply(this.components.shift()));
+		return klg.leave(cb.apply(this.components.value));
+	},
+	withKlg: function(klg, org) {	//Debug purpose only
+		this.openedKnowledge = klg;
+		this.openedKnowledgeOrg = org;
+		this.openedKnowledgeDlc = nul.debug.lc;
+		return klg;
+	},
+	subContextualise: function(tt, act) {
+		var klg = this.openedKnowledge;
+		var prmcs = klg.forget();
+		var cntxtls = nul.browse.contextualise(klg, tt, act);
+		this.components.value = this.components.value
+			.browsed(cntxtls);
+		while(prmcs.length)
+			klg.know(prmcs.shift().browsed(cntxtls,'nocs'));
+		return this;
+	},
 	/**
 	 * Replace each element that can be found in an equivalence class by
 	 * the class' stereotype.
@@ -94,7 +127,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	 * 
 	 * Also replace all operable expression by the result of its operation.
 	 */
-	simplify: function(klg) {
+	simplify: function() {
 		var tt = {};	//Transformation table
 		for(var i= 0; i<this.components.length; ++i)
 			if('='== this.components[i].charact) {
@@ -105,13 +138,13 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 						tt[rplOrg.ndx] = rplBy;
 				}
 			}
-		return this.contextualise(klg, tt, 'knwl');
+		return this.subContextualise(tt, 'knwl');
 	}.perform('nul.xpr.fuzzy->simplify')
 	.describe(function(klg) { return ['Simplifying', this]; }),
 	/**
 	 * Defragment the local index-space.
 	 */
-	relocalise: function(klg) {
+	relocalise: function() {
 		this.summarised();
 		//Remove local-index-space allocations for unknowns not used anymore
 		var delta = 0, i = 0, tt = {};
@@ -126,8 +159,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			}
 		}
 		if(!delta) return this;
-		var rv = this.contextualise(klg, tt);
-		return rv;
+		return this.subContextualise(tt);
 	}.perform('nul.xpr.fuzzy->relocalise')
 	.describe(function(klg) { return ['Relocating', this]; }),
 	/**
@@ -141,15 +173,21 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			nul.browse.lclShft(dlt, this.ctxName, klg.ctxName)
 		) || this);
 		if('fz'!= rv.charact) return rv;
-		klg.knew(rv.components);
+		klg.know(rv.components);
 		return rv.components.value;
 	}.perform('nul.xpr.fuzzy->stpUp'),
 /////// Knowledge
 	enter: function() {
-		return new nul.knowledge([], this.locals, this.ctxName);
+		if(nul.debug.assert) assert(!this.openedKnowledge,
+			'Knowledge not entered twice');
+		return this.withKlg(
+			new nul.knowledge([], this.locals, this.ctxName), 'enter');
 	},
 	aknlgd: function(cb, klg) {
-		this.openedKnowledge = new nul.knowledge(this.components, this.locals, this.ctxName);
+		if(nul.debug.assert) assert(!this.openedKnowledge,
+			'Knowledge not entered twice');
+		this.withKlg(new nul.knowledge(
+			this.components, this.locals, this.ctxName), 'aknlgd');
 		var rv = cb(this.components.value, this.openedKnowledge);
 		return klg.leave(this.openedKnowledge);
 	},

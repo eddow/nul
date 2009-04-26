@@ -15,20 +15,11 @@ nul.xpr.operation = function(pos) {
 			this.charact = oprtr;
 			$super(oprnds);
 		},
-		operable: function(klg, cs, rrv, o) {
-			var fct;
-			if(o) fct = o.attribute(this.charact, klg);
-			while(0< cs.length && !fct) {
-				if(o) rrv.unshift(o);
-				o = cs.pop();
-				fct = o.attribute(this.charact, klg);
-			}
-			if(fct) return {o:o, fct:fct};
-		},
 		subject: function(klg) {
-			var ops = [], rrv = [], fct = [], prsntFct = {};
-			while(0<this.components.length) {
-				var o = this.components.shift();
+			var ops = [], rrv = [], fct = [], prsntFct = {},
+				toOp = clone1(this.components);
+			while(toOp.length) {
+				var o = toOp.shift();
 				var oprtr = o.attribute(this.charact, klg);
 				if(!oprtr) rrv.push(o);
 				else {
@@ -42,14 +33,14 @@ nul.xpr.operation = function(pos) {
 					}
 				}
 			}
-			if(0>= ops.length) return;
+			if(!ops.length) return;
 			
 			var trv = new nul.xpr.application(
 				new nul.xpr.set(fct),
 				new nul.xpr.set(ops));
 			trv = trv.operate(klg);
 			if(!trv) return;
-			if(!rrv.length) return trv.subjective(klg);
+			if(!rrv.length) return this.replaceBy(trv.subjective(klg));
 			rrv.push(trv);
 			return this.compose(rrv);
 		}.describe(function(klg) { return ['Subjectiving', this]; }),		

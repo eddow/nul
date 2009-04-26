@@ -10,101 +10,149 @@
  * Utility functions to access a fuzzy expression as a knowledge
  */
 nul.knowledge = Class.create({
-	access: function() {
-		this.eqAccess = {};
-		this.tpAccess = {};
-		for(var n=0; n<this.knowledge.length; ++n) this.makeAccess(n);
-	},
 	initialize: function(knowledge, locals, ctxName) {
 		this.knowledge = knowledge || [];
 		this.locals = locals || [];
 		this.ctxName = ctxName || nul.xpr.fuzzy.createCtxName();
-		this.access();
 		nul.debug.log('ctxs')(nul.debug.lcs.collapser('Enter'),
 			[this.ctxName, this.knowledge]);
 	},
 	leave: function(rv) {
 		nul.debug.log('ctxs')(nul.debug.lcs.endCollapser('Leave', 'Ctx'),
 			[this.ctxName, rv||'']);
-		if(rv) return this.asFuzz(rv);
+		if(rv) {
+			rv = this.asFuzz(rv);
+			if(nul.debug.assert) assert(
+				'fz'!= rv.charact || rv.openedKnowledge === this,
+				'Knowledge opened only once');
+			delete rv.openedKnowledge;
+			return rv;
+		}			
 	},
 	asFuzz: function(rv) {
 		try {
 			if('fz'== rv.charact) {
 				if(nul.debug.assert) assert(this.ctxName == rv.ctxName,
 					'Fuzzy leaves the knowledge it created.')
-				rv.components.pushs(this.knowledge);
-				this.knowledge = rv.components;
-				this.access();
+				if(this.knowledge !== rv.components) {
+					while(rv.components.length)
+						this.know(rv.components.pop());
+					this.knowledge.value = rv.components.value;
+					rv.components = this.knowledge;
+				}
 				rv.locals = this.locals;
-			} else rv = new nul.xpr.fuzzy(
+				if(nul.debug.assert) assert(rv.openedKnowledge === this,
+					'Knowledge opened only once');
+			} else { 
+				rv = new nul.xpr.fuzzy(
 					rv,
 					this.knowledge,
 					this.locals,
 					this.ctxName);
+				this.knowledge = rv.components;
+				if('fz'!= rv.charact) return rv;
+				rv.withKlg(this, 'asFuzz');
+			}
 			
-			rv.openedKnowledge = this;
-			rv = rv.simplify(this);
-			if('fz'!= rv.charact) throw {cpsd: rv};
-			this.concentrate(rv.components.value);
-			rv = rv.relocalise(this);
-			if('fz'!= rv.charact) throw {cpsd: rv};
-			rv = rv.composed();
+			var oldKNdx, newKNdx = this.knowledgeNdx();
+			do {
+				oldKNdx = newKNdx;
+				rv = rv.simplify();
+				if('fz'!= rv.charact) return rv;
+				this.concentrate(rv.components.value);
+				if('fz'!= rv.charact) return rv;
+				newKNdx = this.knowledgeNdx();
+			} while(oldKNdx != newKNdx)
+			rv = rv.relocalise();
+			if('fz'!= rv.charact) return rv;
+			return rv.composed();
 		} catch(err) {
-			if(err.cpsd) rv = err.cpsd;
-			else {
-				if(nul.failure!= err) throw nul.exception.notice(err);
-				return new nul.xpr.fuzzy();
-			} 
-		} finally {
-			this.knowledge = [];
-			this.access();
+			if(nul.failure!= err) throw nul.exception.notice(err);
+			return new nul.xpr.fuzzy();
 		}
-		if(rv.openedKnowledge) delete rv.openedKnowledge;
+	},
+/////// Access management
+	knowledgeNdx: function() {
+		var rv = '';
+		for(var i=0; i<this.knowledge.length; ++i)
+			rv += '|'+ this.knowledge[i].ndx;
 		return rv;
+	},
+	/**
+	 * Equality accesses
+	 */
+	eqAccess: function() {
+		var rv = {};
+		map(this.knowledge, function(ndx) {
+			if('='== this.charact) map(this.components,function() {
+				rv[this.ndx] = ndx;
+			});
+		});
+		return rv;
+	},
+	/**
+	 * Type accesses (applications)
+	 */
+	tpAccess: function() {
+		var rv = {};
+		map(this.knowledge, function(ndx) {
+			if('[.]'== this.charact) {
+				if(!rv[this.components.applied.ndx])
+					rv[this.components.applied.ndx] = {};
+				rv[this.components.applied.ndx][this.components.object.ndx] = ndx;
+			}
+		});
+		return rv;
+	},
+	/**
+	 * boolean: is this premice known
+	 */
+	known: function(prm) {
+		//TODO: this function avoid to store twice the same knowledge
+		// The problem is that knowledges are proposed a lot of time to be known
+		// It should be nice to try to make less propositions instead of filtering them that much
+		return trys(this.knowledge, function(p) { return prm.cmp(this); });
 	},
 /////// Premices management
 	forget: function(sn) {
-		if('undefined'== typeof sn) {
-			this.knowledge.splice(0);
-			this.eqAccess = {};
-			this.tpAccess = {};
-		} else {
-			for(var x in this.eqAccess) {
-				if(this.eqAccess[x] == sn) delete this.eqAccess[x];
-				else if(this.eqAccess[x] > sn) --this.eqAccess[x];
-			}
-			if('[.]'== this.knowledge[sn].charact)
-				delete this.tpAccess[this.knowledge[sn].components.applied.ndx];
-			return this.knowledge.splice(sn, 1)[0];
-		}
+		if('undefined'== typeof sn)
+			return this.knowledge.splice(0);
+		else return this.knowledge.splice(sn, 1)[0];
 	},
-	knew: function(premices) {
+	know: function(premices) {
 		if(!isArray(premices)) premices = [premices];
 		while(0<premices.length) {
 			var p = premices.pop();
-			if(p.flags.failable) this.knowledge.push(this.makeAccess(p));
+			if('='== p.charact) this.affect(p.components);
+			else this.knew(p);
 		}
+	},
+	knew: function(p) {
+		if(!this.known(p) && p.flags.failable) {
+			nul.debug.log('knowledge')('known', p);
+			if('[.]'== p.charact) {
+				//Insert it as the last belonging knowledge
+				var i;
+				for(i=0;
+					i<this.knowledge.length &&
+					'[.]'== this.knowledge[i].charact;
+					++i);
+				this.knowledge.splice(i, 0, p);
+			} else this.knowledge.push(p);
+		}	//else: already known
 		return this;
 	},
-	makeAccess: function(pn, pval) {
-		if('undefined'== typeof pval) {
-			if('object'== typeof pn) {
-				pval = pn;
-				pn = this.knowledge.length;
-			} else pval = this.knowledge[pn];
-		}
-		if('='== pval.charact)
-			for(var c=0; c<pval.components.length; ++c)
-				this.eqAccess[pval.components[c].ndx] = pn;
-		else if('[.]'== pval.charact)
-			this.tpAccess[pval.components.applied.ndx] =
-				pval.components.object;
-		return pval;
-	},
 	primitive: function(xpr) {
-		var rv = this.tpAccess[xpr.ndx];
-		if(rv) return rv.elementPrimitive;
+		var tpAccess = this.tpAccess();
+		if(tpAccess[xpr.ndx]) {
+			for(var y in tpAccess[xpr.ndx]) {
+				var st = this.knowledge[tpAccess[xpr.ndx][y]];
+				if(nul.debug.assert) assert('[.]'== st.charact,
+					'tpAccess refers to belonging.');
+				st = st.components.object.elementPrimitive;
+				if(st) return st;
+			}
+		}
 	},
 /////// Locals management
 	addLocals: function(locals) {
@@ -122,11 +170,16 @@ nul.knowledge = Class.create({
 		var eqClass = [];
 		var eqClassNdx = {};
 		var merged = false;
+		var eqAccess = this.eqAccess();
 		for(var n=0; n<us.length; ++n) {
 			var fpn, eqi;
-			if('undefined'!= typeof(fpn= this.eqAccess[us[n].ndx])) {
+			//TODO:
+			if('undefined'!= typeof(fpn= eqAccess[us[n].ndx])) {
 				merged = true;
 				eqi = this.forget(fpn).components;
+				for(var i in eqAccess)
+					if(fpn== eqAccess[i]) delete eqAccess[i];
+					else if(fpn< eqAccess[i]) --eqAccess[i];
 				eqi.push(us[n]);
 			} else eqi = [us[n]];
 			var eq;
@@ -158,8 +211,6 @@ nul.knowledge = Class.create({
 	 		if(n<us.length) us[0].setSelfRef(us[n]);
 	 	} while(n<us.length);
 
-		nul.debug.log('knowledge')('Equivals', us);
-
 		var rv = us[0];
 		var unf = new nul.xpr.unification(us).summarised();
 		this.knew(unf);
@@ -178,7 +229,7 @@ nul.knowledge = Class.create({
 
 		var used = [];
 		map(this.knowledge, function() { used.push(this.deps); });
-		used = nul.lcl.dep.mix(used);
+		used = nul.lcl.dep.mix(used)[this.ctxName]||[];
 		
 		//First eliminate locals found once in an equality of the premices
 		for(var l in used) if(1== used[l] && !usefulLocals[l]) {
@@ -197,9 +248,9 @@ nul.knowledge = Class.create({
 						!prm.components[c].deps[this.ctxName][l]; ++c);
 							//Find the term refering the local
 					if('local'== prm.components[c].charact) {
-						if(2== prm.components.length) {
-							this.knowledge.splice(p,1);
-						} else {
+						if(2== prm.components.length)
+							this.forget(p);
+						else {
 							prm.components.splice(c,1);
 							prm.summarised();
 						}

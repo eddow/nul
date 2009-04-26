@@ -24,10 +24,12 @@ nul.xpr.handle = Class.create(nul.xpr.composed, {
 		if(	(!hd && this.components.handled.free([klg.ctxName])) )
 			throw nul.semanticException('HUD',
 				'Cannot handle '+this.components.handled.toString());
-		if(!hr || !hd) return;
-		nul.unify.level(hr[2], hd[1], klg);
-		if(!hr[0]) return hd[2];
-		return new nul.xpr.lambda(hr[0], hd[2]);
+		if(!hr || !hd)
+			klg.know(this); 
+		else {
+			nul.unify.level(hr[2], hd[1], klg);
+			return this.replaceBy(!hr[0]?hd[2]:new nul.xpr.lambda(hr[0], hd[2]));
+		}
 	}.perform('nul.xpr.handle->subject')
 	.describe(function(klg) { return ['Handeling', this]; })
 });

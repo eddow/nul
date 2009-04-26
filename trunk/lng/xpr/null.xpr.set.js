@@ -67,11 +67,16 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder,'set'), {
 		for(var i=0; i<xpr.components.length; ++i) {
 			var trv = xpr.components[i].stpUp(klg);
 			try {
-				rv.push((new nul.knowledge())
-					.leave(new nul.xpr.handle(apl.clone(), trv)));
+				//var nklg = new nul.knowledge();
+				trv = new nul.xpr.handle(apl.clone(), trv);
+				trv = trv.subject(klg) || trv;
 			} catch(err) {
+				trv = null;
 				if(nul.failure!= err) throw nul.exception.notice(err);
+			} finally {
+				//trv = nklg.leave(trv);
 			}
+			if(trv) rv.push(trv);
 		}
 		if(xpr.components.follow) {
 			//TODO
@@ -88,8 +93,11 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder,'set'), {
 				rv.push(kwf.evaluate(klg)||kwf);
 			}*/
 		}
-		if(!rv.length) nul.fail();
-		return nul.xpr.build(nul.xpr.ior3, rv);
+		switch(rv.length) {
+		case 0: nul.fail();
+		case 1: return rv[0].stpUp(klg);
+		}
+		return new nul.xpr.ior3(rv);
 	}.perform('nul.xpr.set->take'),
 /////// String management
 	expressionHTML: function() {

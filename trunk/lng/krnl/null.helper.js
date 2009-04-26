@@ -54,6 +54,13 @@ function map(itm, fct) {
 	return rv;
 }
 
+function replace(dst, src) {
+	dst.prototype = src.prototype;
+	for(var i in dst) delete dst[i];// = null;
+	for(var i in xpr) dst[i] = xpr[i];
+	return dst;
+}
+
 function escapeHTML(str) {
    var div = document.createElement('div');
    var text = document.createTextNode(str);
