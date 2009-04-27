@@ -10,6 +10,10 @@ Yes, if and only if the set of images of an item (`x`) by `a` is either the same
 {{{
 a, E :- \/x {a x} = ({E x} [] {})
 }}}
+Or, also, the intersection of `a` and `E` is `a`
+{{{
+a, E :- a = a * E
+}}}
 
 == vector`<T>` ==
 
