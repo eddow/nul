@@ -11,7 +11,7 @@ Are implemented some native data-managing funtionalities. These are given as "gl
 Are defined two sets : Q, Z, respectively for the sets of rational numbers and integers.
 These sets are non-transforming sets giving back the value or failing if the value don't fit.
 
-Is also defined the set bool, containing - of course - two values.
+Is also defined the set `bool`, containing - of course - two values.
 
 = String =
 
