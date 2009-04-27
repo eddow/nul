@@ -7,6 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 nul.xpr.holder = Class.create(nul.xpr.listed, {
+	hold: true,
 	/**
 	 * Determines weither this set can be empty or not.
 	 * If 'true', the set *CAN* be empty
@@ -21,10 +22,14 @@ nul.xpr.holder = Class.create(nul.xpr.listed, {
 	 * Extend expressions and multiply them to be sure no more IOR3s are in.
 	 */
 	extend: function() {
+		nul.debug.log('evals')(nul.debug.lcs.collapser('Extend'), [this]);
 		var nc = [];
 		while(0< this.components.length)
 			nc.pushs(nul.solve.solve(this.components.shift()));
-		return this.compose(nc);
+		var rv = this.compose(nc);
+		nul.debug.log('evals')(nul.debug.lcs.endCollapser('Extended'), [this]);
+		
+		return rv;
 	}.perform('nul.xpr.holder->extend')
 	.describe(function() { return ['Extendinging', this]; }),
 	composed: function() {
@@ -45,6 +50,19 @@ nul.xpr.holder = Class.create(nul.xpr.listed, {
 			return this.components.follow || this;
 		return this;
 	}.perform('nul.xpr.holder->composed'),
+	subRecursion: function(cb, kb) {
+		return this.compose(map(this.components, function() {
+			var klg = this.enter();
+			if(kb) kb.unshift(klg);
+			var rv;
+			try { rv = cb.apply(this); }
+			finally {
+				rv = klg.leave(rv);
+				if(kb) kb.shift();
+			}
+			return rv;
+		}));
+	},
 });
 
 /**
@@ -65,33 +83,23 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder,'set'), {
 		var xpr = this.clone();	//TODO: please kill me :'(
 		var rv = [];
 		for(var i=0; i<xpr.components.length; ++i) {
-			var trv = xpr.components[i].stpUp(klg);
 			try {
-				//var nklg = new nul.knowledge();
-				trv = new nul.xpr.handle(apl.clone(), trv);
-				trv = trv.subject(klg) || trv;
+				rv.push(xpr.components[i].aknlgd(function(v, klg){
+					v = new nul.xpr.handle(apl.clone(), v);
+					return v.subject(klg, klg) || v;
+				}));
 			} catch(err) {
-				trv = null;
 				if(nul.failure!= err) throw nul.exception.notice(err);
-			} finally {
-				//trv = nklg.leave(trv);
 			}
-			if(trv) rv.push(trv);
 		}
 		if(xpr.components.follow) {
-			//TODO
-/*			var kwf = nul. build.kwFreedom();
-			kwf.makeFrdm(klg);
+			var trv = xpr.components.follow.stpUp(klg);
 			try {
-				kwf.components.value = xpr.components.follow.take(apl,klg,way).dirty();
+				trv = new nul.xpr.application(xpr.components.follow, apl);
+				rv.push(trv.operate(klg) || trv);
 			} catch(err) {
-				klg.pop('kw');
 				if(nul.failure!= err) throw nul.exception.notice(err);
 			}
-			if(kwf.components.value) {
-				kwf = klg.pop(kwf).dirty();
-				rv.push(kwf.evaluate(klg)||kwf);
-			}*/
 		}
 		switch(rv.length) {
 		case 0: nul.fail();

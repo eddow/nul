@@ -11,10 +11,21 @@
  */
 nul.nativeFunctions = {
 	hardCoded: function(txt, hcFctNm, hcFct) {
-		var ub = new nul.globalsUse(null, 'operation');
-		ub.createFreedom(
-			'hardCoded', new nul.xpr.javascript.fct(hcFctNm,hcFct));
-		return ub.valued(nul.compile(txt));	//TODO: compile once !
+		if(!nul.nativeFunctions.hardCoded[hcFctNm]) {
+			nul.debug.log('evals')(nul.debug.lcs.collapser('hardCode'), [hcFctNm]);
+			var rv;
+			try {
+				var ub = new nul.globalsUse(null, 'operation');
+				ub.createFreedom(
+					'hardCoded', new nul.xpr.javascript.fct(hcFctNm,hcFct));
+				nul.nativeFunctions.hardCoded[hcFctNm] =
+					ub.valued(nul.compile(txt));
+			} finally {
+				nul.debug.log('evals')(nul.debug.lcs.endCollapser('hardCoded'),
+					[nul.nativeFunctions.hardCoded[hcFctNm]]);
+			}
+		}
+		return nul.nativeFunctions.hardCoded[hcFctNm].clone();
 	}.perform('nul.nativeFunctions.hardCoded'),
 	atomOp: function(op, tp) {
 		return function() {
@@ -35,7 +46,7 @@ nul.nativeFunctions = {
 		return function() {
 			return nul.nativeFunctions.hardCoded(
 				'\\/a {'+tp+' a} :- hardCoded a',
-				op+tp,
+				op+nul.natives[tp].name,
 				function(o, klg) {
 					if(o.finalRoot()) return fct(o);
 			 	}

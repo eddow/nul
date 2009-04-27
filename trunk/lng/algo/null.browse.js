@@ -24,9 +24,6 @@ nul.browse = {
 	spaces: 0,
 	expression: function(behav, noOwnBS) {
 		if(!noOwnBS) behav.browseSpace = ++nul.browse.spaces;
-		return nul.browse.recursion.apply(this, [behav]);
-	},
-	recursion: function(behav) {
 		var xpr = this, chg = false;
 		function iif(nv, ov) {
 			if(!nv) return ov;
@@ -35,7 +32,7 @@ nul.browse = {
 		}
 
 		if(this.browseSpace== behav.browseSpace) return;
-		this.browseSpace = behav.browseSpace;
+
 		var isToBrowse = 'undefined'== typeof behav.browse ||
 						('function'== typeof behav.browse && behav.browse(xpr)) ||
 						('function'!= typeof behav.browse && behav.browse);
@@ -47,7 +44,7 @@ nul.browse = {
 					var co = iif(this.browse(behav, 'nocs'), this);
 					if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
 					return co;
-				});
+				}, behav.kb);
 				if(nxpr!== xpr) {
 					xpr = nxpr;
 					chg = true;
@@ -66,7 +63,6 @@ nul.browse = {
 			throw err;
 		}
 		if(behav.finish) { xpr = behav.finish(xpr, chg, this); chg = true; }
-		if(chg && xpr) xpr = xpr.summarised();
 
 		if(chg && xpr) {
 			xpr.browseSpace = behav.browseSpace;
@@ -75,13 +71,14 @@ nul.browse = {
 		nul.debug.log('perf')('Useless browse for '+behav.name,this);			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
-	subjectivise: function(klg) {
-		return {	//TODO: have last knowledge
+	subjectivise: function(klg, kb) {
+		return {
 			klg: klg,
+			kb: kb||[],
 			name: 'subjectivisation',
 			finish: function(xpr, chgd, ori) {
 				if(xpr.subject) {
-					var rv = xpr.subject(this.klg);
+					var rv = xpr.subject(this.klg, this.kb[0]);
 					if(rv) {
 						chgd = true;
 						xpr = rv;
@@ -103,32 +100,24 @@ nul.browse = {
 			name: 'contextualisation',
 			rpl: rpl,
 			act: act,
-			kb: klg?[klg]:[],
+			klg: klg,
 			eqProtect: [-1],
 			before: function(xpr) {
 				//TODO: throw stop.browsing ?
 				if('='== xpr.charact) this.eqProtect.unshift(0);
 				else --this.eqProtect[0];
-				if('fz'== xpr.charact) this.kb.unshift(xpr.enter());
 			},
 			finish: function(xpr, chgd, orig) {
 				xpr.summarised();
 				if((0!= ++this.eqProtect[0] || 'knwl'!= this.act) && this.rpl[xpr.ndx])
 					return this.rpl[xpr.ndx];
 				if('='== orig.charact) this.eqProtect.shift();
-				if('fz'== orig.charact) {
-					if(chgd) xpr = this.kb.shift().leave(xpr);
-					else this.kb.shift().leave(orig);
-				}
-				if(xpr && xpr.operate && this.kb.length) {
-					var rv = xpr.operate(this.kb[0]);
+				if(xpr && xpr.operate && this.klg) {
+					var rv = xpr.operate(this.klg);
 					chgd |= rv;
 					xpr = rv || xpr;					
 				}
 				if(chgd) return xpr;
-			},
-			abort: function(xpr, err, orig) {
-				
 			}
 		};
 	},
@@ -143,6 +132,19 @@ nul.browse = {
 				if(xpr.ctxName == this.orgName)
 					return new nul.xpr.local(this.dstName, xpr.lindx + this.inc, xpr.dbgName);
 			}.perform('nul.lclShft->local')
+		};
+	},
+	unSubFuzz: function(klg) {
+		return {
+			name: 'Unfuzz subs',
+			klg: klg,
+			before: function(xpr) {
+				if(xpr.hold) throw nul.browse.abort;
+			},
+			fz: function(xpr) {
+				if(xpr.ctxName == this.klg.ctxName) return xpr;
+				return xpr.stpUp(this.klg);
+			}
 		};
 	},
 };

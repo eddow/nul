@@ -71,21 +71,42 @@ nul.xpr = Class.create({
 	/**
 	 * Makes the components not anymore using objectivities concerning this knowledge.
 	 */
-	subjective: function(klg) {
-		return this.browse(nul.browse.subjectivise(klg)) || this;
+	subjective: function(klg, kb) {
+		return this.browse(nul.browse.subjectivise(klg, kb)) || this;
 	}.perform('nul.xpr->subjective'),
 
-	subRecursion: function(cb) {
+	subRecursion: function(cb, kb) {
 		return this.compose(map(this.components, cb));
 	},
 
 	stpUp: function(klg) { return this; },
-	aknlgd: function(cb, klg) {
-		return cb(this, klg);
+	aknlgd: function(cb) {
+		var klg = this.enter();
+		var rv;
+		try { rv = cb(this, klg); }
+		finally { rv = klg.leave(rv); }
+		return rv;
+	},
+	entered: function(cb) {
+		var klg = this.enter();
+		var rv;
+		try { rv = cb.apply(this, [klg]); }
+		finally { rv = klg.leave(rv); }
+		return rv;
 	},
 	enter: function() {
 		return new nul.knowledge();
 	},
+	/**
+	 * Ensure that no sub-expression of this fuzzy expression is fuzzy, beside
+	 * the ones under a 'holder' (IOR3 or SET)
+	 */
+	noFuzzSubs: function() {	//TODO: to kill?
+		return this.entered(function(klg) {
+			return this.browse(nul.browse.unSubFuzz(klg)) || this;
+		});
+	},
+	
 	/**
 	 * Replace all operable expression by the result of its operation.
 	 */

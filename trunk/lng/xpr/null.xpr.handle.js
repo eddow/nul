@@ -15,23 +15,23 @@ nul.xpr.handle = Class.create(nul.xpr.composed, {
 		$super({handler:handler, handled:handled});
 	},
 /////// Objectivity specific
-	subject: function(klg) {
-		var hr = this.components.handler.handle(klg);
-		var hd = this.components.handled.handle(klg);
-		if(	(!hr && this.components.handler.free([klg.ctxName])) )
+	subject: function(left, hpnd) {
+		var hr = this.components.handler.handle(left);
+		var hd = this.components.handled.handle(left);
+		if(	(!hr && this.components.handler.free([left.ctxName])) )
 			throw nul.semanticException('HUD',
 				'Cannot handle with '+this.components.handler.toString());
-		if(	(!hd && this.components.handled.free([klg.ctxName])) )
+		if(	(!hd && this.components.handled.free([left.ctxName])) )
 			throw nul.semanticException('HUD',
 				'Cannot handle '+this.components.handled.toString());
 		if(!hr || !hd)
-			klg.know(this); 
+			hpnd.know(this); 
 		else {
-			nul.unify.level(hr[2], hd[1], klg);
+			nul.unify.level(hr[2], hd[1], hpnd);
 			return this.replaceBy(!hr[0]?hd[2]:new nul.xpr.lambda(hr[0], hd[2]));
 		}
 	}.perform('nul.xpr.handle->subject')
-	.describe(function(klg) { return ['Handeling', this]; })
+	.describe(function(left, hpnd) { return ['Handeling', this]; })
 });
 
 nul.xpr.lambda = Class.create(nul.xpr.primitive(nul.xpr.composed), {

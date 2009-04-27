@@ -42,7 +42,7 @@ nul.solve = {
 				cn: cn,
 				klg: klg,
 				before: function(xpr) {
-					if(!this.browse || ('{}'==xpr.charact && this.klg))
+					if(!this.browse /*|| ('{}'==xpr.charact && this.klg)*/)
 						throw nul.browse.abort;
 					if(xpr.possibility) {
 						this.browse = false;

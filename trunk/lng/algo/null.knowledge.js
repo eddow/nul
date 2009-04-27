@@ -31,9 +31,14 @@ nul.knowledge = Class.create({
 	},
 	asFuzz: function(rv) {
 		try {
+			if('fz'== rv.charact && rv.components && this.ctxName != rv.ctxName)
+				rv = rv.stpUp(this);
+			
 			if('fz'== rv.charact) {
-				if(nul.debug.assert) assert(this.ctxName == rv.ctxName,
-					'Fuzzy leaves the knowledge it created.')
+				if(!rv.components) {
+					this.forget();
+					return rv;
+				}
 				if(this.knowledge !== rv.components) {
 					while(rv.components.length)
 						this.know(rv.components.pop());
@@ -49,6 +54,7 @@ nul.knowledge = Class.create({
 					this.knowledge,
 					this.locals,
 					this.ctxName);
+				if('fz'!= rv.charact) return rv;
 				this.knowledge = rv.components;
 				if('fz'!= rv.charact) return rv;
 				rv.withKlg(this, 'asFuzz');
@@ -121,16 +127,14 @@ nul.knowledge = Class.create({
 	},
 	know: function(premices) {
 		if(!isArray(premices)) premices = [premices];
-		while(0<premices.length) {
-			var p = premices.pop();
-			if('='== p.charact) this.affect(p.components);
-			else this.knew(p);
-		}
+		var klg = this;
+		map(premices, function() { klg.knew(this); });
 	},
 	knew: function(p) {
 		if(!this.known(p) && p.flags.failable) {
 			nul.debug.log('knowledge')('known', p);
-			if('[.]'== p.charact) {
+			/*if('fz'== p.charact) this.know(p.components);
+			else*/ if('[.]'== p.charact) {
 				//Insert it as the last belonging knowledge
 				var i;
 				for(i=0;
@@ -138,7 +142,8 @@ nul.knowledge = Class.create({
 					'[.]'== this.knowledge[i].charact;
 					++i);
 				this.knowledge.splice(i, 0, p);
-			} else this.knowledge.push(p);
+			} else if('='== p.charact) this.affect(p.components);
+			else this.knowledge.push(p);
 		}	//else: already known
 		return this;
 	},
@@ -198,7 +203,7 @@ nul.knowledge = Class.create({
 		//Sort to have a nice 'replace-by'. note: replaceBy = left-ward
 		//free variables goes left
 		for(var n=1; n<us.length; ++n)
-			if(isEmpty(us[n].deps) || '::'== us[n].charact)
+			if((us[n].free() && !us[0].free()) || '::'== us[n].charact)
 				us.unshift(us.splice(n,1)[0]);
 		//If left-ward is a local, try to put another value (not local) leftward
 	 	if('local'== us[0].charact) {
@@ -207,13 +212,14 @@ nul.knowledge = Class.create({
 	 	}
 	 	//Don't replace X by a value that refer X : if it occurs, contextualise into self-reference
 	 	do {
-	 		for(var n=1; n<us.length; ++n) if(us[0].contains(us[n])) break;
+	 		for(var n=1; n<us.length; ++n)
+	 			if(us[0].contains(us[n]) && !us[n].free())
+	 				break;
 	 		if(n<us.length) us[0].setSelfRef(us[n]);
 	 	} while(n<us.length);
 
 		var rv = us[0];
-		var unf = new nul.xpr.unification(us).summarised();
-		this.knew(unf);
+		this.knowledge.push(new nul.xpr.unification(us).summarised());
 		return rv;
 	},
 
@@ -261,7 +267,7 @@ nul.knowledge = Class.create({
 		//Second, sort the premices to keep only the ones with no link at all from the value
 		var forgottenPrmcs = [];
 		for(var i=0; i<this.knowledge.length; ++i)
-			if(isEmpty(this.knowledge[i].deps, [this.ctxName]))
+			if(this.knowledge[i].free([this.ctxName]))
 				forgottenPrmcs.push(i);
 		do {
 			var ds;

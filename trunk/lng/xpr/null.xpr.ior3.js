@@ -13,6 +13,7 @@
  */
 nul.xpr.ior3 = Class.create(nul.xpr.holder, {
 	charact: '[]',
+	htmlCharact: '&#9633;',
 	failable: function() {
 		return this.canBeEmpty();
 	},

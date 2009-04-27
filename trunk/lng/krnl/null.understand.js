@@ -39,6 +39,8 @@ nul.understanding = {
 
 			case '<<+':	return new nul.xpr.seAppend(ops[0], ops[1]);
 			case ';':
+				for(var i=1; i<ops.length; ++i)
+					ub.klg.know(ops[i]);
 				return ops[0];
 			case '[]':	return new nul.xpr.ior3(ops);
 			default:	throw nul.internalException('Unknown operator: "'+this.operator+'"');
@@ -122,15 +124,15 @@ nul.understanding.base = Class.create({
 	valued: function(tu) {
 		if(!tu) return this.klg.leave();
 		var xpr;
-		try { xpr = tu.understand(this); }
-		catch(err) {
-			this.klg.leave();
+		try {
+			xpr = tu.understand(this);
+			xpr = this.klg.asFuzz(xpr);
+			xpr = xpr.subjective(this.klg, [this.klg]);
+		} catch(err) {
+			xpr = null;
 			if(nul.failure!= err) throw nul.exception.notice(err);
-			return new nul.xpr.fuzzy(); 
-		}
-		xpr = this.klg.asFuzz(xpr);
-		xpr = xpr.subjective(this.klg);
-		return this.klg.leave(xpr);
+		} finally { xpr = this.klg.leave(xpr); }
+		return xpr || new nul.xpr.fuzzy();
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);

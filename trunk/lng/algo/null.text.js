@@ -153,6 +153,7 @@ nul.text = {
 			},
 			endCollapser: function(opnd, clsd) {
 				var plc = this.toPair.pop();
+				if('undefined'== typeof clsd) clsd = opnd;
 				if('undefined'!= typeof this.collapsing[plc]) return '';	//Collaper was not drawn
 				this.collapsing[plc] = this.lineCount();
 				return '<span class="collapser end">' +

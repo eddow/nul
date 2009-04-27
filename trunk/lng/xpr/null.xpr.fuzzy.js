@@ -91,17 +91,22 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		return rv;
 	},
 /////// Fuzzy specific
-	subRecursion: function(cb) {
+	subRecursion: function(cb, kb) {
 		if(this.openedKnowledge) {
 			var ps = this.openedKnowledge.forget();
 			while(ps.length)
 				this.openedKnowledge.know(cb.apply(ps.shift()));
 			return this.openedKnowledge.asFuzz(cb.apply(this.components.value));
 		}
-		var klg = this.enter();
-		while(this.components.length)
-			klg.know(cb.apply(this.components.shift()));
-		return klg.leave(cb.apply(this.components.value));
+		var klg = this.enter('empty'), rv;
+		try {
+			while(this.components.length)
+				klg.know(cb.apply(this.components.shift()));
+			rv = cb.apply(this.components.value);
+		} finally {
+			rv = klg.leave(rv);
+		} 
+		return rv;
 	},
 	withKlg: function(klg, org) {	//Debug purpose only
 		this.openedKnowledge = klg;
@@ -176,20 +181,35 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		klg.know(rv.components);
 		return rv.components.value;
 	}.perform('nul.xpr.fuzzy->stpUp'),
+
 /////// Knowledge
-	enter: function() {
+	enter: function(emptyK) {
 		if(nul.debug.assert) assert(!this.openedKnowledge,
 			'Knowledge not entered twice');
 		return this.withKlg(
-			new nul.knowledge([], this.locals, this.ctxName), 'enter');
+			new nul.knowledge(
+				emptyK?[]:this.components,
+				this.locals, this.ctxName), 'enter');
 	},
-	aknlgd: function(cb, klg) {
+	entered: function(cb) {
 		if(nul.debug.assert) assert(!this.openedKnowledge,
 			'Knowledge not entered twice');
 		this.withKlg(new nul.knowledge(
 			this.components, this.locals, this.ctxName), 'aknlgd');
-		var rv = cb(this.components.value, this.openedKnowledge);
-		return klg.leave(this.openedKnowledge);
+		var rv;
+		try { rv = cb.apply(this, [this.openedKnowledge]); }
+		finally { rv = this.openedKnowledge.leave(rv); }
+		return rv;
+	},
+	aknlgd: function(cb) {
+		if(nul.debug.assert) assert(!this.openedKnowledge,
+			'Knowledge not entered twice');
+		this.withKlg(new nul.knowledge(
+			this.components, this.locals, this.ctxName), 'aknlgd');
+		var rv;
+		try { rv = cb(this.components.value, this.openedKnowledge); }
+		finally { rv = this.openedKnowledge.leave(rv); }
+		return rv;
 	},
 });
 nul.xpr.fuzzy.createCtxName = function(hd) {
