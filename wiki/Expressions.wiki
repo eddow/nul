@@ -27,7 +27,7 @@ This is the set that associate to any type T the type "list of Ts".
 {{{
 list = { type :- {:tlist {} [] type _,.. tlist _} }
 }}}
-
+This, for example, verify {{{list Z (1, 17, 8, 6, 2)}}}
 = Working =
 
 == Factorial ==
