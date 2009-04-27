@@ -11,6 +11,13 @@ Yes, if and only if the set of images of an item (`x`) by `a` is either the same
 a, E :- \/x {a x} = ({E x} [] {})
 }}}
 
+== vector<T> ==
+
+This is the set that associate to any type T the type "list of Ts".
+{{{
+list = { type :- {:tlist {} [] type _,.. tlist _} }
+}}}
+
 = Working =
 
 == Factorial ==
