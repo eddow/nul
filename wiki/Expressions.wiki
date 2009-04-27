@@ -1,6 +1,16 @@
 #summary Some NUL expressions
 #labels Featured,program
 
+= Not yet working =
+
+== Subset ==
+
+Is `a` a subset of `E` ?
+Yes, if and only if the set of images of an item (`x`) by `a` is either the same set as the set of images of that item (`x`) by `E` or an empty set (empty set of images means that `x` has no image by `a`)
+{{{
+a, E :- \/x {a x} = ({E x} [] {})
+}}}
+
 = Working =
 
 == Factorial ==
