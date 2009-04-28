@@ -46,7 +46,7 @@ nul.xpr.local = Class.create(nul.xpr.atom, {
 	initialize: function($super, ctxName, lindx, dbgName) {
 		this.ctxName = ctxName;
 		this.lindx = lindx;
-		this.acNdx = '['+lindx+'|'+ctxName+']';
+		this.acNdx = nul.xpr.local.ndx(lindx, ctxName);
 		this.dbgName = dbgName;
 		$super();
 	},
@@ -63,3 +63,7 @@ nul.xpr.local = Class.create(nul.xpr.atom, {
 		return (this.dbgName?this.dbgName:'')+ this.acNdx;
 	}
 });
+
+nul.xpr.local.ndx = function(lindx, ctxName) {
+	return '['+lindx+'|'+ctxName+']';
+};

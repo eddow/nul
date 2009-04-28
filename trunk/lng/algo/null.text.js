@@ -114,13 +114,13 @@ nul.text = {
 			aDeps = nul.text.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
 		}
 		var cls = '';
-		if('fz'==this.charact) {
+		if(this.locals) {
 			aLocals = [];
 			for(var i=0; i<this.locals.length; ++i)
 				aLocals.push(this.locals[i]);
 			if(0<aLocals.length)
 				aLocals = nul.text.js.tile('locals', this.ctxName + ': ' + aLocals.join(', '));
-			else aLocals = '';
+			else aLocals = nul.text.js.tile('locals', this.ctxName);
 			cls=' freedom'
 		}
 		var rv = aShort+aAutoRef+aLocals+aDeps+aFlags+nul.text.js.tiled();

@@ -58,11 +58,11 @@ nul.xpr = Class.create({
 	},
 
 	//Specify that occurences of <xpr> in <this> expression are indeed self-references
-	setSelfRef: function(xpr) {
+	setSelfRef: function(xpr, klg) {
 		var tt = {};
 		if(!this.arCtxName) this.arCtxName = 'ar'+(++nul.understanding.srCtxNames);
 		tt[xpr.ndx] = new nul.xpr.local(this.arCtxName,nul.lcl.slf, xpr.dbgName?xpr.dbgName:null);
-		return this.contextualise(null, tt);
+		return this.contextualise(klg, tt);
 	},
 	contextualise: function(klg, tt, prtct) {
 		//if(isEmpty(tt)) return this;
@@ -72,7 +72,9 @@ nul.xpr = Class.create({
 	 * Makes the components not anymore using objectivities concerning this knowledge.
 	 */
 	subjective: function(klg, kb) {
-		return this.browse(nul.browse.subjectivise(klg, kb)) || this;
+		return this.entered(function(klg) {
+			return this.browse(nul.browse.subjectivise(klg, [klg]));
+		}) || this;
 	}.perform('nul.xpr->subjective'),
 
 	subRecursion: function(cb, kb) {
@@ -83,7 +85,7 @@ nul.xpr = Class.create({
 	aknlgd: function(cb) {
 		var klg = this.enter();
 		var rv;
-		try { rv = cb(this, klg); }
+		try { rv = cb.apply(this, [klg]); }
 		finally { rv = klg.leave(rv); }
 		return rv;
 	},
@@ -96,15 +98,6 @@ nul.xpr = Class.create({
 	},
 	enter: function() {
 		return new nul.knowledge();
-	},
-	/**
-	 * Ensure that no sub-expression of this fuzzy expression is fuzzy, beside
-	 * the ones under a 'holder' (IOR3 or SET)
-	 */
-	noFuzzSubs: function() {	//TODO: to kill?
-		return this.entered(function(klg) {
-			return this.browse(nul.browse.unSubFuzz(klg)) || this;
-		});
 	},
 	
 	/**
@@ -136,7 +129,7 @@ nul.xpr = Class.create({
 			delete flags.fuzzy;
 			delete flags.failable;
 		}
-		if(['[-]','[]','!'].contains(this.charact)) flags.fuzzy = true;
+		if(['[-]','[]','fz'].contains(this.charact)) flags.fuzzy = true;
 		
 		if(this.makeDeps) dps.push(this.makeDeps());
 		this.deps = nul.lcl.dep.mix(dps);
@@ -219,12 +212,23 @@ nul.xpr.listed = Class.create(nul.xpr, {
 		}
 		return this.summarised().composed();
 	}.perform('nul.xpr.listed->compose'),
+	composed: function($super) {
+		return $super();
+	},
 	initialize: function($super, ops) {
 		this.components = [];
 		var cpsd = this.compose(ops);
 		if(cpsd !== this) return this.replaceBy(cpsd);
 		$super();
 	},
+});
+
+nul.xpr.relation = Class.create(nul.xpr.listed, {
+	composed: function($super) {
+		if(nul.debug.assert) assert(1< this.components.length,
+			'Relation has several components');
+		return this;
+	}.perform('nul.xpr.relation->compose'),
 /////// Strings
 	expressionHTML: function() {
 		return nul.text.expressionHTML(
@@ -238,7 +242,7 @@ nul.xpr.listed = Class.create(nul.xpr, {
 	}
 });
 
-nul.xpr.associative = Class.create(nul.xpr.listed, {
+nul.xpr.associative = Class.create(nul.xpr.relation, {
 	compose: function($super, nComps) {
 		if(!nComps) nComps = this.components;
 		var nc = [];

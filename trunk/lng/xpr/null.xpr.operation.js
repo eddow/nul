@@ -34,20 +34,20 @@ nul.xpr.operation = function(pos) {
 				}
 			}
 			if((!ops.length) ||
-				(1>= ops.length && (nul.xpr.listed==pos))) return;
+				(1>= ops.length && (nul.xpr.relation==pos))) return;
 			
 			var trv = new nul.xpr.application(
 				new nul.xpr.set(fct),
 				new nul.xpr.set(ops));
 			trv = trv.operate(hpnd);
 			if(!trv) return;
-			if(!rrv.length) return this.replaceBy(trv.subjective(left, [hpnd]));
+			if(!rrv.length) return this.replaceBy(trv.subjective());
 			rrv.push(trv);
 			return this.compose(rrv);
 		}.describe(function(left, hpnd) { return ['Subjectiving', this]; }),		
 	});
 }
 
-nul.xpr.operation.listed = nul.xpr.operation(nul.xpr.listed);
+nul.xpr.operation.listed = nul.xpr.operation(nul.xpr.relation);
 nul.xpr.operation.preceded = nul.xpr.operation(nul.xpr.preceded);
 nul.xpr.operation.postceded = nul.xpr.operation(nul.xpr.postceded);

@@ -71,35 +71,43 @@ nul.unify = {
 		if(a.charact== b.charact) {
 			switch(a.charact) {
 			case '{}':
-				if(a.components.length > b.components.length) { var t=a; a=b; b=t; }
-				if(a.components.length!= b.components.length && !a.components.follow)
-					nul.fail('List length already dont fit');
-				var rv = [];
-				for(var i=0; i<a.components.length; ++i)
-					rv.push(nul.unify.level(a.components[i], b.components[i], klg));
-				b = b.clone1();
-				b.components.splice(0,i);
-				if(0==b.components.length) b = b.components.follow;
-								
-				if(a.components.follow)
-					rv.follow = nul.unify.level(a.components.follow, b, klg)
-				else if(b)
-					rv.follow = nul.unify.level(new nul.xpr.set(), b, klg)
-				rv = a.compose(rv);
-				return rv;
+				var ac = clone1(a.components);
+				var bc = clone1(b.components);
+				var brv = [], erv = [];
+				
+				while(ac.length && bc.length &&
+					'fz'!= ac[0].charact &&
+					'fz'!= bc[0].charact)
+					brv.push(nul.unify.level(ac.shift(), bc.shift(), klg));
+				while(ac.length && bc.length &&
+					'fz'!= ac[ac.length-1].charact &&
+					'fz'!= bc[bc.length-1].charact)
+					erv.unshift(nul.unify.level(ac.pop(), bc.pop(), klg));
+				if(!bc.length) { var t=ac; ac=bc; bc=t; }
+				if(bc.length) {
+					if(ac.length)
+						nul.unify.level(
+							new nul.xpr.set(ac),
+							new nul.xpr.set(bc),
+							klg);
+					else map(bc, function() { 
+							klg.knew(new nul.xpr.not(this));
+						});
+				}
+				return a.compose(brv.pushs(ac, erv));
 			case '::':
 				return a.compose(merge(a.components, b.components, function(a, b) {
-					if(!a||!b) nul.fail('Attributes dont match');;
+					if(!a||!b) nul.fail('Attributes dont match');
 					return nul.unify.level(a, b, klg);
 				}));
 			case ':-':
 				return a.compose(merge(a.components, b.components, function(a, b) {
 					return nul.unify.level(a, b, klg);
 				}));
-			case 'fz':
-				return a.aknlgd(function(v, klg) {
-					return nul.unify.level(v, b.stpUp(klg), klg)
-				});
+			/*case 'fz':
+				return a.aknlgd(function(klg) {
+					return nul.unify.level(this, b.stpUp(klg), klg)
+				});*/
 			}
 		}
 	}.perform('nul.unify.subs'),
@@ -113,12 +121,20 @@ nul.unify = {
 	 * - nothing if this function couldn't manage
 	 */
 	vcvs: function(a, b, klg) {
-		if('fz'== a.charact) {
-			return nul.unify.level(a.stpUp(klg), b, klg);
-			return a.aknlgd(function(v, klg) {
-				return nul.unify.level(v, b, klg);
-			});
+		if(a.arCtxName && !b.flags.fuzzy) {
+			var srTt = {}, aNdx = a.ndx;
+			srTt[nul.xpr.local.ndx(nul.lcl.slf, a.arCtxName)] = b;
+			var ctxd = a.contextualise(klg, srTt);
+			//TODO: can do better. unify.level(a,b) iif ctxd applied sth
+			if(ctxd) ctxd = nul.unify.chewed(ctxd, b, klg);
+			if(ctxd && ctxd.ndx != a.ndx) a = ctxd;
 		}
+		/*if('fz'== a.charact) {
+			return nul.unify.level(a.stpUp(klg), b, klg);
+			return a.aknlgd(function(klg) {
+				return nul.unify.level(this, b, klg);
+			});
+		}*/
 		if('='== a.charact) return nul.unify.andDist(a.components, a.x, b, klg);
 		//Distribution in 'solve' but need here too. Epimenide forget premice if not
 		if('[]'== a.charact) {
@@ -169,14 +185,10 @@ nul.unify = {
 	orDist: function(as, ax, b, klg) {
 		var rv = [];
 		for(var i=0; i<as.length; ++i) {
-			var nklg;
-			var oa = as[i];
-			if('fz'==oa.charact) {
-				nklg = oa.enter();
-				oa = oa.components.value;
-			} else nklg = new nul.knowledge();
-			oa = nklg.leave(nul.unify.level(oa, b.clone(), nklg)); 
-			if(!oa.flags.failed) rv.push(oa);
+			var oa = as[i].aknlgd(function(klg) {
+				return nul.unify.level(this, b.clone(), klg);
+			});
+			if(oa && !oa.flags.failed) rv.push(oa);
 		}
 		return rv;
 	}.perform('nul.unify.orDist'),

@@ -100,7 +100,7 @@ nul.browse = {
 			name: 'contextualisation',
 			rpl: rpl,
 			act: act,
-			klg: klg,
+			kb: klg?[klg]:[],
 			eqProtect: [-1],
 			before: function(xpr) {
 				//TODO: throw stop.browsing ?
@@ -109,12 +109,14 @@ nul.browse = {
 			},
 			finish: function(xpr, chgd, orig) {
 				xpr.summarised();
-				if((0!= ++this.eqProtect[0] || 'knwl'!= this.act) && this.rpl[xpr.ndx])
+				if((0!= ++this.eqProtect[0] ||
+					'knwl'!= this.act || 1<this.kb.length) &&
+						this.rpl[xpr.ndx])
 					return this.rpl[xpr.ndx];
 				if('='== orig.charact) this.eqProtect.shift();
-				if(xpr && xpr.operate && this.klg) {
-					var rv = xpr.operate(this.klg);
-					chgd |= rv;
+				if(xpr && xpr.operate) {
+					var rv = xpr.operate(this.kb[0]);
+					chgd |= !!rv;
 					xpr = rv || xpr;					
 				}
 				if(chgd) return xpr;
@@ -132,19 +134,6 @@ nul.browse = {
 				if(xpr.ctxName == this.orgName)
 					return new nul.xpr.local(this.dstName, xpr.lindx + this.inc, xpr.dbgName);
 			}.perform('nul.lclShft->local')
-		};
-	},
-	unSubFuzz: function(klg) {
-		return {
-			name: 'Unfuzz subs',
-			klg: klg,
-			before: function(xpr) {
-				if(xpr.hold) throw nul.browse.abort;
-			},
-			fz: function(xpr) {
-				if(xpr.ctxName == this.klg.ctxName) return xpr;
-				return xpr.stpUp(this.klg);
-			}
 		};
 	},
 };

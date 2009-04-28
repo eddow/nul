@@ -14,11 +14,8 @@ nul.understanding = {
 		var ops;
 		if('[]'== this.operator) {
 			ops = [];
-			for(var i=0; i<this.operands.length; ++i) {
-				var op = this.operands[i];
-				op = (new nul.understanding.base(ub)).valued(op);
-				if('fz'!= op.charact || op.components) ops.push(op);
-			}
+			for(var i=0; i<this.operands.length; ++i)
+				ops.pushs((new nul.understanding.base(ub)).valued(this.operands[i]));
 		}
 		else ops = map(this.operands, function() { 
 				return this.understand(ub);				
@@ -32,9 +29,9 @@ nul.understanding = {
 		switch(this.operator)
 		{
 			case ':-':	return new nul.xpr.lambda(ops[0], ops[1]);
-			case ',':	return new nul.xpr.set(ops);
+			case ',':	return new nul.xpr.set(ops);	//TODO: gérer le '.follow'!!!
 			case '=':
-				return (new nul.xpr.unification(ops)).apply(ub.klg);
+				return (new nul.xpr.unification(ops)).operate(ub.klg);
 			case ':=':	return new nul.xpr.handle(ops[0], ops[1]);
 
 			case '<<+':	return new nul.xpr.seAppend(ops[0], ops[1]);
@@ -47,6 +44,11 @@ nul.understanding = {
 		}
 	},
 	preceded: function(ub) {
+		if('!'== this.operator)
+			map((new nul.understanding.base(ub)).valued(this.operand),
+			function() {
+				ub.klg.knew(new nul.xpr.not(this));
+			});
 		return new nul.xpr.operation.preceded(this.operator,this.operand.understand(ub));
 	},
 	postceded: function(ub) {
@@ -123,16 +125,18 @@ nul.understanding.base = Class.create({
 	},
 	valued: function(tu) {
 		if(!tu) return this.klg.leave();
-		var xpr;
+		var xpr, klg = this.klg;
 		try {
 			xpr = tu.understand(this);
 			xpr = this.klg.asFuzz(xpr);
-			xpr = xpr.subjective(this.klg, [this.klg]);
 		} catch(err) {
 			xpr = null;
 			if(nul.failure!= err) throw nul.exception.notice(err);
 		} finally { xpr = this.klg.leave(xpr); }
-		return xpr || new nul.xpr.fuzzy();
+		xpr = !xpr?[]:nul.solve.solve(xpr);
+		return map(xpr, function() {
+			return this.subjective() || this;
+		});
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);
@@ -153,9 +157,9 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 	},
 	valued: function($super, tu) {
 		var fzx = $super(tu);
-		var stx = new nul.xpr.set(('fz'!= fzx.charact || fzx.components)?[fzx]:[]);
+		var stx = new nul.xpr.set(fzx);
 		if(this.arCtxName) stx.arCtxName = this.arCtxName;
-		return stx.extend();
+		return stx;//.extended();
 	},
 	resolve: function($super, identifier) {
 		if('undefined'!= typeof this.parms[identifier])

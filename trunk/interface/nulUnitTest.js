@@ -34,6 +34,10 @@ tests = [
 		rslt: '{x[0|fc1]; (&#x2124;   x[0|fc1]) ; (0 &lt; x[0|fc1])}'}
 	].named('Local management'),
 	[
+		{xpr: '6 - (5 [] 2)',
+		rslt: '(1 , 4)'},
+		{xpr: 'v = (1 [] 2)',
+		rslt: '(1 , 2)'},
 		{xpr: 'v; (z=1 [] z=2); v=z',
 		rslt: '(1 , 2)'},
 		{xpr: '(z+1)=(1 [] 2); Q z',
@@ -53,10 +57,8 @@ tests = [
 		rslt: '&phi;'},
 		{xpr: '(e= 1-e) = (0 [] 1)',
 		rslt: '&phi;'},
-		{xpr: '(y, y+1) = (x, x), x',
-		rslt: '{((ar1:(y[&crarr;|ar1] + 1) , ar1:(y[&crarr;|ar1] + 1)) , ar1:(y[&crarr;|ar1] + 1))}'},
-		{xpr: 'x; (y, y+1) = (x, x)',
-		rslt: '{ar1:(y[&crarr;|ar1] + 1)}'},
+		{xpr: 'x; (y, F y) = (x, x)',
+		rslt: '{ar2:(F[0|fc1]   y[&crarr;|ar2])}'},
 		
 		/*
 		 

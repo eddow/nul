@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.ordered = Class.create(nul.xpr.listed, {
+nul.xpr.ordered = Class.create(nul.xpr.relation, {
 	failable: function() { return true; },
 	initialize: function($super, oprtr, oprnds) {
 		if('='== oprtr.substr(1)) {

@@ -13,7 +13,7 @@ nul.xpr.unification = Class.create(nul.xpr.associative, {
 		$super(ops);
 	},
 /////// Unification specific
-	apply: function(klg) {
+	operate: function(klg) {
 		var fl = this.components.length;
 		var rv = nul.unify.multiple(this.components, klg)
 		if(rv && 1== rv.length) return rv[0].stpUp(klg);

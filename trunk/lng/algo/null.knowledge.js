@@ -20,14 +20,14 @@ nul.knowledge = Class.create({
 	leave: function(rv) {
 		nul.debug.log('ctxs')(nul.debug.lcs.endCollapser('Leave', 'Ctx'),
 			[this.ctxName, rv||'']);
-		if(rv) {
+		if(rv) try {
 			rv = this.asFuzz(rv);
 			if(nul.debug.assert) assert(
-				'fz'!= rv.charact || rv.openedKnowledge === this,
-				'Knowledge opened only once');
-			delete rv.openedKnowledge;
+				'fz'!= rv.charact || !rv.components ||
+				rv.openedKnowledge === this,
+				'Knowledge opened when leaving');
 			return rv;
-		}			
+		} finally { delete rv.openedKnowledge; }
 	},
 	asFuzz: function(rv) {
 		try {
@@ -46,7 +46,9 @@ nul.knowledge = Class.create({
 					rv.components = this.knowledge;
 				}
 				rv.locals = this.locals;
-				if(nul.debug.assert) assert(rv.openedKnowledge === this,
+				if(nul.debug.assert) assert(
+						//!rv.openedKnowledge ||
+						rv.openedKnowledge === this,
 					'Knowledge opened only once');
 			} else { 
 				rv = new nul.xpr.fuzzy(
@@ -131,10 +133,9 @@ nul.knowledge = Class.create({
 		map(premices, function() { klg.knew(this); });
 	},
 	knew: function(p) {
-		if(!this.known(p) && p.flags.failable) {
-			nul.debug.log('knowledge')('known', p);
-			/*if('fz'== p.charact) this.know(p.components);
-			else*/ if('[.]'== p.charact) {
+		if(!this.known(p) && p.flags.failable) {	//TODO: check containing knowledge too Oo
+			nul.debug.log('knowledge')(this.ctxName, p);
+			if('[.]'== p.charact) {
 				//Insert it as the last belonging knowledge
 				var i;
 				for(i=0;
@@ -194,6 +195,8 @@ nul.knowledge = Class.create({
 			}
 		}
 
+		//If affectation remains with only one item like (2 = 2) just let (2)
+		if(1>= eqClass.length) return eqClass[0];
 		us = eqClass;
 		if(merged) {
 			var rv = nul.unify.multiple(us, this);
@@ -215,7 +218,7 @@ nul.knowledge = Class.create({
 	 		for(var n=1; n<us.length; ++n)
 	 			if(us[0].contains(us[n]) && !us[n].free())
 	 				break;
-	 		if(n<us.length) us[0].setSelfRef(us[n]);
+	 		if(n<us.length) us[0].setSelfRef(us[n], this);
 	 	} while(n<us.length);
 
 		var rv = us[0];
@@ -267,7 +270,8 @@ nul.knowledge = Class.create({
 		//Second, sort the premices to keep only the ones with no link at all from the value
 		var forgottenPrmcs = [];
 		for(var i=0; i<this.knowledge.length; ++i)
-			if(this.knowledge[i].free([this.ctxName]))
+			if(this.knowledge[i].free([this.ctxName]) &&
+				!this.knowledge[i].free())	//TODO: paufiner tout ça, ç'a encore des cas particuliers incorrects
 				forgottenPrmcs.push(i);
 		do {
 			var ds;
@@ -284,6 +288,9 @@ nul.knowledge = Class.create({
 		//Remove in inverse orders to have valid indices.
 		// If [1, 3] must be removed from (0,1,2,3,4) to give (0,2,4),
 		//  first remove 3 then 1.
-		while(0<forgottenPrmcs.length) this.forget(forgottenPrmcs.pop());
+		while(0<forgottenPrmcs.length) {
+			var fp = this.forget(forgottenPrmcs.pop());
+			//if(fp.free() && fp.operate) fp.operate(this); 
+		}
 	}.perform('nul.knowledge->concentrate'),
 });

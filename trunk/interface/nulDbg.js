@@ -22,39 +22,6 @@ function init()
 	for(var i in this) knGlobs[i] = true;
 }
 
-var toSolve = null;
-function extractThis() {
-	$('solutionFuz').innerHTML = $('solutionLst').innerHTML = '';
-
-	var v;
-	if(nul.debug && nul.debug.jsDebug) {
-		v = toSolve.extraction();
-		evd.innerHTML = toSolve.toHTML();
-	} else try { v = toSolve.extraction() }
-	catch( err ) {
-		nul.exception.notice(err);
-		evd.innerHTML = err.message;
-		if(nul.debug.watches && err.callStack) nul.debug.callStack.draw(err.callStack);
-		if(nul.debug.watches && err.kb) nul.debug.kbase.draw(err.kb);
-		if(nul.erroneusJS) throw nul.erroneusJS;
-		//Forward JS errors to Firebug
-		return;
-	}
-
-	if(','!= v.charact)
-		return $('solutionFuz').innerHTML = 'Unexpected solution :<br />' + v.toHTML();
-	if(v.components.follow) $('solutionFuz').innerHTML = v.components.follow.toHTML();
-	for(var n=0; n<v.components.length; ++n)
-		$('solutionLst').insert(new Element('li').update(v.components[n].toHTML()));
-}
-
-function setToSolve(v) {
-	$('extractBu').disabled = !v;
-	$('solutionFuz').innerHTML = $('solutionLst').innerHTML = '';
-	toSolve = v;
-	if($('extractChk').checked && v) extractThis();
-}
-
 function evaluate()
 {
 	rcr.innerHTML = '';
@@ -66,7 +33,6 @@ function evaluate()
 	});
 	prd.innerHTML = v.toHTML();
 	evd.innerHTML = v.toHTML();
-	setToSolve(v);
 }
 
 function testEvaluation()
