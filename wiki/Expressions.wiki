@@ -17,8 +17,8 @@ a, E :- a = a * E
 The `operator*` function of the primitive `set` will, anyway, look like this :
 {{{
 ::*
-{:mult {} :- { _ :- _}
-    [] {a, b,.. S} :- mult({x :- (a x = b x)},.. S)
+{:mult {a} :- a
+    [] (a, b,.. S) :- {a( mult(b,.. S) x )})
 }
 }}}
 
