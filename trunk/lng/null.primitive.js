@@ -10,28 +10,34 @@
  * Functions not accessible by name in NUL code but used by operators.
  */
 nul.nativeFunctions = {
-	hardCoded: function(txt, hcFctNm, hcFct) {
+	hardCoded: function(ftp, txt, hcFctNm, hcFct, hcInv) {
 		if(!nul.nativeFunctions.hardCoded[hcFctNm]) {
 			nul.debug.log('evals')(nul.debug.lcs.collapser('hardCode'), [hcFctNm]);
 			var rv;
 			try {
-				var ub = new nul.globalsUse(null, 'operation');
+				var ub = nul.globalsUse('operation');
 				ub.createFreedom(
-					'hardCoded', new nul.xpr.javascript.fct(hcFctNm,hcFct));
+					'hardCoded', new nul.xpr.javascript[ftp](
+						hcFctNm, hcFct, hcInv));
 				nul.nativeFunctions.hardCoded[hcFctNm] =
 					ub.valued(nul.compile(txt));
 			} finally {
+				if(nul.debug.assert) assert(nul.nativeFunctions.hardCoded[hcFctNm],
+					'Hardcoded '+hcFctNm+' compile');
 				nul.debug.log('evals')(nul.debug.lcs.endCollapser('hardCoded'),
 					[nul.nativeFunctions.hardCoded[hcFctNm]]);
 			}
 		}
 		return nul.nativeFunctions.hardCoded[hcFctNm].clone();
 	}.perform('nul.nativeFunctions.hardCoded'),
-	atomOp: function(op, tp) {
+	atomOp: function(op, tp, neutral) {
 		return function() {
-			return nul.nativeFunctions.hardCoded(
-				'('+tp+' a, '+tp+' b) :- hardCoded(a,b)',
-				//'{} :- 0 []'+'(a, b,.. c) :- operation(hardCoded(a,b), c)'
+			return nul.nativeFunctions.hardCoded('fct',
+//				'{} :- '+neutral+' [] ' +
+//				'('+tp+' a,.. C) :- hardCoded(a, operation C)',
+				'{a} :- '+tp+' a [] ' +
+				'('+tp+' a, b,.. C) :- hardCoded(a, operation(b, C))',
+				//'('+tp+' a, '+tp+' b) :- hardCoded(a,b)',
 				nul.natives[tp].name+op+nul.natives[tp].name,
 				function(o, klg) {
 					var o1 = o.components[0], o2 = o.components[1];
@@ -42,9 +48,37 @@ nul.nativeFunctions = {
 			);
 		}
 	},
+	atomBiOp: function(op, tp) {
+		return function() {
+			return nul.nativeFunctions.hardCoded('fct',
+				'('+tp+' a, '+tp+' b) :- hardCoded(a,b)',
+				nul.natives[tp].name+op+nul.natives[tp].name,
+				function(o, klg) {
+					var o1 = o.components[0], o2 = o.components[1];
+					if(!o1.finalRoot() || !o2.finalRoot()) return;
+					return new nul.xpr.value(
+						eval(''+o1.jsValue()+op+o2.jsValue()));
+			 	}
+			);
+		}
+	},
+	atomOrdr: function(tp) {
+		return function() {
+			return nul.nativeFunctions.hardCoded('set',
+				'hardCoded('+tp+' a, '+tp+' b)',
+				nul.natives[tp].name+'&lt;'+nul.natives[tp].name,
+				function(o, klg) {
+					var o1 = o.components[0], o2 = o.components[1];
+					if(!o1.finalRoot() || !o2.finalRoot()) return;
+					if(o1.jsValue()>=o2.jsValue()) nul.fail('Bad order');
+					return 'ok';
+			 	}
+			);
+		}
+	},
 	atomCeded: function(fct, op, tp) {
 		return function() {
-			return nul.nativeFunctions.hardCoded(
+			return nul.nativeFunctions.hardCoded('fct',
 				'\\/a {'+tp+' a} :- hardCoded a',
 				op+nul.natives[tp].name,
 				function(o, klg) {
@@ -58,48 +92,22 @@ nul.nativeFunctions = {
 nul.primitive = {
 	'set': {
 		'#': nul.nativeFunctions.atomCeded(function(o) {
-			return new nul.xpr.value(0/*TODO*/);
+			return new nul.xpr.value(0);	//TODO
 		}, '#', 'set'),
 	},
 	'number': {
-		'+': nul.nativeFunctions.atomOp('+', 'Q'),
-		'-': nul.nativeFunctions.atomOp('-', 'Q'),
-		'*': nul.nativeFunctions.atomOp('*', 'Q'),
-		'/': nul.nativeFunctions.atomOp('/', 'Q'),
-		'%': nul.nativeFunctions.atomOp('%', 'Q'),
-/*		'-.': function(klg) {
-			if(this.finalRoot()) return nul.build.atom(-this.value);
-		},
-		'<': function(o, klg) {
-			nul.natives.Q.callback(o);
-			if(this.finalRoot() && o.finalRoot()) {
-				if(this.value >= o.value) nul.fail('Bad order');
-				return true;
-			}
-		}*/
+		'+': nul.nativeFunctions.atomOp('+', 'Q', 0),
+		'-': nul.nativeFunctions.atomBiOp('-', 'Q'),
+		'*': nul.nativeFunctions.atomOp('*', 'Q', 1),
+		'/': nul.nativeFunctions.atomBiOp('/', 'Q'),
+		'%': nul.nativeFunctions.atomBiOp('%', 'Q'),	//TODO: 3.7 % 0.7 = 0.2 
+		'<': nul.nativeFunctions.atomOrdr('Q'),
 	},
 	'integer': {
 		
 	},
 	'string': {
-		'+': nul.nativeFunctions.atomOp('+', 'str'),
-/*		'<': function(o, klg) {
-			nul.natives.str.callback(o);
-			if(this.finalRoot() && o.finalRoot()) {
-				if(this.value >= o.value) nul.fail('Bad order');
-				return true;
-			}
-		},
-		//TODO: here, we really have to specify it is commutative !
-		//TODO: 2 'inverses'
-		'*': function(o, klg) {
-			nul.natives.Q.callback(o);
-			if(this.finalRoot() && o.finalRoot()) {
-				var ns = '';
-				for(var i=0; i<o.value; ++i) ns += this.value;
-				return nul.build.atom(ns);
-			}
-		},*/
+		'+': nul.nativeFunctions.atomOp('+', 'str', '""'),
 		'#': nul.nativeFunctions.atomCeded(function(o) {
 			return new nul.xpr.value(o.jsValue().length-2);
 				//remove 2 for the "" added by jsValue
@@ -109,8 +117,7 @@ nul.primitive = {
 		//TODO? qq +(or), *(and) et -(not/don't imply) ?
 	},
 	'object': {
-	}
-
+	},
 };
 
 /**

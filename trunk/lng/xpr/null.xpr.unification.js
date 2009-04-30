@@ -16,7 +16,7 @@ nul.xpr.unification = Class.create(nul.xpr.associative, {
 	operate: function(klg) {
 		var fl = this.components.length;
 		var rv = nul.unify.multiple(this.components, klg)
-		if(rv && 1== rv.length) return rv[0].stpUp(klg);
+		if(rv && 1== rv.length) return rv[0];
 		if(!rv) rv = this.components;
 		return klg.affect(rv, this.x);
 	}.perform('nul.xpr.unification->apply')

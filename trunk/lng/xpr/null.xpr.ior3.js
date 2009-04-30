@@ -23,6 +23,10 @@ nul.xpr.ior3 = Class.create(nul.xpr.holder.listed, {
 		case 1: return this.replaceBy(this.components[0].stpUp(klg));
 		}
 	}.perform('nul.xpr.ior3->composed'),
+	initialize: function($super, ops, ctxName) {
+		this.ctxName = ctxName;
+		return $super(ops);
+	},
 //Interface to solving engine	
 	possibility: function(n, klg) {
 		if(n<this.components.length)

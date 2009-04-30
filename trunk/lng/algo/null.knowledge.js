@@ -10,16 +10,17 @@
  * Utility functions to access a fuzzy expression as a knowledge
  */
 nul.knowledge = Class.create({
-	initialize: function(knowledge, locals, ctxName) {
+	initialize: function(ctxName, knowledge, locals) {
 		this.knowledge = knowledge || [];
 		this.locals = locals || [];
 		this.ctxName = ctxName || nul.xpr.fuzzy.createCtxName();
 		nul.debug.log('ctxs')(nul.debug.lcs.collapser('Enter'),
 			[this.ctxName, this.knowledge]);
 	},
-	leave: function(rv) {
+	leave: function(rv, orig) {
 		nul.debug.log('ctxs')(nul.debug.lcs.endCollapser('Leave', 'Ctx'),
 			[this.ctxName, rv||'']);
+		if(orig && rv!== orig) delete orig.openedKnowledge;
 		if(rv) try {
 			rv = this.asFuzz(rv);
 			if(nul.debug.assert) assert(
@@ -133,7 +134,9 @@ nul.knowledge = Class.create({
 		map(premices, function() { klg.knew(this); });
 	},
 	knew: function(p) {
-		if(!this.known(p) && p.flags.failable) {	//TODO: check containing knowledge too Oo
+		if(!this.known(p) && p.flags.failable) {
+			//TODO: check containing knowledge too Oo
+			//TODO: if Z x and Q x have to be known, just know Z x
 			nul.debug.log('knowledge')(this.ctxName, p);
 			if('[.]'== p.charact) {
 				//Insert it as the last belonging knowledge
@@ -149,6 +152,7 @@ nul.knowledge = Class.create({
 		return this;
 	},
 	primitive: function(xpr) {
+		//TODO: voire aussi si on n'a pas par exemple : { ... } = E ? nécessaire?
 		var tpAccess = this.tpAccess();
 		if(tpAccess[xpr.ndx]) {
 			for(var y in tpAccess[xpr.ndx]) {
@@ -218,7 +222,8 @@ nul.knowledge = Class.create({
 	 		for(var n=1; n<us.length; ++n)
 	 			if(us[0].contains(us[n]) && !us[n].free())
 	 				break;
-	 		if(n<us.length) us[0].setSelfRef(us[n], this);
+	 		if(n<us.length)
+	 			us[0].setSelfRef(us[n], this);
 	 	} while(n<us.length);
 
 		var rv = us[0];
@@ -267,6 +272,7 @@ nul.knowledge = Class.create({
 				}
 			}
 		}
+		return;
 		//Second, sort the premices to keep only the ones with no link at all from the value
 		var forgottenPrmcs = [];
 		for(var i=0; i<this.knowledge.length; ++i)

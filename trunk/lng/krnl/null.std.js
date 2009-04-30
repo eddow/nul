@@ -14,15 +14,35 @@ var nul = {
 		nul.debug.log('fail')('Failure', msg || '');		
 		throw nul.failure;
 	},
+	fzmap: function(itm, fct) {	//TODO: new function, use me instead of local hacks
+		var rv = [];
+		for(var i=0; i< itm.length; ++i)
+			try { rv.push(fct.apply(itm[i],[i, itm[i]])); }
+			catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
+		return rv;
+	},
 	jsVal: function(v) {
 		return ('string'== typeof v)?('"'+v+'"'):v;
 	},
 	isJsInt: function(n) {
 		return n== Math.floor(n);
 	},
-
+	inside: function(xpr) {
+		if('{}'== xpr.charact) return {
+			ctx: xpr.ctxDef,
+			cs: xpr.components
+		};
+		var klg = new nul.knowledge();
+		klg.addLocals('?');
+		var jkr = new nul.xpr.local(klg.ctxName, 0, '?');
+		klg.know(new nul.xpr.application(xpr, jkr));
+		return {
+			ctx: klg.ctxName,
+			cs: [klg.leave(jkr)]
+		};
+	},
 	globalsUse: function(srName) {
-		var ub = new nul.understanding.base.set(null, srName);
+		var ub = new nul.understanding.base.set(null, srName, 'g');
 		for(var p in nul.globals) 
 			ub.createFreedom(p, nul.globals[p]);
 		return ub;

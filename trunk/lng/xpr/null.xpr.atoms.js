@@ -18,14 +18,20 @@ nul.xpr.value = Class.create(nul.xpr.primitive(nul.xpr.atom), {
 		this.primitive = typeof jsValue;
 		if('number'== this.primitive && nul.isJsInt(jsValue))
 			this.primitive = 'integer';
-		this.acNdx = '[' +
-				nul.jsVal(jsValue).toString()
-					.replace('[','[(]')
-					.replace(']','[)]')
-					.replace('|','[|]') +
-				']';
 		this.value = jsValue;
+		//this.fuzze = {};
+		this.composed();
 		$super();
+	},
+	composed: function($super) {
+		this.acNdx =
+			'[' +
+			this.jsValue().toString()
+				.replace('[','[(]')
+				.replace(']','[)]')
+				.replace('|','[|]') +
+			']';
+		return $super();
 	},
 	jsValue: function() { return nul.jsVal(this.value); },
 /////// String
@@ -46,11 +52,17 @@ nul.xpr.local = Class.create(nul.xpr.atom, {
 	initialize: function($super, ctxName, lindx, dbgName) {
 		this.ctxName = ctxName;
 		this.lindx = lindx;
-		this.acNdx = nul.xpr.local.ndx(lindx, ctxName);
 		this.dbgName = dbgName;
+		
+		/*this.fuzze = {};
+		this.fuzze[ctxName] = new nul.fuzze();*/
+		this.composed();
 		$super();
 	},
-
+	composed: function($super) {
+		this.acNdx = nul.xpr.local.ndx(this.lindx, this.ctxName);
+		return $super();
+	},
 /////// Strings
 	expressionHTML: function() {
 		return this.dbgName? (

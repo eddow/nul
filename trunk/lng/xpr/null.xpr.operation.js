@@ -34,20 +34,22 @@ nul.xpr.operation = function(pos) {
 				}
 			}
 			if((!ops.length) ||
-				(1>= ops.length && (nul.xpr.relation==pos))) return;
+				(1>= ops.length && 1< this.components.length)) return;
 			
+			fct = new nul.xpr.set(fct, 'g');
 			var trv = new nul.xpr.application(
-				new nul.xpr.set(fct),
-				new nul.xpr.set(ops));
+				fct,
+				(1==ops.length)?ops[0]:new nul.xpr.set(ops));
 			trv = trv.operate(hpnd);
 			if(!trv) return;
-			if(!rrv.length) return this.replaceBy(trv.subjective());
+			if(!rrv.length) return this.replaceBy(trv.subjected(left, hpnd));
 			rrv.push(trv);
 			return this.compose(rrv);
-		}.describe(function(left, hpnd) { return ['Subjectiving', this]; }),		
+		}.perform('nul.xpr.operation->subject'),	
 	});
 }
 
+nul.xpr.operation.associative = nul.xpr.operation(nul.xpr.associative);
 nul.xpr.operation.listed = nul.xpr.operation(nul.xpr.relation);
 nul.xpr.operation.preceded = nul.xpr.operation(nul.xpr.preceded);
 nul.xpr.operation.postceded = nul.xpr.operation(nul.xpr.postceded);

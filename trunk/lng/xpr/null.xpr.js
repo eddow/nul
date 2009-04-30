@@ -25,19 +25,20 @@ nul.xpr = Class.create({
 				' '+atn+' isnt defined for '+this.toString());
 		
 	},
-	composed: function() { return this; },
+	composed: function() {
+		//TODO: remove this, just used to smooth fuzze change
+		//assert(this.fuzze, 'fuzze est initialisé');
+		return this;
+	},
 	clone: function(nComps) {
+		return this.browse(nul.browse.clonage());
 		var rv = clone1(this);
-		if(nComps) rv.components = nComps;
-		else if(rv.components) rv.components = map(this.components,
+		if(rv.components) rv.components = map(this.components,
 			function() { return this.clone(); });
 		return rv;
 	}.perform('nul.xpr->clone'),
 	replaceBy: function(xpr) {
 		if(xpr) return merge(this, xpr, function(a,b) { return b; });
-	},
-	clone1: function() {
-		return this.clone(clone1(this.components));
 	},
 
 	dbgHTML: function() {
@@ -57,21 +58,38 @@ nul.xpr = Class.create({
 		return -1<this.ndx.indexOf(xpr);
 	},
 
-	//Specify that occurences of <xpr> in <this> expression are indeed self-references
+	/**
+	 * Specify that occurences of <xpr> in <this> expression are indeed self-references
+	 */
 	setSelfRef: function(xpr, klg) {
 		var tt = {};
-		if(!this.arCtxName) this.arCtxName = 'ar'+(++nul.understanding.srCtxNames);
-		tt[xpr.ndx] = new nul.xpr.local(this.arCtxName,nul.lcl.slf, xpr.dbgName?xpr.dbgName:null);
-		return this.contextualise(klg, tt);
+		if(!this.ctxDef) this.ctxDef = nul.xpr.fuzzy.createCtxName();
+		tt[xpr.ndx] = new nul.xpr.local(this.ctxDef,nul.lcl.slf, xpr.dbgName?xpr.dbgName:null);
+		return this.contextualise(tt);
 	},
-	contextualise: function(klg, tt, prtct) {
+	/**
+	 * Expand self references of <this> as <xpr> 
+	 */
+	expSelfRef: function(xpr, klg, ctxNm) {
+		ctxNm = ctxNm || this.ctxDef;
+		if(!ctxNm) return;
+		var tt = {};
+		tt[nul.xpr.local.ndx(nul.lcl.slf, ctxNm)] = xpr;
+		return this.contextualise(tt);
+	},
+	contextualise: function(tt) {
 		//if(isEmpty(tt)) return this;
-		return this.browse(nul.browse.contextualise(klg, tt, prtct)) || this;
+		return this.browse(nul.browse.contextualise(tt)) || this;
 	}.perform('nul.xpr->contextualise'),
+	operated: function(klg) {
+		//if(isEmpty(tt)) return this;
+		return this.browse(nul.browse.operated(klg)) || this;
+	}.perform('nul.xpr->contextualise'),
+
 	/**
 	 * Makes the components not anymore using objectivities concerning this knowledge.
 	 */
-	subjective: function(klg, kb) {
+	subjective: function() {
 		return this.entered(function(klg) {
 			return this.browse(nul.browse.subjectivise(klg, [klg]));
 		}) || this;
@@ -81,7 +99,27 @@ nul.xpr = Class.create({
 		return this.compose(map(this.components, cb));
 	},
 
-	stpUp: function(klg) { return this; },
+	subjected: function(left, hpnd) {
+		var xpr = this.operated(hpnd);//this.operate?(this.operate(hpnd)||this):this;
+		return xpr.subject?(xpr.subject(left, hpnd)||xpr):xpr;
+	},
+
+	stpUp: function(klg) {
+		return this.ctxName?(this.browse(
+			nul.browse.lclShft(0, this.ctxName, klg.ctxName)
+		) || this):this;
+	}.describe(function(klg) { return ['Generic stpUp',
+		klg.ctxName,
+		'(',klg.locals,')',
+		this]; }),
+
+	renameCtx: function(ctxTo, ctxFrom) {
+		if(!ctxFrom) ctxFrom = this.ctxDef;
+		if(this.ctxDef == ctxFrom) this.ctxDef = ctxTo;
+		return this.browse(
+			nul.browse.lclShft(0, ctxFrom, ctxTo)
+		) || this;
+	},
 	aknlgd: function(cb) {
 		var klg = this.enter();
 		var rv;
@@ -104,7 +142,7 @@ nul.xpr = Class.create({
 	 * Replace all operable expression by the result of its operation.
 	 */
 	simplify: function(klg) {
-		return this.contextualise(klg, {}, 'knwl') || this;
+		return this.operate(klg) || this;
 	}.perform('nul.xpr->simplify')
 	.describe(function(klg) { return ['Simplifying', this]; }),
 /**
@@ -129,7 +167,7 @@ nul.xpr = Class.create({
 			delete flags.fuzzy;
 			delete flags.failable;
 		}
-		if(['[-]','[]','fz'].contains(this.charact)) flags.fuzzy = true;
+		if(['[.]','[]','fz','$'].contains(this.charact)) flags.fuzzy = true;
 		
 		if(this.makeDeps) dps.push(this.makeDeps());
 		this.deps = nul.lcl.dep.mix(dps);
@@ -138,9 +176,11 @@ nul.xpr = Class.create({
 			this.used = this.deps[this.ctxName] || {};
 			delete this.deps[this.ctxName];
 		}
-		if(this.arCtxName) {
-			if(this.deps[this.arCtxName]) delete this.deps[this.arCtxName];
-			else delete this.arCtxName;
+		
+		
+		if(this.ctxDef) {
+			if(this.deps[this.ctxDef]) delete this.deps[this.ctxDef];
+			//TODO: else if(!rv.fuzzyTo(this.ctxDef)) delete this.ctxDef;
 		}
 		if(this.failable && this.failable()) flags.failable = true;
 		this.flags = flags;

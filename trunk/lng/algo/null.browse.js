@@ -30,21 +30,37 @@ nul.browse = {
 			chg = true;
 			return nv;
 		}
+		function subBrws() {
+			if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
+			var co = iif(this.browse(behav, 'nocs'), this);
+			if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
+			return co;
+		}
 
 		if(this.browseSpace== behav.browseSpace) return;
-
+		var inpNdx = this.ndx;
+		if(!behav.tabul) behav.tabul = [{}];
+		//for(var t=0; t<behav.tabul.length; ++t)
+			if(false && behav.tabul[0][inpNdx]) switch(behav.tabul[0][inpNdx]) {
+				case nul.failure: nul.fail('I remember...');
+				case 'id': return;
+				default: return behav.tabul[0][inpNdx];
+			}
 		var isToBrowse = 'undefined'== typeof behav.browse ||
 						('function'== typeof behav.browse && behav.browse(xpr)) ||
 						('function'!= typeof behav.browse && behav.browse);
 		try {
-			if(behav.before) xpr = behav.before(xpr)||xpr;
+			if(behav.before) xpr = iif(behav.before(xpr), xpr);
 			if(isToBrowse && xpr.components) {
-				var nxpr = xpr.subRecursion(function() {
-					if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
-					var co = iif(this.browse(behav, 'nocs'), this);
-					if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
-					return co;
-				}, behav.kb);
+				var subTabul = !!xpr.ctxName;
+				if(subTabul) behav.tabul.unshift({});
+				try {
+					var nxpr = behav.kb ?
+						xpr.subRecursion(subBrws, behav.kb):
+						behav.compose?
+						behav.compose(xpr, map(xpr.components, subBrws)):
+						xpr.compose(map(xpr.components, subBrws));
+				} finally { if(subTabul) behav.tabul.shift(); }
 				if(nxpr!== xpr) {
 					xpr = nxpr;
 					chg = true;
@@ -57,17 +73,22 @@ nul.browse = {
 			else xpr = null;
 			if(xpr) {
 				xpr.browseSpace = behav.browseSpace;
+				behav.tabul[0][inpNdx] = xpr;
 				return xpr;
 			}
-			if(nul.browse.abort== err) return;
+			if(nul.browse.abort== err) {
+				behav.tabul[0][inpNdx] = 'id';
+				return;
+			}
 			throw err;
 		}
 		if(behav.finish) { xpr = behav.finish(xpr, chg, this); chg = true; }
 
 		if(chg && xpr) {
 			xpr.browseSpace = behav.browseSpace;
+			behav.tabul[0][inpNdx] = xpr;
 			return xpr;
-		}
+		} else behav.tabul[0][inpNdx] = 'id';
 		nul.debug.log('perf')('Useless browse for '+behav.name,this);			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
@@ -76,13 +97,19 @@ nul.browse = {
 			klg: klg,
 			kb: kb||[],
 			name: 'subjectivisation',
-			finish: function(xpr, chgd, ori) {
-				if(xpr.subject) {
-					var rv = xpr.subject(this.klg, this.kb[0]);
-					if(rv) {
-						chgd = true;
-						xpr = rv;
-					}
+			finish: function(xpr, chgd, orig) {
+				var rv;
+				if(xpr && xpr.subject) try {
+					nul.debug.log('evals')(nul.debug.lcs.collapser('Subjective'),
+						[klg.ctxName, xpr]);
+					rv = xpr.subject(this.klg, this.kb[0]);
+					return rv || xpr;					
+				} catch(err) {
+					if(nul.failure== err && orig.fail) return orig.fail();
+					throw nul.exception.notice(err);
+				} finally {
+					nul.debug.log('evals')(nul.debug.lcs.endCollapser('Subjectived', 'Subjectivisation'),
+						rv?[rv]:['unchanged']);
 				}
 				if(chgd) return xpr;
 			},			
@@ -95,29 +122,31 @@ nul.browse = {
 		};
 	},
 
-	contextualise: function(klg, rpl, act) {
+	contextualise: function(rpl) {
 		return {
 			name: 'contextualisation',
-			rpl: rpl,
-			act: act,
+			tabul: [rpl],
+		};
+	},
+	operated: function(klg) {
+		return {
+			name: 'operation',
 			kb: klg?[klg]:[],
-			eqProtect: [-1],
 			before: function(xpr) {
-				//TODO: throw stop.browsing ?
-				if('='== xpr.charact) this.eqProtect.unshift(0);
-				else --this.eqProtect[0];
+				//TODO: throw stop.browsing ? Dirt system?
 			},
 			finish: function(xpr, chgd, orig) {
-				xpr.summarised();
-				if((0!= ++this.eqProtect[0] ||
-					'knwl'!= this.act || 1<this.kb.length) &&
-						this.rpl[xpr.ndx])
-					return this.rpl[xpr.ndx];
-				if('='== orig.charact) this.eqProtect.shift();
-				if(xpr && xpr.operate) {
-					var rv = xpr.operate(this.kb[0]);
-					chgd |= !!rv;
-					xpr = rv || xpr;					
+				var rv;
+				if(xpr && xpr.operate) try {
+					nul.debug.log('evals')(nul.debug.lcs.collapser('Operate'), [xpr]);
+					rv = xpr.operate(this.kb[0]);
+					return rv || xpr;					
+				} catch(err) {
+					if(nul.failure== err && orig.fail) return orig.fail();
+					throw nul.exception.notice(err);
+				} finally {
+					nul.debug.log('evals')(nul.debug.lcs.endCollapser('Operated', 'Operation'),
+						rv?[rv]:['unchanged']);
 				}
 				if(chgd) return xpr;
 			}
@@ -130,10 +159,33 @@ nul.browse = {
 			inc: inc,
 			dstName: dstName || orgName,
 			orgName: orgName,
-			local: function(xpr) {
-				if(xpr.ctxName == this.orgName)
-					return new nul.xpr.local(this.dstName, xpr.lindx + this.inc, xpr.dbgName);
-			}.perform('nul.lclShft->local')
+			finish: function(xpr, chgd, orig) {
+				if(xpr.ctxName == this.orgName) {
+					//return new nul.xpr.local(this.dstName, xpr.lindx + this.inc, xpr.dbgName);
+					xpr.ctxName = this.dstName;
+					if('local'== xpr.charact && nul.lcl.slf!= xpr.lindx)
+						xpr.lindx += this.inc;
+					if(xpr.composed) xpr = xpr.composed();
+					chgd = true;
+				}
+				if(chgd) return xpr.summarised();
+			}
+		};
+	},
+	clonage: function() {
+		return {
+			name:'clone',
+			before: function(xpr) {
+				return clone1(xpr);
+			},
+			finish: function(xpr, chg, orig) {
+				if(xpr.cloned) xpr.cloned();
+				return xpr;
+			},
+			compose: function(xpr, cs) {
+				xpr.components = cs;
+				return xpr;
+			},
 		};
 	},
 };

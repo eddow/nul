@@ -16,6 +16,7 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 /////// Application specific
 	operate: function(klg) {
 		if(!this.components.object.take) {
+			//TODO: if not, operator $
 			if(!this.components.object.finalRoot()) return;
 			throw nul.semanticException(
 				'OPM', 'Cannot take from '+ this.components.object.toHTML());

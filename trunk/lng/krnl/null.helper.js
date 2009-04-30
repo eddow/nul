@@ -44,6 +44,7 @@ function trys(itm, fct) {
 			['object','function'].contains(typeof itm[i])?itm[i]:null,
 			[reTyped(i), itm[i]])) return rv;
 }
+
 //Returns the same item as <itm> where each member went through <fct>
 function map(itm, fct) {
 	var rv = isArray(itm)?[]:{};
@@ -120,9 +121,8 @@ function arrg(args) {
 }
 
 function beArrg(args) {
-	if(1!= args.length) return arrg(args);
-	if(!isArray(args[0])) return [args[0]];
-	return args[0];
+	if(1== args.length && isArray(args[0])) return args[0];
+	return arrg(args);
 }
 
 function merge(a, b, cb) {

@@ -19,19 +19,6 @@ nul.xpr.holder = function(pos) {
 				if(!this.components[i].flags.failable) return false;
 			return true;
 		},
-		/**
-		 * Extend expressions and multiply them to be sure no more IOR3s are in.
-		 */
-		extend: function() {
-			nul.debug.log('evals')(nul.debug.lcs.collapser('Extend'), [this]);
-			var nc = [];
-			while(0< this.components.length)
-				nc.pushs(nul.solve.solve(this.components.shift()));
-			nul.debug.log('evals')(nul.debug.lcs.endCollapser('Extended'), nc);
-			
-			return nc;
-		}.perform('nul.xpr.holder->extend')
-		.describe(function() { return ['Extending', this]; }),
 		composed: function() {
 			///	Removes empty fuzzy values
 			for(var i = 0; i<this.components.length;)
@@ -52,7 +39,7 @@ nul.xpr.holder = function(pos) {
 					trv = null;
 					if(nul.failure!= err) throw nul.exception.notice(err);
 				} finally {
-					trv = klg.leave(trv);
+					trv = klg.leave(trv, c);
 					if(kb) kb.shift();
 				}
 				if(trv && !trv.flags.failed) rv.push(trv);

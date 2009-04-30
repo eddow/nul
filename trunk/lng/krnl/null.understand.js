@@ -15,12 +15,14 @@ nul.understanding = {
 		if('[]'== this.operator) {
 			ops = [];
 			for(var i=0; i<this.operands.length; ++i)
-				ops.pushs((new nul.understanding.base(ub)).valued(this.operands[i]));
+				ops.push((new nul.understanding.base(ub)).valued(this.operands[i]));
 		}
 		else ops = map(this.operands, function() { 
 				return this.understand(ub);				
 			});
-		if(['+' ,'-' ,'*' ,'/' ,'%' ,'&' ,'|' ,'^'].contains(this.operator))
+		if(['+' ,'*' ,'&' ,'|' ,'^'].contains(this.operator))
+			return new nul.xpr.operation.associative(this.operator, ops);
+		if(['-' ,'/' ,'%'].contains(this.operator))
 			return new nul.xpr.operation.listed(this.operator, ops);
 		if(['<','>', '<=','>='].contains(this.operator)) {
 			ub.klg.know(new nul.xpr.ordered(this.operator, ops));
@@ -29,7 +31,15 @@ nul.understanding = {
 		switch(this.operator)
 		{
 			case ':-':	return new nul.xpr.lambda(ops[0], ops[1]);
-			case ',':	return new nul.xpr.set(ops);	//TODO: gérer le '.follow'!!!
+			case ',':
+				var ctxDef;
+				if(ops.follow) {
+					var flw = nul.inside(ops.follow);
+					ops.pushs(flw.cs);
+					ctxDef = flw.ctx;
+					delete ops.follow;
+				}	
+				return new nul.xpr.set(ops, ctxDef);
 			case '=':
 				return (new nul.xpr.unification(ops)).operate(ub.klg);
 			case ':=':	return new nul.xpr.handle(ops[0], ops[1]);
@@ -39,16 +49,11 @@ nul.understanding = {
 				for(var i=1; i<ops.length; ++i)
 					ub.klg.know(ops[i]);
 				return ops[0];
-			case '[]':	return new nul.xpr.ior3(ops);
+			case '[]':	return new nul.xpr.ior3(ops, ub.klg.ctxName);
 			default:	throw nul.internalException('Unknown operator: "'+this.operator+'"');
 		}
 	},
 	preceded: function(ub) {
-		if('!'== this.operator)
-			map((new nul.understanding.base(ub)).valued(this.operand),
-			function() {
-				ub.klg.knew(new nul.xpr.not(this));
-			});
 		return new nul.xpr.operation.preceded(this.operator,this.operand.understand(ub));
 	},
 	postceded: function(ub) {
@@ -119,47 +124,51 @@ nul.understanding = {
 };
 
 nul.understanding.base = Class.create({
-	initialize: function(prntUb) {
+	initialize: function(prntUb, ctxName) {
+		this.parms = {};
 		this.prntUb = prntUb;
-		this.klg = new nul.knowledge();
+		this.klg = new nul.knowledge(ctxName);
 	},
 	valued: function(tu) {
 		if(!tu) return this.klg.leave();
 		var xpr, klg = this.klg;
 		try {
-			xpr = tu.understand(this);
+			xpr = tu.understand?tu.understand(this):tu;
 			xpr = this.klg.asFuzz(xpr);
 		} catch(err) {
 			xpr = null;
 			if(nul.failure!= err) throw nul.exception.notice(err);
 		} finally { xpr = this.klg.leave(xpr); }
-		xpr = !xpr?[]:nul.solve.solve(xpr);
-		return map(xpr, function() {
-			return this.subjective() || this;
-		});
+		if(xpr) return xpr.subjective() || xpr;
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);
 		throw nul.understanding.unresolvable;
+	},
+	allocLocal: function(name) {
+		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
+		var rv = this.klg.locals.length;
+		this.klg.locals.push(name);
+		rv = new nul.xpr.local(this.klg.ctxName, rv, name)
+		if('_'!= name) this.parms[name] = rv;
+		return rv;
 	},
 	createFreedom: function(name, value) {
 		return this.prntUb.createFreedom(name, value);
 	},
 });
 nul.understanding.base.set = Class.create(nul.understanding.base, {
-	initialize: function($super, prntUb, selfName) {
-		$super(prntUb);
-		this.parms = {};
-		if(selfName)
+	initialize: function($super, prntUb, selfName, ctxName) {
+		$super(prntUb, ctxName);
+		if(ctxName)
 			this.parms[selfName] = new nul.xpr.local(
-				this.arCtxName = 'ar'+(++nul.understanding.srCtxNames),
+				this.klg.ctxName,
 				nul.lcl.slf, selfName);
 	},
 	valued: function($super, tu) {
 		var fzx = $super(tu);
-		var stx = new nul.xpr.set(fzx);
-		if(this.arCtxName) stx.arCtxName = this.arCtxName;
-		return stx;//.extended();
+		var stx = new nul.xpr.set(fzx?[fzx]:[], this.klg.ctxName);
+		return stx.extended();
 	},
 	resolve: function($super, identifier) {
 		if('undefined'!= typeof this.parms[identifier])
@@ -167,14 +176,8 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 		return $super(identifier);
 	},
 	createFreedom: function(name, value) {
-		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
-		if(!value) {
-			var rv = this.klg.locals.length;
-			this.klg.locals.push(name);
-			rv = new nul.xpr.local(this.klg.ctxName, rv, name)
-			if('_'!= name) this.parms[name] = rv;
-			return rv;
-		}
-		return this.parms[name] = value;
+		if(value) this.parms[name] = value;
+		else value = this.allocLocal(name);
+		return value;
 	}
 });

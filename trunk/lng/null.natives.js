@@ -28,11 +28,6 @@ nul.natives = {
 			if(nul.primitiveTree.is(xpr, 'boolean', 'a')) return xpr;
 		}, 'boolean'
 	),
-	set: new nul.xpr.javascript.set('set',
-		function(xpr) {
-			if(nul.primitiveTree.is(xpr, 'set', 'a')) return xpr;
-		}, 'set'
-	),
 	object: new nul.xpr.javascript.set('object',
 		function(xpr) {
 			if(nul.primitiveTree.is(xpr, 'object', 'an')) return xpr;

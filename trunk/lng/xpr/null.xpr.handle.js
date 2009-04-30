@@ -21,9 +21,10 @@ nul.xpr.handle = Class.create(nul.xpr.composed, {
 		if(	(!hr && this.components.handler.free([left.ctxName])) )
 			throw nul.semanticException('HUD',
 				'Cannot handle with '+this.components.handler.toString());
-		if(	(!hd && this.components.handled.free([left.ctxName])) )
+		if(	(!hd && this.components.handled.free([left.ctxName])) ) {
 			throw nul.semanticException('HUD',
 				'Cannot handle '+this.components.handled.toString());
+		}
 		if(!hr || !hd)
 			hpnd.know(this); 
 		else {
@@ -37,6 +38,10 @@ nul.xpr.handle = Class.create(nul.xpr.composed, {
 nul.xpr.lambda = Class.create(nul.xpr.primitive(nul.xpr.composed), {
 	charact: ':-',
 	htmlCharact: '&rArr;',
+	composed: function($super) {
+		
+		return $super();
+	},
 /////// Ctor
 	initialize: function($super, handle, object) {
 		$super({handle:handle, object:object});
@@ -45,4 +50,17 @@ nul.xpr.lambda = Class.create(nul.xpr.primitive(nul.xpr.composed), {
 		this.components.handle,
 		this.components.handle,
 		this.components.object]; },
+/////// Application sets
+	take: function(apl, klg, way) {
+		if(':-'!= apl.charact) return;
+		var h = new nul.xpr.application(
+			this.components.handle,
+			apl.components.handle);
+		var o = new nul.xpr.application(
+			this.components.object,
+			apl.components.object);
+		h = h.operate(klg) || h;
+		o = o.operate(klg) || o;
+		return apl;
+	}.perform('nul.xpr.lambda->take'),
 });

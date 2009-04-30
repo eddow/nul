@@ -21,6 +21,7 @@ nul.unify = {
 		//<uu> : cannot unify with unifion
 		//<rv> : cannot unify with any past unifion
 		//<unifion> : the item trying to unify
+		us = clone1(us);
 		var rv = [], uu = [], unifion, fUsLn = us.length;
 		unifion = us.pop();
 		while(0<us.length) {
@@ -69,6 +70,18 @@ nul.unify = {
 	 */
 	subs: function(a, b, klg) {
 		if(a.charact== b.charact) {
+			if(a.ctxDef && b.ctxDef) {
+				b.renameCtx(a.ctxDef);
+				//TODO: faire le contraire !!! Utiliser le knowledge et
+				// remplacer x[↵|ar1] = {blah} 
+				// par ar1:(_[0|fc2] , x[↵|ar1]) = {blah}
+				/*var nacn = nul.xpr.fuzzy.createCtxName();
+				var lcl = new nul.xpr.local(nacn, nul.lcl.slf);
+				a.expSelfRef(lcl, klg);
+				b.expSelfRef(lcl, klg);
+				a.ctxDef = b.ctxDef = nacn;*/
+			} else if(a.ctxDef) a.expSelfRef(a.clone(), klg);
+			else if(b.ctxDef) b.expSelfRef(b.clone(), klg);
 			switch(a.charact) {
 			case '{}':
 				var ac = clone1(a.components);
@@ -78,23 +91,21 @@ nul.unify = {
 				while(ac.length && bc.length &&
 					'fz'!= ac[0].charact &&
 					'fz'!= bc[0].charact)
+
 					brv.push(nul.unify.level(ac.shift(), bc.shift(), klg));
 				while(ac.length && bc.length &&
 					'fz'!= ac[ac.length-1].charact &&
 					'fz'!= bc[bc.length-1].charact)
 					erv.unshift(nul.unify.level(ac.pop(), bc.pop(), klg));
-				if(!bc.length) { var t=ac; ac=bc; bc=t; }
+				if(bc.length < ac.length) { var t=ac; ac=bc; bc=t; }
 				if(bc.length) {
-					if(ac.length)
-						nul.unify.level(
-							new nul.xpr.set(ac),
-							new nul.xpr.set(bc),
-							klg);
-					else map(bc, function() { 
-							klg.knew(new nul.xpr.not(this));
-						});
+					if(!(brv.length+erv.length)) return;
+					nul.unify.level(
+						new nul.xpr.set(ac, a.ctxDef),
+						new nul.xpr.set(bc, b.ctxDef),
+						klg);
 				}
-				return a.compose(brv.pushs(ac, erv));
+				return a.compose(brv.pushs(bc, erv));
 			case '::':
 				return a.compose(merge(a.components, b.components, function(a, b) {
 					if(!a||!b) nul.fail('Attributes dont match');
@@ -104,10 +115,6 @@ nul.unify = {
 				return a.compose(merge(a.components, b.components, function(a, b) {
 					return nul.unify.level(a, b, klg);
 				}));
-			/*case 'fz':
-				return a.aknlgd(function(klg) {
-					return nul.unify.level(this, b.stpUp(klg), klg)
-				});*/
 			}
 		}
 	}.perform('nul.unify.subs'),
@@ -121,35 +128,22 @@ nul.unify = {
 	 * - nothing if this function couldn't manage
 	 */
 	vcvs: function(a, b, klg) {
-		if(a.arCtxName && !b.flags.fuzzy) {
-			var srTt = {}, aNdx = a.ndx;
-			srTt[nul.xpr.local.ndx(nul.lcl.slf, a.arCtxName)] = b;
-			var ctxd = a.contextualise(klg, srTt);
-			//TODO: can do better. unify.level(a,b) iif ctxd applied sth
-			if(ctxd) ctxd = nul.unify.chewed(ctxd, b, klg);
-			if(ctxd && ctxd.ndx != a.ndx) a = ctxd;
-		}
-		/*if('fz'== a.charact) {
-			return nul.unify.level(a.stpUp(klg), b, klg);
-			return a.aknlgd(function(klg) {
-				return nul.unify.level(this, b, klg);
-			});
-		}*/
-		if('='== a.charact) return nul.unify.andDist(a.components, a.x, b, klg);
-		//Distribution in 'solve' but need here too. Epimenide forget premice if not
-		if('[]'== a.charact) {
-			var rv = nul.unify.orDist(a.components, a.x, b, klg);
-			if(!rv) return;
-			rv = new nul.xpr.ior3(rv);
-			return rv.operate(klg)||rv;
-			
+		if(a.ctxDef && !b.flags.fuzzy && false /*TODO:a is self-dependant*/) {
+			var ctxd = a.clone().expSelfRef(b, klg);
+			if(ctxd) ctxd = ctxd.subjective();
+			if(ctxd && !ctxd.contains(b)) nul.unify.level(ctxd, b, klg);
 		}
 
-		if('[-]'== a.charact && a.components.object.finalRoot()) {
+		if('='== a.charact) return nul.unify.andDist(a.components, a.x, b, klg);
+
+		if('[.]'== a.charact && a.components.object.finalRoot()) {
 			if(!a.components.object.take)
 				throw nul.semanticException('OPM', 'Cannot take from '+ a.components.object.toHTML());
 			var trtk = a.components.object.take(b, klg, -1);
-			if(trtk) return nul.unify.level(trtk, a.components.applied, klg);
+			if(trtk) {
+				nul.unify.level(trtk, a.components.applied, klg);
+				return b;
+			}
 			if(!a.components.object.transform()) {
 				var rv = a.compose({applied: nul.unify.level(a.components.applied, b, klg)});
 				return rv.operate(klg)||rv;
@@ -173,7 +167,8 @@ nul.unify = {
 		if(rv) return rv;
 
 		//TODO: try extraction before fail ?
-		if(a.finalRoot() && b.finalRoot())
+		//TODO: finir le système de finalRoot et fuzzy avec min/max poss
+		if(a.finalRoot() && b.finalRoot() && '{}'!= a.charact && '{}'!= b.charact)
 			nul.fail('Unification failure : ' + a.dbgHTML() + ' and ' + b.dbgHTML());
 	}.perform('nul.unify.chewed'),
 	

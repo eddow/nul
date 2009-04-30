@@ -96,7 +96,7 @@ nul.text = {
 		var aLocals = '', aDeps = '', aDepsTtl = '',
 			aFlags, aAutoRef = '';
 		aShort = nul.text.js.tile('shortStr', aShort);
-		if(this.arCtxName) aAutoRef = nul.text.js.tile('autoRef', this.arCtxName);
+		if(this.ctxDef) aAutoRef = nul.text.js.tile('autoRef', this.ctxDef);
 		aFlags = 
 			(this.x?this.x.primitive:'free') + ' : ' +
 			(isEmpty(this.flags)?'&phi;':keys(this.flags).join(', '));
@@ -114,12 +114,10 @@ nul.text = {
 			aDeps = nul.text.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
 		}
 		var cls = '';
-		if(this.locals) {
+		if(this.ctxName && 'local'!= this.charact) {
 			aLocals = [];
-			for(var i=0; i<this.locals.length; ++i)
-				aLocals.push(this.locals[i]);
-			if(0<aLocals.length)
-				aLocals = nul.text.js.tile('locals', this.ctxName + ': ' + aLocals.join(', '));
+			if(this.locals && this.locals.length)
+				aLocals = nul.text.js.tile('locals', this.ctxName + ': ' + this.locals.join(', '));
 			else aLocals = nul.text.js.tile('locals', this.ctxName);
 			cls=' freedom'
 		}
@@ -131,7 +129,7 @@ nul.text = {
 	toString: function() {
 		if(!nul.text.beginDraw(this)) return '&lt;Self contained!&gt;';
 		var rv = '';
-		if(this.arCtxName) rv += this.arCtxName+':';
+		if(this.ctxDef) rv += this.ctxDef+':';
 		rv += this.expressionString();
 		nul.text.endDraw(this);
 		return rv;
