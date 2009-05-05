@@ -27,6 +27,12 @@ var nul = {
 	isJsInt: function(n) {
 		return n== Math.floor(n);
 	},
+	unSubj: function(dsc, ops) {
+		if(isArray(ops)) ops = clone1(ops);
+		else ops = [ops];
+		ops.desc = dsc;
+		return ops;
+	},
 	inside: function(xpr) {
 		if('{}'== xpr.charact) return {
 			ctx: xpr.ctxDef,
@@ -35,14 +41,13 @@ var nul = {
 		var klg = new nul.knowledge();
 		klg.addLocals('?');
 		var jkr = new nul.xpr.local(klg.ctxName, 0, '?');
-		klg.know(new nul.xpr.application(xpr, jkr));
 		return {
 			ctx: klg.ctxName,
-			cs: [klg.leave(jkr)]
+			cs: [klg.leave(jkr.inSet(xpr))]
 		};
 	},
 	globalsUse: function(srName) {
-		var ub = new nul.understanding.base.set(null, srName, 'g');
+		var ub = new nul.understanding.base.set(null, srName, nul.xpr.fuzzy.createCtxName('g'));
 		for(var p in nul.globals) 
 			ub.createFreedom(p, nul.globals[p]);
 		return ub;

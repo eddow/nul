@@ -9,6 +9,7 @@
  * Native sets : the ones written in javascript
  */
 nul.xpr.javascript = Class.create(nul.xpr.primitive(nul.xpr.uncomposed,'set'), {
+	charact: 'native',
 	failable: function() { return false; },
 	initialize: function($super, name) {
 		this.name = name;
@@ -40,6 +41,10 @@ nul.xpr.javascript.set = Class.create(nul.xpr.javascript, {
 	take: function(apl, klg, way) {
 		if(this.callback(apl, klg)) return apl;
 	}.perform('nul.xpr.javascript.set->take'),
+	elementAttribute: function(xpr, atn) {
+		var fct = nul.primitiveTree.primObject(this.elementPrimitive)[atn];
+		if(fct) return fct.apply(xpr);
+	},
 });
 
 /**

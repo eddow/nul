@@ -38,7 +38,7 @@ a.msTab.selected {
 	cursor: default;
 }
 
-div#parsed {
+table#belong {
 	border: 1px black solid;
 }
 

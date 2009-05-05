@@ -14,7 +14,7 @@ function init()
 	nul.debug.logs.table = $('logs');
 	if(!nul.debug.acts) $('shwLoggingActs').disabled = true;
 	src = document.getElementById('source');
-	prd = document.getElementById('parsed');
+	bln = document.getElementById('belongs');
 	evd = document.getElementById('evaled');
 	rcr = document.getElementById('recur');
 	sbx = document.getElementById('sandBox');
@@ -25,13 +25,12 @@ function init()
 function evaluate()
 {
 	rcr.innerHTML = '';
-	prd.innerHTML = 'parsing...';
+	watchBelongs();
 	evd.innerHTML = '';
 	var v;
 	nul.execution.benchmark.measure('*evaluation',function(){
 		v = nul.expression(src.value);
 	});
-	prd.innerHTML = v.toHTML();
 	evd.innerHTML = v.toHTML();
 }
 
@@ -88,6 +87,18 @@ function tabSelect(te) {
 function shwLoggingClk() {
 	if($('shwLogging').checked) $('loggingChk').show();
 	else $('loggingChk').hide();
+}
+
+function watchBelongs(x) {
+	while(bln.rows.length) bln.deleteRow(0);
+	if(x) {
+		rw.insertCell(0).innerHTML = x.toHTML() + ' belongs to ...';
+		map(x.belong, function(i) {
+			var rw = bln.insertRow(-1);
+			rw.insertCell(0).innerHTML = i;
+			rw.insertCell(0).innerHTML = this.toHTML();
+		});
+	}
 }
 
 var knGlobs = {}, ignGlobs = {};

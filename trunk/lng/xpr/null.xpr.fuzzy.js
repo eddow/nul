@@ -29,7 +29,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	},
 	fail: function() {
 		delete this.components;
-		this.flags = {failed: true};
+		this.failed = true;
 		this.deps = {};
 		return this;
 	},
@@ -41,34 +41,26 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			var rv = $super(nComps);
 			if(rv!== this) return rv;
 		}
-		return this.summarised().composed();
+		return this.composed();
 	},
-	composed: function() {
-		if(!this.components) this.flags = {failed: true};
-		else if(
-		this.components.value &&	//Value is not set when called from within ctor
-		0== this.components.length &&
-		!this.components.value.flags.failable &&
-		!this.components.value.deps[this.ctxName])
-			return this.components.value;
-		/*
-		var singleton = new nul.xpr.set([this.components.value]);
-		this.fuzze = nul.fuzze.mix(this.components, this.components.length? 
-			function(fuzzs) {	//There are premices; all minima go to 0
-				var max = nul.fuzze.tight(fuzzs).max;
-				return fuzzs.value?
-					//The value has a fuzziness
-					new nul.fuzze(0, max, fuzzs.value.set):
-					new nul.fuzze(0, max, singleton);
-			}:
-			function(fuzzs) {	//No premices, returns the one from the value
-				return fuzzs.value;
-			});
-		//TODO: enlever le fuzzy sur this.ctxName
-		//TODO: dans les autres fuzzy, vérifier que le set ne dépend plus de ctxName
-		 */
+	composed: function($super) {
+		if(!this.components) this.failed = true;
+		else {
+			if(
+				this.components.value &&	//Value is not set when called from within ctor
+				0== this.components.length &&
+				!this.components.value.flags.failable &&
+				!this.components.value.deps[this.ctxName])
+					return this.components.value;
+		}
+		$super();
+		var fz = this;
+		if(this.components) map(this.components.value.belong, function() {
+			if(!this.deps[fz.ctxName]) fz.inSet(this, 'skipSub');
+			//TODO: else, see what 'this' is a subset off and detail it
+		});
 		return this;
-	}.perform('nul.xpr.fuzzy->composed'),
+	},
 /////// Ctor
 	initialize: function($super,value, premices, locals, ctxName) {
 		if(!value) return $super(); 
@@ -107,6 +99,11 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			rv += nul.text.expressionString(';', this.components);
 		return rv;
 	},
+/////// Forward specific
+	inSet: function($super, set, flg) {
+		if('skipSub'!= flg) this.components.value.inSet(set, flg);
+		return $super(set);
+	},
 /////// Fuzzy specific
 	subRecursion: function(cb, kb) {
 		//TODO: standardiser les deux semi-méthodes ci-dessous
@@ -139,22 +136,21 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		this.openedKnowledgeDlc = nul.debug.lc;
 		return klg;
 	},
-	subContextualise: function(tt, act) {
+	subBrowse: function(behav, act) {
 		var klg = this.openedKnowledge;
 		var prmcs = klg.forget();
-		var cntxtls = nul.browse.contextualise(tt);
 		this.components.value = this.components.value
-			.browsed(cntxtls);
+			.browsed(behav);
 		while(prmcs.length) {
 			var p = prmcs.shift();
 			if('knwl'== act && '='== p.charact)
 				klg.know(p.compose(map(p.components,
 					function() { return this.components?
 						this.compose(map(this.components,
-						function() { return this.browsed(cntxtls,'nocs'); })):
+						function() { return this.browsed(behav); })):
 						this;
 					})));
-			else klg.know(p.browsed(cntxtls,'nocs'));
+			else klg.know(p.browsed(behav));
 		}
 		return this;
 	},
@@ -167,24 +163,53 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	 * Also replace all operable expression by the result of its operation.
 	 */
 	simplify: function() {
-		var tt = {};	//Transformation table
-		for(var i= 0; i<this.components.length; ++i)
-			if('='== this.components[i].charact) {
-				var rplBy = this.components[i].components[0];
-				if(!rplBy.flags.fuzzy) for(var c=1; c<this.components[i].components.length; ++c) {
-					var rplOrg = this.components[i].components[c];
-					if(!rplBy.contains(rplOrg))
-						tt[rplOrg.ndx] = rplBy;
+		var rv = this, tt = {};	//Transformation table
+		
+		tt = {};
+		for(var i= 0; i<rv.components.length;)
+			if('[.]'== rv.components[i].charact) {
+				var cs = rv.components[i].components;
+				tt[cs.applied.ndx] = 
+					(tt[cs.applied.ndx] || cs.applied)
+					.inSet(cs.object);
+				//rv.components.splice(i,1);
+				++i;
+			} else ++i;
+		rv = rv.subBrowse(nul.browse.contextualise(tt));
+		
+		if('fz'!= rv.charact) return rv;
+		
+		tt = {}
+		for(var i= 0; i<rv.components.length; ++i)
+			if('='== rv.components[i].charact) {
+				var rplBy = rv.components[i].components[0];
+				for(var c=1; c<rv.components[i].components.length; ++c)
+					rplBy.inSets(rv.components[i].components[c].belong);
+					
+				tt[rplBy.ndx] = rplBy;
+				if(isEmpty(rplBy.fuzze)) {
+					for(var c=1; c<rv.components[i].components.length; ++c) {
+						var rplOrg = rv.components[i].components[c];
+						if(!rplBy.contains(rplOrg)) //TODO: par tests: Encore besoin de cette vérification?
+							tt[rplOrg.ndx] = rplBy;
+					}
+				} else {
+					for(var c=1; c<rv.components[i].components.length; ++c) {
+						var rplOrg = rv.components[i].components[c];
+						rplOrg.belong = [];
+						tt[rplOrg.ndx] = rplOrg.inSets(rplBy.belong);
+					}
 				}
 			}
-		return this.subContextualise(tt, 'knwl');
+		rv = rv.subBrowse(nul.browse.contextualise(tt), 'knwl');
+		
+		return rv;
 	}.perform('nul.xpr.fuzzy->simplify')
 	.describe(function(klg) { return ['Simplifying', this]; }),
 	/**
 	 * Defragment the local index-space.
 	 */
 	relocalise: function() {
-		this.summarised();
 		//Remove local-index-space allocations for unknowns not used anymore
 		var delta = 0, i = 0, tt = {};
 		while(i<this.locals.length) {
@@ -198,7 +223,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			}
 		}
 		if(!delta) return this;
-		return this.subContextualise(tt);
+		return this.subBrowse(nul.browse.contextualise(tt));
 	}.perform('nul.xpr.fuzzy->relocalise')
 	.describe(function(klg) { return ['Relocating', this]; }),
 	/**

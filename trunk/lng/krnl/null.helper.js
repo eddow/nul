@@ -55,6 +55,25 @@ function map(itm, fct) {
 	return rv;
 }
 
+
+/**
+ * Returns the same item as <itm> where each member went through <fct>
+ * Each members returning an empty value are not added
+ */
+function maf(itm, fct) {
+	var rv = isArray(itm)?[]:{};
+	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) {
+		var ndx = reTyped(i); 
+		var trv = fct.apply(
+			['object','function'].contains(typeof itm[i])?itm[i]:null,
+			[ndx, itm[i]]);
+		if('undefined'!= typeof trv) {
+			if('number'== typeof ndx) rv.push(trv);
+			else rv[ndx] = trv;
+		}
+	}
+	return rv;
+}
 function replace(dst, src) {
 	dst.prototype = src.prototype;
 	for(var i in dst) delete dst[i];// = null;

@@ -22,11 +22,12 @@ nul.xpr.ordered = Class.create(nul.xpr.relation, {
 			case '<': $super(oprnds); break;
 		}
 	},
-	subject: function(left, hpnd) {
+	subject: function(klg) {
 		var a = this.components[0], b = this.components[1];
-		var oa = a.attribute('<', left), ob = b.attribute('<', left);
+		var oa = a.attribute('<'), ob = b.attribute('<');
 		var fct;
-		if(!oa || !ob) return;
+		if(!oa || !ob) return [
+			nul.unSubj('Operator "&lt;" undefined for', this.components)];
 		if(nul.debug.assert) assert('{}'== oa.charact && '{}'== ob.charact,
 			'Operators are functions');
 		if(oa.ndx == ob.ndx) fct = oa;
@@ -35,9 +36,9 @@ nul.xpr.ordered = Class.create(nul.xpr.relation, {
 			fct.pushs(ob.components);
 			fct = new nul.xpr.set(fct, 'g');
 		}
-		var trv = new nul.xpr.application(fct, new nul.xpr.set([a, b]));
-		trv = trv.operate(hpnd);
+		var trv = new nul.xpr.application(fct, new nul.xpr.set([a, b]), klg.ctxName);
+		trv = trv.operate(klg);
 		if(!trv) return;
-		return this.replaceBy(trv.subjected(left, hpnd));
+		return this.replaceBy(trv);
 	}.perform('nul.xpr.operation->subject'),
 });

@@ -8,22 +8,20 @@
 
 nul.xpr.atom = Class.create(nul.xpr.uncomposed, {
 	failable: function() { return false; },
-	initialize: function($super) { $super(); }
 });
 
 nul.xpr.value = Class.create(nul.xpr.primitive(nul.xpr.atom), {
 	charact: 'value',
 	finalRoot: function() { return true; },
 	initialize: function($super, jsValue) {
-		this.primitive = typeof jsValue;
-		if('number'== this.primitive && nul.isJsInt(jsValue))
-			this.primitive = 'integer';
 		this.value = jsValue;
-		//this.fuzze = {};
-		this.composed();
 		$super();
 	},
 	composed: function($super) {
+		this.primitive = typeof this.value;
+		if('number'== this.primitive && nul.isJsInt(this.value))
+			this.primitive = 'integer';
+		this.primitive = nul.primitiveTree.primObject(this.primitive);
 		this.acNdx =
 			'[' +
 			this.jsValue().toString()
@@ -54,9 +52,6 @@ nul.xpr.local = Class.create(nul.xpr.atom, {
 		this.lindx = lindx;
 		this.dbgName = dbgName;
 		
-		/*this.fuzze = {};
-		this.fuzze[ctxName] = new nul.fuzze();*/
-		this.composed();
 		$super();
 	},
 	composed: function($super) {

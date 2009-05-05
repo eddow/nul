@@ -49,6 +49,10 @@ nul.understanding = {
 				for(var i=1; i<ops.length; ++i)
 					ub.klg.know(ops[i]);
 				return ops[0];
+			case '?':
+				for(var i=0; i<ops.length-1; ++i)
+					ub.klg.know(ops[i]);
+				return ops[ops.length-1];
 			case '[]':	return new nul.xpr.ior3(ops, ub.klg.ctxName);
 			default:	throw nul.internalException('Unknown operator: "'+this.operator+'"');
 		}
@@ -86,7 +90,8 @@ nul.understanding = {
 	application: function(ub) {
 		var rv = new nul.xpr.application(
 			this.item.understand(ub),
-			this.applied.understand(ub));
+			this.applied.understand(ub),
+			ub.klg.ctxName);
 		return rv.operate(ub.klg) || rv;
 	},
 	set: function(ub) {
@@ -139,7 +144,7 @@ nul.understanding.base = Class.create({
 			xpr = null;
 			if(nul.failure!= err) throw nul.exception.notice(err);
 		} finally { xpr = this.klg.leave(xpr); }
-		if(xpr) return xpr.subjective() || xpr;
+		return xpr;
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);
@@ -160,7 +165,7 @@ nul.understanding.base = Class.create({
 nul.understanding.base.set = Class.create(nul.understanding.base, {
 	initialize: function($super, prntUb, selfName, ctxName) {
 		$super(prntUb, ctxName);
-		if(ctxName)
+		if(selfName)
 			this.parms[selfName] = new nul.xpr.local(
 				this.klg.ctxName,
 				nul.lcl.slf, selfName);
@@ -168,7 +173,7 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 	valued: function($super, tu) {
 		var fzx = $super(tu);
 		var stx = new nul.xpr.set(fzx?[fzx]:[], this.klg.ctxName);
-		return stx.extended();
+		return stx.extended?stx.extended():stx;
 	},
 	resolve: function($super, identifier) {
 		if('undefined'!= typeof this.parms[identifier])

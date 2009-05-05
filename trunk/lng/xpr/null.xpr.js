@@ -11,23 +11,24 @@
  */
 nul.xpr = Class.create({
 	initialize: function() {
+		this.belong = [];
 	},
 	primitiveAttribute: function(prmtv, atn, klg) {
 		var fct = nul.primitiveTree.attribute(prmtv, atn);
 		if(fct) return fct.apply(this,[klg]);
 	},
-	attribute: function(atn, klg) {
-		var p = klg.primitive(this);
-		if(p) return this.primitiveAttribute(p, atn, klg);
-		if(this.free([klg.ctxName]))
-			throw nul.semanticException('AUD',
-				(nul.tokenizer.isAB(atn, 'alphanum')?'Attribute':'Operator')+
-				' '+atn+' isnt defined for '+this.toString());
-		
+	attribute: function(atn) {
+		if(this.primitive && this.primitive[atn])
+			return this.primitive[atn].apply(this);
+		var apl = this;
+		var fromBlng = trys(this.belong, function() {
+			if(this.elementAttribute)
+				return this.elementAttribute(apl, atn);
+		});
+		return fromBlng;
 	},
 	composed: function() {
-		//TODO: remove this, just used to smooth fuzze change
-		//assert(this.fuzze, 'fuzze est initialisé');
+		this.summarised();
 		return this;
 	},
 	clone: function(nComps) {
@@ -38,7 +39,12 @@ nul.xpr = Class.create({
 		return rv;
 	}.perform('nul.xpr->clone'),
 	replaceBy: function(xpr) {
-		if(xpr) return merge(this, xpr, function(a,b) { return b; });
+		var blng = this.belong;
+		if(xpr) {
+			merge(this, xpr, function(a,b) { return b; });
+			if(blng) this.inSets(blng);
+			return this;
+		}
 	},
 
 	dbgHTML: function() {
@@ -57,6 +63,7 @@ nul.xpr = Class.create({
 		if('string'!= typeof xpr) xpr = xpr.ndx;
 		return -1<this.ndx.indexOf(xpr);
 	},
+	handle: function() { return this.attribute(' hndl'); },
 
 	/**
 	 * Specify that occurences of <xpr> in <this> expression are indeed self-references
@@ -86,23 +93,10 @@ nul.xpr = Class.create({
 		return this.browse(nul.browse.operated(klg)) || this;
 	}.perform('nul.xpr->contextualise'),
 
-	/**
-	 * Makes the components not anymore using objectivities concerning this knowledge.
-	 */
-	subjective: function() {
-		return this.entered(function(klg) {
-			return this.browse(nul.browse.subjectivise(klg, [klg]));
-		}) || this;
-	}.perform('nul.xpr->subjective'),
-
 	subRecursion: function(cb, kb) {
 		return this.compose(map(this.components, cb));
 	},
 
-	subjected: function(left, hpnd) {
-		var xpr = this.operated(hpnd);//this.operate?(this.operate(hpnd)||this):this;
-		return xpr.subject?(xpr.subject(left, hpnd)||xpr):xpr;
-	},
 
 	stpUp: function(klg) {
 		return this.ctxName?(this.browse(
@@ -150,25 +144,35 @@ nul.xpr = Class.create({
  *  Fix flags, dependances, ...
  */
 	summarised: function() {
-		//TODO: vérifier qu'il n'y a pas de redondance : NE PAS TROP SUMMARISER
 		var dps = [];
 		var flags = {};
 		var ndx = '';
-		if(this.components) map(this.components, function() {
+		var fuzze = {};
+
+		function accountSub() {
 			if(nul.debug.assert) assert(this.deps,'Subs summarised.'); 
 			dps.push(this.deps);
+			fuzze = merge(fuzze, this.fuzze);
 			for(var f in this.flags) flags[f] = true;
+		}
+		if(this.components) map(this.components, function() {
+			accountSub.apply(this);
 			ndx += '|' + this.ndx;
 		});
+		map(this.belong, accountSub);
 		if(this.acNdx) this.ndx = this.acNdx;
-		else this.ndx = '[' + this.charact + ndx + ']';
+		else this.ndx = '[' + ((this.obj&&this.obj!=this.charact) ? 
+				this.charact + this.obj : this.charact) + ndx + ']';
 		ndx = '';
-		if(['{}'].contains(this.charact)) {
-			delete flags.fuzzy;
-			delete flags.failable;
-		}
-		if(['[.]','[]','fz','$'].contains(this.charact)) flags.fuzzy = true;
+		if(['{}'].contains(this.charact)) delete flags.failable;
 		
+		//TODO: application.deps ==> fuzze ?
+		if(this.ctxName && 'local'!= this.charact) fuzze[this.ctxName] = true;
+		if(this.ctxDef) {
+			if(fuzze[this.ctxDef]) delete fuzze[this.ctxDef];
+			else delete this.ctxDef;
+		}
+		this.fuzze = fuzze; 
 		if(this.makeDeps) dps.push(this.makeDeps());
 		this.deps = nul.lcl.dep.mix(dps);
 		if('fz'== this.charact) {
@@ -177,11 +181,6 @@ nul.xpr = Class.create({
 			delete this.deps[this.ctxName];
 		}
 		
-		
-		if(this.ctxDef) {
-			if(this.deps[this.ctxDef]) delete this.deps[this.ctxDef];
-			//TODO: else if(!rv.fuzzyTo(this.ctxDef)) delete this.ctxDef;
-		}
 		if(this.failable && this.failable()) flags.failable = true;
 		this.flags = flags;
 		
@@ -193,10 +192,6 @@ nul.xpr = Class.create({
 	//If the root expression of this operand will be kept forever
 	//TODO: en faire un flag?
 	finalRoot: function() { return false; },
-	handle: function(klg) {
-		if(klg.primitive(this)) return [null, this, this];
-	},
-
 
 //shortcuts defined elsewhere
 	toHTML: nul.text.toHTML,
@@ -204,18 +199,61 @@ nul.xpr = Class.create({
 	browse: nul.browse.expression,
 	browsed: function(behav, noOwnBS) {
 		return this.browse(behav, noOwnBS) || this;
+	},
+/////// Belonging management
+	/**
+	 * Asserts this expression is in <set>.
+	 * Returns the expression.
+	 */
+	inSet: function(set, flg) {
+		if(this.doesBelong(set)) return this;
+		this.belong = map(this.belong, function(ndx) {
+			if(!this.isSubSet(set)) return this;
+		});
+		this.belong.push(set);
+		//TODO: become failable ?
+		if('noSum'== flg) return this;
+		return this.summarised();
+	},
+	inSets: function(sets) {
+		for(var i=0; i<sets.length; ++i) this.inSet(sets[i], 'noSum');
+		return this.summarised();
+	},
+	/**
+	 * Rurns weither this expression belongs to <set>
+	 */
+	doesBelong: function(set) {
+		return trys(this.belong, function() {
+			if(this.isSubSet(set)) return true;
+		});
+	},
+	/**
+	 * Returns weither this set is a sub-set of <set>.
+	 */
+	isSubSet: function(set) {
+		if(this.ndx==set.ndx) return true;
+		return trys(this.containers(), function() {
+			if(this.isSubSet(set)) return true;
+		});
+	},
+	/**
+	 * Returns the list of sets that contains this one.
+	 */
+	containers: function() {
+		var rv = maf(this.belong, function() {
+			if('set'== this.charact) return this.components[0];
+		});
 	}
-	
 });
 
 nul.xpr.uncomposed = Class.create(nul.xpr, {
 	compose: function(nComps) {
 		if(nul.debug.assert) assert(!nComps, 'This shouldnt be composed!');
-		return this.summarised();
-	}.perform('nul.xpr.uncomposed->compose'),
+		return this.composed();
+	},
 	initialize: function($super) {
-		this.compose();
 		$super();
+		this.compose();
 	}
 });
 
@@ -223,13 +261,13 @@ nul.xpr.composed = Class.create(nul.xpr, {
 	compose: function(nComps) {
 		if(nComps && nComps!== this.components)
 			merge(this.components, nComps);
-		return this.summarised().composed();
-	}.perform('nul.xpr.composed->compose'),
+		return this.composed();
+	},
 /////// Ctor
 	initialize: function($super, ops) {
+		$super();
 		this.components = {};
 		this.compose(ops||{});
-		$super();
 	},
 /////// Strings
 	expressionHTML: function() {
@@ -250,16 +288,13 @@ nul.xpr.listed = Class.create(nul.xpr, {
 			this.components.splice(0);
 			merge(this.components, nComps);
 		}
-		return this.summarised().composed();
-	}.perform('nul.xpr.listed->compose'),
-	composed: function($super) {
-		return $super();
+		return this.composed();
 	},
 	initialize: function($super, ops) {
+		$super();
 		this.components = [];
 		var cpsd = this.compose(ops);
 		if(cpsd !== this) return this.replaceBy(cpsd);
-		$super();
 	},
 });
 
@@ -267,8 +302,8 @@ nul.xpr.relation = Class.create(nul.xpr.listed, {
 	composed: function($super) {
 		if(nul.debug.assert) assert(1< this.components.length,
 			'Relation has several components');
-		return this;
-	}.perform('nul.xpr.relation->compose'),
+		return $super();
+	},
 /////// Strings
 	expressionHTML: function() {
 		return nul.text.expressionHTML(
@@ -336,12 +371,12 @@ nul.xpr.postceded = Class.create(nul.xpr.ceded, {
 nul.xpr.primitive = function(root, pnm) {
 	return Class.create(root, {
 		primitive: pnm,
+		initialize: function($super, arg) {
+			if('string'== typeof this.primitive)
+				this.primitive = nul.primitiveTree.primObject(this.primitive);
+			$super(arg);
+		},
 		finalRoot: function() { return true; },
-		handle: function(klg) { return [null, this, this]; },
-		attribute: function($super, atn, klg) {
-			return this.primitiveAttribute(this.primitive, atn, klg) ||
-				$super(atn, klg);
-		}
 	});
 };
 
@@ -353,6 +388,6 @@ nul.xpr.forward = function(root, fkey) {
 		},
 		finalRoot: function() { return this.components[fkey].finalRoot(); },
 		jsValue: function() { return this..components[fkey].jsValue; },
-		handle: function(klg) { return this.components[fkey].handle(klg); },
+		attribute: function(atn) { return this.components[fkey].attribute(atn); },
 	});
 };

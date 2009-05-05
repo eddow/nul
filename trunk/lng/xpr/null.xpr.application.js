@@ -10,7 +10,8 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 	htmlCharact: ' ',
 	charact: '[.]',
 	failable: function() { return true; },
-	initialize: function($super, obj, apl) {
+	initialize: function($super, obj, apl, ctxName) {
+		this.ctxName = ctxName;
 		$super({object: obj, applied: apl});
 	},
 /////// Application specific
@@ -23,10 +24,10 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 		}
 		var rv = this.components.object.take(this.components.applied, klg, 1);
 		if(rv) return this.replaceBy(rv);
-		if(!this.components.object.transform()) {
+		//if(!this.components.applied.doesBelong(this.components.object))
 			klg.know(this);
+		if(!this.components.object.transform())
 			return this.components.applied;
-		}
 	}.perform('nul.xpr.application->apply')
 	.describe(function(klg) { return ['Applying', this]; }),
 /////// String special management. TODO:  on garde ou pas ?

@@ -21,7 +21,7 @@ nul.knowledge = Class.create({
 		nul.debug.log('ctxs')(nul.debug.lcs.endCollapser('Leave', 'Ctx'),
 			[this.ctxName, rv||'']);
 		if(orig && rv!== orig) delete orig.openedKnowledge;
-		if(rv) try {
+		if(rv && !isArray(rv)) try {
 			rv = this.asFuzz(rv);
 			if(nul.debug.assert) assert(
 				'fz'!= rv.charact || !rv.components ||
@@ -44,7 +44,7 @@ nul.knowledge = Class.create({
 					while(rv.components.length)
 						this.know(rv.components.pop());
 					this.knowledge.value = rv.components.value;
-					rv.components = this.knowledge;
+					rv.compose(this.knowledge);
 				}
 				rv.locals = this.locals;
 				if(nul.debug.assert) assert(
@@ -57,24 +57,39 @@ nul.knowledge = Class.create({
 					this.knowledge,
 					this.locals,
 					this.ctxName);
-				if('fz'!= rv.charact) return rv;
-				this.knowledge = rv.components;
-				if('fz'!= rv.charact) return rv;
-				rv.withKlg(this, 'asFuzz');
+				this.knowledge = 'fz'== rv.charact?rv.components:[];
+				if('fz'== rv.charact) rv.withKlg(this, 'asFuzz');
 			}
 			
 			var oldKNdx, newKNdx = this.knowledgeNdx();
+			var sbjBhv;
 			do {
 				oldKNdx = newKNdx;
-				rv = rv.simplify();
-				if('fz'!= rv.charact) return rv;
-				this.concentrate(rv.components.value);
-				if('fz'!= rv.charact) return rv;
+				if('fz'== rv.charact) rv = rv.simplify();
+				if('fz'== rv.charact) this.concentrate(rv.components.value);
+				
+				sbjBhv = nul.browse.subjectivise(this);
+				if('fz'== rv.charact) rv = rv.subBrowse(sbjBhv) || rv;
+				else rv = rv.browse(sbjBhv) || rv;
+
+				var oper = nul.browse.operated(this);
+				if('fz'== rv.charact) rv = rv.subBrowse(oper) || rv;
+				else rv = rv.browse(oper) || rv;
+
 				newKNdx = this.knowledgeNdx();
 			} while(oldKNdx != newKNdx)
-			rv = rv.relocalise();
-			if('fz'!= rv.charact) return rv;
-			return rv.composed();
+			if(sbjBhv.needMore.length) {
+				var txt = [];
+				while(sbjBhv.needMore.length) {
+					var sbj = sbjBhv.needMore.shift();
+					txt.push(sbj.desc+' '+nul.text.expressionString(', ', sbj));
+				}
+				throw nul.semanticException('AUD',
+					txt.join('<br />'));
+			}
+			if('fz'== rv.charact) rv = rv.relocalise();
+			if('fz'== rv.charact) rv = rv.composed();
+			return rv;
 		} catch(err) {
 			if(nul.failure!= err) throw nul.exception.notice(err);
 			return new nul.xpr.fuzzy();
@@ -151,19 +166,6 @@ nul.knowledge = Class.create({
 		}	//else: already known
 		return this;
 	},
-	primitive: function(xpr) {
-		//TODO: voire aussi si on n'a pas par exemple : { ... } = E ? nécessaire?
-		var tpAccess = this.tpAccess();
-		if(tpAccess[xpr.ndx]) {
-			for(var y in tpAccess[xpr.ndx]) {
-				var st = this.knowledge[tpAccess[xpr.ndx][y]];
-				if(nul.debug.assert) assert('[.]'== st.charact,
-					'tpAccess refers to belonging.');
-				st = st.components.object.elementPrimitive;
-				if(st) return st;
-			}
-		}
-	},
 /////// Locals management
 	addLocals: function(locals) {
 		if(!isArray(locals)) locals = [locals];
@@ -227,7 +229,7 @@ nul.knowledge = Class.create({
 	 	} while(n<us.length);
 
 		var rv = us[0];
-		this.knowledge.push(new nul.xpr.unification(us).summarised());
+		this.knowledge.push(new nul.xpr.unification(us));
 		return rv;
 	},
 
@@ -266,7 +268,7 @@ nul.knowledge = Class.create({
 							this.forget(p);
 						else {
 							prm.components.splice(c,1);
-							prm.summarised();
+							prm.composed();
 						}
 					}
 				}

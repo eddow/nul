@@ -37,7 +37,7 @@ function tableStack(nm, tbl) {
 		},
 		clear: function() {
 			this.dirty = true;
-			while(0< this.buffer.rows.length) this.pop();
+			while(this.buffer.rows.length) this.pop();
 			this.apply();		
 		},
 		draw: function(cs) {

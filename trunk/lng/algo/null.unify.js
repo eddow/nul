@@ -104,6 +104,10 @@ nul.unify = {
 						new nul.xpr.set(ac, a.ctxDef),
 						new nul.xpr.set(bc, b.ctxDef),
 						klg);
+					if(!ac.length && trys(bc, function()
+							{ return !this.flags.failable; }))
+						nul.fail('Unification failure : ' +
+							a.dbgHTML() + ' and ' + b.dbgHTML());
 				}
 				return a.compose(brv.pushs(bc, erv));
 			case '::':
@@ -128,9 +132,9 @@ nul.unify = {
 	 * - nothing if this function couldn't manage
 	 */
 	vcvs: function(a, b, klg) {
-		if(a.ctxDef && !b.flags.fuzzy && false /*TODO:a is self-dependant*/) {
+		if(a.ctxDef && isEmpty(b.fuzze) && false /*TODO:a is self-dependant*/) {
 			var ctxd = a.clone().expSelfRef(b, klg);
-			if(ctxd) ctxd = ctxd.subjective();
+			//if(ctxd) ctxd = ctxd.subjective();
 			if(ctxd && !ctxd.contains(b)) nul.unify.level(ctxd, b, klg);
 		}
 
@@ -183,7 +187,7 @@ nul.unify = {
 			var oa = as[i].aknlgd(function(klg) {
 				return nul.unify.level(this, b.clone(), klg);
 			});
-			if(oa && !oa.flags.failed) rv.push(oa);
+			if(oa && !oa.failed) rv.push(oa);
 		}
 		return rv;
 	}.perform('nul.unify.orDist'),

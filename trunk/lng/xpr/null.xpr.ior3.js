@@ -22,7 +22,7 @@ nul.xpr.ior3 = Class.create(nul.xpr.holder.listed, {
 		case 0: nul.fail('No possibile ways');
 		case 1: return this.replaceBy(this.components[0].stpUp(klg));
 		}
-	}.perform('nul.xpr.ior3->composed'),
+	}.perform('nul.xpr.ior3->operate'),
 	initialize: function($super, ops, ctxName) {
 		this.ctxName = ctxName;
 		return $super(ops);

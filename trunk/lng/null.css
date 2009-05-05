@@ -88,17 +88,17 @@ span.local .desc {
 	vertical-align: top;
 }
 
-span.local .desc  .sup {
+span.local .desc .sup {
 	vertical-align: top;
 	display: table-row;
 }
 
-span.local .desc  .sub {
+span.local .desc .sub {
 	vertical-align: bottom;
 	display: table-row;
 }
 
-a.shortStr, a.locals, a.dependances, a.flags, a.autoRef {
+a.shortStr, a.locals, a.dependances, a.flags, a.autoRef, a.belongs, a.fuzze {
 	display: table-cell;
 	font-size: 4px;
 	cursor: none;
@@ -111,7 +111,7 @@ a.shortStr, a.locals, a.dependances, a.flags, a.autoRef {
 	vertical-align: top;
 }
 
-div.shortStr, div.locals, div.dependances, div.flags, div.autoRef {
+div.shortStr, div.locals, div.dependances, div.flags, div.autoRef, div.belongs, div.fuzze {
 	cursor: default;
 	font-size: 1em;
 	position: absolute;
@@ -130,7 +130,6 @@ a.flags div {
 }
 
 .flags .failable { background-color: red; }
-.flags .fuzzy { background-color: turquoise; }
 .flags .dirty { background-color: blue; }
 .flags .extractible { background-color: orange; }
 
@@ -154,6 +153,11 @@ a.flags div {
 	background-color: orange;
 }
 
+.belongs {
+	border-color: firebrick;
+	background-color: plum;
+}
+
 div.dependances {
 	top: 0;
 	padding-top: 2.5em;
@@ -162,6 +166,11 @@ div.dependances {
 .dependances {
 	border-color: darkgreen;
 	background-color: lightgreen;
+}
+
+.fuzze {
+	border-color: lightgreen;
+	background-color: darkgreen;
 }
 
 .dependances table {

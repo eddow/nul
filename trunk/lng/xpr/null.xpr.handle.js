@@ -9,44 +9,38 @@
 nul.xpr.handle = Class.create(nul.xpr.composed, {
 	charact: ':=',
 	htmlCharact: '&lArr;',
+	obj: ':=',
 	failable: function() { return true; },
 /////// Ctor
 	initialize: function($super, handler, handled) {
 		$super({handler:handler, handled:handled});
 	},
 /////// Objectivity specific
-	subject: function(left, hpnd) {
-		var hr = this.components.handler.handle(left);
-		var hd = this.components.handled.handle(left);
-		if(	(!hr && this.components.handler.free([left.ctxName])) )
-			throw nul.semanticException('HUD',
-				'Cannot handle with '+this.components.handler.toString());
-		if(	(!hd && this.components.handled.free([left.ctxName])) ) {
-			throw nul.semanticException('HUD',
-				'Cannot handle '+this.components.handled.toString());
-		}
-		if(!hr || !hd)
-			hpnd.know(this); 
-		else {
-			nul.unify.level(hr[2], hd[1], hpnd);
+	subject: function(klg) {
+		var hr = this.components.handler.handle();
+		var hd = this.components.handled.handle();
+
+		if(!hr || !hd) {
+			var rv = [];
+			if(!hr) rv.push(nul.unSubj('Unable to handle with', this.components.handler));
+			if(!hd) rv.push(nul.unSubj('Unable to handle', this.components.handled));
+			return rv;
+		} else {
+			nul.unify.level(hr[2], hd[1], klg);
 			return this.replaceBy(!hr[0]?hd[2]:new nul.xpr.lambda(hr[0], hd[2]));
 		}
 	}.perform('nul.xpr.handle->subject')
-	.describe(function(left, hpnd) { return ['Handeling', this]; })
+	.describe(function(klg) { return ['Handeling', this]; })
 });
 
 nul.xpr.lambda = Class.create(nul.xpr.primitive(nul.xpr.composed), {
 	charact: ':-',
 	htmlCharact: '&rArr;',
-	composed: function($super) {
-		
-		return $super();
-	},
 /////// Ctor
 	initialize: function($super, handle, object) {
 		$super({handle:handle, object:object});
 	},
-	handle: function(klg) { return [
+	handle: function() { return [
 		this.components.handle,
 		this.components.handle,
 		this.components.object]; },
@@ -55,10 +49,12 @@ nul.xpr.lambda = Class.create(nul.xpr.primitive(nul.xpr.composed), {
 		if(':-'!= apl.charact) return;
 		var h = new nul.xpr.application(
 			this.components.handle,
-			apl.components.handle);
+			apl.components.handle,
+			klg.ctxName);
 		var o = new nul.xpr.application(
 			this.components.object,
-			apl.components.object);
+			apl.components.object,
+			klg.ctxName);
 		h = h.operate(klg) || h;
 		o = o.operate(klg) || o;
 		return apl;

@@ -33,11 +33,9 @@ nul.nativeFunctions = {
 	atomOp: function(op, tp, neutral) {
 		return function() {
 			return nul.nativeFunctions.hardCoded('fct',
-//				'{} :- '+neutral+' [] ' +
-//				'('+tp+' a,.. C) :- hardCoded(a, operation C)',
-				'{a} :- '+tp+' a [] ' +
-				'('+tp+' a, b,.. C) :- hardCoded(a, operation(b, C))',
-				//'('+tp+' a, '+tp+' b) :- hardCoded(a,b)',
+//				tp+' a ? {a} :- a [] ' +
+//				'('+tp+' a, b,.. C) :- hardCoded(a, operation(b, C))',
+				'('+tp+' a, '+tp+' b) :- hardCoded(a,b)',
 				nul.natives[tp].name+op+nul.natives[tp].name,
 				function(o, klg) {
 					var o1 = o.components[0], o2 = o.components[1];
@@ -107,6 +105,9 @@ nul.primitive = {
 		
 	},
 	'string': {
+		'id': function() {
+			return new nul.xpr.value('string');
+		},
 		'+': nul.nativeFunctions.atomOp('+', 'str', '""'),
 		'#': nul.nativeFunctions.atomCeded(function(o) {
 			return new nul.xpr.value(o.jsValue().length-2);
@@ -117,6 +118,9 @@ nul.primitive = {
 		//TODO? qq +(or), *(and) et -(not/don't imply) ?
 	},
 	'object': {
+		' hndl': function() {
+			return [null, this, this];
+		}
 	},
 };
 
@@ -130,13 +134,21 @@ nul.primitiveTree = {
 	'boolean': 'object',
 	'set': 'object',
 	is: function(xpr, pnm, artcl) {
-		var spnm = xpr.primitive;
-		while(spnm) if(spnm == pnm) return true;
-			else spnm = nul.primitiveTree[spnm];
-		if(xpr.primitive) nul.fail('Not '+artcl+' '+pnm+' : '+xpr.toString());
+		if(!xpr.primitive) return;
+		if(xpr.primitive[''].contains(pnm)) return true;
+		nul.fail('Not '+artcl+' '+pnm+' : '+xpr.toString());
 	},
-	attribute: function(pnm, atn) {
-		while(pnm) if(!nul.primitive[pnm][atn]) pnm = nul.primitiveTree[pnm];
-		else return nul.primitive[pnm][atn];
+	primObject: function(pnm) {
+		if(!nul.primitiveTree.primObject[pnm]) {
+			var rv = {};
+			rv[''] = [];
+			while(pnm) {
+				rv[''].push(pnm);
+				rv = merge(rv, nul.primitive[pnm]);
+				pnm = nul.primitiveTree[pnm];
+			}
+			nul.primitiveTree.primObject[pnm] = rv;
+		}
+		return nul.primitiveTree.primObject[pnm];
 	}
 };

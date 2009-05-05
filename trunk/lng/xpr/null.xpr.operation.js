@@ -12,15 +12,15 @@
 nul.xpr.operation = function(pos) {
 	return Class.create(pos, {
 		initialize: function($super, oprtr, oprnds) {
-			this.charact = oprtr;
+			this.obj = this.charact = oprtr;
 			$super(oprnds);
 		},
-		subject: function(left, hpnd) {
+		subject: function(klg) {
 			var ops = [], rrv = [], fct = [], prsntFct = {},
 				toOp = clone1(this.components);
 			while(toOp.length) {
 				var o = toOp.shift();
-				var oprtr = o.attribute(this.charact, left);
+				var oprtr = o.attribute(this.charact);
 				if(!oprtr) rrv.push(o);
 				else {
 					ops.push(o)
@@ -34,15 +34,18 @@ nul.xpr.operation = function(pos) {
 				}
 			}
 			if((!ops.length) ||
-				(1>= ops.length && 1< this.components.length)) return;
+					(1>= ops.length && 1< this.components.length))
+				return [nul.unSubj('Operator "'+this.charact+'" undefined for',
+					this.components)];
 			
 			fct = new nul.xpr.set(fct, 'g');
 			var trv = new nul.xpr.application(
 				fct,
-				(1==ops.length)?ops[0]:new nul.xpr.set(ops));
-			trv = trv.operate(hpnd);
+				(1==ops.length)?ops[0]:new nul.xpr.set(ops),
+				klg.ctxName);
+			trv = trv.operate(klg);
 			if(!trv) return;
-			if(!rrv.length) return this.replaceBy(trv.subjected(left, hpnd));
+			if(!rrv.length) return this.replaceBy(trv);
 			rrv.push(trv);
 			return this.compose(rrv);
 		}.perform('nul.xpr.operation->subject'),	

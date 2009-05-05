@@ -22,8 +22,8 @@
 nul.browse = {
 	abort: 'stopBrowsingPlease',
 	spaces: 0,
-	expression: function(behav, noOwnBS) {
-		if(!noOwnBS) behav.browseSpace = ++nul.browse.spaces;
+	expression: function(behav) {
+		if(!behav.browseSpace) behav.browseSpace = ++nul.browse.spaces;
 		var xpr = this, chg = false;
 		function iif(nv, ov) {
 			if(!nv) return ov;
@@ -32,7 +32,7 @@ nul.browse = {
 		}
 		function subBrws() {
 			if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
-			var co = iif(this.browse(behav, 'nocs'), this);
+			var co = iif(this.browse(behav), this);
 			if(behav.newSub) co = behav.newSub(xpr, this, co) || co;
 			return co;
 		}
@@ -41,18 +41,19 @@ nul.browse = {
 		var inpNdx = this.ndx;
 		if(!behav.tabul) behav.tabul = [{}];
 		//for(var t=0; t<behav.tabul.length; ++t)
-			if(false && behav.tabul[0][inpNdx]) switch(behav.tabul[0][inpNdx]) {
+			if(behav.tabul[0][inpNdx]) switch(behav.tabul[0][inpNdx]) {
 				case nul.failure: nul.fail('I remember...');
 				case 'id': return;
 				default: return behav.tabul[0][inpNdx];
 			}
+			//TODO: browse this.belong!
 		var isToBrowse = 'undefined'== typeof behav.browse ||
 						('function'== typeof behav.browse && behav.browse(xpr)) ||
 						('function'!= typeof behav.browse && behav.browse);
 		try {
 			if(behav.before) xpr = iif(behav.before(xpr), xpr);
 			if(isToBrowse && xpr.components) {
-				var subTabul = !!xpr.ctxName;
+				var subTabul = 'fz'== xpr.charact;
 				if(subTabul) behav.tabul.unshift({});
 				try {
 					var nxpr = behav.kb ?
@@ -82,9 +83,19 @@ nul.browse = {
 			}
 			throw err;
 		}
-		if(behav.finish) { xpr = behav.finish(xpr, chg, this); chg = true; }
+		if(behav.finish) xpr = iif(behav.finish(xpr, chg, this), xpr);
 
-		if(chg && xpr) {
+		if(chg) {
+			chg = false;
+			var nbln = map(this.belong, function() {
+				return iif(this.browse(behav), this);
+			});
+			if(chg) {
+				xpr.belong = [];
+				xpr.inSets(nbln);
+			} else chg = true;
+		}
+		if(chg) {
 			xpr.browseSpace = behav.browseSpace;
 			behav.tabul[0][inpNdx] = xpr;
 			return xpr;
@@ -92,17 +103,23 @@ nul.browse = {
 		nul.debug.log('perf')('Useless browse for '+behav.name,this);			
 	}.perform(function(behav) { return 'nul.browse->recursion/'+behav.name; }),
 
-	subjectivise: function(klg, kb) {
+	subjectivise: function(klg) {
 		return {
 			klg: klg,
-			kb: kb||[],
+			kb: [klg],
 			name: 'subjectivisation',
+			needMore: [],
 			finish: function(xpr, chgd, orig) {
 				var rv;
 				if(xpr && xpr.subject) try {
 					nul.debug.log('evals')(nul.debug.lcs.collapser('Subjective'),
 						[klg.ctxName, xpr]);
 					rv = xpr.subject(this.klg, this.kb[0]);
+					if(isArray(rv)) {
+						if(isEmpty(xpr.fuzze,[klg.ctxName]))
+							this.needMore.pushs(rv);
+						rv = null;
+					}
 					return rv || xpr;					
 				} catch(err) {
 					if(nul.failure== err && orig.fail) return orig.fail();
@@ -168,7 +185,7 @@ nul.browse = {
 					if(xpr.composed) xpr = xpr.composed();
 					chgd = true;
 				}
-				if(chgd) return xpr.summarised();
+				if(chgd) return xpr;
 			}
 		};
 	},

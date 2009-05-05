@@ -78,61 +78,80 @@ nul.text = {
 			elm.getElementsBySelector('div.'+knd).each(Element.hide);
 		}
 	},
-	expressionHTML: function(oprtr, oprnds, beside) {
+	expressionHTML: function(oprtr, oprnds) {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
 			strings.push(oprnds[i].toHTML());
 		return strings.join(' '+oprtr+' ');
 	},
-	expressionString: function(oprtr, oprnds, beside) {
+	expressionString: function(oprtr, oprnds) {
 		var strings = [];
 		for(var i=0; i<oprnds.length; ++i)
 			strings.push(oprnds[i].toString());
 		return strings.join(' '+(oprtr?(oprtr+' '):''));
 	},
 	toHTML: function() {
-		var aShort = this.toString();
-		if(!nul.text.beginDraw(this)) return '<span class="failure">Self contained!</span>';
-		var aLocals = '', aDeps = '', aDepsTtl = '',
-			aFlags, aAutoRef = '';
-		aShort = nul.text.js.tile('shortStr', aShort);
-		if(this.ctxDef) aAutoRef = nul.text.js.tile('autoRef', this.ctxDef);
-		aFlags = 
-			(this.x?this.x.primitive:'free') + ' : ' +
-			(isEmpty(this.flags)?'&phi;':keys(this.flags).join(', '));
-		aFlags = nul.text.js.tile('flags',
-			aFlags,
-			keys(this.flags));
-		if(this.deps && !isEmpty(this.deps)) {
-			for(var i in this.deps) {
-				var ds = [];
-				for(var j in this.deps[i])
-					ds.push(j+':'+this.deps[i][j]);
-				aDeps += '<tr><th>'+i+'</th><td>'+ds.join('</td><td>')+'</td></tr>';
-				aDepsTtl += i+'['+ds.join(',')+']';
+		//if(!this.toHTML.cache) {
+			var aShort = this.toString();
+			if(!nul.text.beginDraw(this)) return '<span class="failure">Self contained!</span>';
+			var aLocals = '', aDeps = '', aDepsTtl = '',
+				aFlags, aBlngs = '', aAutoRef = '', aFuzze = '';
+			aShort = nul.text.js.tile('shortStr', aShort);
+			if(this.ctxDef) aAutoRef = nul.text.js.tile('autoRef', this.ctxDef);
+			aFlags = 
+				(this.x?this.x.primitive:'free') + ' : ' +
+				(isEmpty(this.flags)?'&phi;':keys(this.flags).join(', '));
+			aFlags = nul.text.js.tile('flags',
+				aFlags,
+				keys(this.flags));
+			if(this.deps && !isEmpty(this.deps)) {
+				for(var i in this.deps) {
+					var ds = [];
+					for(var j in this.deps[i])
+						ds.push(j+':'+this.deps[i][j]);
+					aDeps += '<tr><th>'+i+'</th><td>'+ds.join('</td><td>')+'</td></tr>';
+					aDepsTtl += i+'['+ds.join(',')+']';
+				}
+				aDeps = nul.text.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
 			}
-			aDeps = nul.text.js.tile('dependances', '<table>'+aDeps+'</table>', aDepsTtl);
-		}
-		var cls = '';
-		if(this.ctxName && 'local'!= this.charact) {
-			aLocals = [];
-			if(this.locals && this.locals.length)
-				aLocals = nul.text.js.tile('locals', this.ctxName + ': ' + this.locals.join(', '));
-			else aLocals = nul.text.js.tile('locals', this.ctxName);
-			cls=' freedom'
-		}
-		var rv = aShort+aAutoRef+aLocals+aDeps+aFlags+nul.text.js.tiled();
-		rv += this.expressionHTML();
-		nul.text.endDraw(this);
-		return '<span class="xpr'+cls+'">'+rv+'</span>';
+			var cls = '';
+			if(this.ctxName && 'local'!= this.charact) {
+				aLocals = [];
+				if(this.locals && this.locals.length)
+					aLocals = nul.text.js.tile('locals', this.ctxName + ': ' + this.locals.join(', '));
+				else aLocals = nul.text.js.tile('locals', this.ctxName);
+				cls=' freedom'
+			}
+			if(this.belong.length) {
+				aBlngs = map(this.belong, function() { return this.toString(); });
+				aBlngs = nul.text.js.tile('belongs',
+					'<table><tr><td>'+aBlngs.join('</td><td>')+'</td></tr></table>',
+					aBlngs.join(' | '));
+			}
+			if(!isEmpty(this.fuzze)) {
+				aFuzze = keys(this.fuzze);
+				aFuzze = nul.text.js.tile('fuzze',
+					'<table><tr><td>'+aFuzze.join('</td><td>')+'</td></tr></table>',
+					aFuzze.join(' | '));
+			}
+			var rv = aShort+aAutoRef+aLocals+aDeps+aFlags+aBlngs+aFuzze+
+				nul.text.js.tiled();
+			rv += this.expressionHTML();
+			nul.text.endDraw(this);
+			this.toHTML.cache = '<span class="xpr'+cls+'">'+rv+'</span>';
+		//}
+		return this.toHTML.cache;
 	}.perform('nul.text->toHTML'),
 	toString: function() {
-		if(!nul.text.beginDraw(this)) return '&lt;Self contained!&gt;';
-		var rv = '';
-		if(this.ctxDef) rv += this.ctxDef+':';
-		rv += this.expressionString();
-		nul.text.endDraw(this);
-		return rv;
+		//if(!this.toString.cache) {
+			if(!nul.text.beginDraw(this)) return '&lt;Self contained!&gt;';
+			var rv = '';
+			if(this.ctxDef) rv += this.ctxDef+':';
+			rv += this.expressionString();
+			nul.text.endDraw(this);
+			this.toString.cache = rv;
+		//}
+		return this.toString.cache;
 	},
 	clpsSstm : function(table, uc, lcFct) {
 		return table ? table.clpsSstm = {
