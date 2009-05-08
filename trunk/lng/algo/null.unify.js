@@ -132,10 +132,11 @@ nul.unify = {
 	 * - nothing if this function couldn't manage
 	 */
 	vcvs: function(a, b, klg) {
-		if(a.ctxDef && isEmpty(b.fuzze) && false /*TODO:a is self-dependant*/) {
+		if(a.ctxDef && a.used && a.used[nul.lcl.slf]) {
 			var ctxd = a.clone().expSelfRef(b, klg);
 			//if(ctxd) ctxd = ctxd.subjective();
-			if(ctxd && !ctxd.contains(b)) nul.unify.level(ctxd, b, klg);
+			/*if(ctxd && !ctxd.contains(b))*/
+			//nul.unify.level(ctxd, b, klg);
 		}
 
 		if('='== a.charact) return nul.unify.andDist(a.components, a.x, b, klg);
@@ -171,7 +172,7 @@ nul.unify = {
 		if(rv) return rv;
 
 		//TODO: try extraction before fail ?
-		//TODO: finir le système de finalRoot et fuzzy avec min/max poss
+		//TODO: finir le système de finalRoot et fuzzy avec min/max poss?
 		if(a.finalRoot() && b.finalRoot() && '{}'!= a.charact && '{}'!= b.charact)
 			nul.fail('Unification failure : ' + a.dbgHTML() + ' and ' + b.dbgHTML());
 	}.perform('nul.unify.chewed'),

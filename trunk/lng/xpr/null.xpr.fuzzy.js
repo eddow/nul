@@ -44,14 +44,25 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		return this.composed();
 	},
 	composed: function($super) {
+		var cn = this.ctxName;
 		if(!this.components) this.failed = true;
 		else {
 			if(
 				this.components.value &&	//Value is not set when called from within ctor
-				0== this.components.length &&
-				!this.components.value.flags.failable &&
+				!this.components.length &&
+				!trys(this.components, function() { return this.fuzze[cn]; }) &&
 				!this.components.value.deps[this.ctxName])
 					return this.components.value;
+			for(var i=0; i<this.components.length; ++i)
+				if('fz'== this.components[i].charact) {
+					this.components.pushs(this.components[i].components);
+					if(this.components[i].components.value.flags.failable)
+						this.components[i] = this.components[i].components.value;
+					else {
+						this.components.splice(i,1);
+						--i;
+					}
+				}
 		}
 		$super();
 		var fz = this;
@@ -100,9 +111,9 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		return rv;
 	},
 /////// Forward specific
-	inSet: function($super, set, flg) {
-		if('skipSub'!= flg) this.components.value.inSet(set, flg);
-		return $super(set);
+	belongChg: function($super, sets, flg) {
+		if('skipSub'!= flg) this.components.value.alsoInSets(sets, flg);
+		return $super(sets);
 	},
 /////// Fuzzy specific
 	subRecursion: function(cb, kb) {
@@ -179,12 +190,12 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		
 		if('fz'!= rv.charact) return rv;
 		
-		tt = {}
+		tt = {};
 		for(var i= 0; i<rv.components.length; ++i)
 			if('='== rv.components[i].charact) {
 				var rplBy = rv.components[i].components[0];
 				for(var c=1; c<rv.components[i].components.length; ++c)
-					rplBy.inSets(rv.components[i].components[c].belong);
+					rplBy.alsoInSets(rv.components[i].components[c].belong);
 					
 				tt[rplBy.ndx] = rplBy;
 				if(isEmpty(rplBy.fuzze)) {
@@ -196,7 +207,6 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 				} else {
 					for(var c=1; c<rv.components[i].components.length; ++c) {
 						var rplOrg = rv.components[i].components[c];
-						rplOrg.belong = [];
 						tt[rplOrg.ndx] = rplOrg.inSets(rplBy.belong);
 					}
 				}
@@ -231,12 +241,20 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	 * this' locals are added to <klg>' last context 
 	 * This ctxName is not referenced anymore
 	 */
-	stpUp: function(klg) {
+	renameCtx: function(klg) {
 		var dlt = klg.addLocals(this.locals);
-		var rv = this.browse(
+		return this.browse(
 			nul.browse.lclShft(dlt, this.ctxName, klg.ctxName)
 		) || this;
-		if('fz'!= rv.charact) return rv;
+	},
+	/**
+	 * This expression out of the set
+	 * this' locals are added to <klg>' last context 
+	 * This ctxName is not referenced anymore
+	 * knowledge is moved in the specified <klg>
+	 */
+	stpUp: function(klg) {
+		var rv = this.renameCtx(klg);
 		klg.know(rv.components);
 		return rv.components.value;
 	}.perform('nul.xpr.fuzzy->stpUp')

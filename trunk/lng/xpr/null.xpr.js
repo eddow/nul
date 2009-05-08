@@ -40,9 +40,11 @@ nul.xpr = Class.create({
 	}.perform('nul.xpr->clone'),
 	replaceBy: function(xpr) {
 		var blng = this.belong;
+		var cd = this.ctxDef;
 		if(xpr) {
 			merge(this, xpr, function(a,b) { return b; });
-			if(blng) this.inSets(blng);
+			if(blng) this.alsoInSets(blng);
+			if(cd) this.ctxDef = cd;
 			return this;
 		}
 	},
@@ -98,22 +100,17 @@ nul.xpr = Class.create({
 	},
 
 
-	stpUp: function(klg) {
-		return this.ctxName?(this.browse(
-			nul.browse.lclShft(0, this.ctxName, klg.ctxName)
+	renameCtx: function(klg, ctxFrom) {
+		var ctxn = ctxFrom || this.ctxName || this.ctxDef;
+		return ctxn?(this.browse(
+			nul.browse.lclShft(0, ctxn, klg.ctxName)
 		) || this):this;
 	}.describe(function(klg) { return ['Generic stpUp',
 		klg.ctxName,
 		'(',klg.locals,')',
 		this]; }),
+	stpUp: function(klg) { return this.renameCtx(klg); },
 
-	renameCtx: function(ctxTo, ctxFrom) {
-		if(!ctxFrom) ctxFrom = this.ctxDef;
-		if(this.ctxDef == ctxFrom) this.ctxDef = ctxTo;
-		return this.browse(
-			nul.browse.lclShft(0, ctxFrom, ctxTo)
-		) || this;
-	},
 	aknlgd: function(cb) {
 		var klg = this.enter();
 		var rv;
@@ -166,20 +163,25 @@ nul.xpr = Class.create({
 		ndx = '';
 		if(['{}'].contains(this.charact)) delete flags.failable;
 		
+		if(this.makeDeps) dps.push(this.makeDeps());
+		this.deps = nul.lcl.dep.mix(dps);
 		//TODO: application.deps ==> fuzze ?
 		if(this.ctxName && 'local'!= this.charact) fuzze[this.ctxName] = true;
 		if(this.ctxDef) {
-			if(fuzze[this.ctxDef]) delete fuzze[this.ctxDef];
-			else delete this.ctxDef;
+			if(!fuzze[this.ctxDef] && !this.deps[this.ctxDef]) delete this.ctxDef;
+			else {
+				this.used = this.deps[this.ctxDef] || {};
+				delete fuzze[this.ctxDef];
+				delete this.deps[this.ctxDef];
+			}
 		}
-		this.fuzze = fuzze; 
-		if(this.makeDeps) dps.push(this.makeDeps());
-		this.deps = nul.lcl.dep.mix(dps);
 		if('fz'== this.charact) {
+			if(this.deps[this.ctxName]) fuzze[this.ctxName] = true;
 			//TODO: envoie ça dans une sous-classe
 			this.used = this.deps[this.ctxName] || {};
 			delete this.deps[this.ctxName];
 		}
+		this.fuzze = fuzze;
 		
 		if(this.failable && this.failable()) flags.failable = true;
 		this.flags = flags;
@@ -213,12 +215,33 @@ nul.xpr = Class.create({
 		this.belong.push(set);
 		//TODO: become failable ?
 		if('noSum'== flg) return this;
+		this.belongChg([set], flg);
 		return this.summarised();
 	},
-	inSets: function(sets) {
+	alsoInSets: function(sets, flg) {
+		if(sets == this.belong) return this;
 		for(var i=0; i<sets.length; ++i) this.inSet(sets[i], 'noSum');
+		this.belongChg(sets, flg);
 		return this.summarised();
 	},
+	inSets: function(sets, flg) {
+		if(sets == this.belong) return this;
+		this.belong = sets;
+		this.belongChg(sets, flg);
+		return this.summarised();
+	},
+
+	/**
+	 * Called internally, if the belonging has to be forwarded
+	 */
+	belongChg: function(sets, flg) {
+		if(this.ctxDef && this.used && this.used[nul.lcl.slf])
+			this.browse(nul.browse.belong(
+				nul.xpr.local.ndx(nul.lcl.slf,this.ctxDef),
+				this.belong));
+		return this;
+	},
+
 	/**
 	 * Rurns weither this expression belongs to <set>
 	 */
@@ -320,8 +343,9 @@ nul.xpr.relation = Class.create(nul.xpr.listed, {
 nul.xpr.associative = Class.create(nul.xpr.relation, {
 	compose: function($super, nComps) {
 		if(!nComps) nComps = this.components;
+		nComps = clone1(nComps);
 		var nc = [];
-		while(0<nComps.length) {
+		while(nComps.length) {
 			var tc = nComps.pop();
 			if(tc.charact == this.charact) nComps.pushs(tc.components);
 			else nc.unshift(tc);

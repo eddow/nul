@@ -21,6 +21,12 @@ var nul = {
 			catch(err) { if(nul.failure!= err) throw nul.exception.notice(err); }
 		return rv;
 	},
+	/**
+	 * Is <xpr> suitable to replace another expression
+	 */
+	canSimpl: function(xpr) {
+		return isEmpty(xpr.fuzze);
+	},
 	jsVal: function(v) {
 		return ('string'== typeof v)?('"'+v+'"'):v;
 	},

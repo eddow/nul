@@ -22,7 +22,7 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 			throw nul.semanticException(
 				'OPM', 'Cannot take from '+ this.components.object.toHTML());
 		}
-		var rv = this.components.object.take(this.components.applied, klg, 1);
+		var rv = this.components.object.take(this.components.applied, klg, 1, this.ctxName);
 		if(rv) return this.replaceBy(rv);
 		//if(!this.components.applied.doesBelong(this.components.object))
 			klg.know(this);

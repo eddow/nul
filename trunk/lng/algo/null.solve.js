@@ -36,7 +36,7 @@ nul.solve = {
 		for(cn=0; tryed=nul.solve.tryed(xpr.clone(), cn, ctxName); ++cn) try {
 			if(nul.debug.assert) assert(xpr.contains('[[]|'), 'Try if choice');
 			nul.debug.log('solve')(nul.debug.lcs.collapser('Trying'),tryed);
-			tryed = nul.solve.solve(tryed);
+			tryed = nul.solve.solve(tryed, ctxName);
 			rv.pushs(tryed);
 			nul.debug.log('solve')(nul.debug.lcs.endCollapser('Tried', 'Tried'),
 				tryed);
@@ -45,22 +45,22 @@ nul.solve = {
 		return [xpr];
 	},
 	tryed: function(xpr, cn, ctxName) {
-		var rv, klg = xpr.enter();
+		var rv;//, klg = xpr.enter();
 		try {
 			rv = xpr.browse({
 				name: 'solve try',
 				browse: true,
 				ctxName: ctxName,
 				cn: cn,
-				klg: klg,
+				//klg: klg,
 				before: function(xpr) {
 					if(!this.browse /*|| ('{}'==xpr.charact && this.klg)*/)
 						throw nul.browse.abort;
 					if(xpr.possibility && this.ctxName == xpr.ctxName) {
 						this.browse = false;
 						nul.debug.log('solve')('Choose',[cn, 'out of', xpr]);
-						var rv = xpr.possibility(this.cn, this.klg);
-						if(rv) return rv;
+						var rv = xpr.possibility(this.cn/*, this.klg*/);
+						if(rv) return xpr.replaceBy(rv);
 						this.cn = 'end';
 					} 
 				},
@@ -70,8 +70,8 @@ nul.solve = {
 				},
 			});
 		} finally {
-			rv = klg.leave(rv);
+			//rv = klg.leave(rv);
 		}
-		return rv;
+		if(rv) return rv.enter().leave(rv);
 	}
 };

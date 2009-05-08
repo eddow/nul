@@ -60,7 +60,6 @@ nul.knowledge = Class.create({
 				this.knowledge = 'fz'== rv.charact?rv.components:[];
 				if('fz'== rv.charact) rv.withKlg(this, 'asFuzz');
 			}
-			
 			var oldKNdx, newKNdx = this.knowledgeNdx();
 			var sbjBhv;
 			do {
@@ -78,15 +77,10 @@ nul.knowledge = Class.create({
 
 				newKNdx = this.knowledgeNdx();
 			} while(oldKNdx != newKNdx)
-			if(sbjBhv.needMore.length) {
-				var txt = [];
-				while(sbjBhv.needMore.length) {
-					var sbj = sbjBhv.needMore.shift();
-					txt.push(sbj.desc+' '+nul.text.expressionString(', ', sbj));
-				}
-				throw nul.semanticException('AUD',
-					txt.join('<br />'));
-			}
+			//The 'needMore' specified by the subjectivisation are given to the knowledge
+			rv.unfinished = map(sbjBhv.needMore, function() {
+				return this.desc+' '+nul.text.expressionString(', ', this);
+			});
 			if('fz'== rv.charact) rv = rv.relocalise();
 			if('fz'== rv.charact) rv = rv.composed();
 			return rv;
@@ -209,27 +203,36 @@ nul.knowledge = Class.create({
 			if(rv && 1== rv.length) return rv[0];
 			if(rv) us = rv;
 		}
-		//Sort to have a nice 'replace-by'. note: replaceBy = left-ward
+		//5- Sort to have a nice 'replace-by'. note: replaceBy = left-ward
+		
 		//free variables goes left
 		for(var n=1; n<us.length; ++n)
-			if((us[n].free() && !us[0].free()) || '::'== us[n].charact)
+			if((us[n].free() && !us[0].free()) ||
+					'::'== us[n].charact ||
+					'{}'== us[n].charact)
 				us.unshift(us.splice(n,1)[0]);
+
 		//If left-ward is a local, try to put another value (not local) leftward
 	 	if('local'== us[0].charact) {
 	 		for(var n=1; n<us.length; ++n) if('local'!= us[n].charact) break;
 	 		if(n<us.length) us.unshift(us.splice(n,1)[0]);
 	 	}
+	 	
 	 	//Don't replace X by a value that refer X : if it occurs, contextualise into self-reference
 	 	do {
-	 		for(var n=1; n<us.length; ++n)
-	 			if(us[0].contains(us[n]) && !us[n].free())
-	 				break;
-	 		if(n<us.length)
-	 			us[0].setSelfRef(us[n], this);
+	 		for(var n=1; n<us.length && !us[0].contains(us[n]); ++n);
+	 		if(n<us.length) {
+	 			if(us[0].ctxDef) us[0].setSelfRef(us[n], this);
+	 			else us.unshift(us.splice(n,1)[0]);
+	 		}
 	 	} while(n<us.length);
 
-		var rv = us[0];
-		this.knowledge.push(new nul.xpr.unification(us));
+		//6- use that value
+		var rv = new nul.xpr.unification(us);
+		//if(nul.canSimpl(us[0])) {
+			this.knowledge.push(rv);
+			rv = us[0];
+		//}
 		return rv;
 	},
 

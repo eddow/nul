@@ -31,7 +31,7 @@ function evaluate()
 	nul.execution.benchmark.measure('*evaluation',function(){
 		v = nul.expression(src.value);
 	});
-	evd.innerHTML = v.toHTML();
+	evd.innerHTML = v?v.toHTML():'Empty!';
 }
 
 function testEvaluation()

@@ -9,16 +9,15 @@
 nul.xpr.unification = Class.create(nul.xpr.associative, {
 	charact: '=',
 	failable: function() { return true; },
-	initialize: function($super, ops) {
-		$super(ops);
-	},
 /////// Unification specific
 	operate: function(klg) {
+		var b4ndx = this.ndx;
 		var fl = this.components.length;
 		var rv = nul.unify.multiple(this.components, klg)
 		if(rv && 1== rv.length) return rv[0];
 		if(!rv) rv = this.components;
-		return klg.affect(rv, this.x);
+		rv = klg.affect(rv);
+		if(rv.ndx != b4ndx) return rv;	//TODO: trouver autre chose pour voir le changement ?
 	}.perform('nul.xpr.unification->apply')
 	.describe(function(klg) { return ['Applying', this]; }),
 });

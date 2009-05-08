@@ -28,10 +28,9 @@ nul.xpr.ior3 = Class.create(nul.xpr.holder.listed, {
 		return $super(ops);
 	},
 //Interface to solving engine	
-	possibility: function(n, klg) {
+	possibility: function(n) {
 		if(n<this.components.length)
-		//TODO: if it is a xpr.fuzzy, use 'into' kb (grab 'into' fct over SVN)
-			return this.components[n].stpUp(klg);
+			return this.components[n];//.stpUp(klg);
 	},
 /////// Strings
 	expressionHTML: function() {

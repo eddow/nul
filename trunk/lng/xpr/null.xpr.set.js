@@ -32,15 +32,31 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder.listed,'set'), {
 					'fz'== c.charact && 'local'== c.components.value.charact)
 				return this.replaceBy(c.belong[0]);
 		}
+		//Extends components
+		var nc = [], cd = this.ctxDef;
+		nul.debug.log('evals')(nul.debug.lcs.collapser('Extend'),
+			cd?[cd, this.components]:this.components);
+		map(this.components, function() { nc.pushs(nul.solve.solve(this, cd)); });
+		this.components = nc;
+		nul.debug.log('evals')(nul.debug.lcs.endCollapser('Extended'),
+			cd?[cd, this.components]:this.components);
+
+		//Specify my appartenance set, verify every object became subject
+		var tps = [], crd = [];	//TODO: types and cardinalities
+		map(this.components, function() {
+			if(this.unfinished && this.unfinished.length)
+				throw nul.semanticException('AUD',this.unfinished.join('<br />'));
+		});
+		
 		return $super();
 	},
-	take: function(apl, klg, way) {
+	take: function(apl, klg, way, ctxDef) {
 		var xpr = this.clone();	//TODO: please kill me :'(
 		var rv = [], trv, acn = this.ctxDef, set = this;
 		for(var i=0; i<xpr.components.length; ++i) {
 			try {
-				trv = xpr.components[i].aknlgd(function(klg){
-					return new nul.xpr.handle(apl.clone(), this);
+				trv = xpr.components[i].aknlgd(function(){
+					return new nul.xpr.handle(apl.clone(), this.renameCtx(klg));
 				});
 				if(acn && trv.deps[acn] && trv.deps[acn][nul.lcl.slf])
 					//TODO: optimise recursion
@@ -56,7 +72,7 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder.listed,'set'), {
 		case 0: nul.fail(apl.toString()+' not in set '+this.toString());
 		case 1: return rv[0].stpUp(klg);
 		}
-		return new nul.xpr.ior3(rv, klg.ctxName);
+		return new nul.xpr.ior3(rv, ctxDef || klg.ctxName);
 	}.perform('nul.xpr.set->take'),
 /////// String management
 	expressionHTML: function() {
@@ -73,21 +89,4 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder.listed,'set'), {
 		}
 		return '('+nul.text.expressionString(',', this.components)+')';
 	},
-/////// Set specific
-	/**
-	 * Extend expressions and multiply them to be sure no more IOR3s are in.
-	 */
-	extend: function() {
-		nul.debug.log('evals')(nul.debug.lcs.collapser('Extend'), [this]);
-		var nc = [];
-		while(0< this.components.length)
-			nc.pushs(nul.solve.solve(this.components.shift(), this.ctxDef));
-		nul.debug.log('evals')(nul.debug.lcs.endCollapser('Extended'), nc);
-		
-		return nc;
-	}.perform('nul.xpr.set->extend')
-	.describe(function() { return ['Extending', this]; }),
-	extended: function() {
-		return this.compose(this.extend());
-	}
 });

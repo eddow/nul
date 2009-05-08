@@ -44,7 +44,7 @@ nul.browse = {
 			if(behav.tabul[0][inpNdx]) switch(behav.tabul[0][inpNdx]) {
 				case nul.failure: nul.fail('I remember...');
 				case 'id': return;
-				default: return behav.tabul[0][inpNdx];
+				default: return behav.tabul[0][inpNdx].alsoInSets(this.belong);
 			}
 			//TODO: browse this.belong!
 		var isToBrowse = 'undefined'== typeof behav.browse ||
@@ -90,10 +90,8 @@ nul.browse = {
 			var nbln = map(this.belong, function() {
 				return iif(this.browse(behav), this);
 			});
-			if(chg) {
-				xpr.belong = [];
-				xpr.inSets(nbln);
-			} else chg = true;
+			if(chg) xpr.inSets(nbln);
+			else chg = true;
 		}
 		if(chg) {
 			xpr.browseSpace = behav.browseSpace;
@@ -113,10 +111,10 @@ nul.browse = {
 				var rv;
 				if(xpr && xpr.subject) try {
 					nul.debug.log('evals')(nul.debug.lcs.collapser('Subjective'),
-						[klg.ctxName, xpr]);
-					rv = xpr.subject(this.klg, this.kb[0]);
+						[this.klg.ctxName, xpr]);
+					rv = xpr.subject(this.kb[0]);
 					if(isArray(rv)) {
-						if(isEmpty(xpr.fuzze,[klg.ctxName]))
+						if(isEmpty(xpr.fuzze) && isEmpty(xpr.deps,[this.klg.ctxName]))
 							this.needMore.pushs(rv);
 						rv = null;
 					}
@@ -139,10 +137,14 @@ nul.browse = {
 		};
 	},
 
-	contextualise: function(rpl) {
+	contextualise: function(tt) {
 		return {
 			name: 'contextualisation',
-			tabul: [rpl],
+			tt: tt,
+			finish: function(xpr, chg) {
+				if(this.tt[xpr.ndx]) return this.tt[xpr.ndx];
+				if(chg) return xpr;
+			}
 		};
 	},
 	operated: function(klg) {
@@ -198,6 +200,21 @@ nul.browse = {
 			finish: function(xpr, chg, orig) {
 				if(xpr.cloned) xpr.cloned();
 				return xpr;
+			},
+			compose: function(xpr, cs) {
+				xpr.components = cs;
+				return xpr;
+			},
+		};
+	},
+	belong: function(ndx, blngs) {
+		return {
+			name: 'belong',
+			ndx: ndx,
+			blngs: blngs,
+			finish: function(xpr, chg) {
+				if(ndx== xpr.ndx) return xpr.inSets(blngs);
+				if(chg) return xpr;
 			},
 			compose: function(xpr, cs) {
 				xpr.components = cs;

@@ -51,6 +51,8 @@ tests = [
 		rslt: '(1 , 2)'},
 		{xpr: '{ (a,b,c) [] (d,e,f) }(_,1,2)',
 		rslt: '((_[0|fc1] , 1 , 2) , (_[0|fc1] , 1 , 2))'},
+		{xpr: '\\/E Q x ? {1 [] E x}; E = {4 [] 5 [] "o"}',
+		rslt: '(1 , 4 , 5)'},
 	].named('OR-s management'),
 	[
 		{xpr: '(z+2)=z=1',
@@ -58,7 +60,7 @@ tests = [
 		{xpr: '(e= 1-e) = (0 [] 1)',
 		rslt: '&phi;'},
 		{xpr: 'x; (y, F y) = (x, x)',
-		rslt: '{ar1:(F[0|fc1]   y[&crarr;|ar1])}'},
+		rslt: 'g1:{y[0|g1]; (y[0|g1] = (F[1|g1]   y[0|g1]))}'},
 		{xpr: '{ x= (_, x) }(5,(5,(5,(5,(5,_)))))',
 		rslt:  ''},
 		
