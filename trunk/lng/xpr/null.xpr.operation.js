@@ -52,7 +52,7 @@ nul.xpr.operation = function(pos) {
 	});
 }
 
-nul.xpr.operation.associative = nul.xpr.operation(nul.xpr.associative);
+nul.xpr.operation.associative = nul.xpr.operation(nul.xpr.associative.relation);
 nul.xpr.operation.listed = nul.xpr.operation(nul.xpr.relation);
 nul.xpr.operation.preceded = nul.xpr.operation(nul.xpr.preceded);
 nul.xpr.operation.postceded = nul.xpr.operation(nul.xpr.postceded);

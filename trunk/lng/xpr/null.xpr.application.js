@@ -14,6 +14,9 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 		this.ctxName = ctxName;
 		$super({object: obj, applied: apl});
 	},
+	composed: function($super) {
+		return $super();
+	},
 /////// Application specific
 	operate: function(klg) {
 		if(!this.components.object.take) {
@@ -24,12 +27,20 @@ nul.xpr.application = Class.create(nul.xpr.composed, {
 		}
 		var rv = this.components.object.take(this.components.applied, klg, 1, this.ctxName);
 		if(rv) return this.replaceBy(rv);
-		//if(!this.components.applied.doesBelong(this.components.object))
-			klg.know(this);
-		if(!this.components.object.transform())
-			return this.components.applied;
 	}.perform('nul.xpr.application->apply')
 	.describe(function(klg) { return ['Applying', this]; }),
+	/**
+	 * Try to get the value only
+	 */
+	value: function(klg) {
+		var rv = this.operate(klg);
+		if(!rv) {
+			klg.know(this);
+			if(this.components.object.transform && !this.components.object.transform())
+				return this.components.applied;
+		}
+		return this;	//add belonging img(object)
+	},
 /////// String special management. TODO:  on garde ou pas ?
 	expressionHTML: function($super) {
 		if(!this.components.object.opChr) return $super();

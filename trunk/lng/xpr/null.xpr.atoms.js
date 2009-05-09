@@ -29,6 +29,12 @@ nul.xpr.value = Class.create(nul.xpr.primitive(nul.xpr.atom), {
 				.replace(']','[)]')
 				.replace('|','[|]') +
 			']';
+		this.inSet({
+			'string': nul.natives.str,
+			'boolean': nul.natives.bool,
+			'number': nul.natives.Q,
+			'integer': nul.natives.Z
+		}[this.primitive[''][0]], 'replace');
 		return $super();
 	},
 	jsValue: function() { return nul.jsVal(this.value); },

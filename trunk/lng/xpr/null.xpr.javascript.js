@@ -34,7 +34,7 @@ nul.xpr.javascript = Class.create(nul.xpr.primitive(nul.xpr.uncomposed,'set'), {
 nul.xpr.javascript.set = Class.create(nul.xpr.javascript, {
 	initialize: function($super, name, callback, primitive) {
 		this.callback = callback;
-		this.elementPrimitive = primitive;
+		this.elementPrimitive = nul.primitiveTree.primObject(primitive);
 		$super(name);
 	},
 	transform: function() { return false; },
@@ -42,7 +42,7 @@ nul.xpr.javascript.set = Class.create(nul.xpr.javascript, {
 		if(this.callback(apl, klg)) return apl;
 	}.perform('nul.xpr.javascript.set->take'),
 	elementAttribute: function(xpr, atn) {
-		var fct = nul.primitiveTree.primObject(this.elementPrimitive)[atn];
+		var fct = this.elementPrimitive[atn];
 		if(fct) return fct.apply(xpr);
 	},
 });

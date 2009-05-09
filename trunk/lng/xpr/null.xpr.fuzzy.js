@@ -43,16 +43,29 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		}
 		return this.composed();
 	},
-	composed: function($super) {
+	/**
+	 * Get weither this expression is not simply its value, without fuzziness
+	 */
+	precisable: function() {
 		var cn = this.ctxName;
-		if(!this.components) this.failed = true;
-		else {
-			if(
-				this.components.value &&	//Value is not set when called from within ctor
+		return	this.components.value &&	//Value is not set when called from within ctor
 				!this.components.length &&
 				!trys(this.components, function() { return this.fuzze[cn]; }) &&
-				!this.components.value.deps[this.ctxName])
-					return this.components.value;
+				!this.components.value.deps[cn];
+	},
+	/**
+	 * Remove the lock avoiding this expression to be simplified
+	 */
+	unlock: function() {
+	 	delete this.locked;
+	 	if(this.precisable()) this.replaceBy(this.components.value);
+	 	return this;
+	},
+	composed: function($super) {
+		if(!this.components) this.failed = true;
+		else {
+			if(this.precisable() && !this.locked)
+				return this.components.value;
 			for(var i=0; i<this.components.length; ++i)
 				if('fz'== this.components[i].charact) {
 					this.components.pushs(this.components[i].components);
@@ -66,19 +79,21 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		}
 		$super();
 		var fz = this;
-		if(this.components) map(this.components.value.belong, function() {
-			if(!this.deps[fz.ctxName]) fz.inSet(this, 'skipSub');
-			//TODO: else, see what 'this' is a subset off and detail it
-		});
+		if(this.components) this.inSet(maf(this.components.value.belongs(), function() {
+			if(!this.deps[fz.ctxName]) return this;
+			//TODO: else, see what 'this' is a subset off and detail it ph?
+		}), 'skipSub');
 		return this;
 	},
 /////// Ctor
-	initialize: function($super,value, premices, locals, ctxName) {
+	//If locked is specified, this remains a fuzzy and don't get simplified
+	initialize: function($super,value, premices, locals, ctxName, locked) {
 		if(!value) return $super(); 
 		var comps = premices || [];
 		comps.value = value;
 		this.ctxName = ctxName || nul.xpr.fuzzy.createCtxName();
 		this.locals = locals || [];
+		if(locked) this.locked = locked;
 		$super(comps);
 	},
 	operate: function(klg) {
@@ -111,35 +126,30 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		return rv;
 	},
 /////// Forward specific
-	belongChg: function($super, sets, flg) {
-		if('skipSub'!= flg) this.components.value.alsoInSets(sets, flg);
-		return $super(sets);
+	inSet: function($super, sets, flg) {
+		if('skipSub'!= flg) this.components.value.inSet(sets, flg);
+		return $super(sets, flg);
 	},
 /////// Fuzzy specific
 	subRecursion: function(cb, kb) {
-		//TODO: standardiser les deux semi-méthodes ci-dessous
-		if(this.openedKnowledge) {
-			var ps = this.openedKnowledge.forget();
-			while(ps.length) {
-				var trv = cb.apply(ps.shift());
-				//trv = trv.operate?(trv.operate(this.openedKnowledge)||trv):trv;
-				this.openedKnowledge.know(trv);
-			}
-			//return this.openedKnowledge.asFuzz(cb.apply(this.components.value));
-			return cb.apply(this.components.value);
-		}
-		var klg = this.enter('empty'), rv; //TODO: plus de 'empty', on le vide à la main après
+		if(nul.debug.assert) assert(!this.openedKnowledge, 'No browse of an opened fuzzy')
+		var klg = this.enter(), rv;
+		kb.unshift(klg);
 		try {
-			while(this.components.length) {
-				var trv = cb.apply(this.components.shift());
-				//trv = trv.operate?(trv.operate(klg)||trv):trv;
-				klg.know(trv);
-			}
-			rv = cb.apply(this.components.value);
+			rv = cnt(klg.forget(), function() {
+				return !klg.know(this, !cb.apply(this));
+			});
+			rv |= cb.apply(this.components.value);
+		} catch(err) {
+			if(nul.failure!= err) throw nul.exception.notice(err);
+			this.replaceBy(new nul.xpr.fuzzy());	//makes a failure
+			rv = 0;
 		} finally {
-			rv = klg.leave(rv, this);
+			if(rv) this.replaceBy(klg.leave(this));
+			else klg.leave(null, this);
+			kb.shift();
 		} 
-		return rv;
+		return !!rv;
 	},
 	withKlg: function(klg, org) {	//Debug purpose only
 		this.openedKnowledge = klg;
@@ -154,14 +164,16 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			.browsed(behav);
 		while(prmcs.length) {
 			var p = prmcs.shift();
-			if('knwl'== act && '='== p.charact)
-				klg.know(p.compose(map(p.components,
+			if('knwl'== act && '='== p.charact) {
+				var chg = cnt(p.components,
 					function() { return this.components?
 						this.compose(map(this.components,
 						function() { return this.browsed(behav); })):
 						this;
-					})));
-			else klg.know(p.browsed(behav));
+					});
+				if(chg) p.composed();
+				klg.know(p, !chg);
+			} else klg.know(p, !p.browse(behav));
 		}
 		return this;
 	},
@@ -186,7 +198,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 				//rv.components.splice(i,1);
 				++i;
 			} else ++i;
-		rv = rv.subBrowse(nul.browse.contextualise(tt));
+		rv = rv.subBrowse(new nul.browse.contextualise(tt));
 		
 		if('fz'!= rv.charact) return rv;
 		
@@ -195,7 +207,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			if('='== rv.components[i].charact) {
 				var rplBy = rv.components[i].components[0];
 				for(var c=1; c<rv.components[i].components.length; ++c)
-					rplBy.alsoInSets(rv.components[i].components[c].belong);
+					rplBy.inSet(rv.components[i].components[c].belong);
 					
 				tt[rplBy.ndx] = rplBy;
 				if(isEmpty(rplBy.fuzze)) {
@@ -207,11 +219,11 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 				} else {
 					for(var c=1; c<rv.components[i].components.length; ++c) {
 						var rplOrg = rv.components[i].components[c];
-						tt[rplOrg.ndx] = rplOrg.inSets(rplBy.belong);
+						tt[rplOrg.ndx] = rplOrg.inSet(rplBy.belong, 'replace');
 					}
 				}
 			}
-		rv = rv.subBrowse(nul.browse.contextualise(tt), 'knwl');
+		rv = rv.subBrowse(new nul.browse.contextualise(tt), 'knwl');
 		
 		return rv;
 	}.perform('nul.xpr.fuzzy->simplify')
@@ -233,20 +245,24 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			}
 		}
 		if(!delta) return this;
-		return this.subBrowse(nul.browse.contextualise(tt));
+		return this.subBrowse(new nul.browse.contextualise(tt));
 	}.perform('nul.xpr.fuzzy->relocalise')
 	.describe(function(klg) { return ['Relocating', this]; }),
 	/**
 	 * This expression out of the set
-	 * this' locals are added to <klg>' last context 
+	 * this locals are added to <klg> last context 
 	 * This ctxName is not referenced anymore
 	 */
 	renameCtx: function(klg) {
-		var dlt = klg.addLocals(this.locals);
-		return this.browse(
-			nul.browse.lclShft(dlt, this.ctxName, klg.ctxName)
-		) || this;
-	},
+		this.browse(new nul.browse.lclShft(
+			klg.addLocals(this.locals), this.ctxName, klg.ctxName));
+		delete this.ctxName;
+		return this;
+	}
+	.describe(function(klg) { return ['ctx rename',
+		klg.ctxName,
+		'(',klg.locals,')',
+		this]; }),
 	/**
 	 * This expression out of the set
 	 * this' locals are added to <klg>' last context 
@@ -257,20 +273,16 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		var rv = this.renameCtx(klg);
 		klg.know(rv.components);
 		return rv.components.value;
-	}.perform('nul.xpr.fuzzy->stpUp')
-	.describe(function(klg) { return ['Fuzzy stpUp',
-		klg.ctxName,
-		'(',klg.locals,')',
-		this]; }),
+	}.perform('nul.xpr.fuzzy->stpUp'),
 
 /////// Knowledge
-	enter: function(emptyK) {
+	enter: function() {
 		if(nul.debug.assert) assert(!this.openedKnowledge,
 			'Knowledge not entered twice');
 		return this.withKlg(
 			new nul.knowledge(
 				this.ctxName,
-				emptyK?[]:this.components,
+				this.components,
 				this.locals), 'enter');
 	},
 	entered: function(cb) {

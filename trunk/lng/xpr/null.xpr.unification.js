@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.unification = Class.create(nul.xpr.associative, {
+nul.xpr.unification = Class.create(nul.xpr.associative.relation, {
 	charact: '=',
 	failable: function() { return true; },
 /////// Unification specific
@@ -20,4 +20,12 @@ nul.xpr.unification = Class.create(nul.xpr.associative, {
 		if(rv.ndx != b4ndx) return rv;	//TODO: trouver autre chose pour voir le changement ?
 	}.perform('nul.xpr.unification->apply')
 	.describe(function(klg) { return ['Applying', this]; }),
+	value: function(klg) {
+		var rv = this.operate(klg) || this;
+		if('='== rv.charact) {
+			klg.know(rv);
+			rv = rv.components[0];
+		}
+		return rv;
+	},
 });

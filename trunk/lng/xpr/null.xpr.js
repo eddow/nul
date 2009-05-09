@@ -11,7 +11,6 @@
  */
 nul.xpr = Class.create({
 	initialize: function() {
-		this.belong = [];
 	},
 	primitiveAttribute: function(prmtv, atn, klg) {
 		var fct = nul.primitiveTree.attribute(prmtv, atn);
@@ -21,7 +20,7 @@ nul.xpr = Class.create({
 		if(this.primitive && this.primitive[atn])
 			return this.primitive[atn].apply(this);
 		var apl = this;
-		var fromBlng = trys(this.belong, function() {
+		var fromBlng = trys(this.belongs(), function() {
 			if(this.elementAttribute)
 				return this.elementAttribute(apl, atn);
 		});
@@ -29,10 +28,12 @@ nul.xpr = Class.create({
 	},
 	composed: function() {
 		this.summarised();
+		this.cachedComp = {};
 		return this;
 	},
 	clone: function(nComps) {
-		return this.browse(nul.browse.clonage());
+		//return this.browse(nul.browse.clonage());
+		//OLD clone: working but not optimised
 		var rv = clone1(this);
 		if(rv.components) rv.components = map(this.components,
 			function() { return this.clone(); });
@@ -43,7 +44,7 @@ nul.xpr = Class.create({
 		var cd = this.ctxDef;
 		if(xpr) {
 			merge(this, xpr, function(a,b) { return b; });
-			if(blng) this.alsoInSets(blng);
+			if(blng) this.inSet(blng);
 			if(cd) this.ctxDef = cd;
 			return this;
 		}
@@ -88,23 +89,20 @@ nul.xpr = Class.create({
 	},
 	contextualise: function(tt) {
 		//if(isEmpty(tt)) return this;
-		return this.browse(nul.browse.contextualise(tt)) || this;
+		return this.browse(new nul.browse.contextualise(tt));
 	}.perform('nul.xpr->contextualise'),
 	operated: function(klg) {
-		//if(isEmpty(tt)) return this;
-		return this.browse(nul.browse.operated(klg)) || this;
+		return this.browsed(new nul.browse.operated(klg));
 	}.perform('nul.xpr->contextualise'),
 
 	subRecursion: function(cb, kb) {
-		return this.compose(map(this.components, cb));
+		if(cnt(this.components, cb)) return this.composed();
 	},
 
 
 	renameCtx: function(klg, ctxFrom) {
 		var ctxn = ctxFrom || this.ctxName || this.ctxDef;
-		return ctxn?(this.browse(
-			nul.browse.lclShft(0, ctxn, klg.ctxName)
-		) || this):this;
+		return ctxn?this.browsed(new nul.browse.lclShft(0, ctxn, klg.ctxName)):this;
 	}.describe(function(klg) { return ['Generic stpUp',
 		klg.ctxName,
 		'(',klg.locals,')',
@@ -156,7 +154,7 @@ nul.xpr = Class.create({
 			accountSub.apply(this);
 			ndx += '|' + this.ndx;
 		});
-		map(this.belong, accountSub);
+		if(this.belong) accountSub.apply(this.belong);
 		if(this.acNdx) this.ndx = this.acNdx;
 		else this.ndx = '[' + ((this.obj&&this.obj!=this.charact) ? 
 				this.charact + this.obj : this.charact) + ndx + ']';
@@ -199,73 +197,32 @@ nul.xpr = Class.create({
 	toHTML: nul.text.toHTML,
 	toString: nul.text.toString,
 	browse: nul.browse.expression,
-	browsed: function(behav, noOwnBS) {
-		return this.browse(behav, noOwnBS) || this;
+	browsed: function(behav) {
+		this.browse(behav);
+		return this;
 	},
 /////// Belonging management
 	/**
 	 * Asserts this expression is in <set>.
 	 * Returns the expression.
 	 */
-	inSet: function(set, flg) {
-		if(this.doesBelong(set)) return this;
-		this.belong = map(this.belong, function(ndx) {
-			if(!this.isSubSet(set)) return this;
-		});
-		this.belong.push(set);
-		//TODO: become failable ?
-		if('noSum'== flg) return this;
-		this.belongChg([set], flg);
+	inSet: function(sets, flg) {
+		if(!sets) return;
+		if('replace'== flg) this.belong = sets;
+		else {
+			sets = isArray(sets)?clone1(sets):[sets];
+			if(this.belong) sets.push(this.belong);
+			if(!sets.length) return this;
+			this.belong = new nul.xpr.intersection(sets);
+		}
+		if('{}'== this.belong.charact && !this.belong.components.length)
+			nul.fail('Impossible value');
 		return this.summarised();
 	},
-	alsoInSets: function(sets, flg) {
-		if(sets == this.belong) return this;
-		for(var i=0; i<sets.length; ++i) this.inSet(sets[i], 'noSum');
-		this.belongChg(sets, flg);
-		return this.summarised();
-	},
-	inSets: function(sets, flg) {
-		if(sets == this.belong) return this;
-		this.belong = sets;
-		this.belongChg(sets, flg);
-		return this.summarised();
-	},
-
-	/**
-	 * Called internally, if the belonging has to be forwarded
-	 */
-	belongChg: function(sets, flg) {
-		if(this.ctxDef && this.used && this.used[nul.lcl.slf])
-			this.browse(nul.browse.belong(
-				nul.xpr.local.ndx(nul.lcl.slf,this.ctxDef),
-				this.belong));
-		return this;
-	},
-
-	/**
-	 * Rurns weither this expression belongs to <set>
-	 */
-	doesBelong: function(set) {
-		return trys(this.belong, function() {
-			if(this.isSubSet(set)) return true;
-		});
-	},
-	/**
-	 * Returns weither this set is a sub-set of <set>.
-	 */
-	isSubSet: function(set) {
-		if(this.ndx==set.ndx) return true;
-		return trys(this.containers(), function() {
-			if(this.isSubSet(set)) return true;
-		});
-	},
-	/**
-	 * Returns the list of sets that contains this one.
-	 */
-	containers: function() {
-		var rv = maf(this.belong, function() {
-			if('set'== this.charact) return this.components[0];
-		});
+	belongs: function() {
+		if(!this.belong) return [];
+		if('&#x2229;'!= this.belong.charact) return [this.belong]
+		return this.belong.components;
 	}
 });
 
@@ -321,6 +278,9 @@ nul.xpr.listed = Class.create(nul.xpr, {
 	},
 });
 
+/**
+ * Need several components
+ */
 nul.xpr.relation = Class.create(nul.xpr.listed, {
 	composed: function($super) {
 		if(nul.debug.assert) assert(1< this.components.length,
@@ -340,19 +300,26 @@ nul.xpr.relation = Class.create(nul.xpr.listed, {
 	}
 });
 
-nul.xpr.associative = Class.create(nul.xpr.relation, {
-	compose: function($super, nComps) {
-		if(!nComps) nComps = this.components;
-		nComps = clone1(nComps);
-		var nc = [];
-		while(nComps.length) {
-			var tc = nComps.pop();
-			if(tc.charact == this.charact) nComps.pushs(tc.components);
-			else nc.unshift(tc);
-		}
-		return $super(nc);
-	},
-});
+/**
+ * associative : (a + b) + c ==> (a + b + c)
+ */
+nul.xpr.associative = function(prnt) {
+	return Class.create(prnt, {
+		compose: function($super, nComps) {
+			if(!nComps) nComps = this.components;
+			nComps = clone1(nComps);
+			var nc = [];
+			while(nComps.length) {
+				var tc = nComps.pop();
+				if(tc.charact == this.charact) nComps.pushs(tc.components);
+				else nc.unshift(tc);
+			}
+			return $super(nc);
+		},
+	});
+};
+nul.xpr.associative.relation = nul.xpr.associative(nul.xpr.relation);
+nul.xpr.associative.listed = nul.xpr.associative(nul.xpr.listed);
 
 nul.xpr.ceded = Class.create(nul.xpr.listed, {
 /////// Ctor
@@ -406,9 +373,10 @@ nul.xpr.primitive = function(root, pnm) {
 
 nul.xpr.forward = function(root, fkey) {
 	return Class.create(root, {
-		initialise: function($super, o) {
+		initialize: function($super, o) {
 			$super(o);
-			this.primitive = this.components[fkey].primitive;
+			if(this.components && this.components[fkey])
+				this.primitive = this.components[fkey].primitive;
 		},
 		finalRoot: function() { return this.components[fkey].finalRoot(); },
 		jsValue: function() { return this..components[fkey].jsValue; },

@@ -47,33 +47,31 @@ nul.knowledge = Class.create({
 					rv.compose(this.knowledge);
 				}
 				rv.locals = this.locals;
-				if(nul.debug.assert) assert(
-						//!rv.openedKnowledge ||
-						rv.openedKnowledge === this,
+				if(nul.debug.assert) assert(rv.openedKnowledge === this,
 					'Knowledge opened only once');
+				rv.locked = 'locked';
 			} else { 
 				rv = new nul.xpr.fuzzy(
 					rv,
 					this.knowledge,
 					this.locals,
-					this.ctxName);
-				this.knowledge = 'fz'== rv.charact?rv.components:[];
-				if('fz'== rv.charact) rv.withKlg(this, 'asFuzz');
+					this.ctxName,
+					'locked');
+				this.knowledge = rv.components;
+				rv.withKlg(this, 'asFuzz');
 			}
 			var oldKNdx, newKNdx = this.knowledgeNdx();
 			var sbjBhv;
 			do {
 				oldKNdx = newKNdx;
-				if('fz'== rv.charact) rv = rv.simplify();
-				if('fz'== rv.charact) this.concentrate(rv.components.value);
+				rv = rv.simplify();
+				this.concentrate(rv.components.value);
 				
-				sbjBhv = nul.browse.subjectivise(this);
-				if('fz'== rv.charact) rv = rv.subBrowse(sbjBhv) || rv;
-				else rv = rv.browse(sbjBhv) || rv;
+				sbjBhv = new nul.browse.subjectivise(this);
+				rv = rv.subBrowse(sbjBhv) || rv;
 
-				var oper = nul.browse.operated(this);
-				if('fz'== rv.charact) rv = rv.subBrowse(oper) || rv;
-				else rv = rv.browse(oper) || rv;
+				var oper = new nul.browse.operated(this);
+				rv = rv.subBrowse(oper) || rv;
 
 				newKNdx = this.knowledgeNdx();
 			} while(oldKNdx != newKNdx)
@@ -81,9 +79,9 @@ nul.knowledge = Class.create({
 			rv.unfinished = map(sbjBhv.needMore, function() {
 				return this.desc+' '+nul.text.expressionString(', ', this);
 			});
-			if('fz'== rv.charact) rv = rv.relocalise();
-			if('fz'== rv.charact) rv = rv.composed();
-			return rv;
+			rv = rv.relocalise();
+			rv = rv.composed();
+			return rv.unlock();
 		} catch(err) {
 			if(nul.failure!= err) throw nul.exception.notice(err);
 			return new nul.xpr.fuzzy();
@@ -137,16 +135,17 @@ nul.knowledge = Class.create({
 			return this.knowledge.splice(0);
 		else return this.knowledge.splice(sn, 1)[0];
 	},
-	know: function(premices) {
+	know: function(premices, recall) {
 		if(!isArray(premices)) premices = [premices];
 		var klg = this;
-		map(premices, function() { klg.knew(this); });
+		map(premices, function() { klg.knew(this, recall); });
+		return recall;
 	},
-	knew: function(p) {
+	knew: function(p, recall) {
 		if(!this.known(p) && p.flags.failable) {
 			//TODO: check containing knowledge too Oo
 			//TODO: if Z x and Q x have to be known, just know Z x
-			nul.debug.log('knowledge')(this.ctxName, p);
+			if(!recall) nul.debug.log('knowledge')(this.ctxName, p);
 			if('[.]'== p.charact) {
 				//Insert it as the last belonging knowledge
 				var i;
@@ -155,7 +154,7 @@ nul.knowledge = Class.create({
 					'[.]'== this.knowledge[i].charact;
 					++i);
 				this.knowledge.splice(i, 0, p);
-			} else if('='== p.charact) this.affect(p.components);
+			} else if('='== p.charact) this.knowledge.push(this.affect(p.components));
 			else this.knowledge.push(p);
 		}	//else: already known
 		return this;
@@ -228,12 +227,7 @@ nul.knowledge = Class.create({
 	 	} while(n<us.length);
 
 		//6- use that value
-		var rv = new nul.xpr.unification(us);
-		//if(nul.canSimpl(us[0])) {
-			this.knowledge.push(rv);
-			rv = us[0];
-		//}
-		return rv;
+		return new nul.xpr.unification(us);
 	},
 
 	/**

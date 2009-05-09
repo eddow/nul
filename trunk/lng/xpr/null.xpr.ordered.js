@@ -37,7 +37,7 @@ nul.xpr.ordered = Class.create(nul.xpr.relation, {
 			fct = new nul.xpr.set(fct, 'g');
 		}
 		var trv = new nul.xpr.application(fct, new nul.xpr.set([a, b]), klg.ctxName);
-		trv = trv.operate(klg);
+		trv = trv.value(klg);
 		if(!trv) return;
 		return this.replaceBy(trv);
 	}.perform('nul.xpr.operation->subject'),

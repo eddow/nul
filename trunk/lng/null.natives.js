@@ -34,3 +34,12 @@ nul.natives = {
 		}, 'object'
 	),
 };
+
+function included(a, b) {
+	a.inSet(new nul.xpr.subset([new nul.xpr.intersection([b])], ['*']));
+}
+
+included(nul.natives.Z, nul.natives.Q);
+included(nul.natives.Q, nul.natives.object);
+included(nul.natives.bool, nul.natives.object);
+included(nul.natives.str, nul.natives.object);

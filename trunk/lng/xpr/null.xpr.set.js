@@ -28,9 +28,9 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder.listed,'set'), {
 	composed: function($super) {
 		if(1== this.components.length) {
 			var c = this.components[0];
-			if(!c.flags.failable && 1== c.belong.length &&	//TODO: boudjou, quel cas particulier de dieu-le-père Oo
+			if(!c.flags.failable &&	c.belong &&	//TODO: boudjou, quel cas particulier de dieu-le-père Oo
 					'fz'== c.charact && 'local'== c.components.value.charact)
-				return this.replaceBy(c.belong[0]);
+				return this.replaceBy(c.belong);
 		}
 		//Extends components
 		var nc = [], cd = this.ctxDef;
@@ -46,6 +46,7 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder.listed,'set'), {
 		map(this.components, function() {
 			if(this.unfinished && this.unfinished.length)
 				throw nul.semanticException('AUD',this.unfinished.join('<br />'));
+			tps.push(this.belong);
 		});
 		
 		return $super();
@@ -55,8 +56,11 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder.listed,'set'), {
 		var rv = [], trv, acn = this.ctxDef, set = this;
 		for(var i=0; i<xpr.components.length; ++i) {
 			try {
-				trv = xpr.components[i].aknlgd(function(){
-					return new nul.xpr.handle(apl.clone(), this.renameCtx(klg));
+				
+				trv = xpr.components[i];
+				if('fz'== trv.charact) trv = trv.renameCtx(klg);
+				trv = trv.aknlgd(function(){
+					return new nul.xpr.handle(apl.clone(), this);
 				});
 				if(acn && trv.deps[acn] && trv.deps[acn][nul.lcl.slf])
 					//TODO: optimise recursion

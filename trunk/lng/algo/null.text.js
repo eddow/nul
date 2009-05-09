@@ -122,12 +122,10 @@ nul.text = {
 				else aLocals = nul.text.js.tile('locals', this.ctxName);
 				cls=' freedom'
 			}
-			if(this.belong.length) {
-				aBlngs = map(this.belong, function() { return this.toString(); });
+			if(this.belong)
 				aBlngs = nul.text.js.tile('belongs',
-					'<table><tr><td>'+aBlngs.join('</td><td>')+'</td></tr></table>',
-					aBlngs.join(' | '));
-			}
+					this.belong.toString(),
+					this.belong.toString());
 			if(!isEmpty(this.fuzze)) {
 				aFuzze = keys(this.fuzze);
 				aFuzze = nul.text.js.tile('fuzze',

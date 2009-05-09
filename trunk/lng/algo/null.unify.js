@@ -58,7 +58,8 @@ nul.unify = {
 		if(nul.debug.assert) assert(klg, 'Level without KLG shouldnt happen anymore');
 		var rv = nul.unify.chewed(a, b, klg);
 		if(rv) return rv;
-		return klg.affect([a,b]);
+		klg.know(new nul.xpr.unification([a,b]));	//TODO: le affect va refaire un chewed.
+		return a;
 	}.perform('nul.unify.level'),
 
 	
@@ -161,6 +162,8 @@ nul.unify = {
 	 * Returns the unified expression or nothing if it cannot be unified now.
 	 */
 	chewed: function(a, b, klg) {
+		a.inSet(b.belong);
+		b.inSet(a.belong, 'replace');
 		if(a.cmp(b)) return a;
 		
 		var rv = nul.unify.subs(a, b, klg);

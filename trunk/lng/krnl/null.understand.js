@@ -41,7 +41,7 @@ nul.understanding = {
 				}	
 				return new nul.xpr.set(ops, ctxDef);
 			case '=':
-				return (new nul.xpr.unification(ops)).operate(ub.klg);
+				return (new nul.xpr.unification(ops)).value(ub.klg);
 			case ':=':	return new nul.xpr.handle(ops[0], ops[1]);
 
 			case '<<+':	return new nul.xpr.seAppend(ops[0], ops[1]);
@@ -92,7 +92,7 @@ nul.understanding = {
 			this.item.understand(ub),
 			this.applied.understand(ub),
 			ub.ctxDef);
-		return rv.operate(ub.klg) || rv;
+		return rv.value(ub.klg);
 	},
 	set: function(ub) {
 		if(!this.content) return new nul.xpr.set();

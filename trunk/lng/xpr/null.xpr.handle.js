@@ -55,8 +55,8 @@ nul.xpr.lambda = Class.create(nul.xpr.primitive(nul.xpr.composed), {
 			this.components.object,
 			apl.components.object,
 			klg.ctxName);
-		h = h.operate(klg) || h;
-		o = o.operate(klg) || o;
+		h = h.value(klg);
+		o = o.value(klg);
 		return apl;
 	}.perform('nul.xpr.lambda->take'),
 });

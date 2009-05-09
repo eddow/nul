@@ -36,22 +36,42 @@ function iif(a, b) {
 	return ('undefined'== (typeof a) || null=== a)?b:a;
 }
 
-//Returns the first of <itm> for which the function <fct> returned a value evaluated to true
+/**
+ * Internal (helper) use for mapping functions
+ */
+function mapCb(fct, ndx, itm) {
+	return fct.apply( ['object','function'].contains(typeof itm)?itm:null, [reTyped(ndx), itm]);
+}
+
+/**
+ * Returns the first of <itm> for which the function <fct> returned a value evaluated to true
+ */
 function trys(itm, fct) {
 	var rv;
 	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i])
-		if(rv = fct.apply(
-			['object','function'].contains(typeof itm[i])?itm[i]:null,
-			[reTyped(i), itm[i]])) return rv;
+		if(rv = mapCb(fct, i, itm[i])) return rv;
 }
 
-//Returns the same item as <itm> where each member went through <fct>
+/**
+ * Returns the sum of the returns value (or 1 if not-false and not-number)
+ */
+function cnt(itm, fct) {
+	var rv = 0;
+	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) { 
+		var trv = mapCb(fct, i, itm[i]);
+		if('number'== typeof trv) rv += trv;
+		else if(trv) ++rv;
+	}
+	return rv;
+}
+
+/**
+ * Returns the same item as <itm> where each member went through <fct>
+ */
 function map(itm, fct) {
 	var rv = isArray(itm)?[]:{};
 	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) 
-		rv[i] = fct.apply(
-			['object','function'].contains(typeof itm[i])?itm[i]:null,
-			[reTyped(i), itm[i]]);
+		rv[i] = mapCb(fct, i, itm[i]);
 	return rv;
 }
 
@@ -64,9 +84,7 @@ function maf(itm, fct) {
 	var rv = isArray(itm)?[]:{};
 	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) {
 		var ndx = reTyped(i); 
-		var trv = fct.apply(
-			['object','function'].contains(typeof itm[i])?itm[i]:null,
-			[ndx, itm[i]]);
+		var trv = mapCb(fct, i, itm[i]);
 		if('undefined'!= typeof trv) {
 			if('number'== typeof ndx) rv.push(trv);
 			else rv[ndx] = trv;
@@ -74,6 +92,7 @@ function maf(itm, fct) {
 	}
 	return rv;
 }
+
 function replace(dst, src) {
 	dst.prototype = src.prototype;
 	for(var i in dst) delete dst[i];// = null;

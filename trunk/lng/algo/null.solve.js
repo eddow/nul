@@ -45,33 +45,6 @@ nul.solve = {
 		return [xpr];
 	},
 	tryed: function(xpr, cn, ctxName) {
-		var rv;//, klg = xpr.enter();
-		try {
-			rv = xpr.browse({
-				name: 'solve try',
-				browse: true,
-				ctxName: ctxName,
-				cn: cn,
-				//klg: klg,
-				before: function(xpr) {
-					if(!this.browse /*|| ('{}'==xpr.charact && this.klg)*/)
-						throw nul.browse.abort;
-					if(xpr.possibility && this.ctxName == xpr.ctxName) {
-						this.browse = false;
-						nul.debug.log('solve')('Choose',[cn, 'out of', xpr]);
-						var rv = xpr.possibility(this.cn/*, this.klg*/);
-						if(rv) return xpr.replaceBy(rv);
-						this.cn = 'end';
-					} 
-				},
-				finish: function(xpr, chgd, orig) {
-					if(!this.browse && 'end'!= this.cn)
-						return xpr;
-				},
-			});
-		} finally {
-			//rv = klg.leave(rv);
-		}
-		if(rv) return rv.enter().leave(rv);
+		if(xpr.browse(new nul.browse.solve(cn, ctxName))) return xpr.enter().leave(xpr);
 	}
 };
