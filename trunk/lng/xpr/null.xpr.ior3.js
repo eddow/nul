@@ -28,9 +28,9 @@ nul.xpr.ior3 = Class.create(nul.xpr.holder.listed, {
 		return $super(ops);
 	},
 //Interface to solving engine	
-	possibility: function(n) {
+	possibility: function(n, klg) {
 		if(n<this.components.length)
-			return this.components[n];//.stpUp(klg);
+			return this.components[n].stpUp(klg);
 	},
 /////// Strings
 	expressionHTML: function() {

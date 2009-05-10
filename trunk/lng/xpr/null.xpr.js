@@ -32,13 +32,20 @@ nul.xpr = Class.create({
 		return this;
 	},
 	clone: function(nComps) {
-		//return this.browse(nul.browse.clonage());
+		//return this.browse(new nul.browse.clonage());
 		//OLD clone: working but not optimised
-		var rv = clone1(this);
+		var rv = this.clone1();//clone1(this);
 		if(rv.components) rv.components = map(this.components,
 			function() { return this.clone(); });
+		if(rv.belong) rv.belong = rv.belong.clone();
 		return rv;
 	}.perform('nul.xpr->clone'),
+	clone1: function() {
+		return map(this, function(i, v) {
+			if(['belong', 'components'].contains(i)) return v;
+			return clone(v);
+		});
+	},
 	replaceBy: function(xpr) {
 		var blng = this.belong;
 		var cd = this.ctxDef;
@@ -107,7 +114,7 @@ nul.xpr = Class.create({
 		klg.ctxName,
 		'(',klg.locals,')',
 		this]; }),
-	stpUp: function(klg) { return this.renameCtx(klg); },
+	stpUp: function(klg) { return this;/*.renameCtx(klg);*/ },
 
 	aknlgd: function(cb) {
 		var klg = this.enter();

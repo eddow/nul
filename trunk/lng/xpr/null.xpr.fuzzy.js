@@ -28,10 +28,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			this.components.value.flags.failable;
 	},
 	fail: function() {
-		delete this.components;
-		this.failed = true;
-		this.deps = {};
-		return this;
+		return new nul.xpr.fuzzy();
 	},
 	compose: function($super, nComps) {
 		if(!nComps) {
@@ -96,10 +93,6 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 		if(locked) this.locked = locked;
 		$super(comps);
 	},
-	operate: function(klg) {
-		if(!this.locals.length)	//TODO: si locals comps, import => ior3
-			return this.replaceBy(this.stpUp(klg));
-	},
 /////// String management
 	expressionHTML: function() {
 		if(!this.components) return '<span class="failure">fail</span>';
@@ -127,6 +120,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	},
 /////// Forward specific
 	inSet: function($super, sets, flg) {
+		if(!this.components) return this;
 		if('skipSub'!= flg) this.components.value.inSet(sets, flg);
 		return $super(sets, flg);
 	},
@@ -139,7 +133,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 			rv = cnt(klg.forget(), function() {
 				return !klg.know(this, !cb.apply(this));
 			});
-			rv |= cb.apply(this.components.value);
+			rv |= !!cb.apply(this.components.value);
 		} catch(err) {
 			if(nul.failure!= err) throw nul.exception.notice(err);
 			this.replaceBy(new nul.xpr.fuzzy());	//makes a failure
@@ -159,19 +153,28 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	},
 	subBrowse: function(behav, act) {
 		var klg = this.openedKnowledge;
+		
+		var eqcls;
+		if('knwl'== act) eqcls = maf(this.components, function() {
+			if('='== this.charact) this.components = map(this.components, function() {
+				return this.clone1();
+			});
+		});
+
 		var prmcs = klg.forget();
 		this.components.value = this.components.value
 			.browsed(behav);
 		while(prmcs.length) {
 			var p = prmcs.shift();
 			if('knwl'== act && '='== p.charact) {
-				var chg = cnt(p.components,
-					function() { return this.components?
-						this.compose(map(this.components,
-						function() { return this.browsed(behav); })):
-						this;
+				var chg = false;
+				var nc = map(p.components,
+					function() {
+						chg |= !!this.components && cnt(this.components,
+							function() {
+								return this.browse(behav);
+							});
 					});
-				if(chg) p.composed();
 				klg.know(p, !chg);
 			} else klg.know(p, !p.browse(behav));
 		}
@@ -270,7 +273,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr.forward(nul.xpr.listed, 'value'), {
 	 * knowledge is moved in the specified <klg>
 	 */
 	stpUp: function(klg) {
-		var rv = this.renameCtx(klg);
+		var rv = this;//.renameCtx(klg);
 		klg.know(rv.components);
 		return rv.components.value;
 	}.perform('nul.xpr.fuzzy->stpUp'),

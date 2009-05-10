@@ -59,8 +59,8 @@ nul.xpr.set = Class.create(nul.xpr.primitive(nul.xpr.holder.listed,'set'), {
 				
 				trv = xpr.components[i];
 				if('fz'== trv.charact) trv = trv.renameCtx(klg);
-				trv = trv.aknlgd(function(){
-					return new nul.xpr.handle(apl.clone(), this);
+				trv = trv.aknlgd(function(klg){
+					return new nul.xpr.handle(apl.clone(), this, klg.ctxName);
 				});
 				if(acn && trv.deps[acn] && trv.deps[acn][nul.lcl.slf])
 					//TODO: optimise recursion

@@ -6,12 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
 
-/* browse behaviour defines:
-- abort(orig, err, xpr)
-* 	returns nothing. Called instead of 'finish' when a problem occured. <err> is the abortion cause (what was thrown).
-- <charact>(xpr)
-* 	acts on a specific characterised expression
-*/
 nul.browse = {
 	/**
 	 * Browsing behaviour
@@ -97,8 +91,8 @@ nul.browse = {
 	abort: 'stopBrowsingPlease',
 	spaces: 0,	//TODO: le système de compCache remplace le browseSpace, remove this!
 	expression: function(behav) {
-		var failer = this.fail;
 		var xpr = this, chg = false;
+		var failer = this.fail;
 		function subBrws(ndx) {
 			if(nul.debug.assert) assert(this.browse, 'Sub is expressions');
 			var co = this.browse(behav);
@@ -123,21 +117,20 @@ nul.browse = {
 		try {
 			chg = behav.before(this);
 			if(this.components && ('function'== typeof behav.browse ? behav.browse(this) : behav.browse)) {
-				var subTabul = 'fz'== this.charact;
+				var subTabul = 'fz'== this.charact, schg = false;
 				if(behav.tabul && subTabul) behav.tabul.unshift({});
 				try {
-					var schg = false;
 					if(behav.kb) schg = this.subRecursion(subBrws, behav.kb);
 					else if(schg = cnt(this.components, subBrws)) behav.composed(this);
 				} finally { if(behav.tabul && subTabul) behav.tabul.shift(); }
-				chg |= schg;
+				chg |= !!schg;
 			}
-			if(behav[this.charact]) chg |= behav[this.charact](this);
+			if(behav[this.charact]) chg |= !!behav[this.charact](this);
 		} catch(err) {
 			nul.exception.notice(err);
 			if(behav.abort && behav.abort(this, err, failer)) {
 				if(behav.tabul) behav.tabul[0][inpNdx] = this;
-				behav.cache(this, true);
+				behav.cache(this, {chg: true});
 				return 'aborted';
 			}
 			if(nul.browse.abort== err) {
@@ -145,7 +138,7 @@ nul.browse = {
 				behav.cache(this, {});
 				return;
 			}
-			//TODO: on tabule pas la failure ?
+			if(nul.failure== err & behav.tabul) behav.tabul[0][inpNdx] = err;
 			throw err;
 		}
 		chg = behav.finish(this, chg, failer);
@@ -195,7 +188,7 @@ nul.browse.subjectivise = Class.create(nul.browse.behav, {
 			}
 			return rv;					
 		} catch(err) {
-			if(nul.failure== err && failer) return failer();
+			if(nul.failure== err && failer) return rv = xpr.replaceBy(failer());
 			throw nul.exception.notice(err);
 		} finally {
 			nul.debug.log('evals')(nul.debug.lcs.endCollapser('Subjectived', 'Subjectivisation'),
@@ -203,7 +196,7 @@ nul.browse.subjectivise = Class.create(nul.browse.behav, {
 		}
 	},			
     abort: function(xpr, err, failer) {
-        if(nul.failure== err && failer) return failer();
+        if(nul.failure== err && failer) return xpr.replaceBy(failer());
     },
 });
 
@@ -241,9 +234,9 @@ nul.browse.operated = Class.create(nul.browse.behav, {
 		var rv;
 		try {
 			nul.debug.log('evals')(nul.debug.lcs.collapser('Operate'), [xpr]);
-			return xpr.operate(this.kb[0]);
+			return rv=xpr.operate(this.kb[0]);
 		} catch(err) {
-			if(nul.failure== err && failer) return failer();
+			if(nul.failure== err && failer) return rv = xpr.replaceBy(failer());
 			throw nul.exception.notice(err);
 		} finally {
 			nul.debug.log('evals')(nul.debug.lcs.endCollapser('Operated', 'Operation'),
@@ -306,6 +299,7 @@ nul.browse.solve = Class.create(nul.browse.behav, {
 		this.browse = true;
 		this.ctxName = ctxName;
 		this.cn = cn;
+		this.kb = [];
 		$super();
 		this.tabul = false;
 	},
@@ -323,12 +317,12 @@ nul.browse.solve = Class.create(nul.browse.behav, {
 		if(xpr.possibility && this.ctxName == xpr.ctxName) {
 			this.browse = false;
 			nul.debug.log('solve')('Choose',[this.cn, 'out of', xpr]);
-			var rv = xpr.possibility(this.cn/*, this.klg*/);
+			var rv = xpr.possibility(this.cn, this.kb[0]);
 			if(rv) return xpr.replaceBy(rv);
 			this.cn = 'end';
 		} 
 	},
-	finish: function(xpr, chgd) {
-		return !this.browse && 'end'!= this.cn;
+	finish: function(xpr, chg) {
+		return chg || (!this.browse && 'end'!= this.cn);
 	},
 });

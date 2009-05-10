@@ -12,7 +12,8 @@ nul.xpr.handle = Class.create(nul.xpr.composed, {
 	obj: ':=',
 	failable: function() { return true; },
 /////// Ctor
-	initialize: function($super, handler, handled) {
+	initialize: function($super, handler, handled, ctxName) {
+		this.ctxName = ctxName;
 		$super({handler:handler, handled:handled});
 	},
 /////// Objectivity specific

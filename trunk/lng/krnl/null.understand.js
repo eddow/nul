@@ -42,7 +42,7 @@ nul.understanding = {
 				return new nul.xpr.set(ops, ctxDef);
 			case '=':
 				return (new nul.xpr.unification(ops)).value(ub.klg);
-			case ':=':	return new nul.xpr.handle(ops[0], ops[1]);
+			case ':=':	return new nul.xpr.handle(ops[0], ops[1], ub.ctxDef);
 
 			case '<<+':	return new nul.xpr.seAppend(ops[0], ops[1]);
 			case ';':
