@@ -4,8 +4,7 @@
 || {{{[]}}}  || [GreedyMetaOr Greedy meta-or] ||
 ||  {{{;}}}  || [MetaAnd Meta-and] ||
 || {{{:-}}}  || [Lambda] ||
-|| {{{:-}}}  || [Assertion] ||
-||  {{{,}}}  || [Tuple Tuple creation] ||
+||  {{{,}}}  {{{,..}}} {{{{...} }}}  || [Sets], [Tuple Tuple creation] (TODO: merge?) ||
 ||  {{{=}}}  || [Unification] ||
 ||  {{{:}}}  || [ContentMetaOr Content meta-or] ||
 || {{{< > <= >=}}} || [AtomComparison atom comparison] ||
@@ -14,8 +13,5 @@
 
 Other structures are :
 || {{{\/local ...}}} || [FuzzyExpressions Fuzzy expressions] ||
-<wiki:comment>
-|| {{{[local ... ]}}} || [AutoReferences Auto-references] - removed ||
-</wiki:comment>
-|| {{{{ ... } }}} || [Sets] ||
+|| {{{...[...]}}} || [ImageShortcut Image taking] ||
 || {{{...(...)}}} || [TakeExpression Token expressions] ||
