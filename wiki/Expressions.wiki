@@ -14,13 +14,6 @@ Or, also, the intersection of `a` and `E` is `a`
 {{{
 a, E :- a = a * E
 }}}
-The `operator*` function of the primitive `set` will, anyway, look like this :
-{{{
-::*
-{:mult {a} :- a
-    [] (a, b,.. S) :- {a( mult(b,.. S) x )})
-}
-}}}
 
 == vector`<T>` ==
 
@@ -28,13 +21,13 @@ This is the set that associate to any type T the type "list of Ts".
 {{{
 list = { type :- {:tlist {} [] type _,.. tlist _} }
 }}}
-This, for example, verify {{{list Z (1, 17, 8, 6, 2)}}}
+This, for example, verify {{{list[Z] (1, 17, 8, 6, 2)}}}
 = Working =
 
 == Factorial ==
 {{{
 {:f 0:-1
- [] Z x > 0 :- x * f(x-1)
+ [] Z x > 0 :- x * f[x-1]
 } 3
 }}}
 
@@ -42,8 +35,8 @@ This, for example, verify {{{list Z (1, 17, 8, 6, 2)}}}
 === quick & dirty ===
 {{{
 {:fib (0 [] 1) :- 1
-    [] Z n > 1 :- fib(n-1) + fib(n-2)
-} 10
+    [] Z n > 1 :- fib[n-1] + fib[n-2]
+} [10]
 }}}
 
 === optimised (accmlation) ===
@@ -51,7 +44,7 @@ This, for example, verify {{{list Z (1, 17, 8, 6, 2)}}}
 { Z n > 0 :-
   {:fibaux
       (Z x, _, 0) :- x
-   [] (Z x, Z y, Z z > 0) :- fibaux(y, x+y, z-1)
-  } (1, 1, n)
-} 10
+   [] (Z x, Z y, Z z > 0) :- fibaux[y, x+y, z-1]
+  } [1, 1, n]
+} [10]
 }}}
