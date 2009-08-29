@@ -43,7 +43,7 @@ ex: {{{ { 1 + (2 [] 3) } }}} becomes {{{ { (1 + 2) [] (1 + 3) } }}}
 All the un-evaluable unifications (like {{{x = y}}}) are just added to the present knowledge.
 
 == [TakeExpression]s ==
-
+TODO: no more 'take', just 'value of*' and belonging assertion
  * *Application*: If possible, replace the application by the result. If not, add the take-expression in the knowledge.
 
 ex: {{{ double 5 }}} is computed as  {{{ 5 * 2 }}}
