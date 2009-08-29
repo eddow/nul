@@ -5,38 +5,13 @@ Note: The 'handles' system is still under heavy researchs and modifications.
 
 = Introduction =
 
-The handle is a special [ObjectOrientation attribute]. Even if it cannot be accessed as such, the behaviour is the same.
+The Handle is a system of _key, value_ pair.
+{{{a :- b}}} is the object whose key is {{{a}}} and value is {{{b}}}.
 
-The handle is an expression given therefore to any expression. In {{{ a :- b }}}, {{{a}}} _handles_, or _is the handle of_ {{{b}}}.
+The key/value operators leads :
+{{{& (a :- b)}}} to be {{{a}}}
+{{{* (a :- b)}}} to be {{{b}}}
 
-The peculiar behaviour of the handle attribute is that, if none is given, _an expression handles itself_.
+= Usage
 
-The handles system comes with a special operator (that no-one should have to use in general) : the handeling unification {{{:=}}}.
-The handeling unification is not commutative. 
-
-= Details =
-
-The handeling unification is not ment to be used as this. The handle is created to deal with sets and tables; for instance, the "index" of a table gives the handle of each row.
-
-The 'object taking' or 'set application' involve the handeling unification. Indeed, {{{ { x } a }}} ({{{a}}} taken out of the sets of {{{x}}}) involve it statusing {{{a := x}}}
-
-== Usages ==
-
-The 'handle' operator is used to build indexed data tables within the language.
-
-=== Databases indexes ===
-
-The handle system is used to query a database through an index. The index i therefore the handle and the row, the resulting expresion.
-
-=== Functions ===
-
-To create _functions_ - that are in NUL, finally, just indexed tables.
-
-The function double is the set that contains each number handeling their double : {{{ { x :- 2*x } }}}
-As on the second schematic case, {{{ 4 := (x :- x*2) }}} is worth {{{ x*2 }}} while {{{ 4 = x }}} - and therefore {{{8}}}.
-
-This is where the value {{{8}}} of {{{ { x :- x*2 }( 4 ) }}} comes from.
-
-=== Associatives arrays ===
-
-Associatives arrays are, of course, a particular instance of a database. Though, {{{( 1 :- "un", 2 :- "deux", 3 :- "trois" ) 3 }}} expextedly returns "trois".
+The synthax {{{fct[prm]}}} is a shortcut to {{{*fct( prm :- _ )}}} or, indeed {{{img; fct(prm:-img)}}}
