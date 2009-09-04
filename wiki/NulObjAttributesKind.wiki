@@ -7,18 +7,20 @@ The NUL objects has several kinds of attributes
 
 == Named attributes ==
 
-The ones accessbile from their names : "`obj.X`" represent the attribute named `X` of the object `obj`
+The ones accessbile from their names : "`obj.X`" represent the attribute named `X` of the object `obj`. These are _value_ attribute.
 
 == Postcedor/precedor attributes ==
 
 These attributes are like the named attributes in that they give an object for each object.
-For instance, the precedor '-' is an attribute of the numbers who means the opposite number.
+For instance, the precedor '-' is an attribute of the numbers who means the opposite number. These are also _value_ attribute.
 
 == binary operators ==
 
 Binary operators are not commutative. Therefore, each object has to define how it reacts when it is left of a binary operator by giving a function `operand => value'
 
 The expression `a - b` will be evaluated to `a.operator- [ b ]`
+
+These are _functional_ attributes.
 
 == N-ary operators ==
 
