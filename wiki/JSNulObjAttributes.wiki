@@ -1,4 +1,4 @@
-#summary !JavaScript representation of nul.obj attributes
+#summary JavaScript representation of nul.obj attributes
 #labels Phase-Implementation
 
 = Introduction =
