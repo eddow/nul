@@ -8,7 +8,7 @@ Each NUL object (nul.obj) are !JavaScript objects.
 == !JavaScript objects composition ==
 
 The JS objects contain these properties :
-|| attr || Associative list || A list of the nul.obj properties. Detailed in NulObjAttributes. ||
+|| attr || Associative list || A list of the nul.obj properties. Detailed in JSNulObjAttributes. ||
 ||| || *Existence check functions* || Verify how many fixed values can this fuzzy object take. ||
 || minXst || function(`klg`) || Function returning the minimum possible fixed values in a given context. ||
 || maxXst || function(`klg`) || Function returning the maximum possible fixed values in a given context. ||
