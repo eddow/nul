@@ -19,6 +19,7 @@ For instance, the precedor '-' is an attribute of the numbers who means the oppo
 Binary operators are not commutative. Therefore, each object has to define how it reacts when it is left of a binary operator by giving a function `operand => value'
 
 The expression `a - b` will be evaluated to `a.operator- [ b ]`
+The expression `a b` will be evaluated to `a.operator' ' [ b ]`
 
 These are _functional_ attributes.
 
