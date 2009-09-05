@@ -1,0 +1,17 @@
+#summary Internal representation of fuzzy objects
+#labels Phase-Implementation
+
+= Introduction =
+
+The internal representation of NulFuzzyObj are a !JavaScript object that have these :
+
+== properties ==
+
+|| object || JsNulObj || The representation of the object ||
+|| knowledge || JsNulKlg || The knowledge restricting the values `object` can take ||
+
+== methods ==
+
+|| minXst || function() || Function returning the minimum possible fixed values. ||
+|| maxXst || function() || Function returning the maximum possible fixed values. ||
+|| fixed || function() || Function returning weither the existence is strictly one ({{{fixed = 1==minXst && 1==maxXst}}}). ||
