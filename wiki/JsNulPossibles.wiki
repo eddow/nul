@@ -1,0 +1,9 @@
+#summary List of possible objects
+#labels Phase-Implementation
+
+= Introduction =
+
+A `possibles` is a list of `possible`.
+A `possible` is an object and a knowledge.
+
+TODO
