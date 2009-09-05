@@ -3,7 +3,7 @@
 
 = Introduction =
 
-The internal representation of NulFuzzyObj are a !JavaScript object that have these :
+The internal representation of NulKlg are a !JavaScript object that have these :
 
 == properties ==
 
