@@ -6,17 +6,33 @@
 For some object, the nature is known (pairs, numbers, sets, ...)
 We can also represent object whose nature is unknown (locals, attributes of other objects, ...)
 
-The internal representation of NulObj are a !JavaScript object that have these :
+The internal representation of NulObj are a !JavaScript object that have elements :
 
-== properties ==
+== Attribute access ==
+
+The known-nature objects have an `attr` associative list to sotre the attributes value. The other ones still implements atribute access functions.
 
 || attr || `[`Associative list`]` || A list of the nul.obj properties. Detailed in JsNulObjAttributes. This list is present only when the object has a known nature. ||
-
-== methods ==
-
-|| defined || function(klg) || Manage to get an object with a known nature ||
 || valAttr || function(string) || Gets the _value_ attribute of this object as a JsNulPossibles. ||
 || fctAttr || function(string, JsNulObj) || Gets the _functional_ attribute of this object, whose is applied the given object as a JsNulPossibles. ||
 
+== Nature knowledge ==
+
+|| defined || function(klg) || Manage to get an object with a known nature ||
 
 `defined` returns this JsNulObj if it is defined, a new JsNulObj if it can be defined in klg or nothing if it cannot be defined.
+
+== Cloneage and modification ==
+
+|| getd || function(string) || Gets the JsNulObj attribute which name is given as parameter ||
+|| modd || function(string `attr`, any `val`) || Returns the JsNulObj cloned for which the attribute `attr` now map to `val` ||
+
+{{{obj.getd('a.b')}}} is equivalent to {{{obj.a.b}}}
+
+== Distribution ==
+
+Some JsNulObj reference other JsNulObj. It is possible though yo replace the reference to a JsNulObj by a reference to a JsNulPossibles.
+*The object will be mostly unusable as is* but then, its `distribute` function will give you a list of possibles object, exactly as the original object beside the reference that became one of the possible JsNulObj reference.
+
+|| distribute || function() || Get a list of fuzzy values from this object whose components were a list of fuzzy values ||
+|| distributives || string array || (define by the object) list of the references to an object ||
