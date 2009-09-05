@@ -9,4 +9,4 @@ So, in english, {{{ a; b; c }}} means " {{{a}}} while {{{b}}} and {{{c}}} "
 Note: the meta-and is not an expression builder. When it is used, it gives the meaning of the first expression and add the remainings to the present context predicates.
 
 ===== Example =====
-{{{ a = b + 1 ; a + 5 }}} is equivalent to {{{b+6}}}. The context will have the predicate {{{a = b + 1}}}
+{{{ a + 5 ; a = b + 1 }}} is equivalent to {{{b+6}}}. The context will have the predicate {{{a = b + 1}}}
