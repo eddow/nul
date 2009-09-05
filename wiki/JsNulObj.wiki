@@ -1,15 +1,12 @@
-#summary Object JS structure
+#summary Internal representation of NUL objects
 #labels Phase-Implementation
 
 = Introduction =
 
-Each NUL object (nul.obj) are !JavaScript objects.
+The internal representation of NulFuzzyObj are a !JavaScript object that have these :
 
-== !JavaScript objects composition ==
+== properties ==
 
-The JS objects contain these properties :
 || attr || Associative list || A list of the nul.obj properties. Detailed in JsNulObjAttributes. ||
-||| || *Existence check functions* || Verify how many fixed values can this fuzzy object take. ||
-|| minXst || function(`klg`) || Function returning the minimum possible fixed values in a given context. ||
-|| maxXst || function(`klg`) || Function returning the maximum possible fixed values in a given context. ||
-|| fixed || function(`klg`) || Function returning weither the existence is strictly one ({{{fixed = 1==minXst && 1==maxXst}}}). ||
+
+== methods ==
