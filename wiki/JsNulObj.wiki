@@ -14,4 +14,9 @@ The internal representation of NulObj are a !JavaScript object that have these :
 
 == methods ==
 
-|| isIn || function(JsNulObj) || Returns a JsNulPossibles of this object as it belongs to the one given. ||
+|| defined || function(klg) || Manage to get an object with a known nature ||
+|| valAttr || function(string) || Gets the _value_ attribute of this object as a JsNulPossibles. ||
+|| fctAttr || function(string, JsNulObj) || Gets the _functional_ attribute of this object, whose is applied the given object as a JsNulPossibles. ||
+
+
+`defined` returns this JsNulObj if it is defined, a new JsNulObj if it can be defined in klg or nothing if it cannot be defined.
