@@ -29,10 +29,6 @@ The known-nature objects have an `attr` associative list to sotre the attributes
 
 {{{obj.getd('a.b')}}} is equivalent to {{{obj.a.b}}}
 
-== Distribution ==
+== object-specific ==
 
-Some JsNulObj reference other JsNulObj. It is possible though yo replace the reference to a JsNulObj by a reference to a JsNulPossibles.
-*The object will be mostly unusable as is* but then, its `distribute` function will give you a list of possibles object, exactly as the original object beside the reference that became one of the possible JsNulObj reference.
-
-|| distribute || function() || Get a list of fuzzy values from this object whose components were a list of fuzzy values ||
-|| distributives || string array || (define by the object) list of the references to an object ||
+|| components || string array || (define by the object) list of the references to an object used in composition ||
