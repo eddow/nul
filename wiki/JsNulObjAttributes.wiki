@@ -1,9 +1,9 @@
-#summary JavaScript representation of nul.obj attributes
+#summary JavaScript representation of NulObj attributes
 #labels Phase-Implementation
 
 = Introduction =
 
-The attributes of the nul.obj (stored in the property `attr` of the corresponding JS object) is an associative array.
+The attributes of the NulObj (stored in the property `attr` of the corresponding JsNulObj) is an associative array.
 The !JavaScript keys are the members name for NUL too.
 
 == Attributes representation ==
@@ -12,7 +12,7 @@ In the !JavaScript attributes list, each attribute can have the state of an _eva
 
 As seen in NulObjAttributesKind, there are two kinds of attributes : _value_ and _functional_.
 
-If they are _evaluated attributes_, they are stored as direct JsNulPossibles values (of either a nul.obj either a nul.set)
+If they are _evaluated attributes_, they are stored as direct JsNulPossibles values (of JsNulFuzzyObj)
 If they are still _attribute to evaluate_, they are represented in !JavaScript by a function.
 
 The _value_ attributes will be represented by a function taking one arguments (the object whose attribute is taken from), the _functional_ attributes by a function taking two argument : the object whose attribute is taken from and the nul.obj used as second operand.
