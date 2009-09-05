@@ -10,8 +10,9 @@
  * Define an object that is a value of a local
  */
 nul.obj.local = Class.create(nul.obj, {
-	initialise: function(klgNdx, lclNdx) {
+	initialise: function(klgNdx, lclNdx, dbgName) {
 		this.klgNdx = klgNdx;
 		this.lclNdx = lclNdx;
+		this.dbgName = dbgName;
 	}
 });

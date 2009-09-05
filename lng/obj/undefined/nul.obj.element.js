@@ -12,5 +12,6 @@
 nul.obj.through = Class.create(nul.obj, {
 	initialise: function(set) {
 		this.set = set;
-	}
+	},
+	components: ['set'],
 });
