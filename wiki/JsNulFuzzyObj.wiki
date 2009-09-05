@@ -9,10 +9,6 @@ The internal representation of NulFuzzyObj are a !JavaScript object whose herita
 
 || value || JsNulObj || The representation of the object ||
 
-|| minXst || int || The minimum possible fixed values this fuzzy object can take. ||
-|| maxXst || int || The maximum possible fixed values this fuzzy object can take. ||
-|| fixed || bool || Weither the existence is strictly one ({{{fixed = 1==minXst && 1==maxXst}}}). ||
-
 == methods ==
 
 || unify || function(JsNulFuzzyObj) || Creates a new fuzzy object that is a version of this one who can unify to the given one ||
