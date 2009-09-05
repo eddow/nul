@@ -3,10 +3,15 @@
 
 = Introduction =
 
+For some object, the nature is known (pairs, numbers, sets, ...)
+We can also represent object whose nature is unknown (locals, attributes of other objects, ...)
+
 The internal representation of NulObj are a !JavaScript object that have these :
 
 == properties ==
 
-|| attr || Associative list || A list of the nul.obj properties. Detailed in JsNulObjAttributes. ||
+|| attr || `[`Associative list`]` || A list of the nul.obj properties. Detailed in JsNulObjAttributes. This list is present only when the object has a known nature. ||
 
 == methods ==
+
+|| isIn || function(JsNulObj) || Returns a JsNulPossibles of this object as it belongs to the one given. ||
