@@ -1,0 +1,12 @@
+#summary Fuzzy objects
+#labels Phase-Design
+
+= Introduction =
+
+Here are the objects who don't have a known value but a set of possible values, descriptable in one object dependant of one knowledge.
+
+They are internally represented as JsNulFuzzyObj.
+
+== Characteristics ==
+
+They are unifiable to one or more fixed values. Unified with another _fuzzy object_, they give another _fuzzy object_.
