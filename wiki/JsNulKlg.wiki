@@ -1,0 +1,10 @@
+#summary Internal representation of knowledge
+#labels Phase-Implementation
+
+= Introduction =
+
+The internal representation of NulFuzzyObj are a !JavaScript object that have these :
+
+== properties ==
+
+== methods ==
