@@ -1,0 +1,16 @@
+#summary Knowledges
+#labels Phase-Design
+
+= Introduction =
+
+A knowledge is a list of conditions. As these conditions are assertions, this is a knowledge of local truth.
+
+They are internally represented as JsNulKlg.
+
+
+== Details ==
+
+Knowledge stores conditions like :
+ * Equivalence classes : a = b = 1
+ * Set belonging : a in b
+ * Orders : a < b
