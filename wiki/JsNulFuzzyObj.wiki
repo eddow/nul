@@ -10,8 +10,12 @@ The internal representation of NulFuzzyObj are a !JavaScript object that have th
 || object || JsNulObj || The representation of the object ||
 || knowledge || JsNulKlg || The knowledge restricting the values `object` can take ||
 
+|| minXst || int || The minimum possible fixed values this fuzzy object can take. ||
+|| maxXst || int || The maximum possible fixed values this fuzzy object can take. ||
+|| fixed || bool || Weither the existence is strictly one ({{{fixed = 1==minXst && 1==maxXst}}}). ||
+
 == methods ==
 
-|| minXst || function() || Function returning the minimum possible fixed values. ||
-|| maxXst || function() || Function returning the maximum possible fixed values. ||
-|| fixed || function() || Function returning weither the existence is strictly one ({{{fixed = 1==minXst && 1==maxXst}}}). ||
+|| maybe || function(possibles) || Add this fuzzy object to the possibles if it is not empty. ||
+|| restrictEq || function(JsNulFuzzyObj) || Creates a new fuzzy object that is a version of this one who can unify to the given one ||
+|| restrictEq || function(JsNulObj) || Creates a new fuzzy object containing weither the fixed value given as parameter, either a failure fuzzy object ||
