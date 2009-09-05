@@ -13,5 +13,6 @@ nul.obj.through = Class.create(nul.obj, {
 	initialise: function(fct, obj) {
 		this.functio = fct;
 		this.object = obj;
-	}
+	},
+	components: ['functio','object'],
 });

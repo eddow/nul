@@ -27,5 +27,6 @@ nul.obj.litteral.straightArythmetics = function(oprtr, srnd) {
 
 nul.obj.litteral.attr.string = { '+': nul.obj.litteral.straightArythmetics('"+"','"') };
 nul.obj.litteral.attr.number = {};
+//TODO: integers and & | ^
 map(['+', '-', '*', '/', '%'],
 	function(i,v) { nul.obj.litteral.attr.number[v] = nul.obj.litteral.straightArythmetics(v); });

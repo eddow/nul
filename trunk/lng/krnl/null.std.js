@@ -8,6 +8,7 @@
  
 var nul = {
 	globals: {},
+	slf: '&crarr;',
 	failure: 'nul.failure',
 	fail: function(msg)
 	{
@@ -24,8 +25,7 @@ var nul = {
 	expression: function(txt)
 	{
 		nul.erroneus = false;
-		nul.xpr.fuzzy.ctxNameCpt = 0;
-		nul.understanding.srCtxNames = 0;
+		nul.knowledge.ndx = 0;
 		return nul.globalsUse().valued(nul.compile(txt));
 	},
 	html: function(txt)

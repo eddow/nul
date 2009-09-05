@@ -7,62 +7,54 @@
  *--------------------------------------------------------------------------*/
 
 nul.understanding = {
-	srCtxNames: 0,
-	unresolvable: 'localNameUnresolvable',
-
 	expression: function(ub) {
 		var ops;
-		if('[]'== this.operator) {
-			ops = [];
-			for(var i=0; i<this.operands.length; ++i)
-				ops.push((new nul.understanding.base(ub)).valued(this.operands[i]));
-		}
-		else ops = map(this.operands, function() { 
-				return this.understand(ub);				
+		if('[]'== this.operator)
+			return this.operands.mar(function() {
+			//Understand each operands in a freshly created UB that DOESN'T stores locals
+				return this.understand(new nul.understanding.base(ub));
 			});
-		if(['+' ,'*' ,'&' ,'|' ,'^'].contains(this.operator))
-			return new nul.xpr.operation.associative(this.operator, ops);
-		if(['-' ,'/' ,'%'].contains(this.operator))
-			return new nul.xpr.operation.listed(this.operator, ops);
-		if(['<','>', '<=','>='].contains(this.operator)) {
-			ub.klg.know(new nul.xpr.ordered(this.operator, ops));
-			return ops[0];
-		}
-		switch(this.operator)
-		{
-			case ':-':	return new nul.xpr.lambda(ops[0], ops[1]);
-			case ',':
-				var ctxDef;
-				if(ops.follow) {
-					var flw = nul.inside(ops.follow);
-					ops.pushs(flw.cs);
-					ctxDef = flw.ctx;
-					delete ops.follow;
-				}	
-				return new nul.xpr.set(ops, ctxDef);
-			case '=':
-				return (new nul.xpr.unification(ops)).value(ub.klg);
-			case ':=':	return new nul.xpr.handle(ops[0], ops[1], ub.ctxDef);
+		var ops = map(this.operands, function() { 
+			return this.understand(ub);				
+		});
+		var operator = operator;
+		nul.possibles.map(ops, function(klg) {
+			if(['+' ,'*'].contains(this.operator))
+				return new nul.obj.through(new nul.obj.attribute(this[0],operator), this[1]);
+			if(['-' ,'/' ,'%'].contains(this.operator))
+				return new nul.obj.through(new nul.obj.attribute(this[0],operator), this[1]);
+/*			if(['<','>', '<=','>='].contains(this.operator)) {
+				ub.klg.know(new nul.xpr.ordered(this.operator, this));
+				return this[0];
+			}*/
 
-			case ';':
-				for(var i=1; i<ops.length; ++i)
-					ub.klg.know(ops[i]);
-				return ops[0];
-			case '?':
-				for(var i=0; i<ops.length-1; ++i)
-					ub.klg.know(ops[i]);
-				return ops[ops.length-1];
-			case '[]':	return new nul.xpr.ior3(ops, ub.ctxDef);
-			default:	throw nul.internalException('Unknown operator: "'+this.operator+'"');
-		}
+			switch(this.operator)
+			{
+				case ':-':	return new nul.obj.pair(this[0], this[1]);
+				case ',':
+					var rv = this.follow?this.follow:new nul.obj.empty();
+					while(this.length) rv = new nul.obj.pair(this.pop(), rv);
+					return rv;
+				case '=': return klg.unify(this);
+				case ';':
+					return this[0];
+				default:	throw nul.internalException('Unknown operator: "'+operator+'"');
+			}
+		});
 	},
 	preceded: function(ub) {
-		return new nul.xpr.operation.preceded(this.operator,this.operand.understand(ub));
+		var operand = this.operand.understand(ub);
+		var operator = this.operator;
+		return nul.possibles.map({op: operand}, function(klg) {
+			return new nul.obj.attribute(this.op, ' '+operator);
+		});
 	},
 	postceded: function(ub) {
-		var op = this.operand.understand(ub);
-		//if(this.operator == '!') return nul.todobuild.extraction(op);
-		return new nul.xpr.operation.postceded(this.operator,this.operand.understand(ub));
+		var operand = this.operand.understand(ub);
+		var operator = this.operator;
+		return nul.possibles.map({op: operand}, function(klg) {
+			return new nul.obj.attribute(this.op, operator+' ');
+		});
 	},
 	atom: function(ub) {
 		var value;
@@ -87,25 +79,41 @@ nul.understanding = {
 		return new nul.obj.litteral(value);
 	},
 	application: function(ub) {
-		var rv = new nul.xpr.application(
-			this.item.understand(ub),
-			this.applied.understand(ub),
-			ub.ctxDef);
-		return rv.value(ub.klg);
+		var item = this.item.understand(ub);
+		var applied = this.applied.understand(ub);
+		return nul.possibles.map({itm: item, app: applied}, function(klg) {
+			var rv = this.itm.has(this.app);
+			if(rv) return rv;
+			klg.belong(this.itm, this.app);
+			return this.app;
+		});
 	},
 	taking: function(ub) {
-		var rv = new nul.xpr.application(
-			this.item.understand(ub),
-			this.applied.understand(ub),
-			ub.ctxDef);
-		return rv.value(ub.klg);
+		var item = this.item.understand(ub);
+		var applied = this.applied.understand(ub);
+		return nul.possibles.map({itm: item, app: applied}, function() {
+			return new nul.obj.through(this.itm, this.app);
+		});
 	},
 	set: function(ub) {
 		if(!this.content) return new nul.obj.empty();
-		ub = new nul.understanding.base.set(ub, this.selfRef);
-		return [nul.possibles(this.content.understand(ub)).set()];
+		var cnt = this.content;
+		if('[]'== cnt.operator) cnt = cnt.operands;
+		else cnt = [cnt];
+		
+		var slf = this.selfRef;
+		return [nul.possibles(cnt.mar(function() {
+			//Understand each operands in a freshly created UB that stores locals
+			return this.understand(new nul.understanding.base.set(ub, slf));
+		})).set()];
 	},
-	
+	range: function(ub) {
+		var lower = this.lower.understand(ub);
+		var upper = this.lower.understand(ub);
+		return nul.possibles.map({lwr: lower, upr:upper}, function() {
+			return nul.obj.range(this.lwr, this.upr)
+		});
+	},
 	definition: function(ub) {
 		/*TODO
 		if('_'== this.decl) throw nul.semanticException('JKD', 'Cannot declare joker !')
@@ -121,38 +129,27 @@ nul.understanding = {
 		return [new nul.obj.defined(map(this.vals, function() { return this.understand(ub); }))];
 	},
 	objectivity: function(ub) {
-		return new nul.obj.attribute(this.applied.understand(ub), this.lcl);	//TODO: .defined?
+		var applied = this.applied.understand(ub);
+		var lcl = this.lcl;
+		return nul.possibles.map({app: applied}, function() {
+			return new nul.obj.attribute(this.app, lcl);
+		});
 	}
 };
 
 nul.understanding.base = Class.create({
-	initialize: function(prntUb, ctxName) {
+	initialize: function(prntUb) {
 		this.parms = {};
 		this.prntUb = prntUb;
-		if(prntUb) this.ctxDef = prntUb.ctxDef;
-		this.klg = new nul.knowledge(ctxName);
-	},
-	valued: function(tu) {
-		if(!tu) return this.klg.leave();
-		var xpr, klg = this.klg;
-		try {
-			xpr = tu.understand?tu.understand(this):tu;
-			xpr = this.klg.asFuzz(xpr);
-		} catch(err) {
-			xpr = null;
-			if(nul.failure!= err) throw nul.exception.notice(err);
-		} finally { xpr = this.klg.leave(xpr); }
-		return xpr;
+		this.klg = new nul.knowledge(prntUb.klg);
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);
-		throw nul.understanding.unresolvable;
+		throw 'unresolvable name';
 	},
 	allocLocal: function(name) {
 		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
-		var rv = this.klg.locals.length;
-		this.klg.locals.push(name);
-		rv = new nul.xpr.local(this.klg.ctxName, rv, name)
+		var rv = this.klg.newLocal(name);
 		if('_'!= name) this.parms[name] = rv;
 		return rv;
 	},
@@ -161,18 +158,9 @@ nul.understanding.base = Class.create({
 	},
 });
 nul.understanding.base.set = Class.create(nul.understanding.base, {
-	initialize: function($super, prntUb, selfName, ctxName) {
-		$super(prntUb, ctxName, ctxName);
-		if(selfName)
-			this.parms[selfName] = new nul.xpr.local(
-				this.klg.ctxName,
-				nul.lcl.slf, selfName);
-		this.ctxDef = this.klg.ctxName;
-	},
-	valued: function($super, tu) {
-		var fzx = $super(tu);
-		var stx = new nul.xpr.set(fzx?[fzx]:[], this.klg.ctxName);
-		return stx;
+	initialize: function($super, prntUb, selfName) {
+		$super(prntUb);
+		if(selfName) this.parms[selfName] = this.klg.local(selfName, nul.slf);
 	},
 	resolve: function($super, identifier) {
 		if('undefined'!= typeof this.parms[identifier])

@@ -38,6 +38,13 @@ function clone1(myObj) {
 }
 
 /**
+ * Gets weither <ndx> is a custom index of <ass>
+ * Returns false for all the default properties of the arrays.
+ */
+function cstmNdx(ass, ndx) {
+	return !isArray(ass) || ass[ndx]!= [][ndx] || 'undefined'== typeof [][ndx];
+}
+/**
  * Internal (helper) use for mapping functions
  */
 function mapCb(fct, ndx, itm) {
@@ -49,7 +56,7 @@ function mapCb(fct, ndx, itm) {
  */
 function trys(itm, fct) {
 	var rv;
-	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i])
+	for(var i in itm) if(cstmNdx(itm, i))
 		if(rv = mapCb(fct, i, itm[i])) return rv;
 }
 
@@ -58,7 +65,7 @@ function trys(itm, fct) {
  */
 function cnt(itm, fct) {
 	var rv = 0;
-	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) { 
+	for(var i in itm) if(cstmNdx(itm, i)) { 
 		var trv = mapCb(fct, i, itm[i]);
 		if('number'== typeof trv) rv += trv;
 		else if(trv) ++rv;
@@ -71,7 +78,7 @@ function cnt(itm, fct) {
  */
 function map(itm, fct) {
 	var rv = isArray(itm)?[]:{};
-	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) 
+	for(var i in itm) if(cstmNdx(itm, i)) 
 		rv[i] = mapCb(fct, i, itm[i]);
 	return rv;
 }
@@ -83,7 +90,7 @@ function map(itm, fct) {
  */
 function maf(itm, fct) {
 	var rv = isArray(itm)?[]:{};
-	for(var i in itm) if(itm[i]!= [][i] || 'undefined'== typeof [][i]) {
+	for(var i in itm) if(cstmNdx(itm, i)) {
 		var ndx = reTyped(i); 
 		var trv = mapCb(fct, i, itm[i]);
 		if('undefined'!= typeof trv) {
@@ -94,13 +101,6 @@ function maf(itm, fct) {
 	return rv;
 }
 
-function replace(dst, src) {
-	dst.prototype = src.prototype;
-	for(var i in dst) delete dst[i];// = null;
-	for(var i in xpr) dst[i] = xpr[i];
-	return dst;
-}
-
 function escapeHTML(str) {
    var div = document.createElement('div');
    var text = document.createTextNode(str);
@@ -108,7 +108,7 @@ function escapeHTML(str) {
    return div.innerHTML;
 };
 
-//Is <o> an empty association ? (<b>eside the values contained in array <b>) 
+//Is <o> an empty association ? (beside the values contained in array <b>) 
 function isEmpty(o, b) {
 	for(var i in o) if(!b || !b.contains(reTyped(i))) return false;
 	return true;
@@ -124,14 +124,14 @@ function reTyped(v) {
 //The array of keys of association <ass>
 function keys(ass) {
 	var rv = [];
-	for(var i in ass) rv.push(i);
+	for(var i in ass) if(cstmNdx(ass, i)) rv.push(i);
 	return rv;
 }
 
-//The array of valuess of association <ass>
+//The array of values of association <ass>
 function vals(ass) {
 	var rv = [];
-	for(var i in ass) rv.push(ass[i]);
+	for(var i in ass) if(cstmNdx(ass, i)) rv.push(ass[i]);
 	return rv;
 }
 
@@ -153,15 +153,17 @@ function arrCmp(a, b) {
 }
 
 //arguments to Array()
-function arrg(args) {
+function arrg(args, ndx) {
 	var rv = [];
-	for(var i=0; i<args.length; ++i) rv.push(args[i]);
+	for(var i=ndx; i<args.length; ++i) rv.push(args[i]);
 	return rv;
 }
 
-function beArrg(args) {
-	if(1== args.length && isArray(args[0])) return args[0];
-	return arrg(args);
+function beArrg(args, ndx) {
+	if(!ndx) ndx = 0;
+	if(ndx >= args.length) return [];
+	if(1+ndx== args.length && isArray(args[ndx])) return args[ndx];
+	return arrg(args, ndx);
 }
 
 function merge(a, b, cb) {
@@ -187,4 +189,16 @@ function merge(a, b, cb) {
 //[].clone1 || (Object.prototype.clone1 = function(){ return clone1(this); });	//TODO?
 [].map || (Object.prototype.map = function(f){ return map(this,f); });
 
-inf = number.POSITIVE_INFINITY;
+/**
+ * Returns an array whose elements are the return values of <fct> taken for each item of <itm>
+ * <fct> return an array of element to add in the return list
+ */
+[].mar || (Object.prototype.mar = function(fct) {
+	var rv = [];
+	for(var i in itm) if(cstmNdx(itm, i))
+		rv.pushs(mapCb(fct, i, itm[i]));
+	return rv;
+});
+
+pinf = number.POSITIVE_INFINITY;
+ninf = number.NEGATIVE_INFINITY;

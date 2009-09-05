@@ -19,7 +19,7 @@ nul.fuzzy = function(obj, klg) {
 	};
 	if(obj) return merge(rv, {
 		minXst: 8,		//TODO : klg.eqClasses ? 0 : 1
-		maxXst: 8, 		//TODO : klg.locals ? inf : 1
+		maxXst: 8, 		//TODO : klg.locals ? pinf : 1
 		fixed: !klg,	//TODO || !(klg.locals || klg.eqClasses)
 
 		/**

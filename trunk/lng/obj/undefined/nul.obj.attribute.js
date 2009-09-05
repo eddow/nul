@@ -13,5 +13,6 @@ nul.obj.attribute = Class.create(nul.obj, {
 	initialise: function(ofo, anm) {
 		this.ofObject = ofo;
 		this.attributeName = anm;
-	}
+	},
+	components: ['ofObject'],
 });

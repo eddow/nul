@@ -56,7 +56,7 @@ nul.possibles = function(lst) {
 			this.pushs(nul.possibles.asLst(vl, klg));
 		},
 		set: function() {
-			//note: if one of the item has minXst = inf, replace by nul.obj.whole
+			//note: if one of the item has minXst = pinf, replace by nul.obj.whole
 			var rv = nul.obj.empty();
 			for(var i = this.length-1; i>= 0; --i )
 				rv = nul.obj.pair(this[i], rv);
@@ -71,4 +71,34 @@ nul.possibles.asLst = function(vl, klg) {
 		if(!vl.fuzzy) vl = nul.fuzzy(vl, klg);
 		vl = [vl];
 	}
+};
+
+/**
+ * <pss> is an association containing 'possibles'
+ * <fct> is called for each tuple of object in the possibles (one from each possibles)
+ * <fct> returns a JsNulObj
+ */
+nul.possibles.map = function(pss, fct) {
+	var kys = keys(pss);
+	var ndx = map(kys, function() { return 0; });
+	var mxs = map(kys, function(i, ky) { return pss[key].length; });
+	var rv = nul.possibles();
+	var incndx;
+	while(true) {
+		var klg = nul.knowledge();
+		var obj = isArray(pss)?[]:{};
+		//List of the fuzzies involved for this combinatin
+		map(kys, function(i, ky) {
+			var fzy = pss[ky][ndx[i]];
+			klg.merge(fzy.knowledge);
+			obj[ky] = fzy.object;
+		});
+		rv.maybe(fct.apply(obj, klg), klg);
+		//increment indexes
+		for(incndx=0; incndx<kys.length; ++incndx) {
+			if(++ndx[incndx] < mxs[incndx]) break;
+			ndx[incndx] = 0;
+		}
+	} while(incndx < kys.length)
+	return rv;
 };
