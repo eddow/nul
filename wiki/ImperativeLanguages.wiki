@@ -1,1 +1,0 @@
-#summary Theory: The characteristics of imperative languages
