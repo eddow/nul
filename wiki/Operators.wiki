@@ -1,17 +1,15 @@
 #summary List of operators and expression builders
 #labels Featured,Language
 
-|| {{{[]}}}  || [GreedyMetaOr Greedy meta-or] ||
-||  {{{;}}}  || [MetaAnd Meta-and] ||
-|| {{{:-}}}  || [Lambda] ||
-||  {{{,}}}  {{{,..}}} {{{{...} }}}  || [Sets], [Tuple Tuple creation] (TODO: merge?) ||
-||  {{{=}}}  || [Unification] ||
-||  {{{:}}}  || [ContentMetaOr Content meta-or] ||
-|| {{{< > <= >=}}} || [AtomComparison atom comparison] ||
-|| {{{<<+}}} || (up-to come) insert ||
-|| {{{+ - * / %}}} || atom addition, substraction, multiplication, division, modulo ||
+|| {{{[]}}}  || NulMetaOr ||
+||  {{{;}}}  || MetaAnd ||
+|| {{{:-}}}  || NulObjPair ||
+||  {{{,}}}  {{{,..}}} {{{{...} }}}  || NulSet ||
+||  {{{=}}}  || NulUnification ||
+|| {{{< > <= >=}}} || NulComparison ||
+|| {{{+ - * / %}}} || NulOperation ||
 
 Other structures are :
-|| {{{\/local ...}}} || [FuzzyExpressions Fuzzy expressions] ||
-|| {{{...[...]}}} || [ImageShortcut Image taking] ||
-|| {{{...(...)}}} || [TakeExpression Token expressions] ||
+|| {{{\/local ...}}} || NulPreDefinition ||
+|| {{{...[...]}}} || NulTakeThrough ||
+|| {{{...  ...}}} || NulTake ||
