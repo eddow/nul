@@ -8,3 +8,7 @@ The internal representation of NulKlg are a !JavaScript object that have these :
 == properties ==
 
 == methods ==
+
+|| merge || function(JsNulKlg) => JsNulKlg || Creates a new knowledge knowing all assertions of this one and of the given one. ||
+|| unify || function(JsNulObj, ...) => JsNulObj || Get the best representation for all the given JsNulObj, knowing that they are all equivalents. ||
+|| belong || function(JsNulObj set, JsNulObj itm) => JsNulObj || Get the best representation of `itm` knowing that it belongs to `set`. ||
