@@ -11,11 +11,11 @@ A `possibles` is an a array of JsNulFuzzyObj.
 
 Knowing that `pp` means `Possible Parameter` and can be either of these :
 || JsNulObj`[`, JsNulKlg`]` || a fixed/fuzzy value ||
-|| JsNulFuzzyObj || a fuzzy value ||
-|| an array of JsNulFuzzyObj || a list of possibles ||
+|| JsNulKlg || a fuzzy value ||
+|| an array of JsNulKlg || a list of possibles ||
 
 The `possibles` array define beside these methods :
 || and || function(`pp`) || Creates a list of `possibles` who are these unifiable to the given ones ||
 || or || function(`pp`) || Creates a list of `possibles` who are these or the given ones ||
 || maybe || function(`pp`) || Modifies this `possibles` so that they recognise also the given ones ||
-|| set || function() || Get these possibles as a NulObjSet representation ||
+|| set || function() || Get these possibles as a NulObjSet representation (only valid if items are JsNulFuzzyObj) ||
