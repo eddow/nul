@@ -3,12 +3,11 @@
 
 = Introduction =
 
-The internal representation of NulFuzzyObj are a !JavaScript object that have these :
+The internal representation of NulFuzzyObj are a !JavaScript object whose heritage is JsNulKlg and contains a reference to an value.
 
 == properties ==
 
-|| object || JsNulObj || The representation of the object ||
-|| knowledge || JsNulKlg || The knowledge restricting the values `object` can take ||
+|| value || JsNulObj || The representation of the object ||
 
 || minXst || int || The minimum possible fixed values this fuzzy object can take. ||
 || maxXst || int || The maximum possible fixed values this fuzzy object can take. ||
