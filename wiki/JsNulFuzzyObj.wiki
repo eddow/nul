@@ -16,6 +16,5 @@ The internal representation of NulFuzzyObj are a !JavaScript object that have th
 
 == methods ==
 
-|| maybe || function(possibles) || Add this fuzzy object to the possibles if it is not empty. ||
-|| restrictEq || function(JsNulFuzzyObj) || Creates a new fuzzy object that is a version of this one who can unify to the given one ||
-|| restrictEq || function(JsNulObj) || Creates a new fuzzy object containing weither the fixed value given as parameter, either a failure fuzzy object ||
+|| unify || function(JsNulFuzzyObj) || Creates a new fuzzy object that is a version of this one who can unify to the given one ||
+|| unify || function(JsNulObj) || Creates a new fuzzy object containing weither the fixed value given as parameter, either a failure fuzzy object ||
