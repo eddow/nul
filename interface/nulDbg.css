@@ -1,0 +1,82 @@
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+ 
+div#dbgOptions {
+	float: right;
+}
+
+div#evaled {
+	border: 1px black solid;
+}
+
+table#solved td {
+	border: 2px black solid;
+}
+
+a.msTab {
+	padding: 0 1em;
+	border: 0;
+	background-color: #fbf0f0;
+	border: 1px black solid;
+	cursor: pointer;
+	color: black;
+	text-decoration: none;
+}
+
+a.msTab:hover {
+	background-color: #f0fbf0;
+}
+
+a.msTab.selected {
+	border-bottom: 1px #f0f0fb solid;
+	background-color: #f0f0fb;
+	cursor: default;
+}
+
+table#belong {
+	border: 1px black solid;
+}
+
+div.msTab {
+	background-color: #f0f0fb;
+	border: 1px black solid;
+	display: none;
+}
+
+div.msTab.selected {
+	display: block;
+}
+
+#callStack, #kb {
+	display: inline-table;
+}
+
+td.callStack {
+	border: 2px solid black;
+}
+table#kbase {
+	empty-cells: show;
+}
+td.kb {
+	border-left: 1px solid black;
+	border-bottom: 1px solid black;
+}
+td.kb.c0 {
+	border: 1px dashed black;
+}
+td.ke.c0 {
+	border-right: 1px solid black;
+}
+
+#logs .knowledge.log { background-color: pink; }
+#logs .evals.log { background-color: lightblue; }
+#logs .error.log { background-color: red; }
+#logs .fail.log { background-color: pink; }
+#logs .solve.log { background-color: papayawhip; }
+#logs .acts.log { background-color: lightgreen; }
+#logs .ctxs.log { background-color: chocolate; }

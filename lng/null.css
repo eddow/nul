@@ -1,0 +1,185 @@
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+ 
+a.collapser {
+	text-decoration: none;
+	cursor: pointer;
+	background-color: white;
+	border: 1px solid black;
+	font-size: 0.6em;
+}
+tr.collapsed {
+	display: none;
+}
+
+tr span.collapser { display: inline; }
+tr span.uncollapser { display: none; }
+tr.uncollapsing span.collapser.end { display: none; }
+tr.uncollapsing span.uncollapser.end { display: inline; }
+tr.unsubcollapsing span.collapser.start { display: none; }
+tr.unsubcollapsing span.uncollapser.start { display: inline; }
+
+table.object {
+	display: inline-block;
+	border-width: 0 1px;
+	border-color: black;
+	border-style: solid;
+}
+td.objhd {
+	text-align: center;
+	border-bottom: 1px black dotted;
+}
+
+span.op {
+	color: #400000;
+	font-weight: bolder;
+	vertical-align: middle;
+}
+span.op.big {
+	font-weight: 100;
+	font-size: 40px;
+}
+.xpr {
+	border: 1px blue dotted;
+	display: inline-block;
+	margin: 3px;
+	position: relative;
+	vertical-align: middle;
+}
+.xpr.freedom {
+	border: 0;
+	margin: 4px;
+}
+td.freedom {
+	text-align: center;
+	border-bottom: 2px groove;
+}
+th.freedom {
+	text-align: center;
+	font-weight: lighter;
+}
+
+.xpr.lined {
+	border: 2px blue solid;
+	margin: 2px;
+}
+
+span.local {
+	font-size: large;
+	color: #004000;
+}
+span.native {
+	font-size: large;
+	color: #600060;
+}
+span.failure {
+	font-size: large;
+	color: #800020;
+}
+
+span.local .desc {
+	font-size: xx-small;
+	color: #004040;
+	vertical-align: top;
+}
+
+span.local .desc .sup {
+	vertical-align: top;
+	display: table-row;
+}
+
+span.local .desc .sub {
+	vertical-align: bottom;
+	display: table-row;
+}
+
+a.shortStr, a.locals, a.dependances, a.flags, a.autoRef, a.belongs, a.fuzze {
+	display: table-cell;
+	font-size: 4px;
+	cursor: none;
+	height: 3px;
+	position: absolute;
+	z-index: 500;
+	width: 3px;
+	border-width: 1px;
+	border-style: solid;
+	vertical-align: top;
+}
+
+div.shortStr, div.locals, div.dependances, div.flags, div.autoRef, div.belongs, div.fuzze {
+	cursor: default;
+	font-size: 1em;
+	position: absolute;
+	padding: 0.5em;
+	top: -2em;
+	left: -1px;
+	border-width: 1px;
+	border-style: solid;
+	white-space: nowrap;
+}
+
+a.flags div {
+	width: 3px;
+	height: 1px;
+	border: 0;
+}
+
+.flags .failable { background-color: red; }
+.flags .dirty { background-color: blue; }
+.flags .extractible { background-color: orange; }
+
+.flags {
+	border-color: lightgrey;
+	background-color: ivory;
+}
+
+.shortStr {
+	border-color: blue;
+	background-color: lightblue;
+}
+
+.autoRef {
+	border-color: black;
+	background-color: grey;
+}
+
+.locals {
+	border-color: red;
+	background-color: orange;
+}
+
+.belongs {
+	border-color: firebrick;
+	background-color: plum;
+}
+
+div.dependances {
+	top: 0;
+	padding-top: 2.5em;
+}
+
+.dependances {
+	border-color: darkgreen;
+	background-color: lightgreen;
+}
+
+.fuzze {
+	border-color: lightgreen;
+	background-color: darkgreen;
+}
+
+.dependances table {
+	empty-cells: show;
+}
+.dependances th {
+	border-right: 1px solid black;
+}
+div.shortStr.level {
+	left: -1.3em;
+	padding: 2px;
+}
