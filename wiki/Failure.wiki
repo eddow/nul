@@ -7,14 +7,14 @@ For the C-like {{{&&}}} operator, the _first false value_ leads the complete con
 
 The failure is a kind of _meta-false_. All your expression leads to a value or a failure - here are the meta _true_ and _false_.
 
-This i implemented as an exception in the !JavaScript interpreter.
+This implemented as an exception in the !JavaScript interpreter.
 
 = Throwing the failure =
 
-The failure can be triggered by three kind of expressions :
- * The unification. If two elements has to be unifiable but don't fit, it will lead to a failure.
- * The set element-taking - as it is a sort of unification
- * The asertion who fails when given a false argument
+The failure can be triggered by three kind of non-met constraints :
+ * The unification constraints. If two elements has to be unifiable but don't fit, it will lead to a failure.
+ * The appartenance constraints.
+ * The ordering constraints.
 
 = Catching a failure =
 
@@ -27,10 +27,9 @@ It would be the same for the set of all the 'ones' that are unifiable to any 'tw
 
 Note:
  * The {{{ {Z x ? x > 5 & x < 3} }}} set will not be understood as "the empty set {}" and can still carry its whole definition with if the solving engine doesn't help - it will still fail on each element taking and, therefore, has the exact same behaviour as the empty set.
-* {{{ {} }}} is the shortcut to write "empty set"
+ * {{{ {} }}} is the shortcut to write "empty set"
 
 == In an element of a _meta-OR_ ==
-(either [GreedyMetaOr greedy] either [ContentMetaOr content])
 
 An element of an OR that fails is just removed from the list of possibilities.
 Writing {{{ 1=2 [] a [] b }}} is exactly the same as {{{ a [] b }}}
