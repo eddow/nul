@@ -10,7 +10,7 @@ A `possibles` is a list of NulFuzzyObj. It is used to represent computed objects
 A `possibles` is an a array of JsNulFuzzyObj.
 
 The `possibles` array define beside these methods :
-|| and || function(JsKlg, ...) || Creates a list of `possibles` who are these unifiable to the given ones ||
-|| or || function(JsKlg, ...) || Creates a list of `possibles` who are these or the given ones ||
-|| maybe || function(JsKlg, ...) || Modifies this `possibles` so that they recognise also the given ones ||
+|| and || function(JsNulKlg, ...) || Creates a list of `possibles` who are these unifiable to the given ones ||
+|| or || function(JsNulKlg, ...) || Creates a list of `possibles` who are these or the given ones ||
+|| maybe || function(JsNulKlg, ...) || Modifies this `possibles` so that they recognise also the given ones ||
 || set || function() || Get these possibles as a NulObjSet representation (only valid if items are JsNulFuzzyObj) ||
