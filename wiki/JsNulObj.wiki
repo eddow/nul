@@ -29,6 +29,7 @@ The known-nature objects have an `attr` associative list to sotre the attributes
 
 {{{obj.getd('a.b')}}} is equivalent to {{{obj.a.b}}}
 
-== object-specific ==
+== The string index ==
 
-|| components || string array || (define by the object) list of the references to an object used in composition ||
+The object implements the function `ndx()` that build a string specifying this object.
+Two different strings means two different objects. Two equal strings means the same object.
