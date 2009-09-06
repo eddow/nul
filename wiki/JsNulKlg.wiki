@@ -5,8 +5,6 @@
 
 The internal representation of NulKlg are a !JavaScript object that have these :
 
-== properties ==
-
 == methods ==
 
 || merge || function(JsNulKlg) => JsNulPossibiles`<`JsNulKlg`>` || Creates a new knowledge knowing all assertions of this one and of the given one. ||
@@ -15,3 +13,11 @@ The internal representation of NulKlg are a !JavaScript object that have these :
 || minXst || int() || The minimum possible fixed values this fuzzy object can take. ||
 || maxXst || int() || The maximum possible fixed values this fuzzy object can take. ||
 || fixed || bool() || Weither the existence is strictly one ({{{fixed = 1==minXst && 1==maxXst}}}). ||
+
+== Internal representation of knowledge ==
+
+The knowledge is stored as a list of NulEquivalenceClass.
+
+There is therefore an member `eqCls` that is a collection of JsNulEquivalenceClass.
+
+The `access` member allow to find an eqClass from an expression (to find if the expression is already refered in this knowledge). The `eqCls` member is an array that can contains `null` values to keep coherent with the `access` content.
