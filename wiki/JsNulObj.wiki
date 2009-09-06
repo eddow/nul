@@ -27,3 +27,4 @@ The known-nature objects have an `attr` associative list to sotre the attributes
 
 The object implements the function `ndx()` that build a string specifying this object.
 Two different strings means two different objects. Two equal strings means the same object.
+Also, if an object `A` is defined with an object `B` (for exemple, if `A` is `a specific attribute of B`), therefore, the string index of the object `A` will contain the string index of the object `B`.
