@@ -108,11 +108,7 @@ nul.understanding = {
 		})).set()];
 	},
 	range: function(ub) {
-		var lower = this.lower.understand(ub);
-		var upper = this.lower.understand(ub);
-		return nul.possibles.map({lwr: lower, upr:upper}, function() {
-			return nul.obj.range(this.lwr, this.upr)
-		});
+		return [new nul.obj.range(this.lower, this.upper)];
 	},
 	definition: function(ub) {
 		if('_'== this.decl) throw nul.semanticException('JKD', 'Cannot declare joker !')
@@ -126,7 +122,7 @@ nul.understanding = {
 
 	composed: function(ub) {
 		return nul.possibles([
-			new nul.obj.defined(map(this.vals, function() { return this.understand(ub); }))
+			new nul.obj.byAttr(map(this.vals, function() { return this.understand(ub); }))
 		]);
 	},
 	objectivity: function(ub) {

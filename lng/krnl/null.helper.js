@@ -187,6 +187,12 @@ function merge(a, b, cb) {
 	return this; 
 });
 
+[].added || (Array.prototype.added = function(v){
+	var rv = clone1(this);
+	rv.unshift(v);
+	return rv; 
+});
+
 [].map || (Object.prototype.map = function(f){ return map(this,f); });
 
 /**

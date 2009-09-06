@@ -36,4 +36,9 @@ nul.fuzzy = Class.create(nul.knowledge, {
 	knowledge: function() {
 		return new nul.knowledge().copy(this);		
 	},
+	ndx: function($super) {
+		return '[fuzzy:' +
+			this.value.ndx() + '|' +
+			$super() + ']';
+	}
 });

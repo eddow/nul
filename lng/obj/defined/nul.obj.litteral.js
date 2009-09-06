@@ -11,7 +11,9 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 		this.value = val;
 		this.type = typeof(val);
 		this.attr = nul.obj.litteral.attr[typeof(val)] 
-	}
+	},
+	unify: function(o) { return o.type == this.type && o.value == this.value; }, 
+	ndx: function() { return '['+this.type+':'+(''+this.value).replace(']','[|]')+']'; },
 });
 
 nul.obj.litteral.straightArythmetics = function(oprtr, srnd) {
