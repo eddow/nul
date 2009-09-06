@@ -9,9 +9,8 @@
 /**
  * Defines an object that is defined as "belonging to a set"
  */
-nul.obj.through = Class.create(nul.obj, {
+nul.obj.element = Class.create(nul.obj, {
 	initialise: function(set) {
 		this.set = set;
 	},
-	components: ['set'],
 });

@@ -6,13 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * Defines an object that is the value of another object through a function
- */
-nul.obj.through = Class.create(nul.obj, {
-	initialise: function(fct, obj) {
-		this.functio = fct;
-		this.object = obj;
+nul.obj.operation = {};
+nul.obj.operation.binary = Class.create(nul.obj, {
+	initialise: function(operator, ops) {
+		this.operator = operator;
+		this.operands = ops;
 	},
-	components: ['functio','object'],
+});
+
+nul.obj.operation.binary = Class.create(nul.obj.operation, {
+	//TODO2
 });

@@ -6,41 +6,34 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * Create a fuzzy object
- * nul.fuzzy(JsNulObj, JsNulKlg) creates a fuzzy object from one NUL object and a knowledge
- */
-nul.fuzzy = function(obj, klg) {
-	//if(obj && !klg) klg = default fixed knowledge
-	var rv = {
-		knowledge: klg,
-		object: obj,
-		fuzzy: true,
-	};
-	if(obj) return merge(rv, {
-		minXst: 8,		//TODO : klg.eqClasses ? 0 : 1
-		maxXst: 8, 		//TODO : klg.locals ? pinf : 1
-		fixed: !klg,	//TODO || !(klg.locals || klg.eqClasses)
-
-		/**
-		 * Gets the fuzzy objects that can be unified to this and to vl
-		 * @param vl Either a NUL fuzzy object, either a NUL object
-		 * @return new fuzzy object
-		 */
-		unify: function(vl) {
-			var klg = vl.fuzzy?this.knowledge.merge(vl.knowledge):this.knowledge.clone();
-			var obj = klg.unify(this.object, vl.fuzzy?vl.object:vl);
-			return nul.fuzzy(obj, klg);
-		},
-	});
-	return merge(rv, { 
-		minXst: 0,
-		maxXst: 0,
-		fixed: false,
-		/**
-		 * Gets the fuzzy objects that can be unified to this and to vl
-		 * @return this object : the failed fuzzy
-		 */
-		unify: function(vl) { return this; }
-	});
-};
+nul.fuzzy = Class.create(nul.knowledge, {
+	initialise: function(obj, klg) {
+		this.value = obj;
+		if(klg) this.copy(klg);
+	},
+	unify: function($super, vl) {
+		var vl = beArrg(arguments, 1);
+		vl.unshift(this.value);
+		return $super(vl);
+	},
+ 	/**
+ 	 * Know all what 'klg' knows
+ 	 * @return possibles knowledge who knows both these knowledge.
+ 	 */
+ 	merge: function($super, klg) {
+ 		var klgs = $super(klg);
+ 		var obj = this.value;
+ 		var rv = nul.possibles();
+ 		if(klg.value) for(var i = 0; i<klgs.length; ++i)
+ 			rv.maybe(klgs[i].unify(obj));
+ 		else for(var i = 0; i<klgs.length; ++i)
+ 			rv.maybe(new nul.fuzzy(obj, klgs[i]));
+ 		return rv;
+ 	},
+	/**
+	 * Retrieve the knowledge part only of this fuzzy
+	 */
+	knowledge: function() {
+		return new nul.knowledge().copy(this);		
+	},
+});

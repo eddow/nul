@@ -18,15 +18,15 @@ nul.obj.litteral.straightArythmetics = function(oprtr, srnd) {
 	srnd = srnd || '';
 	return function(op1, op2) {
 		if('number'== op2.type) 
-			return [nul.fuzzy(nul.obj.number(eval(
+			return nul.possibles([nul.obj.number(eval(
 				srnd + op1.value + oprtr + op2.value + srnd
-			)))];
+			))]);
 		if(op2.attr) return [];
 	}
 };
 
 nul.obj.litteral.attr.string = { '+': nul.obj.litteral.straightArythmetics('"+"','"') };
 nul.obj.litteral.attr.number = {};
-//TODO: integers and & | ^
+//TODO4: integers and & | ^
 map(['+', '-', '*', '/', '%'],
 	function(i,v) { nul.obj.litteral.attr.number[v] = nul.obj.litteral.straightArythmetics(v); });
