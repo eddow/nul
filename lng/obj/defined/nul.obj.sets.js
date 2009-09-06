@@ -6,26 +6,26 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.empty = Class.create(nul.obj.noThroughSet, {
+nul.obj.empty = Class.create(nul.obj.defined, {
 	has: function(o) {
 		return [];
 	}
 });
 
-nul.obj.whole = Class.create(nul.obj.noThroughSet, {
+nul.obj.whole = Class.create(nul.obj.defined, {
 	has: function(o) {
 		return [nul.fuzzy(o)];
 	}
 });
 
-nul.obj.number = Class.create(nul.obj.noThroughSet, {
+nul.obj.number = Class.create(nul.obj.defined, {
 	has: function(o) {
-		if('number'== o.type) return [nul.fuzzy(o)];
+		if('number'== o.type) return nul.possibles([o]);
 		if(o.attr) return [];
 	}
 });
 
-nul.obj.range = Class.create(nul.obj.noThroughSet, {
+nul.obj.range = Class.create(nul.obj.defined, {
 	initialise: function(lwr, upr) {
 		this.lower = lwr;
 		this.upper = upr;
@@ -36,6 +36,6 @@ nul.obj.range = Class.create(nul.obj.noThroughSet, {
 			o.value < this.lower ||
 			o.value > this.upper)
 				return [];
-		return [nul.fuzzy(o)];
+		return nul.possibles([o]);
 	}
 });

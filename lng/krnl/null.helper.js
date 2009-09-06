@@ -186,7 +186,7 @@ function merge(a, b, cb) {
 	}
 	return this; 
 });
-//[].clone1 || (Object.prototype.clone1 = function(){ return clone1(this); });	//TODO?
+
 [].map || (Object.prototype.map = function(f){ return map(this,f); });
 
 /**

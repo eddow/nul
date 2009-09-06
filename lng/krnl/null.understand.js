@@ -12,7 +12,7 @@ nul.understanding = {
 		if('[]'== this.operator)
 			return this.operands.mar(function() {
 			//Understand each operands in a freshly created UB that DOESN'T stores locals
-				return this.understand(new nul.understanding.base(ub));
+				return new nul.understanding.base(ub).understand(this);
 			});
 		var ops = map(this.operands, function() { 
 			return this.understand(ub);				
@@ -20,9 +20,9 @@ nul.understanding = {
 		var operator = operator;
 		nul.possibles.map(ops, function(klg) {
 			if(['+' ,'*'].contains(this.operator))
-				return new nul.obj.through(new nul.obj.attribute(this[0],operator), this[1]);
+				return new nul.obj.operation.Nary(operator, this);
 			if(['-' ,'/' ,'%'].contains(this.operator))
-				return new nul.obj.through(new nul.obj.attribute(this[0],operator), this[1]);
+				return new nul.obj.operation.binary(operator, this);
 /*			if(['<','>', '<=','>='].contains(this.operator)) {
 				ub.klg.know(new nul.xpr.ordered(this.operator, this));
 				return this[0];
@@ -92,7 +92,7 @@ nul.understanding = {
 		var item = this.item.understand(ub);
 		var applied = this.applied.understand(ub);
 		return nul.possibles.map({itm: item, app: applied}, function() {
-			return new nul.obj.through(this.itm, this.app);
+			return this.app.through(this.itm);
 		});
 	},
 	set: function(ub) {
@@ -104,7 +104,7 @@ nul.understanding = {
 		var slf = this.selfRef;
 		return [nul.possibles(cnt.mar(function() {
 			//Understand each operands in a freshly created UB that stores locals
-			return this.understand(new nul.understanding.base.set(ub, slf));
+			return new nul.understanding.base.set(ub, slf).understand(this);
 		})).set()];
 	},
 	range: function(ub) {
@@ -115,18 +115,19 @@ nul.understanding = {
 		});
 	},
 	definition: function(ub) {
-		/*TODO
 		if('_'== this.decl) throw nul.semanticException('JKD', 'Cannot declare joker !')
 		ub.createFreedom(this.decl);
-		return this.value.understand(ub); */
+		return this.value.understand(ub);
 	},
 
 	xml: function(ub) {
-		//TODO
+		//TODO3
 	},
 
 	composed: function(ub) {
-		return [new nul.obj.defined(map(this.vals, function() { return this.understand(ub); }))];
+		return nul.possibles([
+			new nul.obj.defined(map(this.vals, function() { return this.understand(ub); }))
+		]);
 	},
 	objectivity: function(ub) {
 		var applied = this.applied.understand(ub);
@@ -156,6 +157,13 @@ nul.understanding.base = Class.create({
 	createFreedom: function(name, value) {
 		return this.prntUb.createFreedom(name, value);
 	},
+	/**
+	 * Understand <tu> in a new context that doesn't store locals
+	 */
+	 understand: function(tu) {
+	 	var rv = tu.understand(this);
+	 	return rv.and(this.klg);
+	 },
 });
 nul.understanding.base.set = Class.create(nul.understanding.base, {
 	initialize: function($super, prntUb, selfName) {

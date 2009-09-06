@@ -7,7 +7,6 @@
  *--------------------------------------------------------------------------*/
 
 nul.obj = Class.create({
-	components: [],
 	modd: function(inm, vl) {
 		var rv = clone1(this), brwsr = rv;
 		inm = inm.split('.');
@@ -39,7 +38,9 @@ nul.obj.defined = Class.create(nul.obj, {
 	fctAttr: function(anm, op) {
 		var avl = this.attr[anm];
 		if(!avl) return;
-		if('function'!= typeof(avl)) return nul.possibles(/*TODO*/);
+		if('function'!= typeof(avl)) return nul.possibles.map({fct: avl}, function(klg) {
+			return op.through(this.fct);
+		});
 		return avl(this, op);
 	},
 	//Default functions through attributes
@@ -47,18 +48,10 @@ nul.obj.defined = Class.create(nul.obj, {
 		if(this.attr[' ']) return this.fctAttr(' ', o);
 	},
 	through: function(o) {
-		return [];	//TODO: has 
+		//TODO1: return o[this]
 	},
 	defined: function() { return this; },
 	initialise: function(attr) {
 		this.attr = attr||{};
 	}
-});
-
-/**
- * All defined objects that define a set of objects (that are not pairs)
- * So, these sets never returns anything taken through
- */
-nul.obj.noThroughSet = Class.create(nul.obj.defined, {
-	through: function(o) { return []; }
 });

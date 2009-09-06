@@ -14,5 +14,4 @@ nul.obj.attribute = Class.create(nul.obj, {
 		this.ofObject = ofo;
 		this.attributeName = anm;
 	},
-	components: ['ofObject'],
 });
