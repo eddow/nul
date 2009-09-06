@@ -7,6 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 nul.obj.pair = Class.create(nul.obj.defined, {
+	type: 'pair',
 	initialise: function(first, second, fklg) {
 		this.first = first.fuzzy?first:new nul.fuzzy(first, fklg);	//TODO2: if first.fuzzy & fklg given?
 		this.second = second;
@@ -34,5 +35,17 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 			if(pinf<= op.first.minXst()) return nul.possibles([op]);	// *{ Q x [] 'oui' } = { Q x [] 'oui' }
 			if(op.first.fixed()) return nul.possibles([op.second]);
 		},
+	},
+	unify: function(o, klg) {
+		if('pair'!= o.type) return;
+		var f = this.first.unify(o.first), s;
+		if(f) s = klg.unify(this.second, o.second);
+		if(s) return new nul.obj.pair(f, s);
+	},
+	ndx: function() {
+		return'[pair:' +
+			this.first.ndx() + '|' +
+			this.second.ndx() + '|' +
+			']';
 	},
 });

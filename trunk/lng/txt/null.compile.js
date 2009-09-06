@@ -79,6 +79,12 @@ nul.compiler = function(txt)
 				throw nul.syntaxException('IDE', 'Identifier expected');
 			return rv.value;
 		},
+		number: function() {
+			var rv = this.tknzr.pop(['number']);
+			if(!rv)
+				throw nul.syntaxException('IDE', 'Number expected');
+			return rv.value;
+		},
 		list: function(firstOp, oprtr, oprtrLvl) {
 			var rv = [firstOp];
 			switch(oprtr[1])
@@ -169,14 +175,14 @@ nul.compiler = function(txt)
 					return this.tknzr.expect('}', nul.compiled.set(this.expression(), sr));
 				}
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
-				if(this.tknzr.take('[')) {
-					var lwr, upr;
-					if(this.tknzr.rawTake('..')) lwr = nul.compiled.atom('number', ninf);
-					else lwr = this.rawExpect('..',this.expression());
-					if(this.tknzr.take(']')) upr = nul.compiled.atom('number', pinf);
-					else upr = this.expect(']',this.expression());
-					return nul.compiled.range(lwr, upr);
-				}
+                if(this.tknzr.take('[')) {
+                    var lwr, upr;
+                    if(!this.tknzr.rawTake('..'))
+						lwr = this.rawExpect('..',this.number());
+                    if(!this.tknzr.take(']'))
+                    	upr = this.expect(']',this.number());
+                    return nul.compiled.range(lwr, upr);
+                }
 				if(this.tknzr.take('::')) {
 					var vals = {};
 					do {

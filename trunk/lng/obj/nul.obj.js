@@ -6,6 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO4: pre-calculate ndx()
 nul.obj = Class.create({
 	modd: function(inm, vl) {
 		var rv = clone1(this), brwsr = rv;
@@ -26,6 +27,11 @@ nul.obj = Class.create({
 		}
 		return brwsr[uinm[0]];
 	},
+	
+	through: function(o) {
+		//TODO2: return o[this]
+	},
+
 });
 
 nul.obj.defined = Class.create(nul.obj, {
@@ -47,11 +53,13 @@ nul.obj.defined = Class.create(nul.obj, {
 	has: function(o) {
 		if(this.attr[' ']) return this.fctAttr(' ', o);
 	},
-	through: function(o) {
-		//TODO1: return o[this]
-	},
-	defined: function() { return this; },
+});
+
+nul.obj.byAttr = Class.create(nul.obj.defined, {
+	type: 'byAttr',
 	initialise: function(attr) {
 		this.attr = attr||{};
-	}
+		this.ndx = ++nul.obj.byAttr.nbr;
+	},
+	ndx: function() { return '[o'+this.byAttrNdx+']'; },
 });

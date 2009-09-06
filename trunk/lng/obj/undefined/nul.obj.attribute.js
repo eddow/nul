@@ -14,4 +14,5 @@ nul.obj.attribute = Class.create(nul.obj, {
 		this.ofObject = ofo;
 		this.attributeName = anm;
 	},
+	ndx: function() { return '[attr:'+this.ofObject.ndx()+'|'+this.attributeName+']'; },
 });

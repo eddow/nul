@@ -9,13 +9,9 @@
 var nul = {
 	globals: {},
 	slf: '&crarr;',
-	failure: 'nul.failure',
-	fail: function(msg)
-	{
-		nul.debug.log('fail')('Failure', msg || '');		
-		throw nul.failure;
-	},
-
+    isJsInt: function(n) {
+    	return n== Math.floor(n);
+    },
 	globalsUse: function(srName) {
 		var ub = new nul.understanding.base.set(null, srName, nul.xpr.fuzzy.createCtxName('g'));
 		for(var p in nul.globals) 
@@ -26,6 +22,7 @@ var nul = {
 	{
 		nul.erroneus = false;
 		nul.knowledge.ndx = 0;
+		nul.obj.byAttr.nbr = 0;		
 		return nul.globalsUse().valued(nul.compile(txt));
 	},
 	html: function(txt)
