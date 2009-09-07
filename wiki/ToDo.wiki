@@ -1,5 +1,9 @@
 #summary TODOs et idées
 
+=== xpr ===
+
+reflect the nul.xpr in the wiki
+
 === possibles ===
 
 Les possibles prennent *toujours* un `klg` en paramètre de construction.
