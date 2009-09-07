@@ -11,3 +11,9 @@ Si c'est pour re-construire un `possibles`, faire un assert sur l'équivalence a
 Ce `klg` est le `fuzzyTo` de l'ancien système.
 
 Maintenir et asserter ce `klg` au travers des `maybe`, `or`, `and`, ...
+
+=== equivalences ===
+
+Les classes d'équivalences retiennent aussi une liste d'attributs spécifiés (par exemple, quand on y tape un objet hand-attributed)
+
+Ces attributs sont utilisés sur le `one` - donc appliqués lors de changement d'attribut ou le changement de prototype.
