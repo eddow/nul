@@ -4,8 +4,10 @@
 
 Les possibles prennent *toujours* un `klg` en paramètre de construction.
 
-Retenir ce klg dans le `possibles`.
+Retenir ce `klg` dans le `possibles`.
 
 Si c'est pour re-construire un `possibles`, faire un assert sur l'équivalence avec le `klg` qui était déjà.
 
 Ce `klg` est le `fuzzyTo` de l'ancien système.
+
+Maintenir et asserter ce `klg` au travers des `maybe`, `or`, `and`, ...
