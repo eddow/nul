@@ -13,7 +13,7 @@ function isArray(itm) {
 	return itm &&
 		typeof(itm) == 'object' &&
 		typeof itm.length === 'number' &&
-		!itm.propertyIsEnumerable('length') &&
+//		!itm.propertyIsEnumerable('length') &&
 		typeof itm.splice === 'function';
 }
 
@@ -41,8 +41,8 @@ function clone1(myObj) {
  * Gets weither <ndx> is a custom index of <ass>
  * Returns false for all the default properties of the arrays.
  */
-function cstmNdx(ass, ndx) {
-	return !isArray(ass) || ass[ndx]!= [][ndx] || 'undefined'== typeof [][ndx];
+function cstmNdx(ndx, ass) {
+	return (ass && (!isArray(ass) || ass[ndx]!= [][ndx])) || 'undefined'== typeof [][ndx];
 }
 /**
  * Internal (helper) use for mapping functions
@@ -56,7 +56,7 @@ function mapCb(fct, ndx, itm) {
  */
 function trys(itm, fct) {
 	var rv;
-	for(var i in itm) if(cstmNdx(itm, i))
+	for(var i in itm) if(cstmNdx(i, itm))
 		if(rv = mapCb(fct, i, itm[i])) return rv;
 }
 
@@ -65,7 +65,7 @@ function trys(itm, fct) {
  */
 function cnt(itm, fct) {
 	var rv = 0;
-	for(var i in itm) if(cstmNdx(itm, i)) { 
+	for(var i in itm) if(cstmNdx(i, itm)) { 
 		var trv = mapCb(fct, i, itm[i]);
 		if('number'== typeof trv) rv += trv;
 		else if(trv) ++rv;
@@ -78,7 +78,7 @@ function cnt(itm, fct) {
  */
 function map(itm, fct) {
 	var rv = isArray(itm)?[]:{};
-	for(var i in itm) if(cstmNdx(itm, i)) 
+	for(var i in itm) if(cstmNdx(i, itm)) 
 		rv[i] = mapCb(fct, i, itm[i]);
 	return rv;
 }
@@ -90,7 +90,7 @@ function map(itm, fct) {
  */
 function maf(itm, fct) {
 	var rv = isArray(itm)?[]:{};
-	for(var i in itm) if(cstmNdx(itm, i)) {
+	for(var i in itm) if(cstmNdx(i, itm)) {
 		var ndx = reTyped(i); 
 		var trv = mapCb(fct, i, itm[i]);
 		if('undefined'!= typeof trv) {
@@ -124,14 +124,14 @@ function reTyped(v) {
 //The array of keys of association <ass>
 function keys(ass) {
 	var rv = [];
-	for(var i in ass) if(cstmNdx(ass, i)) rv.push(i);
+	for(var i in ass) if(cstmNdx(i, ass)) rv.push(i);
 	return rv;
 }
 
 //The array of values of association <ass>
 function vals(ass) {
 	var rv = [];
-	for(var i in ass) if(cstmNdx(ass, i)) rv.push(ass[i]);
+	for(var i in ass) if(cstmNdx(i, ass)) rv.push(ass[i]);
 	return rv;
 }
 
@@ -167,7 +167,7 @@ function beArrg(args, ndx) {
 }
 
 function merge(a, b, cb) {
-	for(var i in b) a[i] = cb?cb(a[i],b[i], i):b[i];
+	for(var i in b) if(cstmNdx(i, a)) a[i] = cb?cb(a[i],b[i], i):b[i];
 	if(cb) for(var i in a) if('undefined'== typeof b[i]) a[i] = cb(a[i], null, i);
 	return a; 
 }
@@ -181,7 +181,8 @@ function merge(a, b, cb) {
 [].pushs || (Array.prototype.pushs = function(){
 	for(var j=0; j<arguments.length; ++j) {
 		var o = arguments[j];
-		if(this===o) throw nul.internalException('Catenating self')
+		if(this===o)
+			throw nul.internalException('Catenating self')
 		for(var i=0; i<o.length; ++i) this.push(o[i]);
 	}
 	return this; 
@@ -199,12 +200,13 @@ function merge(a, b, cb) {
  * Returns an array whose elements are the return values of <fct> taken for each item of <itm>
  * <fct> return an array of element to add in the return list
  */
-[].mar || (Object.prototype.mar = function(fct) {
+[].mar || (Array.prototype.mar = function(fct) {
 	var rv = [];
-	for(var i in this) if(cstmNdx(this, i))
-		rv.pushs(mapCb(fct, i, this[i]));
+	for(var i in this) if(cstmNdx(i)) rv.pushs(mapCb(fct, i, this[i]));
 	return rv;
 });
 
 pinf = Number.POSITIVE_INFINITY;
 ninf = Number.NEGATIVE_INFINITY;
+
+window.toString = null;

@@ -104,16 +104,14 @@ nul.text = {
 			// several time on an item
 			collapse: function(lc) {
 				assert(this.collapsing[lc] && 'topair'!= this.collapsing[lc], 'Collapsing pairs coherence.');
-				var r;
-				for(r=lc; r<this.collapsing[lc]; ++r)
+				for(var r=lc; r<this.collapsing[lc]; ++r)
 					$(this.table.rows[r]).className = 'collapsed ' + $(this.table.rows[r]).className;
 				this.table.rows[r].addClassName('uncollapsing');
 				if('up'==this.uc && 0<lc) this.table.rows[lc-1].addClassName('unsubcollapsing');
 			},
 			uncollapse: function(lc) {
 				assert(this.collapsing[lc] && 'topair'!= this.collapsing[lc], 'Collapsing pairs coherence.');
-				var r;
-				for(r=lc; r<this.collapsing[lc]; ++r)
+				for(var r=lc; r<this.collapsing[lc]; ++r)
 					$(this.table.rows[r]).className = $(this.table.rows[r]).className.substr('collapsed '.length);
 				this.table.rows[r].removeClassName('uncollapsing');
 				if('up'==this.uc && 0<lc) this.table.rows[lc-1].removeClassName('unsubcollapsing');

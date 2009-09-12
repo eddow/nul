@@ -36,8 +36,33 @@
 		}
 		return brwsr[uinm[0]];
 	},
-	toHtml: function() { return this.toString(); },
+	toHTML: function() { return this.toString(); },
 	toString: function() { throw 'abstract'; },
-	ndx: function() { throw 'abstract'; },
+	
+	build_components: function() {
+		var rv = {};
+		for(var comp in this.components) if(cstmNdx(comp)) {
+			if(isArray(comp)) {
+				for(var ci in this[comp]) if(cstmNdx(ci))
+					rv[comp+':'+ci] = this[comp][ci];
+			} else {
+				rv[comp] = this[comp];
+			}
+		}
+		return rv;
+	},
+	
+	is: function(prm) {
+		var rv = this['is_'+prm];
+		if('function'== typeof(rv)) rv = rv.apply(this);
+		return rv;
+	},
+	is_list: function() { return this.is('set'); },
+	ndx: function() { return this.build_ndx(); },
+	//TODO2: generic build
+	build_ndx: function() {
+		if(nul.debug.assert) assert(this.type, 'NDX builder implemented');
+		return '['+this.type+':'+ this.build_components().join('|')+']';
+	},
 	components: [],
  });

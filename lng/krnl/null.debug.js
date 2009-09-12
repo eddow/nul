@@ -94,12 +94,11 @@ nul.debug = {
 	kbase: tableStack('kb'),
 	logs: tableStack('logs'),
 	jsDebug: false,
-	levels: true,
 	assert: true,
 	logging: false,
 	watches: false,
 	perf: 0> window.location.href.indexOf('noperf'),
-	acts: 0<= window.location.href.indexOf('actLog'),
+	acts: 0> window.location.href.indexOf('noactlog'),
 	lcLimit: 10000,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';

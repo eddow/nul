@@ -10,8 +10,8 @@
 //TODO4: ((a - b) - c) =?> (a - (b + c)) 
 //TODO4: (a - (b - c)) =?> ((a + c) - b) !!!/0 
 
-nul.obj.operation = Class.create(nul.obj, {
-	initialise: function(operator, ops) {
+nul.obj.operation = Class.create(nul.obj.undefined, {
+	initialize: function(operator, ops) {
 		this.operator = operator;
 		this.operands = ops;
 	},
@@ -19,9 +19,10 @@ nul.obj.operation = Class.create(nul.obj, {
 //////////////// nul.xpr implementation
 	
 	type: 'operation',
-	ndx: function() { return '[op:'+this.operator+'|'+
-		this.operands.map(function() { return this.ndx(); }).join('|')+
-		']'; },
+	toString: function() {
+		return '(' + map(this.operands, function() { return this.toString(); })
+			.join(' '+this.operator+' ') + ')';
+	},
 	components: ['operands'],
 });
 

@@ -8,12 +8,14 @@
 
  nul.xpr.knowledge = Class.create(nul.xpr, {
 	fuzzy: true,
- 	initialise: function(prnt) {
+ 	initialize: function(prnt) {
+ 		//dbgNames, could remember just the length (as an int) if no debug info needed
+ 		this.locals = [];	//Create a new object each time
+ 		
  		this.prnt = prnt;
 		this.name = ++nul.xpr.knowledge.ndx;
  	},
-	locals: [],	//dbgNames, could remember just the length (as an int) if no debug info needed
- 	eqCls: [],	//Array of equivalence classes.
+ 	eqCls: [],		//Array of equivalence classes.
  	access: {},		//Access from an obj.ndx to an eq class he's in
  	/**
  	 * Copy the infos of klg in here.
@@ -45,13 +47,13 @@
  	},
  	/**
  	 * Move the local-space so it merge with the local-space of klg.
- 	 * TODO: Also rename byAttr objects
+ 	 * TODO: Also rename extension objects
  	 * side-effect: new locals in 'klg'
  	 */
  	stepUp: function(klg) {
  		var brwsr = new nul.browser.stepUp(this.name, klg.name, klg.locals.length);
  		klg.locals.pushs(this.locals);
- 		return brwsr.browse(this); 
+ 		return brwsr.browse(this) || this; 
  	},
  	/**
  	 * Know all what 'klg' knows
@@ -61,8 +63,11 @@
  		var rv = new nul.xpr.knowledge();
  		rv.copy(this);
  		klg = klg.stepUp(rv);
- 		for(ec in klg.eqCls)
- 			rv.belong(rv.unify(ec.equivalents()), ec.belongs);
+ 		for(var ec in klg.eqCls) if(cstmNdx(ec)) {
+ 			var unf = rv.unify(klg.eqCls[ec].equivalents()), blg = null;
+ 			if(unf) blg = rv.belong(unf, klg.eqCls[ec].belongs);
+ 			if(!blg) return [];
+ 		}
  		if(klg.value) rv.value = klg.value;
  		return [rv];
  	},
@@ -79,12 +84,13 @@
  		var eqClss = {};
  		var solos = [];
  		for(var i=0; i<a.length; ++i) {
- 			if(a.fuzzy) a = this.merge(a).value;
- 			var ndx = a.ndx();
+ 			if(a[i].fuzzy) a[i] = this.merge(a[i]).value;
+ 			var ndx = a[i].ndx();
  			if(this.access[ndx]) eqClss[this.access[ndx]] = true;
- 			else solo.push(a);
- 		}	//TODO2: byAttr management
+ 			else solos.push(a[i]);
+ 		}	//TODO2: null.obj.extension management
  		eqClss = keys(eqClss);
+ 		var dstEqClsNdx = (0+eqClss[0]) || this.eqCls.length;
  		var dstEqCls = eqClss.length?
  			this.eqCls[eqClss.shift()]:
  			this.newEqClass();
@@ -92,16 +98,25 @@
 	 			try { return this.eqCls[eqClss[eqx]].mergeTo(dstEqCls); }
 	 			finally { this.eqCls[eqClss[eqx]] = null; }
 	 		}) ||
-			trys(solo, function() { return dstEqCls.isEq(this); });
- 		if(!failure) return dstEqCls.good();
+			trys(solos, function() { return dstEqCls.isEq(this); });
+ 		if(!failure) {
+ 			//Refresh access
+ 			var eqs = dstEqCls.equivalents();
+ 			for(var unfd in eqs) if(cstmNdx(unfd))
+ 				this.access[eqs[unfd].ndx()] = dstEqClsNdx;
+ 			return dstEqCls.good();
+ 		}
  		delete this.locals;
  		delete this.eqCls;
  		delete this.access;
- 	},
+ 	}.describe(function() {
+ 		return 'Unification : ' +
+ 			map(beArrg(arguments), function() { return this.toString(); }).join(' = ');
+ 	}),
 	/**
  	 * Know that 'e' is in the set 's'.
  	 * Modifies the knowledge
- 	 * @return The replacement value for both 'e' or nothing if unification failed.
+ 	 * @return The replacement value for 'e' or nothing if inclusion failed.
  	 */
  	belong: function(e, ss) {
  		ss = beArrg(arguments, 1);
@@ -109,10 +124,10 @@
  		var dstEC = this.access[ndx]?
  			this.eqCls[this.access[ndx]]:
  			this.newEqClass(e);
- 		for(s in ss) dstEC.isIn(s);
+ 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(s);
  	},
  	//TODO2: end the changes to the parent, so he can notify with more discovered consequent knowledge.
- 	local: function(name, ndx) {
+ 	newLocal: function(name, ndx) {
  		if('undefined'== typeof ndx) {
  			ndx = this.locals.length;
  			this.locals.push(name);
@@ -128,17 +143,14 @@
 	type: 'klg',
 	//TODO: toHtml show locals
 	toString: function() {
-		return this.eqCls.map(function() { return this.toString(); }).join('; ');
-	},
-	ndx: function() {
-		return nul.xpr.knowledge.eqClass.ndx(this.eqClass,'klg');	
+		return map(this.eqCls, function() { return this.toString(); }).join('; ');
 	},
 	components: ['eqCls'],
 
 });
 
 nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
-	initialise: function(klg) {
+	initialize: function(klg) {
 		this.knowledge = klg;
 	},
 	prototyp: null,
@@ -195,22 +207,10 @@ nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
 	
 	type: 'eqCls',
 	toString: function() {
-		var rv = '('+this.equivalents().map(function() { return this.toString(); }).join(' = ')+')';
+		var rv = '('+map(this.equivalents(), function() { return this.toString(); }).join(' = ')+')';
 		if(!this.belongs.length) return rv;
-		return rv + ' in (' + this.belongs.map(function() { return this.toString(); }).join(', ')+')';
+		return rv + ' in (' + map(this.belongs, function() { return this.toString(); }).join(', ')+')';
 			
 	},
-	ndx: function() {
-		return '[eqCls:'+
-			(this.prototyp?this.prototyp.ndx():'[]') + '|' +
-			nul.xpr.knowledge.eqClass.ndx(this.values, 'values') + '|' +
-			nul.xpr.knowledge.eqClass.ndx(this.belongs, 'belongs') + ']';
-	},
-	components: ['prototyp', 'values', 'belong'],
+	components: ['prototyp', 'values', 'belongs'],
 });
-
-nul.xpr.knowledge.eqClass.ndx = function(ary, p) {
-	ary = ary.maf(function(i, obj) { if(obj) return obj.ndx(); });
-	ary.sort();
-	return '['+p+':'+ary.join('|')+']';
-};

@@ -25,10 +25,13 @@ nul.browser = Class.create({
 		var bwsd = {};
 		var ppd = this.prepare(xpr);
 		var tob = ppd || xpr;
- 		for(comp in tob.components) {
+ 		for(var comp in tob.components) if(cstmNdx(comp)) {
  			comp = tob.components[comp];
- 			//TODO1: comp may be array
- 			bwsd[comp] = this.browse(xpr[comp]);
+ 			if(isArray(xpr[comp])) {
+ 				var brwsr = this;
+ 				bwsd[comp] = map(xpr[comp], function() { return brwsr.browse(this); });
+ 			} else
+ 				bwsd[comp] = this.browse(xpr[comp]);
  		}
  		return this.makeRV(xpr, bwsd, ppd);
  	}
@@ -45,10 +48,20 @@ nul.browser.bijectif = Class.create(nul.browser, {
 		//ppd iif preparation modification
 		//mod iif browse modification
 		//trn iif transform modification
-		var mod = null;
-		for(c in bwsd) if(bwsd[c]) {
-			if(!mod) mod = clone1(ppd || xpr);
-			mod[c] = bwsd[c];
+		var mod = null, base = ppd || xpr;
+		for(var c in bwsd) {
+			var nwItm = bwsd[c];
+			if(isArray(bwsd[c])) {
+				//bwsd[c] contient des null-s et des valeurs
+				if(trys(bwsd[c], function() { return !!this; }))
+					//If at least one non-null return value,
+					nwItm = merge(clone1(nwItm), base[c], function(a, b) { return a||b; });
+				else nwItm = null;
+			}
+			if(nwItm) {
+				if(!mod) mod = clone1(base);
+				mod[c] = nwItm;
+			}
 		}
 		var trn = this.transform(mod || ppd || xpr);
 		return trn || mod || ppd; 
@@ -56,14 +69,14 @@ nul.browser.bijectif = Class.create(nul.browser, {
 });
 
 nul.browser.stepUp = Class.create(nul.browser.bijectif, {
-	initialise: function(srcKlgName, dstKlgName, deltaLclNdx) {
+	initialize: function(srcKlgName, dstKlgName, deltaLclNdx) {
 		this.srcKlgName = srcKlgName;
 		this.dstKlgName = dstKlgName;
 		this.deltaLclNdx = deltaLclNdx;
 	},
 	transform: function(xpr) {
 		if('local'== xpr.type && this.srcKlgName== xpr.klgName)
-			return new nul.obj.local(dstKlgName, 
+			return new nul.obj.local(this.dstKlgName, 
 				'number'== typeof xpr.lclNdx ?
 					xpr.lclNdx+this.deltaLclNdx :
 					xpr.lclNdx,

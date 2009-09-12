@@ -6,9 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO4: pre-calculate ndx()
-nul.obj = Class.create(nul.xpr, {
-	through: function(o) {
-		//TODO2: return o[this]
+nul.obj.extension = Class.create(nul.obj.defined, {
+	initialize: function(attr) {
+		this.attr = attr||{};
+		this.ndx = ++nul.obj.extension.nbr;
 	},
+
+//////////////// nul.xpr implementation
+
+	type: 'extension',
+	build_ndx: function() { return '[o'+this.extensionNdx+']'; },
 });

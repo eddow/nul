@@ -6,9 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO4: pre-calculate ndx()
-nul.obj = Class.create(nul.xpr, {
-	through: function(o) {
-		//TODO2: return o[this]
-	},
+nul.obj.undefined = Class.create(nul.obj, {
+	is_set: true,
 });

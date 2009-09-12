@@ -9,8 +9,8 @@
 /**
  * Defined an object that is an attribute of another object
  */
-nul.obj.attribute = Class.create(nul.obj, {
-	initialise: function(ofo, anm) {
+nul.obj.attribute = Class.create(nul.obj.undefined, {
+	initialize: function(ofo, anm) {
 		this.ofObject = ofo;
 		this.attributeName = anm;
 	},
@@ -18,6 +18,9 @@ nul.obj.attribute = Class.create(nul.obj, {
 //////////////// nul.xpr implementation
 
 	type: 'attr',
-	ndx: function() { return '[attr:'+this.ofObject.ndx()+'|'+this.attributeName+']'; },
+	toString: function() {
+		return this.ofObject.toString() + '&rarr;' + this.attributeName;
+	},
+	build_ndx: function() { return '[attr:'+this.ofObject.ndx()+'|'+this.attributeName+']'; },
 	components: ['ofObject'],
 });
