@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.fuzzy = Class.create(nul.knowledge, {
+nul.xpr.fuzzy = Class.create(nul.xpr.knowledge, {
 	initialise: function(obj, klg) {
 		this.value = obj;
 		if(nul.debug.assert) assert(klg, 'Fuzzy built on knowledge');
@@ -16,7 +16,7 @@ nul.fuzzy = Class.create(nul.knowledge, {
 	 * Retrieve the knowledge part only of this fuzzy
 	 */
 	knowledge: function() {
-		return new nul.knowledge(this.prnt).copy(this);		
+		return new nul.xpr.knowledge(this.prnt).copy(this);		
 	},
 
 //////////////// nul.klg implementation
@@ -40,13 +40,18 @@ nul.fuzzy = Class.create(nul.knowledge, {
  		if(klg.value) for(var i = 0; i<klgs.length; ++i)
  			rv.maybe(klgs[i].unify(obj));
  		else for(var i = 0; i<klgs.length; ++i)
- 			rv.maybe(new nul.fuzzy(obj, klgs[i]));
+ 			rv.maybe(new nul.xpr.fuzzy(obj, klgs[i]));
  		return rv;
  	},
 
 //////////////// nul.xpr implementation
 
 	type: 'fuzzy',	
+	toString: function($super) {
+		var klgStr = $super();
+		if(!klgStr.length) return this.value.toString();
+		return this.value.toString() + '; ' + klgStr;
+	},
 	ndx: function($super) {
 		return '[fuzzy:' +
 			this.value.ndx() + '|' +

@@ -14,8 +14,7 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 	ndx: function() { return '['+this.type+']'; },
 });
 
-nul.obj.empty = Class.create(nul.obj.hcSet, {
-	
+merge(nul.obj.empty = new nul.obj.hcSet(), {
 	intersect: function(o) {
 		return [this];
 	},
@@ -26,23 +25,24 @@ nul.obj.empty = Class.create(nul.obj.hcSet, {
 //////////////// nul.xpr implementation
 
 	type: 'empty',
-
+	toString: function() { return '&phi;'; },
 });
 
-nul.obj.whole = Class.create(nul.obj.hcSet, {
+merge(nul.obj.whole = new nul.obj.hcSet(), {
 	intersect: function(o) {
 		return [o];
 	},
 	has: function(o, klg) {
-		return [nul.fuzzy(o, klg)];
+		return [nul.xpr.fuzzy(o, klg)];
 	},
 
 //////////////// nul.xpr implementation
 
 	type: 'whole',
+	toString: function() { return 'any'; },
 });
 
-nul.obj.number = Class.create(nul.obj.hcSet, {
+merge(nul.obj.number = new nul.obj.hcSet(), {
 	intersect: function(o) {
 		if('range'== o.type) return o;
 	},
@@ -54,6 +54,7 @@ nul.obj.number = Class.create(nul.obj.hcSet, {
 //////////////// nul.xpr implementation
 
 	type: 'number',
+	toString: function() { return '&#x211a;'; },
 });
 
 nul.obj.string = Class.create(nul.obj.hcSet, {
@@ -65,6 +66,7 @@ nul.obj.string = Class.create(nul.obj.hcSet, {
 //////////////// nul.xpr implementation
 
 	type: 'string',
+	toString: function() { return 'str'; },
 });
 
 nul.obj.range = Class.create(nul.obj.hcSet, {
@@ -99,5 +101,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 //////////////// nul.xpr implementation
 
 	type: 'range',
+	//TODO2: draw real range  
+	toString: function() { return '&#x2124;'; },
 	ndx: function() { return '[range:'+this.lower+'|'+this.upper+']'; },
 });

@@ -13,13 +13,11 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	 * @param klg If <first> is JsNulObj, this is the parent knowledge
 	 */
 	initialise: function(first, second, klg) {
-		this.first = first.fuzzy?first:new nul.fuzzy(first, new nul.knowledge(klg));	//TODO2: if first.fuzzy & fklg given?
+		this.first = first.fuzzy?first:new nul.xpr.fuzzy(first, new nul.xpr.knowledge(klg));	//TODO2: if first.fuzzy & fklg given?
 		this.second = second;
 	},
 
 //////////////// nul.obj implementation
-
-	type: 'pair',
 
 	has: function(o, klg) {
 			//TODO3: make a tree of fixed values (=> ram db)
@@ -58,6 +56,10 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 //////////////// nul.xpr implementation
 
+	type: 'pair',
+	toString : function() {
+		//TODO1
+	},
 	ndx: function() {
 		return'[pair:' +
 			this.first.ndx() + '|' +

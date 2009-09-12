@@ -36,6 +36,8 @@
 		}
 		return brwsr[uinm[0]];
 	},
+	toHtml: function() { return this.toString(); },
+	toString: function() { throw 'abstract'; },
 	ndx: function() { throw 'abstract'; },
 	components: [],
  });

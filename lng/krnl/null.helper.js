@@ -201,8 +201,8 @@ function merge(a, b, cb) {
  */
 [].mar || (Object.prototype.mar = function(fct) {
 	var rv = [];
-	for(var i in itm) if(cstmNdx(itm, i))
-		rv.pushs(mapCb(fct, i, itm[i]));
+	for(var i in this) if(cstmNdx(this, i))
+		rv.pushs(mapCb(fct, i, this[i]));
 	return rv;
 });
 
