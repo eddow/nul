@@ -206,5 +206,5 @@ function merge(a, b, cb) {
 	return rv;
 });
 
-pinf = number.POSITIVE_INFINITY;
-ninf = number.NEGATIVE_INFINITY;
+pinf = Number.POSITIVE_INFINITY;
+ninf = Number.NEGATIVE_INFINITY;
