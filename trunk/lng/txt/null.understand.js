@@ -7,6 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 nul.understanding = {
+	unresolvable: 'unresolved identifier',
 	expression: function(ub) {
 		var ops;
 		if('[]'== this.operator)
@@ -15,10 +16,10 @@ nul.understanding = {
 				return new nul.understanding.base(ub).understand(this);
 			});
 		var ops = map(this.operands, function() { 
-			return this.understand(ub);				
+			return new nul.possibles(ub.klg, this.understand(ub));				
 		});
-		var operator = operator;
-		nul.possibles.map(ub.klg, ops, function(klg) {
+		var operator = this.operator;
+		return nul.possibles.map(ub.klg, ops, function(klg) {
 			if(['+' ,'*'].contains(this.operator))
 				return new nul.obj.operation.Nary(operator, this);
 			if(['-' ,'/' ,'%'].contains(this.operator))
@@ -28,9 +29,10 @@ nul.understanding = {
 				return this[0];
 			}*/
 
-			switch(this.operator)
+			switch(operator)
 			{
-				case ':-':	return new nul.obj.pair(this[0], this[1], klg);
+				case ':-':
+					return new nul.obj.pair(this[0], this[1], klg);
 				case ',':
 					var rv = this.follow?this.follow:nul.obj.empty;
 					while(this.length) rv = new nul.obj.pair(this.pop(), rv, klg);
@@ -38,7 +40,8 @@ nul.understanding = {
 				case '=': return klg.unify(this);
 				case ';':
 					return this[0];
-				default:	throw nul.internalException('Unknown operator: "'+operator+'"');
+				default:
+					throw nul.internalException('Unknown operator: "'+operator+'"');
 			}
 		});
 	},
@@ -67,16 +70,16 @@ nul.understanding = {
 				value = 1*this.value;
 				break;
 			case "alphanum" :
-				try { return ub.resolve(this.value); }
+				try { return [ub.resolve(this.value)]; }
 				catch(err) {
 					if(nul.understanding.unresolvable!= err) throw err;
-					return ub.createFreedom(this.value);
+					return [ub.createFreedom(this.value)];
 				}
 				break;
 			default:
 				throw nul.internalException('unknown atom type: ' + this.type + ' - ' + this.value);
 		}
-		return new nul.obj.litteral(value);
+		return [new nul.obj.litteral(value)];
 	},
 	application: function(ub) {
 		var item = this.item.understand(ub);
@@ -114,7 +117,7 @@ nul.understanding = {
 
 	composed: function(ub) {
 		return new nul.possibles(ub.klg, [
-			new nul.obj.byAttr(map(this.vals, function() { return this.understand(ub); }))
+			new nul.obj.extension(map(this.vals, function() { return this.understand(ub); }))
 		]);
 	},
 	objectivity: function(ub) {
@@ -134,7 +137,7 @@ nul.understanding.base = Class.create({
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);
-		throw 'unresolvable name';
+		throw nul.understanding.unresolvable;
 	},
 	allocLocal: function(name) {
 		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
@@ -149,8 +152,7 @@ nul.understanding.base = Class.create({
 	 * Understand <tu> in a new context that doesn't store locals
 	 */
 	 understand: function(tu) {
-	 	var rv = new nul.possibles(this.klg, tu.understand(this));
-	 	return rv.and(this.klg);
+	 	return new nul.possibles(this.klg, tu.understand(this));
 	 },
 });
 nul.understanding.base.set = Class.create(nul.understanding.base, {
@@ -171,6 +173,7 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 });
 
 nul.understanding.base.set.understand = function(cnt, ub, slf) {
+	//TODO2: cnt=[cnt] pourrait marcher à tous les coups -> redondance -> repenser
 	if('[]'== cnt.operator) cnt = cnt.operands;
 	else cnt = [cnt];
 	

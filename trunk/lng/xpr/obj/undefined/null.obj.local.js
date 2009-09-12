@@ -15,8 +15,8 @@
 /**
  * Define an object that is a value of a local
  */
-nul.obj.local = Class.create(nul.obj, {
-	initialise: function(klgName, lclNdx, dbgName) {
+nul.obj.local = Class.create(nul.obj.undefined, {
+	initialize: function(klgName, lclNdx, dbgName) {
 		this.klgName = klgName;
 		this.lclNdx = lclNdx;
 		this.dbgName = dbgName;
@@ -31,5 +31,8 @@ nul.obj.local = Class.create(nul.obj, {
 //////////////// nul.xpr implementation
 
 	type: 'local',
-	ndx: function() { return '[lcl:'+this.klgName+'|'+this.lclNdx+']'; },
+	toString: function() {
+		return (this.dbgName?this.dbgName:'') + '[' + this.klgName + '|' + this.lclNdx + ']';
+	},
+	build_ndx: function() { return '[lcl:'+this.klgName+'|'+this.lclNdx+']'; },
 });

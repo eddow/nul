@@ -7,7 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 nul.obj.litteral = Class.create(nul.obj.defined, {
-	initialise: function(val) {
+	initialize: function(val) {
 		this.value = val;
 		this.type = typeof(val);
 		this.attr = nul.obj.litteral.attr[typeof(val)] 
@@ -16,11 +16,11 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 	 
 //////////////// nul.xpr implementation
 
-	//type: on_init
+	//type: set on initialise
 	toString : function() {
-		//TODO1
+		return ''+ this.value;
 	},
-	ndx: function() { return '['+this.type+':'+(''+this.value).replace(']','[|]')+']'; },
+	build_ndx: function() { return '['+this.type+':'+(''+this.value).replace(']','[|]')+']'; },
 });
 
 nul.obj.litteral.straightArythmetics = function(oprtr, srnd) {

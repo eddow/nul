@@ -12,9 +12,19 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	 * @param second JsNulObj
 	 * @param klg If <first> is JsNulObj, this is the parent knowledge
 	 */
-	initialise: function(first, second, klg) {
+	initialize: function(first, second, klg) {
 		this.first = first.fuzzy?first:new nul.xpr.fuzzy(first, new nul.xpr.knowledge(klg));	//TODO2: if first.fuzzy & fklg given?
 		this.second = second;
+	},
+	flat: function() {
+		var rv = [];
+		var brwsr = this;
+		do {
+			rv.push(brwsr.first);
+			brwsr = brwsr.second;
+		} while('pair'== brwsr.type);
+		rv.follow = brwsr;
+		return rv;
 	},
 
 //////////////// nul.obj implementation
@@ -26,7 +36,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		do {
 			rv.maybe(brwsr.first.stepUp(klg).unify(o));
 			brwsr = brwsr.second;
-		} while(this[' ']== brwsr.attr[' ']);
+		} while('pair'== brwsr.type);
 		return rv.maybe(brws.attr[' '](o, klg));
 	},
 
@@ -58,15 +68,27 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 	type: 'pair',
 	toString : function() {
-		//TODO1
-	},
-	ndx: function() {
-		return'[pair:' +
-			this.first.ndx() + '|' +
-			this.second.ndx() + '|' +
-			']';
+		if(!this.is('set')) return '(' +
+			this.first.toString() + ' :- ' +
+			this.second.toString() + ')' ;
+		var flat = this.flat();
+		if(this.is('list')) {
+			if(1== flat.length && '&phi;'== flat.follow.type)
+				return '{' + flat[0].toString() + '}';
+			var rv = '(' +
+				map(flat, function() {return this.toString(); }).join(', ');
+			if('&phi;'!= flat.follow.type) rv += ',.. ' + flat.follow.toString();
+			return rv+')';
+		} 
+		var rv = '{' +
+			map(flat, function() {return this.toString(); }).join(' &#9633; ') + '}';
+		if('&phi;'!= flat.follow.type) rv += ' &cup; ' + flat.follow.toString();
+		return rv;
 	},
 
 	components: ['first', 'second'],
-	
+	is_set: function() { return this.second.is('set'); },
+	is_list: function() {
+		return this.first.fixed && this.second.is('list');
+	},
 });

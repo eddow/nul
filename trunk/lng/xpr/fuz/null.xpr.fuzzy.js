@@ -7,7 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 nul.xpr.fuzzy = Class.create(nul.xpr.knowledge, {
-	initialise: function(obj, klg) {
+	initialize: function(obj, klg) {
 		this.value = obj;
 		if(nul.debug.assert) assert(klg, 'Fuzzy built on knowledge');
 		this.copy(klg);
@@ -51,11 +51,6 @@ nul.xpr.fuzzy = Class.create(nul.xpr.knowledge, {
 		var klgStr = $super();
 		if(!klgStr.length) return this.value.toString();
 		return this.value.toString() + '; ' + klgStr;
-	},
-	ndx: function($super) {
-		return '[fuzzy:' +
-			this.value.ndx() + '|' +
-			$super() + ']';
 	},
 	components: ['eqCls', 'value'],		//TODO: sth to abstract knowledge components !
 });

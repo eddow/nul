@@ -22,7 +22,7 @@ var nul = {
 	{
 		nul.erroneus = false;
 		nul.xpr.knowledge.ndx = 0;
-		nul.obj.byAttr.nbr = 0;		
+		nul.obj.extension.nbr = 0;		
 		return nul.understanding.base.set.understand(nul.compile(txt), nul.globalsUse());
 	},
 	html: function(txt)
