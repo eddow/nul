@@ -6,15 +6,15 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.possibles = Class.create(Array, {
+nul.possibles = Class.create({
 	initialise: function(cklg, lst) {
 		lst = beArrg(arguments, 1);
-		var rv = [];
+		this.lst = [];
 		if(debug.assert && lst.klg) assert(lst.klg == cklg, 'Possibles knowledge stays');
 		lst = beArrg(arguments);
 		for(var i=0; i<lst.length; ++i)
-			if(lst[i].fuzzy) rv.push(lst[i]);	//TODO: use cklg?
-			else rv.push(new nul.fuzzy(lst[i], cklg));
+			if(lst[i].fuzzy) this.lst.push(lst[i]);	//TODO: use cklg?
+			else this.lst.push(new nul.xpr.fuzzy(lst[i], cklg));
 	},
 	/**
 	 * Gets the possibles objects that can be unified to this and to vl
@@ -22,7 +22,7 @@ nul.possibles = Class.create(Array, {
 	 */
 	and: function(itm) {
 		var itms = beArrg(arguments);
-		var rv = nul.possibles(this.klg);
+		var rv = new nul.possibles(this.klg);
 		for(var i=0; i < this.length; ++i) for(var j=0; j < itm.length; ++j)
 			rv.maybe(this[i].merge(itm[j]));
 		return rv;
@@ -32,7 +32,7 @@ nul.possibles = Class.create(Array, {
 	 * @return new possibles object
 	 */
 	or: function(itm) {
-		var rv = nul.possibles(this.klg);
+		var rv = new nul.possibles(this.klg);
 		rv.maybe(this);
 		rv.maybe(beArrg(arguments));
 		return rv;
@@ -44,13 +44,13 @@ nul.possibles = Class.create(Array, {
 	maybe: function(itm) {
 		itm = beArrg(arguments);
 		if(debug.assert && itm.klg) assert(this.klg == itm.klg, 'Possibles knowledge stays');
-		this.pushs(itm);
+		this.lst.pushs(itm);
 	},
 	set: function() {
 		//note: if one of the item has minXst = pinf, replace by nul.obj.whole
-		var rv = nul.obj.empty();
+		var rv = nul.obj.empty;
 		for(var i = this.length-1; i>= 0; --i )
-			rv = nul.obj.pair(this[i], rv);
+			rv = new nul.obj.pair(this[i], rv);
 		return rv;
 	}
 });
@@ -66,14 +66,14 @@ nul.possibles.map = function(klg, pss, fct) {
 	var kys = keys(pss);
 	var ndx = map(kys, function() { return 0; });
 	var mxs = map(kys, function(i, ky) { return pss[key].length; });
-	var rv = nul.possibles(klg);
+	var rv = new nul.possibles(klg);
 	var incndx;
 	while(true) {
-		var klgs = nul.possibles(klg, new nul.knowledge(klg));
+		var klgs = new nul.possibles(klg, new nul.xpr.knowledge(klg));
 		var obj = isArray(pss)?[]:{};
 		//List of the fuzzies involved for this combinatin
 		map(kys, function(i, ky) {
-			var fzy = pss[ky][ndx[i]];
+			var fzy = pss[ky].lst[ndx[i]];
 			obj[ky] = fzy.value;
 			klgs.and((fct&&fzy.value)?fzy.knowledge():fzy);
 		});

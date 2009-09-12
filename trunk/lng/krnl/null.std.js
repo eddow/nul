@@ -13,7 +13,7 @@ var nul = {
     	return n== Math.floor(n);
     },
 	globalsUse: function(srName) {
-		var ub = new nul.understanding.base.set(null, srName, nul.xpr.fuzzy.createCtxName('g'));
+		var ub = new nul.understanding.base.set(null, srName);
 		for(var p in nul.globals) 
 			ub.createFreedom(p, nul.globals[p]);
 		return ub;
@@ -21,9 +21,9 @@ var nul = {
 	expression: function(txt)
 	{
 		nul.erroneus = false;
-		nul.knowledge.ndx = 0;
+		nul.xpr.knowledge.ndx = 0;
 		nul.obj.byAttr.nbr = 0;		
-		return nul.globalsUse().valued(nul.compile(txt));
+		return nul.understanding.base.set.understand(nul.compile(txt), nul.globalsUse());
 	},
 	html: function(txt)
 	{

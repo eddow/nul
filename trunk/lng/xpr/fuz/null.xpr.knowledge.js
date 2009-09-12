@@ -6,11 +6,11 @@
  *
  *--------------------------------------------------------------------------*/
 
- nul.knowledge = Class.create(nul.xpr, {
+ nul.xpr.knowledge = Class.create(nul.xpr, {
 	fuzzy: true,
  	initialise: function(prnt) {
  		this.prnt = prnt;
-		this.name = ++nul.knowledge.ndx;
+		this.name = ++nul.xpr.knowledge.ndx;
  	},
 	locals: [],	//dbgNames, could remember just the length (as an int) if no debug info needed
  	eqCls: [],	//Array of equivalence classes.
@@ -29,7 +29,7 @@
  	 * Creates an equivalence class
  	 */
  	newEqClass: function(v) {
- 		var rv = new nul.knowledge.eqClass();
+ 		var rv = new nul.xpr.knowledge.eqClass();
  		this.eqCls.push(rv);
  		if(v) {
  			rv.isEq(v);
@@ -58,7 +58,7 @@
  	 * @return possibles knowledge who knows both these knowledge.
  	 */
  	merge: function(klg) {
- 		var rv = new nul.knowledge();
+ 		var rv = new nul.xpr.knowledge();
  		rv.copy(this);
  		klg = klg.stepUp(rv);
  		for(ec in klg.eqCls)
@@ -126,14 +126,18 @@
 //////////////// nul.xpr implementation
 	
 	type: 'klg',
+	//TODO: toHtml show locals
+	toString: function() {
+		return this.eqCls.map(function() { return this.toString(); }).join('; ');
+	},
 	ndx: function() {
-		return nul.knowledge.eqClass.ndx(this.eqClass,'klg');	
+		return nul.xpr.knowledge.eqClass.ndx(this.eqClass,'klg');	
 	},
 	components: ['eqCls'],
 
 });
 
-nul.knowledge.eqClass = Class.create(nul.xpr, {
+nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
 	initialise: function(klg) {
 		this.knowledge = klg;
 	},
@@ -190,16 +194,22 @@ nul.knowledge.eqClass = Class.create(nul.xpr, {
 //////////////// nul.xpr implementation
 	
 	type: 'eqCls',
+	toString: function() {
+		var rv = '('+this.equivalents().map(function() { return this.toString(); }).join(' = ')+')';
+		if(!this.belongs.length) return rv;
+		return rv + ' in (' + this.belongs.map(function() { return this.toString(); }).join(', ')+')';
+			
+	},
 	ndx: function() {
 		return '[eqCls:'+
 			(this.prototyp?this.prototyp.ndx():'[]') + '|' +
-			nul.knowledge.eqClass.ndx(this.values, 'values') + '|' +
-			nul.knowledge.eqClass.ndx(this.belongs, 'belongs') + ']';
+			nul.xpr.knowledge.eqClass.ndx(this.values, 'values') + '|' +
+			nul.xpr.knowledge.eqClass.ndx(this.belongs, 'belongs') + ']';
 	},
 	components: ['prototyp', 'values', 'belong'],
 });
 
-nul.knowledge.eqClass.ndx = function(ary, p) {
+nul.xpr.knowledge.eqClass.ndx = function(ary, p) {
 	ary = ary.maf(function(i, obj) { if(obj) return obj.ndx(); });
 	ary.sort();
 	return '['+p+':'+ary.join('|')+']';

@@ -32,7 +32,7 @@ nul.understanding = {
 			{
 				case ':-':	return new nul.obj.pair(this[0], this[1], klg);
 				case ',':
-					var rv = this.follow?this.follow:new nul.obj.empty();
+					var rv = this.follow?this.follow:nul.obj.empty;
 					while(this.length) rv = new nul.obj.pair(this.pop(), rv, klg);
 					return rv;
 				case '=': return klg.unify(this);
@@ -96,16 +96,8 @@ nul.understanding = {
 		});
 	},
 	set: function(ub) {
-		if(!this.content) return new nul.obj.empty();
-		var cnt = this.content;
-		if('[]'== cnt.operator) cnt = cnt.operands;
-		else cnt = [cnt];
-		
-		var slf = this.selfRef;
-		return [new nul.possibles(ub.klg, cnt.mar(function() {
-			//Understand each operands in a freshly created UB that stores locals
-			return new nul.understanding.base.set(ub, slf).understand(this);
-		})).set()];
+		if(!this.content) return nul.obj.empty;
+		return [nul.understanding.base.set.understand(this.content, ub, this.selfRef)];
 	},
 	range: function(ub) {
 		return [new nul.obj.range(this.lower, this.upper)];
@@ -138,7 +130,7 @@ nul.understanding.base = Class.create({
 	initialize: function(prntUb) {
 		this.parms = {};
 		this.prntUb = prntUb;
-		this.klg = new nul.knowledge(prntUb?prntUb.klg:null);
+		this.klg = new nul.xpr.knowledge(prntUb?prntUb.klg:null);
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);
@@ -157,7 +149,7 @@ nul.understanding.base = Class.create({
 	 * Understand <tu> in a new context that doesn't store locals
 	 */
 	 understand: function(tu) {
-	 	var rv = tu.understand(this);
+	 	var rv = new nul.possibles(this.klg, tu.understand(this));
 	 	return rv.and(this.klg);
 	 },
 });
@@ -177,3 +169,13 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 		return value;
 	}
 });
+
+nul.understanding.base.set.understand = function(cnt, ub, slf) {
+	if('[]'== cnt.operator) cnt = cnt.operands;
+	else cnt = [cnt];
+	
+	return new nul.possibles(ub.klg, cnt.mar(function() {
+		//Understand each operands in a freshly created UB that stores locals
+		return new nul.understanding.base.set(ub, slf).understand(this);
+	})).set();
+};
