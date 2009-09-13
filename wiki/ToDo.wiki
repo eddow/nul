@@ -10,3 +10,7 @@ reflect the nul.xpr in the wiki
 Les classes d'équivalences retiennent aussi une liste d'attributs spécifiés (par exemple, quand on y tape un objet hand-attributed)
 
 Ces attributs sont utilisés sur le `one` - donc appliqués lors de changement d'attribut ou le changement de prototype.
+
+=== ior3 ===
+
+Les `possibles` redeviennent un objet indéfini (`ior3`) qui sera distribué selon une solving engine.
