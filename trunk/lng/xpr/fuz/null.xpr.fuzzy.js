@@ -47,10 +47,10 @@ nul.xpr.fuzzy = Class.create(nul.xpr.knowledge, {
 //////////////// nul.xpr implementation
 
 	type: 'fuzzy',	
-	toString: function($super) {
-		var klgStr = $super();
-		if(!klgStr.length) return this.value.toString();
-		return this.value.toString() + '; ' + klgStr;
+	toText: function($super, txtr) {
+		var klgStr = $super(txtr);
+		if(!klgStr.length) return this.value.toText(txtr);
+		return this.value.toText(txtr) + '; ' + klgStr;
 	},
 	components: ['eqCls', 'value'],		//TODO: sth to abstract knowledge components !
 });

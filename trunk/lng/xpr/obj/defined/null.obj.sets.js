@@ -12,7 +12,7 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 //////////////// nul.xpr implementation
 
 	is_set: true,
-	toString: function() { return this.type; },
+	toText: function(txtr) { return this.type; },
 });
 
 merge(nul.obj.empty = new nul.obj.hcSet(), {
@@ -99,6 +99,6 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 
 	type: 'range',
 	//TODO2: draw real range  
-	toString: function() { return '&#x2124;'; },
+	toText: function(txtr) { return '&#x2124;'; },
 	build_ndx: function() { return '[range:'+this.lower+'|'+this.upper+']'; },
 });

@@ -36,8 +36,9 @@
 		}
 		return brwsr[uinm[0]];
 	},
-	toHTML: function() { return this.toString(); },
-	toString: function() { throw 'abstract'; },
+	toHtml: function() { return this.toText(nul.txt.html); },
+	toFlat: function() { return this.toText(nul.txt.flat); },
+	toText: function(txtr) { throw 'abstract'; },
 	
 	build_components: function() {
 		var rv = {};

@@ -31,7 +31,7 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 //////////////// nul.xpr implementation
 
 	type: 'local',
-	toString: function() {
+	toText: function(txtr) {
 		return (this.dbgName?this.dbgName:'') + '[' + this.klgName + '|' + this.lclNdx + ']';
 	},
 	build_ndx: function() { return '[lcl:'+this.klgName+'|'+this.lclNdx+']'; },
