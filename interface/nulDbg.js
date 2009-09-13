@@ -13,6 +13,7 @@ function init()
 	nul.debug.kbase.table = $('kbase');
 	nul.debug.logs.table = $('logs');
 	if(!nul.debug.acts) $('shwLoggingActs').disabled = true;
+	else $('shwLoggingActs').checked = true;
 	src = document.getElementById('source');
 	bln = document.getElementById('belongs');
 	evd = document.getElementById('evaled');
@@ -31,7 +32,7 @@ function evaluate()
 	nul.execution.benchmark.measure('*evaluation',function(){
 		v = nul.expression(src.value);
 	});
-	evd.innerHTML = v?v.toHTML():'Empty!';
+	evd.innerHTML = v.toHtml();
 }
 
 function testEvaluation()
@@ -92,11 +93,11 @@ function shwLoggingClk() {
 function watchBelongs(x) {
 	while(bln.rows.length) bln.deleteRow(0);
 	if(x) {
-		rw.insertCell(0).innerHTML = x.toHTML() + ' belongs to ...';
+		rw.insertCell(0).innerHTML = x.toHtml() + ' belongs to ...';
 		map(x.belong, function(i) {
 			var rw = bln.insertRow(-1);
 			rw.insertCell(0).innerHTML = i;
-			rw.insertCell(0).innerHTML = this.toHTML();
+			rw.insertCell(0).innerHTML = this.toHtml();
 		});
 	}
 }

@@ -67,22 +67,22 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 //////////////// nul.xpr implementation
 
 	type: 'pair',
-	toString : function() {
+	toText : function(txtr) {
 		if(!this.is('set')) return '(' +
-			this.first.toString() + ' :- ' +
-			this.second.toString() + ')' ;
+			this.first.toText(txtr) + ' :- ' +
+			this.second.toText(txtr) + ')' ;
 		var flat = this.flat();
 		if(this.is('list')) {
 			if(1== flat.length && '&phi;'== flat.follow.type)
-				return '{' + flat[0].toString() + '}';
+				return '{' + flat[0].toText(txtr) + '}';
 			var rv = '(' +
-				map(flat, function() {return this.toString(); }).join(', ');
-			if('&phi;'!= flat.follow.type) rv += ',.. ' + flat.follow.toString();
+				map(flat, function() {return this.toText(txtr); }).join(', ');
+			if('&phi;'!= flat.follow.type) rv += ',.. ' + flat.follow.toText(txtr);
 			return rv+')';
 		} 
 		var rv = '{' +
-			map(flat, function() {return this.toString(); }).join(' &#9633; ') + '}';
-		if('&phi;'!= flat.follow.type) rv += ' &cup; ' + flat.follow.toString();
+			map(flat, function() {return this.toText(txtr); }).join(' &#9633; ') + '}';
+		if('&phi;'!= flat.follow.type) rv += ' &cup; ' + flat.follow.toText(txtr);
 		return rv;
 	},
 

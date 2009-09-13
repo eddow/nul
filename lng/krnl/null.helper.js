@@ -155,7 +155,7 @@ function arrCmp(a, b) {
 //arguments to Array()
 function arrg(args, ndx) {
 	var rv = [];
-	for(var i=ndx; i<args.length; ++i) rv.push(args[i]);
+	for(var i=(ndx||0); i<args.length; ++i) rv.push(args[i]);
 	return rv;
 }
 
@@ -208,5 +208,3 @@ function merge(a, b, cb) {
 
 pinf = Number.POSITIVE_INFINITY;
 ninf = Number.NEGATIVE_INFINITY;
-
-window.toString = null;

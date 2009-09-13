@@ -18,8 +18,8 @@ nul.obj.attribute = Class.create(nul.obj.undefined, {
 //////////////// nul.xpr implementation
 
 	type: 'attr',
-	toString: function() {
-		return this.ofObject.toString() + '&rarr;' + this.attributeName;
+	toText: function(txtr) {
+		return this.ofObject.toText(txtr) + '&rarr;' + this.attributeName;
 	},
 	build_ndx: function() { return '[attr:'+this.ofObject.ndx()+'|'+this.attributeName+']'; },
 	components: ['ofObject'],

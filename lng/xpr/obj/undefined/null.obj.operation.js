@@ -19,8 +19,8 @@ nul.obj.operation = Class.create(nul.obj.undefined, {
 //////////////// nul.xpr implementation
 	
 	type: 'operation',
-	toString: function() {
-		return '(' + map(this.operands, function() { return this.toString(); })
+	toText: function(txtr) {
+		return '(' + map(this.operands, function() { return this.toText(txtr); })
 			.join(' '+this.operator+' ') + ')';
 	},
 	components: ['operands'],

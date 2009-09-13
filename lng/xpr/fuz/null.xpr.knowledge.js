@@ -9,14 +9,15 @@
  nul.xpr.knowledge = Class.create(nul.xpr, {
 	fuzzy: true,
  	initialize: function(prnt) {
- 		//dbgNames, could remember just the length (as an int) if no debug info needed
- 		this.locals = [];	//Create a new object each time
+ 		
+ 		//Create new objects each time
+ 		this.locals = [];	//dbgNames, could remember just the length (as an int) if no debug info needed
+ 		this.eqCls = [];	//Array of equivalence classes.
+ 		this.access = {};	//Access from an obj.ndx to an eq class it's in.
  		
  		this.prnt = prnt;
 		this.name = ++nul.xpr.knowledge.ndx;
  	},
- 	eqCls: [],		//Array of equivalence classes.
- 	access: {},		//Access from an obj.ndx to an eq class he's in
  	/**
  	 * Copy the infos of klg in here.
  	 */
@@ -24,7 +25,7 @@
  		this.locals = klg.locals;
  		this.eqCls = klg.eqCls;
  		this.access = klg.access;
- 		this.name = klg.name;
+ 		this.name = klg.name;	//TODO2: let or not ?
  		return this;
  	},
  	/**
@@ -86,7 +87,7 @@
  		for(var i=0; i<a.length; ++i) {
  			if(a[i].fuzzy) a[i] = this.merge(a[i]).value;
  			var ndx = a[i].ndx();
- 			if(this.access[ndx]) eqClss[this.access[ndx]] = true;
+ 			if('undefined'!= typeof this.access[ndx]) eqClss[this.access[ndx]] = true;
  			else solos.push(a[i]);
  		}	//TODO2: null.obj.extension management
  		eqClss = keys(eqClss);
@@ -111,7 +112,7 @@
  		delete this.access;
  	}.describe(function() {
  		return 'Unification : ' +
- 			map(beArrg(arguments), function() { return this.toString(); }).join(' = ');
+ 			map(beArrg(arguments), function() { return this.toHtml(); }).join(' = ');
  	}),
 	/**
  	 * Know that 'e' is in the set 's'.
@@ -142,8 +143,8 @@
 	
 	type: 'klg',
 	//TODO: toHtml show locals
-	toString: function() {
-		return map(this.eqCls, function() { return this.toString(); }).join('; ');
+	toText: function(txtr) {
+		return map(this.eqCls, function() { return this.toText(txtr); }).join('; ');
 	},
 	components: ['eqCls'],
 
@@ -206,10 +207,10 @@ nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
 //////////////// nul.xpr implementation
 	
 	type: 'eqCls',
-	toString: function() {
-		var rv = '('+map(this.equivalents(), function() { return this.toString(); }).join(' = ')+')';
+	toText: function(txtr) {
+		var rv = '('+map(this.equivalents(), function() { return this.toText(txtr); }).join(' = ')+')';
 		if(!this.belongs.length) return rv;
-		return rv + ' in (' + map(this.belongs, function() { return this.toString(); }).join(', ')+')';
+		return rv + ' in (' + map(this.belongs, function() { return this.toText(txtr); }).join(', ')+')';
 			
 	},
 	components: ['prototyp', 'values', 'belongs'],

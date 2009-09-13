@@ -6,16 +6,16 @@
  *
  *--------------------------------------------------------------------------*/
  
-nul.text = {
+nul.txt = {
 	drawing: [],
 	beginDraw: function(xpr) {
-		if(nul.text.drawing.contains(xpr)) return false;
-		nul.text.drawing.push(xpr);
+		if(this.drawing.contains(xpr)) return false;
+		this.drawing.push(xpr);
 		return true;
 	},
 	endDraw: function(xpr) {
-		if(nul.debug.assert) assert(xpr==nul.text.drawing.pop(), 'Drawing consistency');
-		else nul.text.drawing.pop();
+		if(nul.debug.assert) assert(xpr==this.drawing.pop(), 'Drawing consistency');
+		else this.drawing.pop();
 	},
 	js: {
 		tilement: '',
@@ -36,12 +36,12 @@ nul.text = {
 			if(!ttl) ttl = cnt;
 			this.tilement += '<a class="'+knd+'" '+
 				'title="'+ttl+'" '+
-				'onmouseover="nul.text.js.enter(this.parentNode, \''+knd+'\');" '+
+				'onmouseover="nul.txt.js.enter(this.parentNode, \''+knd+'\');" '+
 				'style="left: '+((this.tilePos++)*5)+'px;" '+
 				'>'+aCnt+'</a>' ;
 			return '<div class="'+knd+'" '+
-				'onmouseout="nul.text.js.leave();" '+
-				'onmouseover="nul.text.js.keepIn();" '+
+				'onmouseout="nul.txt.js.leave();" '+
+				'onmouseover="nul.txt.js.keepIn();" '+
 				'style="display: none;" '+
 				'>'+ cnt + '</div>';
 		},
@@ -60,7 +60,7 @@ nul.text = {
 			elm.getElementsBySelector('div.'+knd).each(Element.show);
 			elm.getElementsBySelector('span a.'+knd).each(Element.show);
 			elm.getElementsBySelector('span div.'+knd).each(Element.hide);
-			//this.keepTimeOut = window.setTimeout('nul.text.js.leave();',100);
+			//this.keepTimeOut = window.setTimeout('nul.txt.js.leave();',100);
 		},
 		leave: function(elm, knd) {
 			if(!this.entered) return;
@@ -82,9 +82,9 @@ nul.text = {
 			collapser: function(html) {
 				this.toPair.push(this.lineCount());
 				return '<span class="collapser start"><a class="collapser" ' +
-					'onclick="nul.text.collapse(this, '+this.lineCount()+');">&darr;</a></span>'+
+					'onclick="nul.txt.collapse(this, '+this.lineCount()+');">&darr;</a></span>'+
 					'<span class="uncollapser start"><a class="collapser" ' +
-					'onclick="nul.text.uncollapse(this, '+this.lineCount()+');">+</a></span>'+
+					'onclick="nul.txt.uncollapse(this, '+this.lineCount()+');">+</a></span>'+
 					html;
 			},
 			endCollapser: function(opnd, clsd) {
@@ -94,10 +94,10 @@ nul.text = {
 				this.collapsing[plc] = this.lineCount();
 				return '<span class="collapser end">' +
 					'<a class="collapser" ' +
-					'onclick="nul.text.collapse(this, '+plc+');">&uarr;</a>' + opnd +
+					'onclick="nul.txt.collapse(this, '+plc+');">&uarr;</a>' + opnd +
 					'</span><span class="uncollapser end">' +
 					'<a class="collapser" ' +
-					'onclick="nul.text.uncollapse(this, '+plc+');">+</a>' + clsd +
+					'onclick="nul.txt.uncollapse(this, '+plc+');">+</a>' + clsd +
 					'</span>';
 			},
 			//'collapsed' class name is added once for each collapsement : this is not a bug if it appears

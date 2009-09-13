@@ -98,7 +98,7 @@ nul.debug = {
 	logging: false,
 	watches: false,
 	perf: 0> window.location.href.indexOf('noperf'),
-	acts: 0> window.location.href.indexOf('noactlog'),
+	acts: 0<= window.location.href.indexOf('actLog'),
 	lcLimit: 10000,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
@@ -118,7 +118,7 @@ nul.debug = {
 			return rv.join(' ');
 		}
 		if(v.dbgHTML) return v.dbgHTML();
-		return v.toString()
+		return v.toText?v.toText(nul.txt.flat):v.toString();
 	},
 	log: function(tp) {
 		return nul.debug.logging && nul.debug.logging[tp] ? function(v) {
@@ -140,14 +140,14 @@ nul.debug = {
 	},
 	watch: function(v)
 	{
-		rcr.innerHTML = v.toHTML();
+		rcr.innerHTML = v.toHtml();
 	},
 	reset: function() {
 		nul.debug.logs.clear();
 		nul.debug.callStack.clear();
 		nul.debug.kbase.clear();
 		nul.debug.lc = 0;
-		nul.debug.lcs = nul.text.clpsSstm(this.logs.table, 'dn',
+		nul.debug.lcs = nul.txt.clpsSstm(this.logs.table, 'dn',
 			function() { return nul.debug.logs.buffer.rows.length; });
 		nul.debug.lcNextLimit = nul.debug.lcLimit;
 	},

@@ -183,7 +183,7 @@ function drawTests(tests, cs, lvl) {
 
 function init() {
 	if(!nul.debug.perf) $('perfTbl').hide();
-	clpsSstm = nul.text.clpsSstm(tbody = $('tests'),'up');
+	clpsSstm = nul.txt.clpsSstm(tbody = $('tests'),'up');
 	drawTests(tests, clpsSstm, 0);
 	nul.execution.reset();
 }
@@ -205,7 +205,7 @@ function doTest(tn) {
 	var v, test = tbody.rows[tn].test;
 	nul.debug.assert = !$('qndTst').checked;
 	try {
-		v = v = nul.expression(test.xpr).toString();
+		v = v = nul.expression(test.xpr).toFlat();
 	} catch(err) {
 		nul.exception.notice(err);
 		if(nul.erroneusJS) throw nul.erroneusJS;

@@ -17,7 +17,7 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 //////////////// nul.xpr implementation
 
 	//type: set on initialise
-	toString : function() {
+	toText : function(txtr) {
 		return ''+ this.value;
 	},
 	build_ndx: function() { return '['+this.type+':'+(''+this.value).replace(']','[|]')+']'; },
