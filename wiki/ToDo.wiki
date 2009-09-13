@@ -1,9 +1,12 @@
 #summary TODOs et idées
 
+=== fuzziness ===
+
+Création de l'objet fuzziness et de sa realtion avec les fuzzy
+
 === xpr ===
 
 reflect the nul.xpr in the wiki
-
 
 === equivalences ===
 
