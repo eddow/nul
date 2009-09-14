@@ -28,5 +28,4 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 //////////////// nul.xpr implementation
 
 	type: 'local',
-	build_ndx: function() { return '[lcl:'+this.fznsName+'|'+this.lclNdx+']'; },
 });

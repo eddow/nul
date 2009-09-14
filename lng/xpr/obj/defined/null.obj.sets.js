@@ -18,7 +18,7 @@ merge(nul.obj.empty = new nul.obj.hcSet(), {
 	intersect: function(o) {
 		return [this];
 	},
-	has: function(o, klg) {
+	has: function(o) {
 		nul.fail(this.type,' contains nothing!');
 	},
 
@@ -31,7 +31,7 @@ merge(nul.obj.whole = new nul.obj.hcSet(), {
 	intersect: function(o) {
 		return [o];
 	},
-	has: function(o, klg) {
+	has: function(o) {
 		return o;
 	},
 
@@ -44,9 +44,9 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 	intersect: function(o) {
 		if('range'== o.type) return o;
 	},
-	has: function(o, klg) {
+	has: function(o) {
 		if('number'== o.type) return o;
-		if(o.c()) nul.fail(o, ' is not a number');
+		if(o.isDefined()) nul.fail(o, ' is not a number');
 	},
 
 //////////////// nul.xpr implementation
@@ -55,7 +55,7 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 });
 
 nul.obj.string = Class.create(nul.obj.hcSet, {
-	has: function(o, klg) {
+	has: function(o) {
 		if('string'== o.type) return o;
 		if(o.isDefined()) nul.fail(o, ' is not a string');
 	},
@@ -66,7 +66,7 @@ nul.obj.string = Class.create(nul.obj.hcSet, {
 });
 
 nul.obj.bool = Class.create(nul.obj.hcSet, {
-	has: function(o, klg) {
+	has: function(o) {
 		if('boolean'== o.type) return o;
 		if(o.isDefined()) nul.fail(o, ' is not a boolean');
 	},
@@ -90,7 +90,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		this.lower = lwr || ninf;
 		this.upper = upr || pinf;
 	},
-	has: function(o, klg) {
+	has: function(o) {
 		if(!o.isDefined()) return;
 		if('number'!= o.type) nul.fail(o, ' is not a number');
 		if(!nul.isJsInt(o.value)) nul.fail(o, ' is not an integer');

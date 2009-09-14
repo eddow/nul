@@ -16,7 +16,7 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 			isList: false,
 		}); 
 	},
-	 
+	
 //////////////// nul.xpr implementation
 
 	//type: set on initialise

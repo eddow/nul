@@ -23,9 +23,9 @@
 	 */
 	summary: function(itm) {
 		if(nul.debug.assert) assert(this.summarised, 'Use summary only when summarised')
-		if(!this.summarised[itm]) {
+		if('undefined'== typeof this.summarised[itm]) {
 			assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.type);
-			this['sum_'+itm].apply(this);
+			this.summarised[itm] = this['sum_'+itm].apply(this);
 		}
 		return this.summarised[itm];
 	},
@@ -71,16 +71,17 @@
 	
 	sum_index: function() {
 		if(nul.debug.assert) assert(this.type, 'NDX builder implemented');
-		return this.indexedSubs(vals(this.sum_components));
+		return this.indexedSub(vals(this.sum_components));
 	},
-	indexedSubs: function(items) {
+	indexedSub: function(items) {
 	 	items = beArrg(arguments);
 	 	var rv = '['+this.type;
 	 	if(items && items.length) rv += ':' + items.join('|');
 	 	return rv+']';
 	},
 
-	sum_htmlTxt: function() { return nul.txt.html.toText(this); },
+	sum_htmlTxt: function() { return nul.txt.flat.toText(this); },
+		//TODO1: return nul.txt.html.toText(this); },
 	sum_flatTxt: function() { return nul.txt.flat.toText(this); },
 	
 	sum_isList: function() { return this.isSet(); },

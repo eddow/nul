@@ -26,3 +26,7 @@ nul.obj.operation = Class.create(nul.obj.undefined, {
 nul.obj.operation.binary = Class.create(nul.obj.operation, {
 	//TODO2
 });
+
+nul.obj.operation.Nary = Class.create(nul.obj.operation, {
+	//TODO2
+});

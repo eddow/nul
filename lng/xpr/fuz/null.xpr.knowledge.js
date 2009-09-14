@@ -10,8 +10,8 @@
  * A list of conditions and fuzziness reduction.
  */
 nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
-	initialize: function($super, fzns) {
- 		$super(fzns);
+	initialize: function(fznsName) {
+		if(nul.debug.assert) this.fznsName = fznsName;
  		//Create new objects each time
  		this.eqCls = [];		//Array of equivalence classes.
  		this.access = {};		//Access from an obj.ndx to an eq class it's in.
@@ -37,7 +37,7 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  		this.modify();
 		var eqs = (ec || this.eqCls[ecNdx]).equivalents();
 		for(var unfd in eqs) if(cstmNdx(unfd))
-			this.access[eqs[unfd]] = dstEqClsNdx;
+			this.access[eqs[unfd]] = ecNdx;
  	},
  	
 //////////////// internals
@@ -58,6 +58,7 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  	 * Register an IOR3 for this knowledge
  	 */
  	hesitate: function(choices) {
+ 		this.modify();
  		this.hesitations.push(choices);
  	},
  	
@@ -69,28 +70,35 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  	 * @param fzns nul.xpr.fuzziness
  	 * @return boolean success
  	 */
- 	stepUp: function(fzns) {
- 		if(nul.debug.assert) assert(this.fzns.name != fzns.name, 'stepUp effectively chage fuzziness')
- 		fzns.modify();
- 		var brwsr = new nul.browser.stepUp(this.name, fzns.name, fzns.locals.length);
- 		fzns.locals.pushs(this.locals);
- 		return brwsr.browse(this) || this; 
+ 	stepUp: function(fzns, val) {
+ 		if(nul.debug.assert) {
+ 			assert(this.summarised, 'stepUp a built knowledge');
+ 			assert(this.fuzziness.name != fzns.name, 'stepUp effectively chage fuzziness');
+ 		}
+ 		var brwsr = new nul.browser.stepUp(this.fuzziness.name, fzns.name, fzns.locals.length);
+ 		fzns.locals.pushs(this.fuzziness.locals);
+ 		var rv = brwsr.browse(this) || this.modifiable();
+ 		return val?{knowledge: rv, value: brwsr.browse(val)}:rv;
  	},
  	
  	/**
  	 * Know all what klg knows
  	 * Note: share the fuziness with klg
- 	 * @return boolean Success
+ 	 * @return nul.xpr.knowledge
+ 	 * @throws nu.failure
  	 */
  	merge: function(klg) {
  		this.modify();
- 		if(nul.debug.assert) assert(this.fzns===klg.fzns, 'Merged knowledge share fuzziness')
- 		for(var ec in klg.eqCls) if(cstmNdx(ec)) {
+ 		if(nul.debug.assert) {
+ 			assert(klg.summarised, 'Merge a built knowledge');
+ 			assert(this.fznsName==klg.fuzziness.name, 'Merged knowledge share fuzziness');
+ 		}
+ 		for(var ec in klg.eqCls) if(cstmNdx(ec) && klg.eqCls[ec]) {
  			var unf = this.unify(klg.eqCls[ec].equivalents()), blg = null;
  			if(unf) blg = this.belong(unf, klg.eqCls[ec].belongs);
- 			if(!blg) return false;
+ 			if(!blg) return nul.fail('Knowledge merging');
  		}
- 		return toAdd.value||true;
+ 		return this;
  	},
 
  	/**
@@ -108,14 +116,14 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  		var eqClss = {};
  		var solos = [];
  		for(var i=0; i<a.length; ++i) {
- 			if(a[i].fuzzy) a[i] = a[i].stepUp(this);
+ 			//if(a[i].fuzzy) a[i] = a[i].stepUp(this);
  			if('undefined'!= typeof this.access[a[i]]) eqClss[this.access[a[i]]] = true;
  			else solos.push(a[i]);
  		}	//TODO2: null.obj.extension management
  		eqClss = keys(eqClss);
- 		var dstEqClsNdx = (0+eqClss[0]) || this.eqCls.length;
+ 		var dstEqClsNdx = this.eqCls.length;
  		var dstEqCls = eqClss.length?
- 			this.eqCls[eqClss.shift()]:
+ 			this.eqCls[dstEqClsNdx=eqClss.shift()]:
  			this.newEqClass();
  		if(trys(eqClss, function(i, eqx) {
 	 			try { return this.eqCls[eqClss[eqx]].mergeTo(dstEqCls); }
@@ -123,8 +131,12 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
 	 		}) ||
 			trys(solos, function() { return dstEqCls.isEq(this); }))
 			nul.fail('Unification', a)
-		this.accede(dstEqClsNdx);
-		return dstEqCls.good();
+		try { return dstEqCls.good(); }
+		finally {
+			if(1==dstEqCls.equivalents().length && !dstEqCls.belongs.length)
+				this.eqCls[dstEqClsNdx] = null;
+			else this.accede(dstEqClsNdx);
+		}
  	}.describe(function() {
  		return 'Unification : ' +
  			map(beArrg(arguments), function() { return this.toHtml(); }).join(' = ');
@@ -139,19 +151,24 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  	belong: function(e, ss) {
  		this.modify();
  		ss = beArrg(arguments, 1);
- 		var asrtSets = [];
- 		for(var s in ss) if(cstmNdx(s)) {
- 			var fltrd = ss[s].has(e, this);
- 			if(fltrd) e = fltrd;
- 			else asrtSets.push(ss[s]);
- 		}
- 		if(asrtSets.length) {
-	 		var dstEC = this.access[e]?
-	 			this.eqCls[this.access[e]]:
-	 			this.newEqClass(e);
-	 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(s);
- 		}
+ 		var dstEC = this.access[e]?
+ 			this.eqCls[this.access[e]]:
+ 			this.newEqClass(e);
+ 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(ss[s]);
  		return e;
+ 	},
+	
+//////////////// nul.xpr.fuzzy implementation
+
+ 	built: function(fzns) {
+ 		if(nul.debug.assert) {
+ 			assert(this.fznsName==fzns.name, 'Promised fuzziness arrived');
+ 			delete this.fznsName;
+ 		}
+ 		this.fuzziness = fzns;
+ 		for(var ec in this.eqCls) if(cstmNdx(ec) && this.eqCls[ec]) this.eqCls[ec].summarise();
+ 		this.summarise();
+ 		return this;	//TODO4: what if isFixed ?
  	},
 
 //////////////// nul.xpr.fuzzy summaries
@@ -180,10 +197,11 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
 nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
 	initialize: function(klg) {
 		this.knowledge = klg;
+ 		//Create new objects each time
+		this.values = [];	//Equal values
+		this.belongs = [];	//Sets the values belong to
 	},
 	prototyp: null,
-	values: [],
-	belongs: [],
 	/**
 	 * Gets a good way to represent the values of this equivalence class
 	 */
@@ -205,7 +223,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
  		this.modify();
 		if(o.isDefined()) {
 			if(this.prototyp) {
-				var unf = this.prototyp.unify(o, this.knowledge);
+				var unf = this.prototyp.unified(o, this.knowledge);
 				if(!unf) return true;
 				if(true!== unf) this.prototyp = unf;
 			} else this.prototyp = o;
@@ -233,14 +251,6 @@ nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
 			trys(this.values, function() { return c.isEq(this); }) ||
 			trys(this.belongs, function() { return c.isIn(this); });
 	},
-	
-//////////////// nul.xpr.fuzzy implementation
-
- 	built: function() {
- 		for(ec in this.eqCls) ec.summarise();
- 		this.summarise();
- 		return this.isFixed()?null:this;
- 	},
 
 //////////////// nul.xpr implementation
 	

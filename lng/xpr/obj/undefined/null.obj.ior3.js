@@ -11,14 +11,28 @@
  */
 nul.obj.ior3 = Class.create(nul.xpr.fuzzy, nul.obj.undefined, {
 	initialize: function(cklg, items) {
-		this.choices = items;
+		
+		this.choices = items.mar(function() {
+			if(nul.debug.assert) assert('fuzzy'== this.type, 'Only fuzzy values are given to ior3')
+			if('ior3'== this.value.type && this.value.cklg== cklg) {
+				//TODO2: flatten
+			}
+			return [this];
+		});
 		this.cklg = cklg;
+		this.summarise({
+			isFixed: false,
+		});
 	},
 	
 //////////////// nul.xpr.fuzzy implementation
 
-	built: function() {
-		if(1== this.choices.length) return this.choices[0];
+	built: function(fzns) {
+		if(!this.choices.length) nul.fail('No more choices');
+		if(1== this.choices.length) {
+			this.cklg.merge(this.choices[0].knowledge);
+			return this.choices[0].value;
+		}
 		this.cklg.hesitate(this);
 		return this;
 	},
@@ -41,7 +55,7 @@ nul.obj.ior3 = Class.create(nul.xpr.fuzzy, nul.obj.undefined, {
 		}
 		return rv;
 	},
-	
+
 //////////////// nul.xpr implementation
 	
 	type: 'ior3',

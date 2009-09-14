@@ -14,7 +14,7 @@ var nul = {
 	 */
 	fail: function(reason) {
 		reason = beArrg(arguments)
-		//TODO1
+		//TODO2: log
 		throw nul.failure;
 	},
 	globals: {},
@@ -23,7 +23,7 @@ var nul = {
     	return n== Math.floor(n);
     },
 	globalsUse: function(srName) {
-		var ub = new nul.understanding.base.set(null, srName);
+		var ub = new nul.understanding.base.set(null, srName, 'g');
 		for(var p in nul.globals) 
 			ub.createFreedom(p, nul.globals[p]);
 		return ub;

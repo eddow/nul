@@ -6,12 +6,11 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.txt.flat = {
+nul.txt.flat = merge({
 	all: function(ass) {
 		var txtr = this;
 		return maf(ass, function() { return this.toFlat(); });
 	},
-	prototype: nul.txt,
 	recurStr: '[recur]',
 	wrap: function(txt) { return txt; },
 	outp: function(xpr) { return xpr; },
@@ -64,16 +63,16 @@ nul.txt.flat = {
 		
 		eqCls: function() {
 			return '(' + nul.txt.flat.all(this.equivalents()).join(' = ') + ')' +
-				(this.belongs.length?(' &in; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
+				(this.belongs.length?(' &isin; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
 		},
 		klg: function() {
 			return nul.txt.flat.all(this.eqCls).join('; ');
 		},
 		fuzzy: function() {
-			var klgStr = nul.txt.flat.klg.apply(this);
+			var klgStr = this.knowledge?this.knowledge.toFlat():'';
 			var valStr = this.value.toFlat();
 			if(!klgStr.length) return valStr;
 			return valStr + '; ' + klgStr;
 		}
 	}
-};
+}, nul.txt);
