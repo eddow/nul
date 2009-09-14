@@ -12,7 +12,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	 * @param second JsNulObj
 	 * @param klg If <first> is JsNulObj, this is the parent knowledge
 	 */
-	initialize: function(first, second, klg) {
+	initialize: function(first, second, klg, fzns) {
 		var fuzObj;
 		if('fuzzy'== first.type) {
 			if(nul.debug.assert) assert(!klg, 'Either give a pair a fuzzy, either an object and a knowledge');
@@ -25,7 +25,8 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 			first = (fuzObj = ops[0]).value;
 			klg = fuzObj.knowledge;
 		}
-		this.first = fuzObj || klg?new nul.obj.fuzzy(first, klg):first;
+		if(klg) klg = klg.built(fzns);
+		this.first = fuzObj || nul.obj.fuzzy.ifKlg(first, klg);
 		this.second = second;
 		this.summarise();
 	},
@@ -52,15 +53,13 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 			var op = brwsr.first;
 			var tklg = new nul.xpr.knowledge(fzns.name);
 			try {
-				rv.push(new nul.obj.fuzzy(
+				rv.push(nul.obj.fuzzy.ifKlg(
 					tklg.unify(('fuzzy'== op.type)?op.stepUp(fzns, tklg):op, o),
 					tklg.built(fzns)));
-			} catch(err) {
-				if(nul.failure!= err) throw nul.exception.notice(err);
-			}
+			} catch(err) { nul.failed(err); }
 			brwsr = brwsr.second;
 		} while('pair'== brwsr.type);
-		//TODO1: follow
+		//TODO2: follow
 		return new nul.obj.ior3(klg, rv).built(fzns);
 	},
 
@@ -83,7 +82,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 	/*unified: function(o, klg) {
 		if('pair'!= o.type) nul.fail(this, ' does not unify to ', o);
-		//TODO1
+		//TODO4
 	},*/
 	
 //////////////// nul.xpr implementation

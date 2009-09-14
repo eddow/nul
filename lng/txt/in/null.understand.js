@@ -14,9 +14,7 @@ nul.understanding = {
 			return new nul.obj.ior3(ub.klg, maf(this.operands, function() {
 			//Understand each operands in a freshly created UB that DOESN'T stores locals
 				try { return new nul.understanding.base(ub).understand(this); }
-				catch(err) {
-					if(nul.failure!= err) throw nul.exception.notice(err);
-				}
+				catch(err) { nul.failed(err); }
 			})).built(ub.fuzziness());
 		var ops = map(this.operands, function() { return this.understand(ub); });
 
@@ -117,7 +115,7 @@ nul.understanding.base = Class.create({
 	},
 	fuzziness: function() { return this.prntUb.fuzziness(); },
 	understand: function(cnt) {
-		return new nul.obj.fuzzy(cnt.understand(this), this.klg.built(this.fuzziness()));
+		return nul.obj.fuzzy.ifKlg(cnt.understand(this), this.klg.built(this.fuzziness()));
 	},
 });
 
@@ -150,9 +148,10 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 			return new nul.obj.pair(
 				cnt.understand(this),
 				nul.obj.empty,
-				this.klg.built(this.fzns));
+				this.klg,
+				this.fzns);
 		} catch(err) {
-			if(nul.failure!= err) throw nul.exception.notice(err);
+			nul.failed(err);
 			return nul.obj.empty;
 		}
 	},

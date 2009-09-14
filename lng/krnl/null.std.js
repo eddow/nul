@@ -17,6 +17,12 @@ var nul = {
 		//TODO2: log
 		throw nul.failure;
 	},
+	/**
+	 * Catch only failure.
+	 */
+	failed: function(err) {
+		if(nul.failure!= err) throw nul.exception.notice(err);
+	},
 	globals: {},
 	slf: '&crarr;',
     isJsInt: function(n) {

@@ -13,16 +13,12 @@ nul.obj.ior3 = Class.create(nul.xpr.fuzzy, nul.obj.undefined, {
 	initialize: function(cklg, items) {
 		
 		this.choices = items.mar(function() {
-			if(nul.debug.assert) assert('fuzzy'== this.type, 'Only fuzzy values are given to ior3')
 			if('ior3'== this.value.type && this.value.cklg== cklg) {
 				//TODO2: flatten
 			}
 			return [this];
 		});
 		this.cklg = cklg;
-		this.summarise({
-			isFixed: false,
-		});
 	},
 	
 //////////////// nul.xpr.fuzzy implementation
@@ -34,6 +30,10 @@ nul.obj.ior3 = Class.create(nul.xpr.fuzzy, nul.obj.undefined, {
 			return this.choices[0].value;
 		}
 		this.cklg.hesitate(this);
+		this.summarise({
+			isFixed: false,
+			isDefined: false,
+		});
 		return this;
 	},
 
@@ -42,7 +42,7 @@ nul.obj.ior3 = Class.create(nul.xpr.fuzzy, nul.obj.undefined, {
 	sum_maxXst: function() {
 		var rv = 0;
 		for(var c in this.choices) if(cstmNdx(c)) {
-			if(!this.choices[c].fuzzy) ++rv;
+			if('fuzzy'!= this.choices[c].type) ++rv;
 			else rv += this.choices[c].maxXst();
 		}
 		return rv;
@@ -50,7 +50,7 @@ nul.obj.ior3 = Class.create(nul.xpr.fuzzy, nul.obj.undefined, {
 	sum_minXst: function() {
 		var rv = 0;
 		for(var c in this.choices) if(cstmNdx(c)) {
-			if(!this.choices[c].fuzzy) ++rv;
+			if('fuzzy'!= this.choices[c].type) ++rv;
 			else rv += this.choices[c].minXst();
 		}
 		return rv;

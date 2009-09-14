@@ -116,7 +116,6 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  		var eqClss = {};
  		var solos = [];
  		for(var i=0; i<a.length; ++i) {
- 			//if(a[i].fuzzy) a[i] = a[i].stepUp(this);
  			if('undefined'!= typeof this.access[a[i]]) eqClss[this.access[a[i]]] = true;
  			else solos.push(a[i]);
  		}	//TODO2: null.obj.extension management
@@ -166,7 +165,12 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  			delete this.fznsName;
  		}
  		this.fuzziness = fzns;
- 		for(var ec in this.eqCls) if(cstmNdx(ec) && this.eqCls[ec]) this.eqCls[ec].summarise();
+ 		var isCnd = false;
+ 		for(var ec in this.eqCls) if(cstmNdx(ec) && this.eqCls[ec]) {
+ 			this.eqCls[ec].summarise();
+ 			isCnd = true;
+ 		}
+ 		if(!isCnd && !fzns.locals.length) return; 
  		this.summarise();
  		return this;	//TODO4: what if isFixed ?
  	},
