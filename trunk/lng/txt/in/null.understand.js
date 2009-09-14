@@ -11,36 +11,33 @@ nul.understanding = {
 	expression: function(ub) {
 		var ops;
 		if('[]'== this.operator)
-			return new nul.obj.ior3(this.operands.mar(function() {
+			return new nul.obj.ior3(ub.klg, maf(this.operands, function() {
 			//Understand each operands in a freshly created UB that DOESN'T stores locals
 				try { return new nul.understanding.base(ub).understand(this); }
 				catch(err) {
 					if(nul.failure!= err) throw nul.exception.notice(err);
 				}
-			})).built();
-		var ops = map(this.operands, function() { 
-			return new nul.possibles(ub.klg, this.understand(ub));				
-		});
-		if(['+' ,'*'].contains(this.operator))
-			return new nul.obj.operation.Nary(this.operator, ops);
-		if(['-' ,'/' ,'%'].contains(this.operator))
-			return new nul.obj.operation.binary(this.operator, ops);
-/*		if(['<','>', '<=','>='].contains(this.operator)) {
-				ub.klg.know(new nul.xpr.ordered(this.operator, this));
-				return this[0];
-			}*/
+			})).built(ub.fuzziness());
+		var ops = map(this.operands, function() { return this.understand(ub); });
 
-		switch(operator)
+		switch(this.operator)
 		{
+			case '+':
+			case '*':
+				return new nul.obj.operation.Nary(this.operator, ops);
+			case '-':
+			case '/':
+			case '%':
+				return new nul.obj.operation.binary(this.operator, ops);
+			//TODO2: > < >= <=
 			case ':-':
-				return new nul.obj.pair(ops[0], ops[1], ub.klg);
+				return new nul.obj.pair(ops[0], ops[1]);
 			case ',':
 				var rv = ops.follow?ops.follow:nul.obj.empty;
-				while(this.length) rv = new nul.obj.pair(ops.pop(), rv, ub.klg);
+				while(ops.length) rv = new nul.obj.pair(ops.pop(), rv);
 				return rv;
-			case '=': return klg.unify(ops);
-			case ';':
-				return ops[0];
+			case '=': return ub.klg.unify(ops);
+			case ';': return ops[0];
 			default:
 				throw nul.internalException('Unknown operator: "'+operator+'"');
 		}
@@ -74,7 +71,9 @@ nul.understanding = {
 		return new nul.obj.litteral(value);
 	},
 	application: function(ub) {
-		return klg.belong(this.applied.understand(ub), this.item.understand(ub));
+		var app = this.applied.understand(ub);
+		var itm = this.item.understand(ub);
+		return itm.has(app, ub.fuzziness(), ub.klg) || ub.klg.belong(app, itm);
 	},
 	taking: function(ub) {
 		return this.applied.understand(ub).through(this.item.understand(ub));
@@ -107,7 +106,7 @@ nul.understanding = {
 nul.understanding.base = Class.create({
 	initialize: function(prntUb) {
 		this.prntUb = prntUb;
-		this.klg = new nul.xpr.knowledge(prntUb?prntUb.klg:null);
+		this.klg = new nul.xpr.knowledge(this.fuzziness().name);
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);
@@ -116,16 +115,17 @@ nul.understanding.base = Class.create({
 	createFreedom: function(name, value) {
 		return this.prntUb.createFreedom(name, value);
 	},
-	fuzziness: function() { return prntUb.fuzziness(); },
+	fuzziness: function() { return this.prntUb.fuzziness(); },
 	understand: function(cnt) {
-		return new nul.obj.fuzzy(cnt.understand(this), this.klg.built());
+		return new nul.obj.fuzzy(cnt.understand(this), this.klg.built(this.fuzziness()));
 	},
 });
+
 nul.understanding.base.set = Class.create(nul.understanding.base, {
-	initialize: function($super, prntUb, selfName) {
+	initialize: function($super, prntUb, selfName, fznsName) {
+		this.fzns = new nul.fuzziness(fznsName);
 		$super(prntUb);
 		this.parms = {};
-		this.fzns = new nul.fuzziness();
 		if(selfName) this.parms[selfName] = this.klg.local(selfName, nul.slf);
 	},
 	resolve: function($super, identifier) {
@@ -144,19 +144,16 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 		else value = this.allocLocal(name);
 		return value;
 	},
-	fuzziness: function() { return prntUb.fuzziness(); },
+	fuzziness: function() { return this.fzns; },
 	understand: function(cnt) {
-		return new nul.obj.pair(cnt.understand(this), nul.obj.empty, this.klg.built(), this.fzns);
+		try {
+			return new nul.obj.pair(
+				cnt.understand(this),
+				nul.obj.empty,
+				this.klg.built(this.fzns));
+		} catch(err) {
+			if(nul.failure!= err) throw nul.exception.notice(err);
+			return nul.obj.empty;
+		}
 	},
 });
-
-nul.understanding.base.set.understand = function(cnt, ub, slf) {
-	//TODO2: cnt=[cnt] pourrait marcher à tous les coups -> redondance -> repenser
-	if('[]'== cnt.operator) cnt = cnt.operands;
-	else cnt = [cnt];
-	
-	return new nul.possibles(ub.klg, cnt.mar(function() {
-		//Understand each operands in a freshly created UB that stores locals
-		return new nul.understanding.base.set(ub, slf).understand(this);
-	})).set();
-};

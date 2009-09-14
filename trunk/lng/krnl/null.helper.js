@@ -194,8 +194,6 @@ function merge(a, b, cb) {
 	return rv; 
 });
 
-[].map || (Object.prototype.map = function(f){ return map(this,f); });
-
 /**
  * Returns an array whose elements are the return values of <fct> taken for each item of <itm>
  * <fct> return an array of element to add in the return list

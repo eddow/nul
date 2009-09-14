@@ -12,15 +12,15 @@ nul.txt = {
 		try { return this.wrap((this.draw[xpr.type]||this.draw.other).apply(this.outp(xpr), [])); }
 		finally { this.endDraw(xpr); }
 	},
-	dipatchPair: function(xpr, obj) {
-		if(!xpr.is('set')) return this.draw.dotted.apply(obj, []);
-		var flat = xpr.flat();
-		if(xpr.is('list')) {
-			if(1== flat.length && '&phi;'== flat.follow.type)
+	dispatchPair: function(xpr, obj) {
+		if(!xpr.isSet()) return this.draw.dotted.apply(obj, []);
+		var lstd = xpr.listed();
+		if(xpr.isList()) {
+			if(1== lstd.length && !lstd.follow)
 				return this.draw.singleton.apply(obj, []);
-			return this.draw.list.apply(obj, [flat]);
+			return this.draw.list.apply(obj, [lstd]);
 		} 
-		return this.draw.set.apply(obj, [flat]);
+		return this.draw.set.apply(obj, [lstd]);
 	},
 	drawing: [],
 	beginDraw: function(xpr) {
@@ -28,7 +28,7 @@ nul.txt = {
 		this.drawing.push(xpr);
 		return true;
 	},
-	endDraw: function(str) {
+	endDraw: function(xpr) {
 		if(nul.debug.assert) assert(xpr==this.drawing.pop(), 'Drawing consistency');
 		else this.drawing.pop();
 	},
