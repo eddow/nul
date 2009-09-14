@@ -60,6 +60,9 @@ nul.txt.flat = merge({
 			return '{' + nul.txt.flat.all(flat).join(' &#9633; ') + '}' +
 				(flat.follow?(' &cup; '+flat.follow.toFlat()):'');
 		},
+		ior3: function() {
+			return '(' + nul.txt.flat.all(this.choices).join(' &#9633; ') + ')';
+		},
 		
 		eqCls: function() {
 			return '(' + nul.txt.flat.all(this.equivalents()).join(' = ') + ')' +

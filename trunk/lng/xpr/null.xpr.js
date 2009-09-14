@@ -81,7 +81,7 @@
 	},
 
 	sum_htmlTxt: function() { return nul.txt.flat.toText(this); },
-		//TODO1: return nul.txt.html.toText(this); },
+		//TODO2: return nul.txt.html.toText(this); },
 	sum_flatTxt: function() { return nul.txt.flat.toText(this); },
 	
 	sum_isList: function() { return this.isSet(); },

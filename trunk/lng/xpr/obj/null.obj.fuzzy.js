@@ -33,3 +33,8 @@ nul.obj.fuzzy = Class.create(nul.obj, {
 	type: 'fuzzy',
 	components: ['value', 'knowledge'],
 });
+
+nul.obj.fuzzy.ifKlg = function(value, knowledge) {
+	if(!knowledge) return value;
+	return new nul.obj.fuzzy(value, knowledge);
+};
