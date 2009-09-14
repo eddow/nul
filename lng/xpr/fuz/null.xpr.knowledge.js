@@ -20,25 +20,32 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
 
 //////////////// privates
 
- 	/**
- 	 * Creates an equivalence class
- 	 */
- 	newEqClass: function(v) {
- 		this.modify();
- 		var rv = new nul.xpr.knowledge.eqClass();
- 		this.eqCls.push(rv);
- 		if(v) {
- 			rv.isEq(v);
- 			this.accede(this.eqCls.length - 1);
- 		}
- 		return rv;
- 	},
+	/**
+	 * Modify eqCls and set accesses
+	 */
  	accede: function(ecNdx, ec) {
  		this.modify();
-		var eqs = (ec || this.eqCls[ecNdx]).equivalents();
+ 		if(ec) this.eqCls[ecNdx] = ec;
+		var eqs = this.eqCls[ecNdx].equivalents;
 		for(var unfd in eqs) if(cstmNdx(unfd))
 			this.access[eqs[unfd]] = ecNdx;
  	},
+ 	
+ 	/**
+ 	 * Begin modification of an equivalence class
+ 	 * @param obj nul.obj or int Object whose information is brought or eqCls index
+ 	 * @return nul.xpr.knowledge.eqClass
+ 	 */
+	inform: function(ndx) {
+		var obj;
+		if(ndx && ndx.expression) ndx = this.access[obj=ndx];
+		if(ndx || 0=== ndx) return new nul.xpr.knowledge.eqClass(this, ndx, this.eqCls[ndx]);
+
+ 		var rv = new nul.xpr.knowledge.eqClass(this, this.eqCls.length);
+ 		this.eqCls.push(rv);
+ 		if(obj) rv.isEq(obj);
+ 		return rv;
+	},
  	
 //////////////// internals
 
@@ -94,7 +101,7 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  			assert(this.fznsName==klg.fuzziness.name, 'Merged knowledge share fuzziness');
  		}
  		for(var ec in klg.eqCls) if(cstmNdx(ec) && klg.eqCls[ec]) {
- 			var unf = this.unify(klg.eqCls[ec].equivalents()), blg = null;
+ 			var unf = this.unify(klg.eqCls[ec].equivalents), blg = null;
  			if(unf) blg = this.belong(unf, klg.eqCls[ec].belongs);
  			if(!blg) return nul.fail('Knowledge merging');
  		}
@@ -120,22 +127,15 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  			else solos.push(a[i]);
  		}	//TODO2: null.obj.extension management
  		eqClss = keys(eqClss);
- 		var dstEqClsNdx = this.eqCls.length;
- 		var dstEqCls = eqClss.length?
- 			this.eqCls[dstEqClsNdx=eqClss.shift()]:
- 			this.newEqClass();
+ 		var dstEqCls = this.inform(eqClss[0]);
+ 		if(eqClss.length) eqClss.shift();
  		if(trys(eqClss, function(i, eqx) {
 	 			try { return this.eqCls[eqClss[eqx]].mergeTo(dstEqCls); }
 	 			finally { this.eqCls[eqClss[eqx]] = null; }
 	 		}) ||
 			trys(solos, function() { return dstEqCls.isEq(this); }))
 			nul.fail('Unification', a)
-		try { return dstEqCls.good(); }
-		finally {
-			if(1==dstEqCls.equivalents().length && !dstEqCls.belongs.length)
-				this.eqCls[dstEqClsNdx] = null;
-			else this.accede(dstEqClsNdx);
-		}
+		return dstEqCls.built();
  	}.describe(function() {
  		return 'Unification : ' +
  			map(beArrg(arguments), function() { return this.toHtml(); }).join(' = ');
@@ -150,11 +150,9 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
  	belong: function(e, ss) {
  		this.modify();
  		ss = beArrg(arguments, 1);
- 		var dstEC = this.access[e]?
- 			this.eqCls[this.access[e]]:
- 			this.newEqClass(e);
+ 		var dstEC = this.inform(e);
  		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(ss[s]);
- 		return e;
+ 		return dstEC.built();
  	},
 	
 //////////////// nul.xpr.fuzzy implementation
@@ -196,30 +194,42 @@ nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
 	
 	type: 'klg',
 	components: ['eqCls'],
+	modifiable: function($super) {
+		var rv = $super();
+		if(nul.debug.assert) rv.fznsName = rv.fuzziness.name;
+		delete rv.fuzziness;
+		rv.eqCls = clone1(rv.eqCls);
+		rv.access = clone1(rv.access);
+		rv.hesitations = clone1(rv.hesitations);
+		return rv;		
+	}
 });
 
 nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
-	initialize: function(klg) {
+	initialize: function(klg, ndx, copy) {
 		this.knowledge = klg;
+		this.index = ndx;
  		//Create new objects each time
-		this.values = [];	//Equal values
-		this.belongs = [];	//Sets the values belong to
+		this.values = copy?clone1(copy.values):[];		//Equal values
+		this.belongs = copy?clone1(copy.belongs):[];	//Sets the values belong to
+	},
+	built: function() {
+		this.modify();
+		this.good = this.prototyp || this.values[0];
+		this.equivalents = this.prototyp?this.values.added(this.prototyp):this.values;
+		this.summarise();
+		if(!this.belongs.length && 1>= this.equivalents.length)
+			this.knowledge.eqCsl[this.index] = null;
+		else {
+			this.knowledge.accede(this.index, this);
+			delete this.index;
+			delete this.knowledge;
+		}
+		return this.prototyp || this.values[0];
 	},
 	prototyp: null,
 	/**
-	 * Gets a good way to represent the values of this equivalence class
-	 */
-	good: function() {
-		return this.prototyp || this.values[0];
-	},
-	/**
-	 * Gets a list of all the items that are declared equivalent here
-	 */
-	equivalents: function() {
-		return this.prototyp?this.values.added(this.prototyp):this.values;
-	},
-	/**
-	 * Add an object in the equivalence.
+	 * Add an object in the equivlence.
 	 * @param o JsNulObj object to add
 	 * @return bool failure
 	 */
@@ -231,7 +241,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
 				if(!unf) return true;
 				if(true!== unf) this.prototyp = unf;
 			} else this.prototyp = o;
-		} else this.values.push(o);
+		} else this.values.push(o);	//TODO2: sort not to have ior3 as 'good'
 	},
 	/**
 	 * Add an object as a belongs.

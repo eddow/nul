@@ -65,7 +65,7 @@ nul.txt.flat = merge({
 		},
 		
 		eqCls: function() {
-			return '(' + nul.txt.flat.all(this.equivalents()).join(' = ') + ')' +
+			return '(' + nul.txt.flat.all(this.equivalents).join(' = ') + ')' +
 				(this.belongs.length?(' &isin; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
 		},
 		klg: function() {
