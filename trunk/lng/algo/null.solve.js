@@ -37,7 +37,7 @@ nul.solve = function(fz) {
 				}
 				tries.push(tried);
 			}
-			tried = new nul.browser.solve(klg, tries);	//TODO1
+			tried = new nul.browser.solve(klg, tries);
 			if(nul.debug.assert) assert(tried, 'Solving try always modify : if not, no hesitations !');
 			rv.push(tried);
 		} catch(err) { nul.failed(err); }

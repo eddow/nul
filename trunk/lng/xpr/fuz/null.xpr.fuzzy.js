@@ -17,7 +17,7 @@ nul.xpr.fuzzy = Class.create(nul.xpr, {
 
 //////////////// specific summaries
 
-	maxXst: function() { return this.summary('maxXst'); }, 	
-	minXst: function() { return this.summary('minXst'); }, 	
+	maxXst: nul.summary('maxXst'), 	
+	minXst: nul.summary('minXst'), 	
 
 });

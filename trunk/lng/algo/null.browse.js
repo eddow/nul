@@ -86,3 +86,15 @@ nul.browser.stepUp = Class.create(nul.browser.bijectif, {
 				xpr.dbgName)
 	},
 });
+
+nul.browser.solve = Class.create(nul.browser.bijectif, {
+	initialize: function(klg, tries) {
+		this.klg = klg;
+		this.replace = {};
+		for(var i=0; i<tries.length; ++i)
+			this.replace[klg.hesitations[i]] = tries[i];
+	},
+	transform: function(xpr) {
+		return this.replace[xpr];
+	},
+});

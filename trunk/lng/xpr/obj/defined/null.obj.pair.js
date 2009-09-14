@@ -30,7 +30,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		this.second = second;
 		this.summarise();
 	},
-	listed: function() { return this.summary('listed'); },
+	listed: nul.summary('listed'),
 	//TODO2: flat should be a 'summary'
 	sum_listed: function() {
 		var rv = [];

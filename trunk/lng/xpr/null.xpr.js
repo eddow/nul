@@ -6,8 +6,15 @@
  *
  *--------------------------------------------------------------------------*/
 
+ /**
+  * Used to build expression summary items
+  */
+ nul.summary = function(itm) {
+ 	return function() { return this.summary(itm); };
+ };
+ 
  nul.xpr = Class.create({
-
+	expression: true,
 	components: [],
 	
 //////////////// Summary functionment
@@ -46,14 +53,14 @@
 
 //////////////// Summary users
 
-	toString: function() { return this.summary('index'); },
-	toHtml: function() { return this.summary('htmlTxt'); },
-	toFlat: function() { return this.summary('flatTxt'); },
-	isSet: function() { return this.summary('isSet'); },
-	isList: function() { return this.summary('isList'); },
-	isFixed: function() { return this.summary('isFixed'); },
-	isDefined: function() { return this.summary('isDefined'); },
-	
+	toString: nul.summary('index'),
+	toHtml: nul.summary('htmlTxt'),
+	toFlat: nul.summary('flatTxt'),
+	isSet: nul.summary('isSet'),
+	isList: nul.summary('isList'),
+	isFixed: nul.summary('isFixed'),
+	isDefined: nul.summary('isDefined'),
+
 //////////////// Generic summary providers
 
 	sum_components: function() {
