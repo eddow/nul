@@ -37,6 +37,9 @@ nul.browser = Class.create({
  	}
 });
 
+/**
+ * Gives one other expression (or null if just the same)
+ */
 nul.browser.bijectif = Class.create(nul.browser, {
 	/**
 	 * Transform this expression that already had bee browsed.
@@ -55,11 +58,11 @@ nul.browser.bijectif = Class.create(nul.browser, {
 				//bwsd[c] contient des null-s et des valeurs
 				if(trys(bwsd[c], function() { return !!this; }))
 					//If at least one non-null return value,
-					nwItm = merge(clone1(nwItm), base[c], function(a, b) { return a||b; });
+					nwItm = merge(nwItm.modifiable(), base[c], function(a, b) { return a||b; });
 				else nwItm = null;
 			}
 			if(nwItm) {
-				if(!mod) mod = clone1(base);
+				if(!mod) mod = base.modifiable();
 				mod[c] = nwItm;
 			}
 		}
@@ -69,14 +72,14 @@ nul.browser.bijectif = Class.create(nul.browser, {
 });
 
 nul.browser.stepUp = Class.create(nul.browser.bijectif, {
-	initialize: function(srcKlgName, dstKlgName, deltaLclNdx) {
-		this.srcKlgName = srcKlgName;
-		this.dstKlgName = dstKlgName;
+	initialize: function(srcFznsName, dstFznsName, deltaLclNdx) {
+		this.srcFznsName = srcFznsName;
+		this.dstK = dstFznsName;
 		this.deltaLclNdx = deltaLclNdx;
 	},
 	transform: function(xpr) {
-		if('local'== xpr.type && this.srcKlgName== xpr.klgName)
-			return new nul.obj.local(this.dstKlgName, 
+		if('local'== xpr.type && this.srcFznsName== xpr.fznsName)
+			return new nul.obj.local(this.dstFznsName, 
 				'number'== typeof xpr.lclNdx ?
 					xpr.lclNdx+this.deltaLclNdx :
 					xpr.lclNdx,

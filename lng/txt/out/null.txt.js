@@ -7,13 +7,28 @@
  *--------------------------------------------------------------------------*/
  
 nul.txt = {
+	toText: function(xpr) {
+		if(!this.beginDraw(xpr)) return this.recurStr;
+		try { return this.wrap((this.draw[xpr.type]||this.draw.other).apply(this.outp(xpr), [])); }
+		finally { this.endDraw(xpr); }
+	},
+	dipatchPair: function(xpr, obj) {
+		if(!xpr.is('set')) return this.draw.dotted.apply(obj, []);
+		var flat = xpr.flat();
+		if(xpr.is('list')) {
+			if(1== flat.length && '&phi;'== flat.follow.type)
+				return this.draw.singleton.apply(obj, []);
+			return this.draw.list.apply(obj, [flat]);
+		} 
+		return this.draw.set.apply(obj, [flat]);
+	},
 	drawing: [],
 	beginDraw: function(xpr) {
 		if(this.drawing.contains(xpr)) return false;
 		this.drawing.push(xpr);
 		return true;
 	},
-	endDraw: function(xpr) {
+	endDraw: function(str) {
 		if(nul.debug.assert) assert(xpr==this.drawing.pop(), 'Drawing consistency');
 		else this.drawing.pop();
 	},

@@ -6,88 +6,110 @@
  *
  *--------------------------------------------------------------------------*/
 
- nul.xpr.knowledge = Class.create(nul.xpr, {
-	fuzzy: true,
- 	initialize: function(prnt) {
- 		
+/**
+ * A list of conditions and fuzziness reduction.
+ */
+nul.xpr.knowledge = Class.create(nul.xpr.fuzzy, {
+	initialize: function($super, fzns) {
+ 		$super(fzns);
  		//Create new objects each time
- 		this.locals = [];	//dbgNames, could remember just the length (as an int) if no debug info needed
- 		this.eqCls = [];	//Array of equivalence classes.
- 		this.access = {};	//Access from an obj.ndx to an eq class it's in.
- 		
- 		this.prnt = prnt;
-		this.name = ++nul.xpr.knowledge.ndx;
+ 		this.eqCls = [];		//Array of equivalence classes.
+ 		this.access = {};		//Access from an obj.ndx to an eq class it's in.
+ 		this.hesitations = [];	//List of unchoosed IOR3
  	},
- 	/**
- 	 * Copy the infos of klg in here.
- 	 */
- 	copy: function(klg) {
- 		this.locals = klg.locals;
- 		this.eqCls = klg.eqCls;
- 		this.access = klg.access;
- 		this.name = klg.name;	//TODO2: let or not ?
- 		return this;
- 	},
+
+//////////////// privates
+
  	/**
  	 * Creates an equivalence class
  	 */
  	newEqClass: function(v) {
+ 		this.modify();
  		var rv = new nul.xpr.knowledge.eqClass();
  		this.eqCls.push(rv);
  		if(v) {
  			rv.isEq(v);
- 			this.index(this.eqCls.length - 1);
+ 			this.accede(this.eqCls.length - 1);
  		}
  		return rv;
  	},
- 	index: function(ecNdx) {
- 		var ec = this.eqCls[ecNdx];
- 		if(ec.prototyp) this.access[ec.prototyp.ndx()] = ecNdx;
- 		for(var i=0; i<ec.values.length; ++i)
- 			this.access[ec.values[i].ndx()] = ecNdx;
+ 	accede: function(ecNdx, ec) {
+ 		this.modify();
+		var eqs = (ec || this.eqCls[ecNdx]).equivalents();
+		for(var unfd in eqs) if(cstmNdx(unfd))
+			this.access[eqs[unfd]] = dstEqClsNdx;
  	},
+ 	
+//////////////// internals
+
+ 	/**
+ 	 * Copy the infos of klg in here.
+ 	 */
+ 	copy: function(klg) {
+ 		this.modify();
+ 		this.eqCls = klg.eqCls;
+ 		this.access = klg.access;
+ 		this.hesitations = klg.hesitations;
+ 		this.name = klg.name;	//TODO2: let or not ?
+ 		return this;
+ 	},
+ 	
+ 	/**
+ 	 * Register an IOR3 for this knowledge
+ 	 */
+ 	hesitate: function(choices) {
+ 		this.hesitations.push(choices);
+ 	},
+ 	
+//////////////// publics
+
  	/**
  	 * Move the local-space so it merge with the local-space of klg.
  	 * TODO: Also rename extension objects
- 	 * side-effect: new locals in 'klg'
+ 	 * @param fzns nul.xpr.fuzziness
+ 	 * @return boolean success
  	 */
- 	stepUp: function(klg) {
- 		var brwsr = new nul.browser.stepUp(this.name, klg.name, klg.locals.length);
- 		klg.locals.pushs(this.locals);
+ 	stepUp: function(fzns) {
+ 		if(nul.debug.assert) assert(this.fzns.name != fzns.name, 'stepUp effectively chage fuzziness')
+ 		fzns.modify();
+ 		var brwsr = new nul.browser.stepUp(this.name, fzns.name, fzns.locals.length);
+ 		fzns.locals.pushs(this.locals);
  		return brwsr.browse(this) || this; 
  	},
+ 	
  	/**
- 	 * Know all what 'klg' knows
- 	 * @return possibles knowledge who knows both these knowledge.
+ 	 * Know all what klg knows
+ 	 * Note: share the fuziness with klg
+ 	 * @return boolean Success
  	 */
  	merge: function(klg) {
- 		var rv = new nul.xpr.knowledge();
- 		rv.copy(this);
- 		klg = klg.stepUp(rv);
+ 		this.modify();
+ 		if(nul.debug.assert) assert(this.fzns===klg.fzns, 'Merged knowledge share fuzziness')
  		for(var ec in klg.eqCls) if(cstmNdx(ec)) {
- 			var unf = rv.unify(klg.eqCls[ec].equivalents()), blg = null;
- 			if(unf) blg = rv.belong(unf, klg.eqCls[ec].belongs);
- 			if(!blg) return [];
+ 			var unf = this.unify(klg.eqCls[ec].equivalents()), blg = null;
+ 			if(unf) blg = this.belong(unf, klg.eqCls[ec].belongs);
+ 			if(!blg) return false;
  		}
- 		if(klg.value) rv.value = klg.value;
- 		return [rv];
+ 		return toAdd.value||true;
  	},
+
  	/**
  	 * Know that all the arguments are unifiable
  	 * Modifies the knowledge
  	 * @param JsNulObj or JsNulFuzzyObj
- 	 * @return JsNulObj The replacement value for all the values or nothing if unification failed.
+ 	 * @return JsNulObj The replacement value for all the given values
+ 	 * @throws nul.failure
  	 */
  	unify: function(a, b) {
+ 		this.modify();
  		var a = beArrg(arguments);
  		//1- a are JnNulObj : gathering eqClasses so that we have a list of eqClasses to merge and a list
  		// of solo objects
  		var eqClss = {};
  		var solos = [];
  		for(var i=0; i<a.length; ++i) {
- 			if(a[i].fuzzy) a[i] = this.merge(a[i]).value;
- 			var ndx = a[i].ndx();
- 			if('undefined'!= typeof this.access[ndx]) eqClss[this.access[ndx]] = true;
+ 			if(a[i].fuzzy) a[i] = a[i].stepUp(this);
+ 			if('undefined'!= typeof this.access[a[i]]) eqClss[this.access[a[i]]] = true;
  			else solos.push(a[i]);
  		}	//TODO2: null.obj.extension management
  		eqClss = keys(eqClss);
@@ -95,59 +117,64 @@
  		var dstEqCls = eqClss.length?
  			this.eqCls[eqClss.shift()]:
  			this.newEqClass();
- 		var failure = trys(eqClss, function(i, eqx) {
+ 		if(trys(eqClss, function(i, eqx) {
 	 			try { return this.eqCls[eqClss[eqx]].mergeTo(dstEqCls); }
 	 			finally { this.eqCls[eqClss[eqx]] = null; }
 	 		}) ||
-			trys(solos, function() { return dstEqCls.isEq(this); });
- 		if(!failure) {
- 			//Refresh access
- 			var eqs = dstEqCls.equivalents();
- 			for(var unfd in eqs) if(cstmNdx(unfd))
- 				this.access[eqs[unfd].ndx()] = dstEqClsNdx;
- 			return dstEqCls.good();
- 		}
- 		delete this.locals;
- 		delete this.eqCls;
- 		delete this.access;
+			trys(solos, function() { return dstEqCls.isEq(this); }))
+			nul.fail('Unification', a)
+		this.accede(dstEqClsNdx);
+		return dstEqCls.good();
  	}.describe(function() {
  		return 'Unification : ' +
  			map(beArrg(arguments), function() { return this.toHtml(); }).join(' = ');
  	}),
+ 	
 	/**
  	 * Know that 'e' is in the set 's'.
  	 * Modifies the knowledge
  	 * @return The replacement value for 'e' or nothing if inclusion failed.
+ 	 * @throws nul.failure
  	 */
  	belong: function(e, ss) {
+ 		this.modify();
  		ss = beArrg(arguments, 1);
- 		var ndx = e.ndx();
- 		var dstEC = this.access[ndx]?
- 			this.eqCls[this.access[ndx]]:
- 			this.newEqClass(e);
- 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(s);
- 	},
- 	//TODO2: end the changes to the parent, so he can notify with more discovered consequent knowledge.
- 	newLocal: function(name, ndx) {
- 		if('undefined'== typeof ndx) {
- 			ndx = this.locals.length;
- 			this.locals.push(name);
+ 		var asrtSets = [];
+ 		for(var s in ss) if(cstmNdx(s)) {
+ 			var fltrd = ss[s].has(e, this);
+ 			if(fltrd) e = fltrd;
+ 			else asrtSets.push(ss[s]);
  		}
- 		return new nul.obj.local(this.name, ndx, name)
+ 		if(asrtSets.length) {
+	 		var dstEC = this.access[e]?
+	 			this.eqCls[this.access[e]]:
+	 			this.newEqClass(e);
+	 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(s);
+ 		}
+ 		return e;
  	},
-	maxXst: function() { return this.locals.length?pinf:1; },
-	minXst: function() { return this.eqCls.length?0:this.maxXst(); },
-	fixed: function() { return !this.locals.length && !this.eqCls.length; },
+
+//////////////// nul.xpr.fuzzy summaries
+
+	sum_maxXst: function() {
+		var rv = 1;
+		for(var h in this.hesitations) if(cstmNdx(h))
+			rv *= this.hesitations[h].maxXst();
+		return rv;
+	},
+	sum_minXst: function() {
+		if(this.eqCls.length) return 0;
+		var rv = 1;
+		for(var h in this.hesitations) if(cstmNdx(h))
+			rv *= this.hesitations[h].minXst();
+		return rv;
+	},
+	sum_isFixed: function() { return !this.hesitations.length && !this.eqCls.length; },
 
 //////////////// nul.xpr implementation
 	
 	type: 'klg',
-	//TODO: toHtml show locals
-	toText: function(txtr) {
-		return map(this.eqCls, function() { return this.toText(txtr); }).join('; ');
-	},
 	components: ['eqCls'],
-
 });
 
 nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
@@ -175,7 +202,8 @@ nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
 	 * @return bool failure
 	 */
 	isEq: function(o) {
-		if(o.attr) {
+ 		this.modify();
+		if(o.isDefined()) {
 			if(this.prototyp) {
 				var unf = this.prototyp.unify(o, this.knowledge);
 				if(!unf) return true;
@@ -189,6 +217,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
 	 * @return bool failure
 	 */
 	isIn: function(s) {
+ 		this.modify();
 		//TODO3 : virer les intersections
 		this.belongs.push(s);
 	},
@@ -198,20 +227,23 @@ nul.xpr.knowledge.eqClass = Class.create(nul.xpr, {
 	 * @return bool failure
 	 */
 	mergeTo: function(c) {
+ 		c.modify();
 		var rv = this.prototyp?c.isEq(this.prototyp):false;
 		return rv ||
 			trys(this.values, function() { return c.isEq(this); }) ||
 			trys(this.belongs, function() { return c.isIn(this); });
 	},
 	
+//////////////// nul.xpr.fuzzy implementation
+
+ 	built: function() {
+ 		for(ec in this.eqCls) ec.summarise();
+ 		this.summarise();
+ 		return this.isFixed()?null:this;
+ 	},
+
 //////////////// nul.xpr implementation
 	
 	type: 'eqCls',
-	toText: function(txtr) {
-		var rv = '('+map(this.equivalents(), function() { return this.toText(txtr); }).join(' = ')+')';
-		if(!this.belongs.length) return rv;
-		return rv + ' in (' + map(this.belongs, function() { return this.toText(txtr); }).join(', ')+')';
-			
-	},
 	components: ['prototyp', 'values', 'belongs'],
 });

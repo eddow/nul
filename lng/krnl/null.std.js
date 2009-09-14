@@ -7,6 +7,16 @@
  *--------------------------------------------------------------------------*/
  
 var nul = {
+	failure: 'failure',
+	/**
+	 * Throw a failure
+	 * @param reason items to shape a sentence
+	 */
+	fail: function(reason) {
+		reason = beArrg(arguments)
+		//TODO1
+		throw nul.failure;
+	},
 	globals: {},
 	slf: '&crarr;',
     isJsInt: function(n) {
@@ -21,9 +31,9 @@ var nul = {
 	expression: function(txt)
 	{
 		nul.erroneus = false;
-		nul.xpr.knowledge.ndx = 0;
-		nul.obj.extension.nbr = 0;		
-		return nul.understanding.base.set.understand(nul.compile(txt), nul.globalsUse());
+		nul.fuzziness.ndx = 0;
+		nul.obj.extension.nbr = 0;
+		return nul.globalsUse().understand(nul.compile(txt));
 	},
 	html: function(txt)
 	{

@@ -6,16 +6,13 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.extension = Class.create(nul.obj.defined, {
-	initialize: function(attr) {
-		this.attr = attr||{};
-		this.ndx = ++nul.obj.extension.nbr;
-		this.summarise({
-			index: this.indexedSub(this.extensionNdx),
-		});
+nul.obj.fuzzy = Class.create(nul.obj, {
+	initialize: function(value, knowledge) {
+		this.value = value;
+		this.knowledge = knowledge;
 	},
-
 //////////////// nul.xpr implementation
-
-	type: 'extension',
+	
+	type: 'fuzzy',
+	components: ['value', 'knowledge'],
 });
