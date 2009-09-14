@@ -7,12 +7,11 @@
  *--------------------------------------------------------------------------*/
 
 nul.obj.hcSet = Class.create(nul.obj.defined, {
-	unify: function(o) { return o.type== this.type; },
-	
-//////////////// nul.xpr implementation
-
-	is_set: true,
-	toText: function(txtr) { return this.type; },
+	initialize: function() {
+		this.summarise({
+			isSet: true,
+		});
+	},
 });
 
 merge(nul.obj.empty = new nul.obj.hcSet(), {
@@ -20,7 +19,7 @@ merge(nul.obj.empty = new nul.obj.hcSet(), {
 		return [this];
 	},
 	has: function(o, klg) {
-		return [];
+		nul.fail(this.type,' contains nothing!');
 	},
 
 //////////////// nul.xpr implementation
@@ -33,7 +32,7 @@ merge(nul.obj.whole = new nul.obj.hcSet(), {
 		return [o];
 	},
 	has: function(o, klg) {
-		return [nul.xpr.fuzzy(o, klg)];
+		return o;
 	},
 
 //////////////// nul.xpr implementation
@@ -46,8 +45,8 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 		if('range'== o.type) return o;
 	},
 	has: function(o, klg) {
-		if('number'== o.type) return nul.possibles([o], klg);
-		if(o.attr) return [];
+		if('number'== o.type) return o;
+		if(o.c()) nul.fail(o, ' is not a number');
 	},
 
 //////////////// nul.xpr implementation
@@ -57,13 +56,24 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 
 nul.obj.string = Class.create(nul.obj.hcSet, {
 	has: function(o, klg) {
-		if('string'== o.type) return nul.possibles([o], klg);
-		if(o.attr) return [];
+		if('string'== o.type) return o;
+		if(o.isDefined()) nul.fail(o, ' is not a string');
 	},
 
 //////////////// nul.xpr implementation
 
 	type: 'str',
+});
+
+nul.obj.bool = Class.create(nul.obj.hcSet, {
+	has: function(o, klg) {
+		if('boolean'== o.type) return o;
+		if(o.isDefined()) nul.fail(o, ' is not a boolean');
+	},
+
+//////////////// nul.xpr implementation
+
+	type: 'bool',
 });
 
 nul.obj.range = Class.create(nul.obj.hcSet, {
@@ -76,29 +86,20 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 			return new nul.obj.range(lwr, upr);
 		}
 	},
-	unify: function(o) {
-		return 'range'== o.type &&	//TODO4: compare with sets defined in extension?
-			this.lower == o.lower &&
-			this.upper == o.upper;
-	},
 	initialize: function(lwr, upr) {
 		this.lower = lwr || ninf;
 		this.upper = upr || pinf;
 	},
 	has: function(o, klg) {
-		if(!o.attr) return;
-		if('number'!= o.type ||
-			o.value < this.lower ||
-			o.value > this.upper ||
-			!nul.isJsInt(o.value) )
-				return [];
-		return nul.possibles([o], klg);
+		if(!o.isDefined()) return;
+		if('number'!= o.type) nul.fail(o, ' is not a number');
+		if(!nul.isJsInt(o.value)) nul.fail(o, ' is not an integer');
+		if( o.value < this.lower || o.value > this.upper) nul.fail(o, ' is not in the range');
+		return o;
 	},
 
 //////////////// nul.xpr implementation
 
 	type: 'range',
-	//TODO2: draw real range  
-	toText: function(txtr) { return '&#x2124;'; },
-	build_ndx: function() { return '[range:'+this.lower+'|'+this.upper+']'; },
+	sum_index: function() { return this.indexedSub(this.lower, this.upper); },
 });

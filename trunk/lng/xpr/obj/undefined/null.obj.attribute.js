@@ -13,14 +13,12 @@ nul.obj.attribute = Class.create(nul.obj.undefined, {
 	initialize: function(ofo, anm) {
 		this.ofObject = ofo;
 		this.attributeName = anm;
+		this.summarise();
 	},
 
-//////////////// nul.xpr implementation
+//////////////// nl.xpr implementation
 
-	type: 'attr',
-	toText: function(txtr) {
-		return this.ofObject.toText(txtr) + '&rarr;' + this.attributeName;
-	},
-	build_ndx: function() { return '[attr:'+this.ofObject.ndx()+'|'+this.attributeName+']'; },
+	type: 'attribute',
+	sum_index: function() { return this.indexedSub(this.ofObject, this.attributeName); },
 	components: ['ofObject'],
 });

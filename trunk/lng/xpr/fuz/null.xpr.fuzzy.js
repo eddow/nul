@@ -6,51 +6,21 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.fuzzy = Class.create(nul.xpr.knowledge, {
-	initialize: function(obj, klg) {
-		this.value = obj;
-		if(nul.debug.assert) assert(klg, 'Fuzzy built on knowledge');
-		this.copy(klg);
+/**
+ * An expression that can take several fixed values
+ */
+nul.fuzzy = Class.create(nul.xpr, {
+	initialize: function(fzns) {
+		this.fuzziness = fzns;
 	},
-	/**
-	 * Retrieve the knowledge part only of this fuzzy
-	 */
-	knowledge: function() {
-		return new nul.xpr.knowledge(this.prnt).copy(this);		
-	},
+	
+//////////////// publics
 
-//////////////// nul.klg implementation
+	built: function() { throw 'abstract'; },	//Summarise. Return this or something else fixed if possible
 
-	/**
-	 * Unify the 'vl' to the current fuzzy value in it's knowledge 
-	 */
-	unify: function($super, vl) {
-		var vl = beArrg(arguments, 1);
-		vl.unshift(this.value);
-		return $super(vl);
-	},
- 	/**
- 	 * Know all what 'klg' knows
- 	 * @return possibles knowledge who knows both these knowledge.
- 	 */
- 	merge: function($super, klg) {
- 		var klgs = $super(klg);
- 		var obj = this.value;
- 		var rv = new nul.possibles(klg);
- 		if(klg.value) for(var i = 0; i<klgs.length; ++i)
- 			rv.maybe(klgs[i].unify(obj));
- 		else for(var i = 0; i<klgs.length; ++i)
- 			rv.maybe(new nul.xpr.fuzzy(obj, klgs[i]));
- 		return rv;
- 	},
+//////////////// specific summaries
 
-//////////////// nul.xpr implementation
+	maxXst: function() { return this.summary('maxXst'); }, 	
+	minXst: function() { return this.summary('minXst'); }, 	
 
-	type: 'fuzzy',	
-	toText: function($super, txtr) {
-		var klgStr = $super(txtr);
-		if(!klgStr.length) return this.value.toText(txtr);
-		return this.value.toText(txtr) + '; ' + klgStr;
-	},
-	components: ['eqCls', 'value'],		//TODO: sth to abstract knowledge components !
 });

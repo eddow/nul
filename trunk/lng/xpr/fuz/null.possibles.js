@@ -17,7 +17,7 @@ nul.possibles = Class.create(arrayClass, {
 			if(lst[i].fuzzy) {
 				if(nul.debug.assert) assert(lst[i].prnt == cklg, 'Knowledge in possibles list');
 				this.push(lst[i]);
-			} else this.push(new nul.xpr.fuzzy(lst[i], new nul.xpr.knowledge(cklg)));
+			} else this.push(new nul.obj.fuzzy(lst[i], new nul.xpr.knowledge(cklg)));
 	},
 	/**
 	 * Gets the possibles objects that can be unified to this and to vl

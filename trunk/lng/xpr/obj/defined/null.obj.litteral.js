@@ -10,27 +10,27 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 	initialize: function(val) {
 		this.value = val;
 		this.type = typeof(val);
-		this.attr = nul.obj.litteral.attr[typeof(val)] 
+		this.attr = nul.obj.litteral.attr[typeof(val)]
+		this.summarise({
+			isSet: false,
+			isList: false,
+		}); 
 	},
-	unify: function(o) { return o.type == this.type && o.value == this.value; },
 	 
 //////////////// nul.xpr implementation
 
 	//type: set on initialise
-	toText : function(txtr) {
-		return ''+ this.value;
-	},
-	build_ndx: function() { return '['+this.type+':'+(''+this.value).replace(']','[|]')+']'; },
+	sum_index: function() { return this.indexedSub(this.value.toString().replace(']','[|]')); },
 });
 
-nul.obj.litteral.straightArythmetics = function(oprtr, srnd) {
+nul.obj.litteral.straightArythmetics = function(type, oprtr, srnd) {
 	srnd = srnd || '';
 	return function(op1, op2, klg) {
-		if('number'== op2.type) 
-			return new nul.possibles(klg, [nul.obj.litteral(eval(
+		if(type== op2.type) 
+			return nul.obj.litteral(eval(
 				srnd + op1.value + oprtr + op2.value + srnd
-			))]);
-		if(op2.attr) return [];
+			));
+		if(op2.isDefined()) return nul.fail(op2, ' is not a ', type);
 	}
 };
 
@@ -38,7 +38,7 @@ nul.obj.litteral.attr = {};
 nul.obj.litteral.attr.string = {}
 nul.obj.litteral.attr.number = {};
 
-nul.obj.litteral.attr.string['+'] = nul.obj.litteral.straightArythmetics('"+"','"');
+nul.obj.litteral.attr.string['+'] = nul.obj.litteral.straightArythmetics('string','"+"','"');
 //TODO4: integers and & | ^
 map(['+', '-', '*', '/', '%'],
-	function(i,v) { nul.obj.litteral.attr.number[v] = nul.obj.litteral.straightArythmetics(v); });
+	function(i,v) { nul.obj.litteral.attr.number[v] = nul.obj.litteral.straightArythmetics('number',v); });

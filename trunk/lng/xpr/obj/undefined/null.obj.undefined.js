@@ -7,5 +7,8 @@
  *--------------------------------------------------------------------------*/
 
 nul.obj.undefined = Class.create(nul.obj, {
-	is_set: true,
+	summarise: function($super, smr) {
+		var ownSmr = { isDefined: false };
+		$super(smr?merge(ownSmr,smr):ownSmr);
+	},
 });

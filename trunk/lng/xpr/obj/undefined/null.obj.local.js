@@ -16,23 +16,17 @@
  * Define an object that is a value of a local
  */
 nul.obj.local = Class.create(nul.obj.undefined, {
-	initialize: function(klgName, lclNdx, dbgName) {
-		this.klgName = klgName;
+	initialize: function(fznsName, lclNdx, dbgName) {
+		this.fznsName = fznsName;
 		this.lclNdx = lclNdx;
 		this.dbgName = dbgName;
-	},
-
-	unify: function(o) {
-		return 'local'== o.type && 
-			this.klgName == o.klgName && 
-			this.lclNdx == o.lclNdx;
+		this.summarise({
+			index: this.indexedSub(this.fznsName, this.lclNdx),
+		});
 	},
 
 //////////////// nul.xpr implementation
 
 	type: 'local',
-	toText: function(txtr) {
-		return (this.dbgName?this.dbgName:'') + '[' + this.klgName + '|' + this.lclNdx + ']';
-	},
-	build_ndx: function() { return '[lcl:'+this.klgName+'|'+this.lclNdx+']'; },
+	build_ndx: function() { return '[lcl:'+this.fznsName+'|'+this.lclNdx+']'; },
 });

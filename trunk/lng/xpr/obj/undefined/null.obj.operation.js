@@ -14,15 +14,12 @@ nul.obj.operation = Class.create(nul.obj.undefined, {
 	initialize: function(operator, ops) {
 		this.operator = operator;
 		this.operands = ops;
+		this.summarise();
 	},
 	
 //////////////// nul.xpr implementation
 	
 	type: 'operation',
-	toText: function(txtr) {
-		return '(' + map(this.operands, function() { return this.toText(txtr); })
-			.join(' '+this.operator+' ') + ')';
-	},
 	components: ['operands'],
 });
 

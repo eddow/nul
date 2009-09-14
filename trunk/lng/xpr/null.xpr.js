@@ -7,40 +7,56 @@
  *--------------------------------------------------------------------------*/
 
  nul.xpr = Class.create({
- 	/**
- 	 * Return a clone where just one item has been changed.
- 	 * Only the needed part are cloned, not the whole tree : to allow the change
- 	 * @param itm path to the component
- 	 * @param vl value to give to the component
- 	 */
-	modd: function(inm, vl) {
-		var rv = clone1(this), brwsr = rv;
-		inm = inm.split('.');
-		while(1<inm.length) {
-			var uinm = inm.unshift();
-			brwsr = brwsr[uinm] = clone1(rv[uinm]);
-		}
-		brwsr[uinm[0]] = vl;
-		return rv;
-	},
- 	/**
- 	 * Get the value of a sub-component
- 	 * @param itm path to the component
- 	 */
- 	 getd: function(inm) {
-		var rv = clone1(this), brwsr = rv;
-		inm = inm.split('.');
-		while(1<inm.length) {
-			var uinm = inm.unshift();
-			brwsr = brwsr[uinm] = clone1(rv[uinm]);
-		}
-		return brwsr[uinm[0]];
-	},
-	toHtml: function() { return this.toText(nul.txt.html); },
-	toFlat: function() { return this.toText(nul.txt.flat); },
-	toText: function(txtr) { throw 'abstract'; },
+
+	components: [],
 	
-	build_components: function() {
+//////////////// Summary functionment
+
+	/**
+	 * Assert this expression is modifiable
+	 */
+	modify: function() {
+		if(nul.debug.assert) assert(!this.summarised, 'Cannot modify summarised')
+	},
+	/**
+	 * Retrieve a computed value about this expression
+	 */
+	summary: function(itm) {
+		if(nul.debug.assert) assert(this.summarised, 'Use summary only when summarised')
+		if(!this.summarised[itm]) {
+			assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.type);
+			this['sum_'+itm].apply(this);
+		}
+		return this.summarised[itm];
+	},
+	/**
+	 * Stop the modifications brought to this expression. Now, we compute some values about
+	 * @param smr The given summary
+	 */
+	summarise: function(smr) {
+		this.summarised = smr || {};
+	},
+
+	/**
+	 * Return a clone version of this expression to modify it.
+	 */
+	modifiable: function() {
+		return maf(this, function(ndx, obj) { if('summarised'!= ndx) return obj; });
+	},
+
+//////////////// Summary users
+
+	toString: function() { return this.summary('index'); },
+	toHtml: function() { return this.summary('htmlTxt'); },
+	toFlat: function() { return this.summary('flatTxt'); },
+	isSet: function() { return this.summary('isSet'); },
+	isList: function() { return this.summary('isList'); },
+	isFixed: function() { return this.summary('isFixed'); },
+	isDefined: function() { return this.summary('isDefined'); },
+	
+//////////////// Generic summary providers
+
+	sum_components: function() {
 		var rv = {};
 		for(var comp in this.components) if(cstmNdx(comp)) {
 			if(isArray(comp)) {
@@ -53,17 +69,21 @@
 		return rv;
 	},
 	
-	is: function(prm) {
-		var rv = this['is_'+prm];
-		if('function'== typeof(rv)) rv = rv.apply(this);
-		return rv;
-	},
-	is_list: function() { return this.is('set'); },
-	ndx: function() { return this.build_ndx(); },
-	//TODO2: generic build
-	build_ndx: function() {
+	sum_index: function() {
 		if(nul.debug.assert) assert(this.type, 'NDX builder implemented');
-		return '['+this.type+':'+ this.build_components().join('|')+']';
+		return this.indexedSubs(vals(this.sum_components));
 	},
-	components: [],
+	indexedSubs: function(items) {
+	 	items = beArrg(arguments);
+	 	var rv = '['+this.type;
+	 	if(items && items.length) rv += ':' + items.join('|');
+	 	return rv+']';
+	},
+
+	sum_htmlTxt: function() { return nul.txt.html.toText(this); },
+	sum_flatTxt: function() { return nul.txt.flat.toText(this); },
+	
+	sum_isList: function() { return this.isSet(); },
+	sum_isFixed: function() { return true; },
  });
+ 
