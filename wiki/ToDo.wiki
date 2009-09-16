@@ -14,6 +14,6 @@ Les classes d'équivalences retiennent aussi une liste d'attributs spécifiés (
 
 Ces attributs sont utilisés sur le `one` - donc appliqués lors de changement d'attribut ou le changement de prototype.
 
-=== ior3 ===
+=== ior3:ndx in klg ===
 
-Les `possibles` redeviennent un objet indéfini (`ior3`) qui sera distribué selon une solving engine.
+Et le ior3 est juste nommé
