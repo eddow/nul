@@ -16,4 +16,4 @@ Ces attributs sont utilisés sur le `one` - donc appliqués lors de changement d
 
 === ior3:ndx in klg ===
 
-Et le ior3 est juste nommé
+Le knowledge prend une array de value/knowledge et crée un IOR3 si besoin (il sera donc construit avec un ior3ndx directement)
