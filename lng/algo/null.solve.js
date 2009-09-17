@@ -9,15 +9,18 @@
 /**
  * Interface function of Solver.
  * Gets a distributed list of fuzzies that don't contains ior3 anymore
- * @param fz nul.obj.fuzzy
- * @return array(nul.obj) Objects can be fuzzy
+ * @param fz 
+ * @return array(nul.xpr.object) Objects can be fuzzy
  */
 nul.solve = function(fz) {
+	return [fz];	//TODO1
+	fz.use();
+
 	if('fuzzy'!= fz.type || !fz.knowledge.hesitations.length) return [fz];
 	var cases = [];
 	var hes = fz.knowledge.hesitations;
 	for(var h in hes) if(cstmNdx(h)) {
-		if(nul.debug.assert) assert(hes[h].cklg == fz.knowledge,
+		if(nul.debug.assert) assert(hes[h].klg == fz.knowledge,
 			'ior3 reference knowledge has the hesitations');
 		cases[h] = nul.solve.ior3(hes[h].choices);
 	}
@@ -27,7 +30,7 @@ nul.solve = function(fz) {
 	var incndx;
 	do {
 		var tries = [], tried;
-		var klg = fz.knowledge.modifiable();	//TODO1: eqCls clone1 ?
+		var klg = fz.knowledge.modifiable();
 		try {
 			for(var i=0; i<ndx.length; ++i) {
 				tried = cases[i][ndx[i]];
@@ -37,27 +40,39 @@ nul.solve = function(fz) {
 				}
 				tries.push(tried);
 			}
-			tried = new nul.browser.solve(klg, tries);
+			tried = new nul.browser.solve(klg, tries).browse(fz);
 			if(nul.debug.assert) assert(tried, 'Solving try always modify : if not, no hesitations !');
 			rv.push(tried);
 		} catch(err) { nul.failed(err); }
 	    //increment indexes
-		for(incndx=0; incndx<kys.length; ++incndx) {
+		for(incndx=0; incndx<cases.length; ++incndx) {
 			if(++ndx[incndx] < cases[incndx].length) break;
 			ndx[incndx] = 0;
 		}
-	} while(incndx < kys.length);
-	
+	} while(incndx < cases.length);
+	return rv;
 };
 
 /**
  * Interface function of Solver.
  * Distribute sub-fuzzies
- * @param array(nul.obj)
- * @return array(nul.obj) Each element of the returned arrays contain no ior3
+ * @param array(nul.xpr.object)
+ * @return array(nul.xpr.object) Each element of the returned arrays contain no ior3
  */
 nul.solve.ior3 = function(fzs) {
 	var rv = [];
 	for(var c in fzs) if(cstmNdx(c)) rv.pushs(nul.solve(fzs[c]));
 	return rv;
 };
+
+nul.browser.solve = Class.create(nul.browser.bijectif, {
+	initialize: function(klg, tries) {
+		this.klg = klg;
+		this.replace = {};
+		for(var i=0; i<tries.length; ++i)
+			this.replace[klg.hesitations[i]] = tries[i];
+	},
+	transform: function(xpr) {
+		return this.replace[xpr];
+	},
+});

@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.defined = Class.create(nul.obj, {
+nul.obj.defined = Class.create(nul.xpr.object, {
 	summarise: function($super, smr) {
 		var ownSmr = { isDefined: true };
 		$super(smr?merge(ownSmr,smr):ownSmr);
@@ -15,9 +15,11 @@ nul.obj.defined = Class.create(nul.obj, {
 	 * Gets an attribute
 	 * @param fzns nul.fuzziness
 	 * @param anm string
-	 * @return nul.obj or nothing if unknown
+	 * @return nul.xpr.object or nothing if unknown
 	 */
 	valAttr: function(fzns, anm) {
+		this.use();
+		
 		var avl = this.attr[anm];
 		if(!avl) return;
 		if('function'!= typeof(avl)) return avl;
@@ -27,11 +29,13 @@ nul.obj.defined = Class.create(nul.obj, {
 	 * Gets a functional attribute
 	 * @param fzns nul.fuzziness
 	 * @param anm string
-	 * @param op nul.obj
-	 * @return nul.obj or nothing if unknown
+	 * @param op nul.xpr.object
+	 * @return nul.xpr.object or nothing if unknown
 	 * @throws nul.failure
 	 */
 	fctAttr: function(fzns, anm, op) {
+		this.use(); op.use();
+		
 		var avl = this.attr[anm];
 		if(!avl) return;
 		if('function'!= typeof(avl)) return op.through(avl, fzns);
@@ -40,8 +44,8 @@ nul.obj.defined = Class.create(nul.obj, {
 	/**
 	 * Return 'o' once it is known that 'o' is in this 'set'
 	 * @param fzns nul.fuzziness
-	 * @param o nul.obj
-	 * @return nul.obj or nothing if unknown
+	 * @param o nul.xpr.object
+	 * @return nul.xpr.object or nothing if unknown
 	 * @throws nul.failure
 	 */
 	has: function(o, fzns, klg) {
@@ -52,6 +56,8 @@ nul.obj.defined = Class.create(nul.obj, {
 	 * Unify two defined objects
 	 */
 	unified: function(o, klg) {
+		this.use(); o.use(); klg.use();
+		
 		if(o.toString() != this.toString()) nul.fail(this, ' does not unify to ', o);
 		return this;
 	},

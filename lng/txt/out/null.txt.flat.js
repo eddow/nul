@@ -57,6 +57,7 @@ nul.txt.flat = merge({
 				(flat.follow?(',.. '+flat.follow.toFlat()):'')+ ')';
 		},
 		set: function(flat) {
+			//flat contains value&knowledge
 			return '{' + nul.txt.flat.all(flat).join(' &#9633; ') + '}' +
 				(flat.follow?(' &cup; '+flat.follow.toFlat()):'');
 		},
@@ -71,11 +72,5 @@ nul.txt.flat = merge({
 		klg: function() {
 			return nul.txt.flat.all(this.eqCls).join('; ');
 		},
-		fuzzy: function() {
-			var klgStr = this.knowledge?this.knowledge.toFlat():'';
-			var valStr = this.value.toFlat();
-			if(!klgStr.length) return valStr;
-			return valStr + '; ' + klgStr;
-		}
 	}
 }, nul.txt);

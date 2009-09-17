@@ -25,7 +25,7 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 		});
 	},
 
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	type: 'local',
 });

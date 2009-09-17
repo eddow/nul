@@ -115,7 +115,9 @@ nul.understanding.base = Class.create({
 	},
 	fuzziness: function() { return this.prntUb.fuzziness(); },
 	understand: function(cnt) {
-		return nul.obj.fuzzy.ifKlg(cnt.understand(this), this.klg.built(this.fuzziness()));
+		return {
+			value: cnt.understand(this),
+			knowledge: this.klg.built(this.fuzziness())};
 	},
 });
 
@@ -148,8 +150,7 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 			return new nul.obj.pair(
 				cnt.understand(this),
 				nul.obj.empty,
-				this.klg,
-				this.fzns);
+				this.klg.built(this.fzns));
 		} catch(err) {
 			nul.failed(err);
 			return nul.obj.empty;

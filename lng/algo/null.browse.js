@@ -22,9 +22,13 @@ nul.browser = Class.create({
 	 */
 	makeRV: function(xpr, bwsd, ppd) {},
 	browse: function(xpr) {
+		if(!xpr) return;
+		xpr.use();
+		
 		var bwsd = {};
 		var ppd = this.prepare(xpr);
 		var tob = ppd || xpr;
+		if(nul.debug.assert) assert(tob.expression, 'Only expressions are browsed');
  		for(var comp in tob.components) if(cstmNdx(comp)) {
  			comp = tob.components[comp];
  			if(isArray(xpr[comp])) {
@@ -51,14 +55,14 @@ nul.browser.bijectif = Class.create(nul.browser, {
 		//ppd iif preparation modification
 		//mod iif browse modification
 		//trn iif transform modification
-		var mod = null, base = ppd || xpr;
+		var mod, base = ppd || xpr;
 		for(var c in bwsd) {
 			var nwItm = bwsd[c];
-			if(isArray(bwsd[c])) {
+			if(isArray(nwItm)) {
 				//bwsd[c] contient des null-s et des valeurs
-				if(trys(bwsd[c], function() { return !!this; }))
+				if(trys(nwItm, function(ndx, obj) { return !!obj; }))
 					//If at least one non-null return value,
-					nwItm = merge(nwItm.modifiable(), base[c], function(a, b) { return a||b; });
+					nwItm = merge(nwItm, base[c], function(a, b) { return a||b; });
 				else nwItm = null;
 			}
 			if(nwItm) {
@@ -66,6 +70,7 @@ nul.browser.bijectif = Class.create(nul.browser, {
 				mod[c] = nwItm;
 			}
 		}
+		if(mod) mod = mod.built();
 		var trn = this.transform(mod || ppd || xpr);
 		return trn || mod || ppd; 
 	}
@@ -87,14 +92,3 @@ nul.browser.stepUp = Class.create(nul.browser.bijectif, {
 	},
 });
 
-nul.browser.solve = Class.create(nul.browser.bijectif, {
-	initialize: function(klg, tries) {
-		this.klg = klg;
-		this.replace = {};
-		for(var i=0; i<tries.length; ++i)
-			this.replace[klg.hesitations[i]] = tries[i];
-	},
-	transform: function(xpr) {
-		return this.replace[xpr];
-	},
-});
