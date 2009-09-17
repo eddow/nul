@@ -7,7 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 //TODO4: pre-calculate ndx()
-nul.obj = Class.create(nul.xpr, {
+nul.xpr.object = Class.create(nul.expression, {
 	through: function(o) {
 		//TODO2: return o[this]
 	},

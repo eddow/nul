@@ -15,7 +15,7 @@ nul.obj.extension = Class.create(nul.obj.defined, {
 		});
 	},
 
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	type: 'extension',
 });

@@ -8,54 +8,68 @@
 
 nul.obj.pair = Class.create(nul.obj.defined, {
 	/**
-	 * @param first Either JsNulObj, either JsNulFuzzyObj
+	 * @param first Either nul.object, either {value/knowledge}
 	 * @param second JsNulObj
 	 * @param klg If <first> is JsNulObj, this is the parent knowledge
 	 */
-	initialize: function(first, second, klg, fzns) {
-		var fuzObj;
-		if('fuzzy'== first.type) {
-			if(nul.debug.assert) assert(!klg, 'Either give a pair a fuzzy, either an object and a knowledge');
-			first = (fuzObj = first).value;
-			klg = fuzObj.knowledge;
-		} else fuzObj = null;
-		while('ior3'== first.type && first.cklg== klg && !klg.eqCls.length) {
-			var ops = clone1(first.choices);
-			while(1< ops.length) second = new nul.obj.pair(ops.pop(), second);
-			first = (fuzObj = ops[0]).value;
-			klg = fuzObj.knowledge;
+	initialize: function(first, second, firstKlg) {
+		//Note if a klg is given, its fuziness belong to this pair' first
+		if(firstKlg) {
+			var ops = nul.solve(first);
+			first = ops.shift();
+			while(ops.length) {
+				var op = ops.pop();
+				second = new nul.obj.pair(op.value, second, op.knowledge);
+			}
+			this.first = first.value;
+			this.firstKlg = first.knowledge;
 		}
-		if(klg) klg = klg.built(fzns);
-		this.first = fuzObj || nul.obj.fuzzy.ifKlg(first, klg);
+		this.first = first;
 		this.second = second;
 		this.summarise();
 	},
+	
+	firstIn: function(fzns, klg) {
+		if(!this.firstKlg) return this.first;
+		var stpUp = this.firstKlg.stepUp(fzns, this.first);
+		klg.merge(stpUp.knowledge);
+		return stpUp.value || this.first;
+	},
+	
+//////////////// Summary
+	
 	listed: nul.summary('listed'),
-	//TODO2: flat should be a 'summary'
+	//TODO1: listed renvoie une liste de paires obj/klg
 	sum_listed: function() {
 		var rv = [];
 		var brwsr = this;
 		do {
-			rv.push(brwsr.first);
+			rv.push({
+				value: brwsr.first,
+				knowledge: brwsr.firstklg});
 			brwsr = brwsr.second;
 		} while('pair'== brwsr.type);
 		if('&phi;'!= brwsr.type) rv.follow = brwsr;
 		return rv;
 	},
 
-//////////////// nul.obj implementation
+//////////////// nul.xpr.object implementation
 
 	has: function(o, fzns, klg) {
+		this.use();
+		o.use();
+		klg.use();
+		
 		//TODO3: summarise a tree of fixed values (=> ram db)
 		var brwsr = this;
 		var rv = [];
 		do {
-			var op = brwsr.first;
 			var tklg = new nul.xpr.knowledge(fzns.name);
 			try {
-				rv.push(nul.obj.fuzzy.ifKlg(
-					tklg.unify(('fuzzy'== op.type)?op.stepUp(fzns, tklg):op, o),
-					tklg.built(fzns)));
+				rv.push({
+					value: tklg.unify(brwsr.firstIn(fzns, tklg), o),
+					knowledge: tklg.built(fzns)
+				});
 			} catch(err) { nul.failed(err); }
 			brwsr = brwsr.second;
 		} while('pair'== brwsr.type);
@@ -85,12 +99,12 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		//TODO4
 	},*/
 	
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	type: 'pair',
 	components: ['first', 'second'],
 	sum_isSet: function() { return this.second.isSet(); },
 	sum_isList: function() {
-		return ('fuzzy'!= this.first.type) && this.second.isList();
+		return (!this.firstKlg) && this.second.isList();
 	},
 });

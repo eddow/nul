@@ -17,7 +17,7 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 		}); 
 	},
 	
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	//type: set on initialise
 	sum_index: function() { return this.indexedSub(this.value.toString().replace(']','[|]')); },

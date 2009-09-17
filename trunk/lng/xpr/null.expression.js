@@ -13,23 +13,32 @@
  	return function() { return this.summary(itm); };
  };
  
- nul.xpr = Class.create({
+ nul.expression = Class.create({
 	expression: true,
 	components: [],
 	
-//////////////// Summary functionment
+//////////////// Assertion functionment
 
 	/**
 	 * Assert this expression is modifiable
 	 */
-	modify: function() {
-		if(nul.debug.assert) assert(!this.summarised, 'Cannot modify summarised')
+	modify: function() {	//TODO1: call this in each function it is appliable (for this and arguments)
+		if(nul.debug.assert) assert(!this.summarised, 'Cannot modify summarised');
 	},
+	/**
+	 * Assert this expression is summarised
+	 */
+	use: function() {	//TODO1: call this in each function it is appliable (for this and arguments)
+		if(nul.debug.assert) assert(this.summarised, 'Cannot use non-summarised');
+	},
+
+//////////////// Summary functionment
+
 	/**
 	 * Retrieve a computed value about this expression
 	 */
 	summary: function(itm) {
-		if(nul.debug.assert) assert(this.summarised, 'Use summary only when summarised')
+		this.use();
 		if('undefined'== typeof this.summarised[itm]) {
 			assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.type);
 			this.summarised[itm] = this['sum_'+itm].apply(this);
@@ -41,6 +50,7 @@
 	 * @param smr The given summary
 	 */
 	summarise: function(smr) {
+		this.modify();
 		this.summarised = smr || {};
 	},
 
@@ -48,7 +58,16 @@
 	 * Return a clone version of this expression to modify it.
 	 */
 	modifiable: function() {
+		this.use();
 		return maf(this, function(ndx, obj) { if('summarised'!= ndx) return obj; });
+	},
+	
+	/**
+	 * Return a summarised version of this.
+	 */
+	built: function(smr) {
+		this.summarise(smr);
+		return this;
 	},
 
 //////////////// Summary users
@@ -66,21 +85,22 @@
 	sum_components: function() {
 		var rv = {};
 		for(var comp in this.components) if(cstmNdx(comp)) {
-			if(isArray(comp)) {
-				for(var ci in this[comp]) if(cstmNdx(ci))
-					rv[comp+':'+ci] = this[comp][ci];
+			var cname = this.components[comp];
+			if(isArray(this[cname])) {
+				for(var ci in this[cname]) if(cstmNdx(ci))
+					rv[cname+':'+ci] = this[cname][ci];
 			} else {
-				rv[comp] = this[comp];
+				rv[cname] = this[cname];
 			}
 		}
 		return rv;
 	},
 	
 	sum_index: function() {
-		if(nul.debug.assert) assert(this.type, 'NDX builder implemented');
-		return this.indexedSub(vals(this.sum_components));
+		return this.indexedSub(vals(this.sum_components()));
 	},
 	indexedSub: function(items) {
+		if(nul.debug.assert) assert(this.type, 'NDX builder implemented');
 	 	items = beArrg(arguments);
 	 	var rv = '['+this.type;
 	 	if(items && items.length) rv += ':' + items.join('|');

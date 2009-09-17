@@ -22,7 +22,7 @@ merge(nul.obj.empty = new nul.obj.hcSet(), {
 		nul.fail(this.type,' contains nothing!');
 	},
 
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	type: '&phi;',
 });
@@ -35,7 +35,7 @@ merge(nul.obj.whole = new nul.obj.hcSet(), {
 		return o;
 	},
 
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	type: 'any',
 });
@@ -49,7 +49,7 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 		if(o.isDefined()) nul.fail(o, ' is not a number');
 	},
 
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	type: '&#x211a;',
 });
@@ -60,7 +60,7 @@ nul.obj.string = Class.create(nul.obj.hcSet, {
 		if(o.isDefined()) nul.fail(o, ' is not a string');
 	},
 
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	type: 'str',
 });
@@ -71,7 +71,7 @@ nul.obj.bool = Class.create(nul.obj.hcSet, {
 		if(o.isDefined()) nul.fail(o, ' is not a boolean');
 	},
 
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	type: 'bool',
 });
@@ -98,7 +98,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		return o;
 	},
 
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 
 	type: 'range',
 	sum_index: function() { return this.indexedSub(this.lower, this.upper); },

@@ -17,7 +17,7 @@ nul.obj.operation = Class.create(nul.obj.undefined, {
 		this.summarise();
 	},
 	
-//////////////// nul.xpr implementation
+//////////////// nul.expression implementation
 	
 	type: 'operation',
 	components: ['operands'],

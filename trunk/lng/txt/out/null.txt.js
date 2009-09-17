@@ -18,7 +18,7 @@ nul.txt = {
 		if(xpr.isList()) {
 			if(1== lstd.length && !lstd.follow)
 				return this.draw.singleton.apply(obj, []);
-			return this.draw.list.apply(obj, [lstd]);
+			return this.draw.list.apply(obj, [map(lstd, function(){ return this.value; })]);
 		} 
 		return this.draw.set.apply(obj, [lstd]);
 	},
