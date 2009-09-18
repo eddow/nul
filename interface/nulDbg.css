@@ -59,9 +59,7 @@ div.msTab.selected {
 td.callStack {
 	border: 2px solid black;
 }
-table#kbase {
-	empty-cells: show;
-}
+
 td.kb {
 	border-left: 1px solid black;
 	border-bottom: 1px solid black;

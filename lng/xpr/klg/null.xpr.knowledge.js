@@ -16,6 +16,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		this.eqCls = [];		//Array of equivalence classes.
  		this.access = {};		//Access from an obj.ndx to an eq class it's in.
  		this.ior3 = [];	//List of unchoosed IOR3
+ 		this.name = ++nul.xpr.knowledge.nbr;
  	},
 
 //////////////// privates
@@ -55,21 +56,33 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		return rv;
 	},
  	
-//////////////// internals
- 	
+//////////////// publics
+
  	/**
- 	 * Register an IOR3 for this knowledge
- 	 * @param choices Array of nul.xpr.knowledge
- 	 * @return number choice index
+ 	 * Gets a value out of these choices
+ 	 * @param choices Array of nul.xpr.possible
+ 	 * @return nul.xpr.object nul.obj.ior3 indeed
  	 */
  	hesitate: function(choices) {
  		this.modify();
-		try { this.ior3.length; }
- 		finally { this.ior3.push(new nul.xpr.knowledge.ior3(choices)); }
- 	},
+		switch(choices.length) {
+		case 0:
+			nul.fail('No more choices');
+		case 1:
+			this.merge(choices[0].knowledge);
+			return choices[0].value;
+		default:
+			var vals = [];
+			var klgs = [];
+			map(choices, function() {
+				vals.push(this.value);
+				klgs.push(this.knowledge);
+			});
+			try { return new nul.obj.ior3(this.name, vals, this.ior3.length); }
+	 		finally { this.ior3.push(new nul.xpr.knowledge.ior3(klgs)); }
+		}
+	},
  	
-//////////////// publics
-
  	/**
  	 * Move the local-space so it merge with the local-space of klg.
  	 * TODO: Also rename extension objects
@@ -80,10 +93,11 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		this.use();
 		
  		if(nul.debug.assert) assert(this.fuzziness.name != fzns.name, 'stepUp effectively chage fuzziness');
- 		var brwsr = new nul.browser.stepUp(this.fuzziness.name, fzns.name, fzns.locals.length);
+ 		var brwsr = new nul.xpr.knowledge.stepUp
+ 			(this.fuzziness.name, fzns.name, fzns.locals.length);
  		fzns.locals.pushs(this.fuzziness.locals);
  		var rv = brwsr.browse(this) || this.modifiable();
- 		return val?{knowledge: rv, value: brwsr.browse(val)}:rv;
+ 		return val?new nul.xpr.possible(brwsr.browse(val), rv):rv;
  	},
  	
  	/**
@@ -92,16 +106,21 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @return nul.xpr.knowledge
  	 * @throws nu.failure
  	 */
- 	merge: function(klg) {
+ 	merge: function(klg, val) {
  		this.modify(); klg.use();
-		
  		if(nul.debug.assert) assert(this.fznsName==klg.fuzziness.name, 'Merged knowledge share fuzziness');
+
+ 		var brwsr = nul.xpr.knowledge.ior3merge(klg.name, this.name, this.ior3.length);
+		klg = brwsr.browse(klg);
+
  		for(var ec in klg.eqCls) if(cstmNdx(ec) && klg.eqCls[ec]) {
  			var unf = this.unify(klg.eqCls[ec].equivalents), blg = null;
  			if(unf) blg = this.belong(unf, klg.eqCls[ec].belongs);
  			if(!blg) return nul.fail('Knowledge merging');
  		}
- 		return this;
+		this.ior3.pushs(klg.ior3);
+ 		
+ 		return val?new nul.xpr.possible(brwsr.browse(val), this):this;
  	},
 
  	/**
@@ -171,6 +190,10 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	},
 	sum_isFixed: function() { return !this.ior3.length && !this.eqCls.length; },
 
+	sum_index: function() {
+		return this.indexedSub(this.name, this.eqCls, this.ior3);
+	},
+
 //////////////// nul.expression implementation
 	
 	type: 'klg',
@@ -184,6 +207,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		return rv;
 	},
  	built: function($super, fzns) {
+		//TODO: vider les eqCls vides
 		if(!fzns) {
 			//Built a context that has been 'modifiable'
 			if(nul.debug.assert) assert(this.fuzziness, 'Build a modified or give a fuzziness');
@@ -203,3 +227,30 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	},
 });
 
+nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
+	initialize: function(srcFznsName, dstFznsName, deltaLclNdx) {
+		this.srcFznsName = srcFznsName;
+		this.dstK = dstFznsName;
+		this.deltaLclNdx = deltaLclNdx;
+	},
+	transform: function(xpr) {
+		if('local'== xpr.type && this.srcFznsName== xpr.fznsName)
+			return new nul.obj.local(this.dstFznsName, 
+				'number'== typeof xpr.lclNdx ?
+					xpr.lclNdx+this.deltaLclNdx :
+					xpr.lclNdx,
+				xpr.dbgName)
+	},
+});
+
+nul.xpr.knowledge.ior3merge = Class.create(nul.browser.bijectif, {
+	initialize: function(srcKlgName, dstklgName, deltaNdx) {
+		this.srcKlgName = srcKlgName;
+		this.dstklgName = dstklgName;
+		this.deltaNdx = deltaNdx;
+	},
+	transform: function(xpr) {
+		if('ior3'== xpr.type && this.srcKlgName== xpr.klgName)
+			return new nul.obj.ior3(this.dstklgName, xpr.ior3ndx+this.deltaNdx, xpr.values);
+	},
+});

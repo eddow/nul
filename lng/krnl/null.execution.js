@@ -9,6 +9,12 @@
 nul.execution = {
 	reset: function()
 	{
+		nul.erroneus = false;
+		//namespaces
+		nul.fuzziness.nbr = 0;
+		nul.obj.extension.nbr = 0;
+		nul.xpr.knowledge.nbr = 0;
+		
 		nul.debug.reset();
 		nul.execution.benchmark.reset();
 	},

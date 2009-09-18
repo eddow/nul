@@ -9,7 +9,7 @@
 nul.fuzziness = Class.create({
 	initialize: function(name) {
  		this.locals = [];		//dbgNames, could remember just the length (as an int) if no debug info needed
-		this.name = name || ++nul.fuzziness.ndx;
+		this.name = name || ++nul.fuzziness.nbr;
 	},
 
  	newLocal: function(name, ndx) {

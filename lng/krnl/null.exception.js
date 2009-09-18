@@ -11,7 +11,6 @@ nul.exception = function(type, code, msg, chrct)
 	var err = { nul: true, type: type, message: msg,
 		code: code,
 		callStack: nul.debug.watches? nul.debug.callStack.value():null,
-		kb: nul.debug.watches? nul.debug.kbase.value():null,
 		chrct: chrct };
 	if(!nul.erroneus) nul.erroneus = err;
 	else nul.erroneus.follow = err;

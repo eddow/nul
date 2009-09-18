@@ -23,14 +23,14 @@
 	 * Assert this expression is modifiable
 	 */
 	modify: function() {	//TODO1: call this in each function it is appliable (for this and arguments)
-		if(nul.debug.assert) assert(!this.summarised, 'Cannot modify summarised');
-	},
+		return !this.summarised;
+	}.contract('Cannot modify summarised'),
 	/**
 	 * Assert this expression is summarised
 	 */
 	use: function() {	//TODO1: call this in each function it is appliable (for this and arguments)
-		if(nul.debug.assert) assert(this.summarised, 'Cannot use non-summarised');
-	},
+		return this.summarised;
+	}.contract('Cannot use non-summarised'),
 
 //////////////// Summary functionment
 
@@ -77,7 +77,6 @@
 	toFlat: nul.summary('flatTxt'),
 	isSet: nul.summary('isSet'),
 	isList: nul.summary('isList'),
-	isFixed: nul.summary('isFixed'),
 	isDefined: nul.summary('isDefined'),
 
 //////////////// Generic summary providers
@@ -112,6 +111,30 @@
 	sum_flatTxt: function() { return nul.txt.flat.toText(this); },
 	
 	sum_isList: function() { return this.isSet(); },
-	sum_isFixed: function() { return true; },
- });
- 
+});
+
+nul.xpr = {
+	are: nul.debug.are('expression'),
+	is: function(x, t) {
+		nul.debug.is('expression')(x);
+		if(t) {
+			t = t.prototype.type;
+			(function() { return x.type == t; }.asserted('Expected "'+t+'" expression'));
+		}
+	},
+	use: function(x, t) {
+		if(!isArray(x)) x = [x];
+		if(nul.debug.assert) map(x, function(i, o) {
+			nul.xpr.is(o, t);
+			o.use();
+		});
+	},
+	
+	mod: function(x, t) {
+		if(!isArray(x)) x = [x];
+		if(nul.debug.assert) map(x, function(i, o) {
+			nul.xpr.is(o, t);
+			o.modify();
+		});
+	},
+};

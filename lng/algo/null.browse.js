@@ -23,7 +23,7 @@ nul.browser = Class.create({
 	makeRV: function(xpr, bwsd, ppd) {},
 	browse: function(xpr) {
 		if(!xpr) return;
-		xpr.use();
+		nul.xpr.use(xpr);
 		
 		var bwsd = {};
 		var ppd = this.prepare(xpr);
@@ -74,21 +74,5 @@ nul.browser.bijectif = Class.create(nul.browser, {
 		var trn = this.transform(mod || ppd || xpr);
 		return trn || mod || ppd; 
 	}
-});
-
-nul.browser.stepUp = Class.create(nul.browser.bijectif, {
-	initialize: function(srcFznsName, dstFznsName, deltaLclNdx) {
-		this.srcFznsName = srcFznsName;
-		this.dstK = dstFznsName;
-		this.deltaLclNdx = deltaLclNdx;
-	},
-	transform: function(xpr) {
-		if('local'== xpr.type && this.srcFznsName== xpr.fznsName)
-			return new nul.obj.local(this.dstFznsName, 
-				'number'== typeof xpr.lclNdx ?
-					xpr.lclNdx+this.deltaLclNdx :
-					xpr.lclNdx,
-				xpr.dbgName)
-	},
 });
 

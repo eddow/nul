@@ -56,7 +56,7 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 	 * Unify two defined objects
 	 */
 	unified: function(o, klg) {
-		this.use(); o.use(); klg.use();
+		this.use(); nul.obj.use(o); nul.xpr.mod(klg, nul.xpr.knowledge);
 		
 		if(o.toString() != this.toString()) nul.fail(this, ' does not unify to ', o);
 		return this;

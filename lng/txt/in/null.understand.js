@@ -11,11 +11,11 @@ nul.understanding = {
 	expression: function(ub) {
 		var ops;
 		if('[]'== this.operator)
-			return new nul.obj.ior3(ub.klg, maf(this.operands, function() {
+			return ub.klg.hesitate(maf(this.operands, function() {
 			//Understand each operands in a freshly created UB that DOESN'T stores locals
 				try { return new nul.understanding.base(ub).understand(this); }
 				catch(err) { nul.failed(err); }
-			})).built(ub.fuzziness());
+			}));
 		var ops = map(this.operands, function() { return this.understand(ub); });
 
 		switch(this.operator)
@@ -115,9 +115,7 @@ nul.understanding.base = Class.create({
 	},
 	fuzziness: function() { return this.prntUb.fuzziness(); },
 	understand: function(cnt) {
-		return {
-			value: cnt.understand(this),
-			knowledge: this.klg.built(this.fuzziness())};
+		return new nul.xpr.possible(cnt.understand(this),this.klg.built(this.fuzziness()));
 	},
 });
 
@@ -148,9 +146,8 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 	understand: function(cnt) {
 		try {
 			return new nul.obj.pair(
-				cnt.understand(this),
-				nul.obj.empty,
-				this.klg.built(this.fzns));
+				new nul.xpr.possible(cnt.understand(this), this.klg.built(this.fzns)),
+				nul.obj.empty);
 		} catch(err) {
 			nul.failed(err);
 			return nul.obj.empty;
