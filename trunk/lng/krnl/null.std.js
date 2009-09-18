@@ -25,6 +25,7 @@ var nul = {
 	},
 	globals: {},
 	slf: '&crarr;',
+	
     isJsInt: function(n) {
     	return n== Math.floor(n);
     },
@@ -34,11 +35,9 @@ var nul = {
 			ub.createFreedom(p, nul.globals[p]);
 		return ub;
 	},
-	expression: function(txt)
+	read: function(txt)
 	{
-		nul.erroneus = false;
-		nul.fuzziness.ndx = 0;
-		nul.obj.extension.nbr = 0;
+		nul.execution.reset();
 		return nul.globalsUse().understand(nul.compile(txt));
 	},
 	html: function(txt)
@@ -56,7 +55,7 @@ var nul = {
 	onload: function() {
 		for(p in nul.natives)
 			nul.globals[p] = nul.natives[p];
-	}
+	},
 };
 
 new Event.observe(window, 'load', nul.onload);

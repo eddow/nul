@@ -11,39 +11,22 @@
  * TODO: comment link w/ knowledge
  */
 nul.obj.ior3 = Class.create(nul.obj.undefined, {
-	initialize: function(klg, items) {
-		var vals = [];
-		var klgs = [];
-		map(items, function() {
-			vals.push(this.value);
-			klgs.push(this.knowledge);
-		});
-		this.values = vals;
-		this.klgs = klgs;
+	initialize: function(klgName, items, ior3ndx) {
+		nul.obj.use(items);
+		this.klgName = klgName;
+		this.values = items;
+		this.ior3ndx = ior3ndx;
+		this.summarise();
 	},
 
 //////////////// nul.expression summaries
 
 	sum_index: function() {
-		return this.indexedSub(this.ior3ndx, this.values);
+		return this.indexedSub(this.klgName, this.ior3ndx, this.values);
 	},
 
 //////////////// nul.expression implementation
 	
 	type: 'ior3',
 	components: ['values'],
-	built: function($super) {
-		//TODO: prévoir le modifiable
-		if(!this.choices.length) nul.fail('No more choices');
-		if(1== this.choices.length) {
-			this.klg.merge(this.klgs[0]);
-			return this.values[0];
-		}
-		this.klg = klg;
-		this.ior3ndx = this.klg.hesitate(this.klgs);
-		delete this.klgs;
-		return $super({
-			isDefined: false,
-		});
-	},
 });

@@ -12,6 +12,7 @@
 
 nul.obj.operation = Class.create(nul.obj.undefined, {
 	initialize: function(operator, ops) {
+		nul.obj.use(ops);
 		this.operator = operator;
 		this.operands = ops;
 		this.summarise();

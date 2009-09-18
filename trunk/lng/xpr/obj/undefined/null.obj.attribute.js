@@ -11,6 +11,7 @@
  */
 nul.obj.attribute = Class.create(nul.obj.undefined, {
 	initialize: function(ofo, anm) {
+		nul.obj.use(ofo);
 		this.ofObject = ofo;
 		this.attributeName = anm;
 		this.summarise();

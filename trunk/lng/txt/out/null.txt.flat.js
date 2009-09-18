@@ -57,20 +57,26 @@ nul.txt.flat = merge({
 				(flat.follow?(',.. '+flat.follow.toFlat()):'')+ ')';
 		},
 		set: function(flat) {
-			//flat contains value&knowledge
 			return '{' + nul.txt.flat.all(flat).join(' &#9633; ') + '}' +
 				(flat.follow?(' &cup; '+flat.follow.toFlat()):'');
 		},
 		ior3: function() {
-			return '(' + nul.txt.flat.all(this.choices).join(' &#9633; ') + ')';
+			//TODO: use possibles
+			return '(' + nul.txt.flat.all(this.values).join(' &#9633; ') + ')';
 		},
 		
 		eqCls: function() {
 			return '(' + nul.txt.flat.all(this.equivalents).join(' = ') + ')' +
 				(this.belongs.length?(' &isin; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
 		},
-		klg: function() {
+		klg: function() {	//TODO: draw ior3s ?
 			return nul.txt.flat.all(this.eqCls).join('; ');
+		},
+		possible: function() {
+			var klgStr = this.knowledge.toFlat();
+			var valStr = this.value.toFlat();
+			if(!klgStr) return valStr;
+			return valStr + '; ' + klgStr;
 		},
 	}
 }, nul.txt);

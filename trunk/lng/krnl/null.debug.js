@@ -89,16 +89,23 @@ function tableStack(nm, tbl) {
 		}
 	};
 }
+/**
+ * Weither the string opt appear in the url parameters
+ */
+function urlOption(opt) {
+	var srch = window.location.href.split('?')[1];
+	if(!srch) return;
+	return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
+}
+
 nul.debug = {
 	callStack: tableStack('callStack'),
-	kbase: tableStack('kb'),
 	logs: tableStack('logs'),
-	jsDebug: false,
-	assert: true,
 	logging: false,
 	watches: false,
-	perf: 0> window.location.href.indexOf('noperf'),
-	acts: 0<= window.location.href.indexOf('actLog'),
+	assert: urlOption('debug'),
+	perf: !urlOption('noperf'),
+	acts: urlOption('actLog'),
 	lcLimit: 10000,
 	action: function() {
 		if(0>= nul.debug.callStack.length()) return 'Begining';
@@ -125,8 +132,6 @@ nul.debug = {
 			v = beArrg(arguments);
 			for(var vi = 0; vi<v.length; ++vi) v[vi] = nul.debug.toLogText(v[vi]);
 			v.unshift(nul.debug.action());
-			if(nul.debug.watches) v.push(nul.debug.kbase.length());
-			else v.push();
 			v.unshift(nul.debug.logCount());
 			return nul.debug.logs.log(v).addClassName(tp+' log');
 		} : nul.debug.logCount;
@@ -140,12 +145,11 @@ nul.debug = {
 	},
 	watch: function(v)
 	{
-		rcr.innerHTML = v.toHtml();
+		wtc.innerHTML = v.toHtml();
 	},
 	reset: function() {
 		nul.debug.logs.clear();
 		nul.debug.callStack.clear();
-		nul.debug.kbase.clear();
 		nul.debug.lc = 0;
 		nul.debug.lcs = nul.txt.clpsSstm(this.logs.table, 'dn',
 			function() { return nul.debug.logs.buffer.rows.length; });
@@ -154,10 +158,7 @@ nul.debug = {
 	
 	applyTables: function() {
 		if(nul.debug.logging) nul.debug.logs.apply();
-		if(nul.debug.watches) {
-			nul.debug.callStack.apply();
-			nul.debug.kbase.apply();
-		}
+		if(nul.debug.watches) nul.debug.callStack.apply();
 	},
 	ctxTable: function(ctx) {
 		var rv = '';
@@ -184,10 +185,50 @@ nul.debug = {
 			}
 		};
 	},
+	asserted: function(str, obj) {
+		var ok = true;
+		if(nul.debug.assert) ok = this.apply(obj);
+		assert(ok, str);
+	},
+	contract: function(str) {
+		if(!nul.debug.assert) return function() {};
+		var ftc = this;
+		return function() {
+			assert(ftc.apply(this), str);
+		};
+	},
+	/**
+	 * Assert this object has a member (use a member which name defines the class)
+	 * @param elm string The member to test
+	 * @return nothing
+	 * @throws assertException
+	 */
+	is: function(elm) {
+		return function(obj) {
+			if(nul.debug.assert) assert(obj[elm], 'Expected '+elm);
+			return obj;
+		}; 
+	},
+	/**
+	 * Assert these objects has a member (use a member which name defines the class)
+	 * @param elm string The member to test
+	 * @return nothing
+	 * @throws assertException
+	 */
+	are: function(elm) {
+		return function(objs) {
+			if(nul.debug.assert) map(objs, function() { assert(this[elm], 'Expected '+elm + 's'); });
+			return objs;
+		}; 
+	},
 };
 
 if(nul.debug.acts) Function.prototype.describe = nul.debug.described;
 else Function.prototype.describe = function() { return this; };
+
+Function.prototype.contract = nul.debug.contract;
+if(nul.debug.assert) Function.prototype.asserted = nul.debug.asserted;
+else Function.prototype.asserted = function() {};
 
 function assert(cnd, str) {
 	if(!cnd)

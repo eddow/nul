@@ -12,18 +12,20 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	 * @param second JsNulObj
 	 * @param klg If <first> is JsNulObj, this is the parent knowledge
 	 */
-	initialize: function(first, second, firstKlg) {
+	initialize: function(first, second) {
 		//Note if a klg is given, its fuziness belong to this pair' first
-		if(firstKlg) {
+		if('possible'== first.type) {
+			first.use();
 			var ops = nul.solve(first);
 			first = ops.shift();
 			while(ops.length) {
 				var op = ops.pop();
 				second = new nul.obj.pair(op.value, second, op.knowledge);
 			}
-			this.first = first.value;
 			this.firstKlg = first.knowledge;
+			first = first.value;
 		}
+		nul.obj.use(first); nul.obj.use(second);
 		this.first = first;
 		this.second = second;
 		this.summarise();
@@ -44,9 +46,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		var rv = [];
 		var brwsr = this;
 		do {
-			rv.push({
-				value: brwsr.first,
-				knowledge: brwsr.firstklg});
+			rv.push(brwsr.firstKlg ? new nul.xpr.possible(brwsr.first,brwsr.firstKlg) : brwsr.first);
 			brwsr = brwsr.second;
 		} while('pair'== brwsr.type);
 		if('&phi;'!= brwsr.type) rv.follow = brwsr;
@@ -57,8 +57,8 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 	has: function(o, fzns, klg) {
 		this.use();
-		o.use();
-		klg.use();
+		nul.obj.use(o);
+		nul.xpr.use(klg, nul.xpr.knowledge);
 		
 		//TODO3: summarise a tree of fixed values (=> ram db)
 		var brwsr = this;
@@ -66,10 +66,8 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		do {
 			var tklg = new nul.xpr.knowledge(fzns.name);
 			try {
-				rv.push({
-					value: tklg.unify(brwsr.firstIn(fzns, tklg), o),
-					knowledge: tklg.built(fzns)
-				});
+				rv.push(new nul.xpr.possible(tklg.unify(brwsr.firstIn(fzns, tklg), o),
+					tklg.built(fzns)));
 			} catch(err) { nul.failed(err); }
 			brwsr = brwsr.second;
 		} while('pair'== brwsr.type);
@@ -102,7 +100,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 //////////////// nul.expression implementation
 
 	type: 'pair',
-	components: ['first', 'second'],
+	components: ['first', 'firstKlg', 'second'],
 	sum_isSet: function() { return this.second.isSet(); },
 	sum_isList: function() {
 		return (!this.firstKlg) && this.second.isList();
