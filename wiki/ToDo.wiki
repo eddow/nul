@@ -1,9 +1,5 @@
 #summary TODOs et idées
 
-=== fuzziness ===
-
-Création de l'objet fuzziness et de sa realtion avec les fuzzy
-
 === xpr ===
 
 reflect the nul.xpr in the wiki
@@ -14,6 +10,9 @@ Les classes d'équivalences retiennent aussi une liste d'attributs spécifiés (
 
 Ces attributs sont utilisés sur le `one` - donc appliqués lors de changement d'attribut ou le changement de prototype.
 
-=== ior3:ndx in klg ===
+=== tests ===
 
-Le knowledge prend une array de value/knowledge et crée un IOR3 si besoin (il sera donc construit avec un ior3ndx directement)
+(1 [] 2) = 2 ==> [number:2]
+
+Ici, encore des klg vides
+(+ unittest back)
