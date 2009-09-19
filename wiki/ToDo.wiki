@@ -3,6 +3,7 @@
 === xpr ===
 
 reflect the nul.xpr in the wiki
+show "dependancy descriptors"
 
 === equivalences ===
 
