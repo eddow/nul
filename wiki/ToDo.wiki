@@ -12,7 +12,7 @@ Ces attributs sont utilisés sur le `one` - donc appliqués lors de changement d
 
 === tests ===
 
-(1 [] 2) = 2 ==> [number:2]
+(1 `[]` 2) = 2 ==> `[`number:2`]`
 
 Ici, encore des klg vides
 (+ unittest back)
