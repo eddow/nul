@@ -21,3 +21,7 @@ Ici, encore des klg vides
  # possible que ior3ndx vide ==> valeur sans condition. Quand klg.ior3 vide, on l'enlève du knowledge et on supprime le ior3ndx (donc browse et change les obj.ior3)
  # summarry dependances : si personne ne réfère un klg.ior3, on supprime les valeurs vides dedans.
  # si un klg.ior3s contient un élément, on le merge au klg. (note: on peut laisser ça au 'solve')
+
+=== fzns ===
+
+le fuzziness revient dans le knowledge !!!
