@@ -25,3 +25,4 @@ Ici, encore des klg vides
 === fzns ===
 
 le fuzziness revient dans le knowledge !!!
+On peut même bien prendre garde à faire descendre la déclaration des locales pour qu'elles soient utiles.
