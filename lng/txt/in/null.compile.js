@@ -178,9 +178,9 @@ nul.compiler = function(txt)
                 if(this.tknzr.take('[')) {
                     var lwr, upr;
                     if(!this.tknzr.rawTake('..'))
-						lwr = this.rawExpect('..',this.number());
+						lwr = this.tknzr.rawExpect('..',this.number());
                     if(!this.tknzr.take(']'))
-                    	upr = this.expect(']',this.number());
+                    	upr = this.tknzr.expect(']',this.number());
                     return nul.compiled.range(lwr, upr);
                 }
 				if(this.tknzr.take('::')) {

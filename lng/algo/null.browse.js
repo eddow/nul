@@ -7,72 +7,121 @@
  *--------------------------------------------------------------------------*/
 
 nul.browser = Class.create({
-	/**
-	 * Called before sub-element browsing
-	 * @param xpr The expression that is going to be browsed
-	 * @return Either nothing either a replacement expression to browse
-	 */
-	prepare: function(xpr) {},
+	initialize: function() {},
 	/**
 	 * Called after sub-element browsing
-	 * @param ppd The prepared expression
 	 * @param bwsd An assocation of the components browsed mapping the result of the browsing
 	 * @param xpr The xpr given to this function
 	 * @return Whatever this browse function should return
 	 */
-	makeRV: function(xpr, bwsd, ppd) {},
-	browse: function(xpr) {
-		if(!xpr) return;
+	makeRV: function(xpr, bwsd) { throw 'abstract'; },
+	/**
+	 * Recursion function over an expression
+	 */
+	recursion: function(xpr) {
+		if(!xpr) return nul.browser.bijectif.unchanged;
 		nul.xpr.use(xpr);
 		
 		var bwsd = {};
-		var ppd = this.prepare(xpr);
-		var tob = ppd || xpr;
-		if(nul.debug.assert) assert(tob.expression, 'Only expressions are browsed');
- 		for(var comp in tob.components) if(cstmNdx(comp)) {
- 			comp = tob.components[comp];
+ 		for(var comp in xpr.components) if(cstmNdx(comp)) {
+ 			comp = xpr.components[comp];
  			if(isArray(xpr[comp])) {
  				var brwsr = this;
- 				bwsd[comp] = map(xpr[comp], function() { return brwsr.browse(this); });
+ 				bwsd[comp] = map(xpr[comp], function(i, o) { return brwsr.recursion(o); });
  			} else
- 				bwsd[comp] = this.browse(xpr[comp]);
+ 				bwsd[comp] = this.recursion(xpr[comp]);
  		}
- 		return this.makeRV(xpr, bwsd, ppd);
- 	}
+ 		return this.makeRV(xpr, bwsd);
+ 	},
+ 	/**
+ 	 * Entry point of browsing
+ 	 */
+ 	browse: function(xpr) {
+ 		return this.recursion(xpr);
+ 	},
 });
 
 /**
- * Gives one other expression (or null if just the same)
+ * A browser that cache returns value in the expression JS object
  */
-nul.browser.bijectif = Class.create(nul.browser, {
+nul.browser.cached = Class.create(nul.browser, {
+	initialize: function($super) {
+		this.cachedExpressions = [];
+		this.name = 'browseCache' + ++nul.browser.cached.nameSpace;
+		$super();
+	},
+	/**
+	 * Recursion function over an expression
+	 */
+	recursion: function($super, xpr) {
+		if(!xpr) return nul.browser.bijectif.unchanged;
+		if(!xpr[this.name]) {
+			xpr[this.name] = $super(xpr);
+			this.cachedExpressions.push(xpr);
+		}
+ 		return xpr[this.name];
+ 	},
+ 	/**
+ 	 * Entry point of browsing
+ 	 */
+ 	browse: function($super, xpr) {
+ 		try { return $super(xpr); }
+ 		finally {
+ 			while(this.cachedExpressions.length)
+ 				delete this.cachedExpressions.pop()[this.name];
+ 		}
+ 	},
+});
+
+/**
+ * Gives one other expression or the same expression
+ */
+nul.browser.bijectif = Class.create(nul.browser.cached, {
+	/**
+	 * Change the expression to browse if needed
+	 */
+	prepare: function(xpr) { return nul.browser.bijectif.unchanged; },
 	/**
 	 * Transform this expression that already had bee browsed.
 	 * @return Either a new object or 'null' if nothing changed
 	 */
-	transform: function(xpr) {},
-	makeRV: function(xpr, bwsd, ppd) {
-		//xpr -(preparation)> ppd -(browse)> mod -(transform)> trn
-		//ppd iif preparation modification
-		//mod iif browse modification
-		//trn iif transform modification
-		var mod, base = ppd || xpr;
+	makeRV: function(xpr, bwsd) {
+		var mod, base = nul.browser.bijectif.firstChange(this.prepare(xpr), xpr);
 		for(var c in bwsd) {
 			var nwItm = bwsd[c];
 			if(isArray(nwItm)) {
 				//bwsd[c] contient des null-s et des valeurs
-				if(trys(nwItm, function(ndx, obj) { return !!obj; }))
+				if(nul.browser.bijectif.unchanged != nul.browser.bijectif.firstChange(nwItm))
 					//If at least one non-null return value,
-					nwItm = merge(nwItm, base[c], function(a, b) { return a||b; });
-				else nwItm = null;
+					nwItm = merge(nwItm, base[c], nul.browser.bijectif.firstChange);
+				else nwItm = nul.browser.bijectif.unchanged;
 			}
-			if(nwItm) {
+			if(nul.browser.bijectif.unchanged!= nwItm) {
 				if(!mod) mod = base.modifiable();
 				mod[c] = nwItm;
 			}
 		}
-		if(mod) mod = mod.built();
-		var trn = this.transform(mod || ppd || xpr);
-		return trn || mod || ppd; 
-	}
+		mod = mod?mod.built():xpr;
+		var trn = mod?this.transform(mod):null;
+		if(trn && nul.browser.bijectif.unchanged!= trn) nul.xpr.use(trn);
+		return nul.browser.bijectif.firstChange(trn, mod); 
+	},
+ 	/**
+ 	 * Entry point of browsing
+ 	 */
+ 	browse: function($super, xpr) {
+ 		return nul.browser.bijectif.firstChange($super(xpr), xpr);
+	},
 });
+
+//////////////// Bijectif browser statics
+
+nul.browser.bijectif.unchanged = 'bijectif.unchanged';
+nul.browser.bijectif.firstChange = function(vals) {
+	vals = beArrg(arguments);
+	for(var i = 0; i<vals.length; ++i)
+		if(vals[i] != nul.browser.bijectif.unchanged)
+			return vals[i];
+	return nul.browser.bijectif.unchanged;
+};
 

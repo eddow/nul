@@ -8,8 +8,17 @@
 
 nul.fuzziness = Class.create({
 	initialize: function(name) {
- 		this.locals = [];		//dbgNames, could remember just the length (as an int) if no debug info needed
-		this.name = name || ++nul.fuzziness.nbr;
+ 		if(nul.debug) this.locals = [];
+ 		else this.locals = 0;
+		this.name = name || ++nul.fuzziness.nameSpace;
+	},
+	
+	concat: function(fzns) {
+ 		if(nul.debug) this.locals.pushs(fzns.locals);
+ 		else this.locals += fzns.locals;
+	},
+	dbgName: function(ndx) {
+		if(nul.debug) return this.locals[ndx];
 	},
 
  	newLocal: function(name, ndx) {
@@ -17,7 +26,7 @@ nul.fuzziness = Class.create({
  			ndx = this.locals.length;
  			this.locals.push(name);
  		}
- 		return new nul.obj.local(this.name, ndx, name)
+ 		return new nul.obj.local(this, ndx)
  	},
 
 });

@@ -16,6 +16,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
  		//Create new objects each time
 		this.values = copy?clone1(copy.values):[];		//Equal values
 		this.belongs = copy?clone1(copy.belongs):[];	//Sets the values belong to
+		this.prototyp = null;
 	},
 	taken: function() {
 		if(nul.debug.assert) assert(this.knowledge, 'Take from freshly created equivalence class');
@@ -23,10 +24,8 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		var knowledge = this.knowledge;
 		var index = this.index;
 		var rec = knowledge.accede(index, this.built());
-		if(!rec) return rv;
-		return rec.good;
+		return rec?rec.good:rv;
 	},
-	prototyp: null,
 	/**
 	 * Add an object in the equivlence.
 	 * @param o JsNulObj object to add
@@ -86,6 +85,9 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 			delete this.index;
 		}
 		this.equivalents = this.prototyp?this.values.added(this.prototyp):this.values;
+		if(!this.equivalents.length ||
+			(!this.belongs.length && 1== this.equivalents.length))
+				return;
 		this.good = this.prototyp || this.values[0];
 		return $super();
 	},

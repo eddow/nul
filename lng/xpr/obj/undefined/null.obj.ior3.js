@@ -11,20 +11,23 @@
  * TODO: comment link w/ knowledge
  */
 nul.obj.ior3 = Class.create(nul.obj.undefined, {
-	initialize: function(klgName, items, ior3ndx) {
+	initialize: function(klg, ndx, items) {
 		nul.obj.use(items);
-		this.klgName = klgName;
+		this.klg = klg;
 		this.values = items;
-		this.ior3ndx = ior3ndx;
+		this.ndx = ndx;
 		this.summarise();
 	},
 
 //////////////// nul.expression summaries
 
 	sum_index: function() {
-		return this.indexedSub(this.klgName, this.ior3ndx, this.values);
+		return this.indexedSub(this.klg.name, this.ndx, this.values);
 	},
-
+	sum_ior3dep: function($super) {
+		//TODO1: if is defined(this.ndx)
+		return nul.specifyDep($super(), this.klg.name, this.ndx);
+	},
 //////////////// nul.expression implementation
 	
 	type: 'ior3',

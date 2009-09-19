@@ -14,39 +14,30 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	 */
 	initialize: function(first, second) {
 		//Note if a klg is given, its fuziness belong to this pair' first
+		nul.xpr.use(first); nul.obj.use(second);
 		if('possible'== first.type) {
 			first.use();
 			var ops = nul.solve(first);
 			first = ops.shift();
 			while(ops.length) {
 				var op = ops.pop();
-				second = new nul.obj.pair(op.value, second, op.knowledge);
+				second = new nul.obj.pair(op, second);
 			}
-			this.firstKlg = first.knowledge;
-			first = first.value;
 		}
-		nul.obj.use(first); nul.obj.use(second);
 		this.first = first;
 		this.second = second;
 		this.summarise();
 	},
 	
-	firstIn: function(fzns, klg) {
-		if(!this.firstKlg) return this.first;
-		var stpUp = this.firstKlg.stepUp(fzns, this.first);
-		klg.merge(stpUp.knowledge);
-		return stpUp.value || this.first;
-	},
-	
 //////////////// Summary
 	
 	listed: nul.summary('listed'),
-	//TODO1: listed renvoie une liste de paires obj/klg
+
 	sum_listed: function() {
 		var rv = [];
 		var brwsr = this;
 		do {
-			rv.push(brwsr.firstKlg ? new nul.xpr.possible(brwsr.first,brwsr.firstKlg) : brwsr.first);
+			rv.push(brwsr.first);
 			brwsr = brwsr.second;
 		} while('pair'== brwsr.type);
 		if('&phi;'!= brwsr.type) rv.follow = brwsr;
@@ -58,7 +49,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	has: function(o, fzns, klg) {
 		this.use();
 		nul.obj.use(o);
-		nul.xpr.use(klg, nul.xpr.knowledge);
+		nul.xpr.mod(klg, nul.xpr.knowledge);
 		
 		//TODO3: summarise a tree of fixed values (=> ram db)
 		var brwsr = this;
@@ -66,13 +57,13 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		do {
 			var tklg = new nul.xpr.knowledge(fzns.name);
 			try {
-				rv.push(new nul.xpr.possible(tklg.unify(brwsr.firstIn(fzns, tklg), o),
-					tklg.built(fzns)));
+				rv.push((new nul.xpr.possible(tklg.unify(brwsr.firstIn(fzns, tklg), o),
+					tklg.built(fzns))).built());
 			} catch(err) { nul.failed(err); }
 			brwsr = brwsr.second;
 		} while('pair'== brwsr.type);
 		//TODO2: follow
-		return new nul.obj.ior3(klg, rv).built(fzns);
+		return klg.hesitate(rv);
 	},
 
 //////////////// nul.obj.defined implementation
@@ -100,9 +91,9 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 //////////////// nul.expression implementation
 
 	type: 'pair',
-	components: ['first', 'firstKlg', 'second'],
+	components: ['first', 'second'],
 	sum_isSet: function() { return this.second.isSet(); },
 	sum_isList: function() {
-		return (!this.firstKlg) && this.second.isList();
+		return this.first.object && this.second.isList();
 	},
 });
