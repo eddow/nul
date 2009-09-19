@@ -10,7 +10,7 @@ nul.obj.extension = Class.create(nul.obj.defined, {
 	initialize: function(attr) {
 		nul.obj.use(vals(attr));
 		this.attr = attr||{};
-		this.ndx = ++nul.obj.extension.nbr;
+		this.ndx = ++nul.obj.extension.nameSpace;
 		this.summarise({
 			index: this.indexedSub(this.extensionNdx),
 		});

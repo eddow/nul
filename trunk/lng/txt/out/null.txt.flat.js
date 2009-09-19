@@ -18,7 +18,7 @@ nul.txt.flat = merge({
 		pair: function() { return nul.txt.flat.dispatchPair(this, this); },
 		
 		local: function() {
-			return (this.dbgName?this.dbgName:'') + '[' + this.fznsName + '|' + this.lclNdx + ']';
+			return this.dbgName() + '[' + this.fzns.name + '|' + this.ndx + ']';
 		},
 		attribute: function() {
 			return this.ofObject.toFlat() + '&rarr;' + this.attributeName;

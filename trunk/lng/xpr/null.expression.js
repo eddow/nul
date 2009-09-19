@@ -9,11 +9,29 @@
  /**
   * Used to build expression summary items
   */
- nul.summary = function(itm) {
- 	return function() { return this.summary(itm); };
- };
+nul.summary = function(itm) {
+	return function() { return this.summary(itm); };
+};
+
+ /**
+  * Used to build expression summary items
+  */
+nul.dependanceSummary = function(nm) {
+	return function() {
+		var comps = this.summary('components');
+		var rv = {};
+		for(c in comps) if(cstmNdx(c)) {
+			var sd = comps[c][nm].apply(comps[c]);
+			for(kn in sd) for(ndx in sd[kn]) nul.specifyDep(rv, kn, ndx, sd[kn][ndx]);
+		} 
+		return rv;
+	};
+}
  
  nul.expression = Class.create({
+ 	initialize: function(tp) {
+ 		if(tp) this.type = tp;
+ 	},
 	expression: true,
 	components: [],
 	
@@ -22,13 +40,13 @@
 	/**
 	 * Assert this expression is modifiable
 	 */
-	modify: function() {	//TODO1: call this in each function it is appliable (for this and arguments)
+	modify: function() {
 		return !this.summarised;
 	}.contract('Cannot modify summarised'),
 	/**
 	 * Assert this expression is summarised
 	 */
-	use: function() {	//TODO1: call this in each function it is appliable (for this and arguments)
+	use: function() {
 		return this.summarised;
 	}.contract('Cannot use non-summarised'),
 
@@ -72,12 +90,14 @@
 
 //////////////// Summary users
 
-	toString: nul.summary('index'),
-	toHtml: nul.summary('htmlTxt'),
-	toFlat: nul.summary('flatTxt'),
-	isSet: nul.summary('isSet'),
-	isList: nul.summary('isList'),
-	isDefined: nul.summary('isDefined'),
+	toString: nul.summary('index'),			//TODO: faire qqch pour pas qu'il l'appelle dans firebug
+	toHtml: nul.summary('htmlTxt'),			//The HTML representation of an expression
+	toFlat: nul.summary('flatTxt'),			//The flat-text representation of an expression
+	isSet: nul.summary('isSet'),			//Weither this expression is a set
+	isList: nul.summary('isList'),			//Weither this expression is a list
+	isDefined: nul.summary('isDefined'),	//Weither this expression has its attributes defined
+	ior3dep: nul.summary('ior3dep'),		//{knowledge.name => {ior3_indexe => nbr_refs}}
+	lclDep: nul.summary('lclDep'),			//{knowledge.name => {lcl_indexe => nbr_refs}}
 
 //////////////// Generic summary providers
 
@@ -109,8 +129,9 @@
 	sum_htmlTxt: function() { return nul.txt.flat.toText(this); },
 		//TODO2: return nul.txt.html.toText(this); },
 	sum_flatTxt: function() { return nul.txt.flat.toText(this); },
-	
 	sum_isList: function() { return this.isSet(); },
+	sum_ior3dep: nul.dependanceSummary('ior3dep'),
+	sum_lclDep: nul.dependanceSummary('lclDep'),
 });
 
 nul.xpr = {

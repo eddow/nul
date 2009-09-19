@@ -12,6 +12,7 @@
 nul.xpr.knowledge.ior3 = Class.create(nul.expression, {
 	initialize: function(choices) {
 		this.choices = choices;
+		this.summarise();
 	},
 
 //////////////// Existence summaries

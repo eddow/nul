@@ -9,55 +9,52 @@
 /**
  * Interface function of Solver.
  * Gets a distributed list of fuzzies that don't contains ior3 anymore
- * @param fz 
- * @return array(nul.xpr.object) Objects can be fuzzy
+ * @param fz nul.xpr.possible
+ * @return array(nul.xpr.possible)
  */
 nul.solve = function(fz) {
-	return [fz];	//TODO1
-	fz.use();
+	nul.xpr.is(fz, nul.xpr.possible);
 
-	if('fuzzy'!= fz.type || !fz.knowledge.hesitations.length) return [fz];
-	var cases = [];
-	var hes = fz.knowledge.hesitations;
-	for(var h in hes) if(cstmNdx(h)) {
-		if(nul.debug.assert) assert(hes[h].klg == fz.knowledge,
-			'ior3 reference knowledge has the hesitations');
-		cases[h] = nul.solve.ior3(hes[h].choices);
-	}
+	if(!fz.knowledge.ior3.length) return [fz];
 	
+	var cases = fz.knowledge.ior3;
 	var ndx = map(cases, function() { return 0; });
 	var rv = [];
-	var incndx;
-	do {
-		var tries = [], tried;
-		var klg = fz.knowledge.modifiable();
+	var incndx = 0;
+	while(incndx < cases.length) {
+		var klg = null;
 		try {
-			for(var i=0; i<ndx.length; ++i) {
-				tried = cases[i][ndx[i]];
-				if('fuzzy'== tried.type) {
-					klg.merge(tried.knowledge);
-					tried = tried.value;
+			for(var i=0; i<ndx.length; ++i)
+				if(cases[i].choices[ndx[i]]) {
+					if(!klg) {
+						klg = fz.knowledge.modifiable();
+						klg.ior3 = [];
+					}
+					klg.merge(cases[i].choices[ndx[i]]);
 				}
-				tries.push(tried);
-			}
-			tried = new nul.browser.solve(klg, tries).browse(fz);
-			if(nul.debug.assert) assert(tried, 'Solving try always modify : if not, no hesitations !');
-			rv.push(tried);
+			rv.push((new nul.solve.browser(fz.knowledge, ndx))
+				.browse(
+					!klg?fz:
+					(new nul.xpr.possible(fz.value, klg.built())).built()
+				));
 		} catch(err) { nul.failed(err); }
 	    //increment indexes
 		for(incndx=0; incndx<cases.length; ++incndx) {
-			if(++ndx[incndx] < cases[incndx].length) break;
+			if(++ndx[incndx] < cases[incndx].choices.length) break;
 			ndx[incndx] = 0;
 		}
-	} while(incndx < cases.length);
+	}
 	return rv;
-};
+}.describe(function() {
+	return 'Resolution : ' +
+		map(beArrg(arguments), function() { return this.toHtml(); }).join(' &#9633; ');
+});
 
 /**
  * Interface function of Solver.
  * Distribute sub-fuzzies
- * @param array(nul.xpr.object)
- * @return array(nul.xpr.object) Each element of the returned arrays contain no ior3
+ * @param array(nul.xpr.possible)
+ * @return array(nul.xpr.possible) Each element of the returned arrays contain no ior3
  */
 nul.solve.ior3 = function(fzs) {
 	var rv = [];
@@ -65,14 +62,15 @@ nul.solve.ior3 = function(fzs) {
 	return rv;
 };
 
-nul.browser.solve = Class.create(nul.browser.bijectif, {
-	initialize: function(klg, tries) {
+nul.solve.browser = Class.create(nul.browser.bijectif, {
+	initialize: function($super, klg, tries) {
 		this.klg = klg;
-		this.replace = {};
-		for(var i=0; i<tries.length; ++i)
-			this.replace[klg.hesitations[i]] = tries[i];
+		this.tries = tries;
+		$super();
 	},
 	transform: function(xpr) {
-		return this.replace[xpr];
+		if('ior3'== xpr.type && this.klg.name == xpr.klg.name)
+			return xpr.values[this.tries[xpr.ndx]];
+		return nul.browser.bijectif.unchanged;
 	},
 });

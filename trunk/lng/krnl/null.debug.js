@@ -205,7 +205,7 @@ nul.debug = {
 	 */
 	is: function(elm) {
 		return function(obj) {
-			if(nul.debug.assert) assert(obj[elm], 'Expected '+elm);
+			if(nul.debug.assert) assert(obj && obj[elm], 'Expected '+elm);
 			return obj;
 		}; 
 	},
@@ -217,7 +217,7 @@ nul.debug = {
 	 */
 	are: function(elm) {
 		return function(objs) {
-			if(nul.debug.assert) map(objs, function() { assert(this[elm], 'Expected '+elm + 's'); });
+			if(nul.debug.assert) map(objs, function(i, o) { assert(o && o[elm], 'Expected '+elm + 's'); });
 			return objs;
 		}; 
 	},
