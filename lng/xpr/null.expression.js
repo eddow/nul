@@ -12,23 +12,8 @@
 nul.summary = function(itm) {
 	return function() { return this.summary(itm); };
 };
-
- /**
-  * Used to build expression summary items
-  */
-nul.dependanceSummary = function(nm) {
-	return function() {
-		var comps = this.summary('components');
-		var rv = {};
-		for(c in comps) if(cstmNdx(c)) {
-			var sd = comps[c][nm].apply(comps[c]);
-			for(kn in sd) for(ndx in sd[kn]) nul.specifyDep(rv, kn, ndx, sd[kn][ndx]);
-		} 
-		return rv;
-	};
-}
  
- nul.expression = Class.create({
+nul.expression = Class.create({
  	initialize: function(tp) {
  		if(tp) this.type = tp;
  	},
@@ -96,8 +81,7 @@ nul.dependanceSummary = function(nm) {
 	isSet: nul.summary('isSet'),			//Weither this expression is a set
 	isList: nul.summary('isList'),			//Weither this expression is a list
 	isDefined: nul.summary('isDefined'),	//Weither this expression has its attributes defined
-	ior3dep: nul.summary('ior3dep'),		//{knowledge.name => {ior3_indexe => nbr_refs}}
-	lclDep: nul.summary('lclDep'),			//{knowledge.name => {lcl_indexe => nbr_refs}}
+	dependance: nul.summary('dependance'),	//nul.dependance
 
 //////////////// Generic summary providers
 
@@ -130,8 +114,13 @@ nul.dependanceSummary = function(nm) {
 		//TODO2: return nul.txt.html.toText(this); },
 	sum_flatTxt: function() { return nul.txt.flat.toText(this); },
 	sum_isList: function() { return this.isSet(); },
-	sum_ior3dep: nul.dependanceSummary('ior3dep'),
-	sum_lclDep: nul.dependanceSummary('lclDep'),
+	sum_dependance: function() {
+		var comps = this.summary('components');
+		var rv = new nul.dependance();
+		for(c in comps)
+			rv.also(comps[c].dependance());
+		return rv;
+	},
 });
 
 nul.xpr = {

@@ -18,7 +18,7 @@ nul.txt.flat = merge({
 		pair: function() { return nul.txt.flat.dispatchPair(this, this); },
 		
 		local: function() {
-			return this.dbgName() + '[' + this.fzns.name + '|' + this.ndx + ']';
+			return this.dbgName() + '[' + this.klgRef + '|' + this.ndx + ']';
 		},
 		attribute: function() {
 			return this.ofObject.toFlat() + '&rarr;' + this.attributeName;
@@ -61,8 +61,7 @@ nul.txt.flat = merge({
 				(flat.follow?(' &cup; '+flat.follow.toFlat()):'');
 		},
 		ior3: function() {
-			//TODO: use possibles
-			return '(' + nul.txt.flat.all(this.values).join(' &#9633; ') + ')';
+			return '(' + nul.txt.flat.all(this.possibles()).join(' &#9633; ') + ')';
 		},
 		
 		eqCls: function() {

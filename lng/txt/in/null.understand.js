@@ -69,9 +69,7 @@ nul.understanding = {
 		return new nul.obj.litteral(value);
 	},
 	application: function(ub) {
-		var app = this.applied.understand(ub);
-		var itm = this.item.understand(ub);
-		return itm.has(app, ub.fuzziness(), ub.klg) || ub.klg.belong(app, itm);
+		return ub.klg.hesitate(this.item.understand(ub).has(this.applied.understand(ub)));
 	},
 	taking: function(ub) {
 		return this.applied.understand(ub).through(this.item.understand(ub));
@@ -102,9 +100,9 @@ nul.understanding = {
 };
 
 nul.understanding.base = Class.create({
-	initialize: function(prntUb) {
+	initialize: function(prntUb, klgName) {
 		this.prntUb = prntUb;
-		this.klg = new nul.xpr.knowledge(this.fuzziness().name);
+		this.klg = new nul.xpr.knowledge(klgName);
 	},
 	resolve: function(identifier) {
 		if(this.prntUb) return this.prntUb.resolve(identifier);
@@ -113,16 +111,14 @@ nul.understanding.base = Class.create({
 	createFreedom: function(name, value) {
 		return this.prntUb.createFreedom(name, value);
 	},
-	fuzziness: function() { return this.prntUb.fuzziness(); },
 	understand: function(cnt) {
-		return (new nul.xpr.possible(cnt.understand(this),this.klg.built(this.fuzziness()))).built();
+		return (new nul.xpr.possible(cnt.understand(this),this.klg.built('clean'))).built();
 	},
 });
 
 nul.understanding.base.set = Class.create(nul.understanding.base, {
-	initialize: function($super, prntUb, selfName, fznsName) {
-		this.fzns = new nul.fuzziness(fznsName);
-		$super(prntUb);
+	initialize: function($super, prntUb, selfName, klgName) {
+		$super(prntUb, klgName);
 		this.parms = {};
 		if(selfName) this.parms[selfName] = this.klg.local(selfName, nul.slf);
 	},
@@ -133,7 +129,7 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 	},
 	allocLocal: function(name) {
 		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
-		var rv = this.fzns.newLocal(name);
+		var rv = this.klg.newLocal(name);
 		if('_'!= name) this.parms[name] = rv;
 		return rv;
 	},
@@ -142,11 +138,10 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 		else value = this.allocLocal(name);
 		return value;
 	},
-	fuzziness: function() { return this.fzns; },
 	understand: function(cnt) {
 		try {
 			return new nul.obj.pair(
-				(new nul.xpr.possible(cnt.understand(this), this.klg.built(this.fzns))).built(),
+				(new nul.xpr.possible(cnt.understand(this), this.klg.built('clean'))).built(),
 				nul.obj.empty);
 		} catch(err) {
 			nul.failed(err);

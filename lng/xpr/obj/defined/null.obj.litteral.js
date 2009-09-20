@@ -17,6 +17,12 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 		}); 
 	},
 	
+//////////////// nul.xpr.object implementation
+
+	has: function(o) {
+		return [];	//TODO4: exception ?
+	},
+	
 //////////////// nul.expression implementation
 
 	//type: set on initialise

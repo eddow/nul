@@ -16,6 +16,13 @@ nul.obj.extension = Class.create(nul.obj.defined, {
 		});
 	},
 
+//////////////// nul.xpr.object implementation
+
+	has: function($super, o, klg) {
+		if(this.attr[' ']) return this.fctAttr(klg, ' ', o);	//TODO
+		return $super();
+	},
+
 //////////////// nul.expression implementation
 
 	type: 'extension',

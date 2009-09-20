@@ -125,7 +125,7 @@ nul.debug = {
 			return rv.join(' ');
 		}
 		if(v.dbgHTML) return v.dbgHTML();
-		return v.toText?v.toText(nul.txt.flat):v.toString();
+		return v.toFlat?v.toFlat():v.toString();
 	},
 	log: function(tp) {
 		return nul.debug.logging && nul.debug.logging[tp] ? function(v) {

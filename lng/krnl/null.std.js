@@ -26,17 +26,6 @@ var nul = {
 	globals: {},
 	slf: '&crarr;',
 	
-	/**
-	 * Add in the dependancy descriptor 'deps' 'qtt' reference to the index 'ndx' of the name 'nm'
-	 */
-	specifyDep: function(deps, nm, ndx, qtt) {
-		qtt = qtt || 1;
-		if(!deps[nm]) deps[nm] = {};
-		if(deps[nm][ndx]) deps[nm][ndx] += qtt;
-		else deps[nm][ndx] = qtt;
-		return deps;
-	},
-	
     isJsInt: function(n) {
     	return n== Math.floor(n);
     },
