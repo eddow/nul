@@ -46,40 +46,25 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 //////////////// nul.xpr.object implementation
 
-	has: function(o, fzns, klg) {
-		this.use();
-		nul.obj.use(o);
-		nul.xpr.mod(klg, nul.xpr.knowledge);
-		
+	has: function(o) {
+		this.use(); nul.obj.use(o);
 		//TODO3: summarise a tree of fixed values (=> ram db)
-		var brwsr = this;
+		//make a table fct also
 		var rv = [];
-		do {
-			var tklg = new nul.xpr.knowledge(fzns.name);
-			try {
-				rv.push((new nul.xpr.possible(tklg.unify(brwsr.firstIn(fzns, tklg), o),
-					tklg.built(fzns))).built());
-			} catch(err) { nul.failed(err); }
-			brwsr = brwsr.second;
-		} while('pair'== brwsr.type);
-		//TODO2: follow
-		return klg.hesitate(rv);
+		try { rv.push( nul.xpr.possible.unification(this.first, o) ); }
+		catch(err) { nul.failed(err); }
+		return rv.pushs(this.second.has(o));
 	},
 
 //////////////// nul.obj.defined implementation
 
 	attr: {	
 		'& ': function(op, klg) {
-			if(op.first.fixed()) return op.first;
-			//if(1<= op.first.minXst()) return [op.first];	//TODO3: ?
-			//if(pinf<= op.first.minXst() && op.first.enumerableExistence)
-			// 	return [nul.possible(op.first.firstExistence())];	// &{ N x [] 'oui' } = 0
+			//TODO3: more complex cases?
+			if('possible'!= op.first.type) return op.first;
 		},
 		'* ': function(op, klg) {
-			//if(pinf<= op.first.minXst() && op.first.enumerableExistence)
-			// 	return [nul.possible(op[first.next])];	// *{ N x [] 'oui' } = { [2..pinf] x [] 'oui' }
-			if(pinf<= op.first.minXst()) return op;	// *{ Q x [] 'oui' } = { Q x [] 'oui' }
-			if(op.first.fixed()) return op.second;
+			if('possible'!= op.first.type) return op.second;
 		},
 	},
 

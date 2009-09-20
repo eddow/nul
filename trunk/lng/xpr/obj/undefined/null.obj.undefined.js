@@ -11,4 +11,5 @@ nul.obj.undefined = Class.create(nul.xpr.object, {
 		var ownSmr = { isDefined: false };
 		$super(smr?merge(ownSmr,smr):ownSmr);
 	},
+	
 });

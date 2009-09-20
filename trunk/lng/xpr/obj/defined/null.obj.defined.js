@@ -13,45 +13,35 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 	},
 	/**
 	 * Gets an attribute
-	 * @param fzns nul.fuzziness
+	 * @param klg nul.xpr.knowledge
 	 * @param anm string
 	 * @return nul.xpr.object or nothing if unknown
 	 */
-	valAttr: function(fzns, anm) {
+	valAttr: function(klg, anm) {
 		this.use();
 		
 		var avl = this.attr[anm];
 		if(!avl) return;
 		if('function'!= typeof(avl)) return avl;
-		return avl(this, fzns);
+		return avl(this, klg);
 	},
 	/**
 	 * Gets a functional attribute
-	 * @param fzns nul.fuzziness
+	 * @param klg nul.xpr.knowledge
 	 * @param anm string
 	 * @param op nul.xpr.object
 	 * @return nul.xpr.object or nothing if unknown
 	 * @throws nul.failure
 	 */
-	fctAttr: function(fzns, anm, op) {
+	fctAttr: function(klg, anm, op) {
 		this.use(); op.use();
 		
 		var avl = this.attr[anm];
 		if(!avl) return;
-		if('function'!= typeof(avl)) return op.through(avl, fzns);
-		return avl(this, op, fzns);
+		if('function'!= typeof(avl)) return op.through(avl, klg);
+		return avl(this, op, klg);
 	},
-	/**
-	 * Return 'o' once it is known that 'o' is in this 'set'
-	 * @param fzns nul.fuzziness
-	 * @param o nul.xpr.object
-	 * @return nul.xpr.object or nothing if unknown
-	 * @throws nul.failure
-	 */
-	has: function(o, fzns, klg) {
-		if(this.attr[' ']) return this.fctAttr(fzns, ' ', o);
-	},
-	
+
 	/**
 	 * Unify two defined objects
 	 */

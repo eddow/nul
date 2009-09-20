@@ -19,7 +19,7 @@ merge(nul.obj.empty = new nul.obj.hcSet(), {
 		return [this];
 	},
 	has: function(o) {
-		nul.fail(this.type,' contains nothing!');
+		return [];
 	},
 
 //////////////// nul.expression implementation
@@ -32,7 +32,7 @@ merge(nul.obj.whole = new nul.obj.hcSet(), {
 		return [o];
 	},
 	has: function(o) {
-		return o;
+		return [o];
 	},
 
 //////////////// nul.expression implementation
@@ -45,8 +45,8 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 		if('range'== o.type) return o;
 	},
 	has: function(o) {
-		if('number'== o.type) return o;
-		if(o.isDefined()) nul.fail(o, ' is not a number');
+		if('number'== o.type) return [o];
+		if(o.isDefined()) return [];
 	},
 
 //////////////// nul.expression implementation
@@ -56,8 +56,8 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 
 nul.obj.string = Class.create(nul.obj.hcSet, {
 	has: function(o) {
-		if('string'== o.type) return o;
-		if(o.isDefined()) nul.fail(o, ' is not a string');
+		if('string'== o.type) return [o];
+		if(o.isDefined()) return [];
 	},
 
 //////////////// nul.expression implementation
@@ -67,8 +67,8 @@ nul.obj.string = Class.create(nul.obj.hcSet, {
 
 nul.obj.bool = Class.create(nul.obj.hcSet, {
 	has: function(o) {
-		if('boolean'== o.type) return o;
-		if(o.isDefined()) nul.fail(o, ' is not a boolean');
+		if('boolean'== o.type) return [o];
+		if(o.isDefined()) return [];
 	},
 
 //////////////// nul.expression implementation
@@ -92,10 +92,10 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 	},
 	has: function(o) {
 		if(!o.isDefined()) return;
-		if('number'!= o.type) nul.fail(o, ' is not a number');
-		if(!nul.isJsInt(o.value)) nul.fail(o, ' is not an integer');
-		if( o.value < this.lower || o.value > this.upper) nul.fail(o, ' is not in the range');
-		return o;
+		if('number'!= o.type) return [];
+		if(!nul.isJsInt(o.value)) return [];
+		if( o.value < this.lower || o.value > this.upper) return [];
+		return [o];
 	},
 
 //////////////// nul.expression implementation

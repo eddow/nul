@@ -16,23 +16,24 @@
  * Define an object that is a value of a local
  */
 nul.obj.local = Class.create(nul.obj.undefined, {
-	initialize: function(fzns, ndx) {
-		this.fzns = fzns;
+	initialize: function(klgRef, ndx) {
+		this.klgRef = klgRef;
 		this.ndx = ndx;
 		this.summarise({
-			index: this.indexedSub(this.fzns.name, this.ndx),
+			index: this.indexedSub(this.klgRef, this.ndx),
 		});
 	},
 
 //////////////// public
 
 	dbgName: function() {
-		return this.fzns.dbgName(this.ndx) || '';
+		//TODO1: return this.klg.dbgName(this.ndx) || '';
+		return 'lcl';
+	},
+	sum_dependance: function($super) {
+		return new nul.dependance(this);
 	},
 	
-	sum_lclDep: function($super) {
-		return nul.specifyDep($super(), this.fzns.name, this.ndx);
-	},
 //////////////// nul.expression implementation
 
 	type: 'local',

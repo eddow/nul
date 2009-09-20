@@ -24,18 +24,17 @@ nul.solve = function(fz) {
 	while(incndx < cases.length) {
 		var klg = null;
 		try {
-			for(var i=0; i<ndx.length; ++i)
-				if(cases[i].choices[ndx[i]]) {
-					if(!klg) {
-						klg = fz.knowledge.modifiable();
-						klg.ior3 = [];
-					}
-					klg.merge(cases[i].choices[ndx[i]]);
+			for(var i=0; i<ndx.length; ++i) {
+				if(!klg) {
+					klg = fz.knowledge.modifiable();
+					klg.ior3 = [];
 				}
+				if(cases[i].choices[ndx[i]]) klg.merge(cases[i].choices[ndx[i]]);
+			}
 			rv.push((new nul.solve.browser(fz.knowledge, ndx))
 				.browse(
 					!klg?fz:
-					(new nul.xpr.possible(fz.value, klg.built())).built()
+					(new nul.xpr.possible(fz.value, klg.built('clean'))).built()
 				));
 		} catch(err) { nul.failed(err); }
 	    //increment indexes
@@ -69,7 +68,7 @@ nul.solve.browser = Class.create(nul.browser.bijectif, {
 		$super();
 	},
 	transform: function(xpr) {
-		if('ior3'== xpr.type && this.klg.name == xpr.klg.name)
+		if('ior3'== xpr.type && this.klg.name == xpr.klgRef)
 			return xpr.values[this.tries[xpr.ndx]];
 		return nul.browser.bijectif.unchanged;
 	},
