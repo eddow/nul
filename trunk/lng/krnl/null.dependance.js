@@ -14,7 +14,7 @@ nul.dependance = Class.create({
 		this.usages = {};
 		if(lcl) {
 			nul.xpr.is(lcl, nul.obj.lcl);
-			this.depend(lcl.klg.name, 'local', lcl.ndx);
+			this.depend(lcl.klgRef, 'local', lcl.ndx);
 		}
 	},
 	
@@ -40,12 +40,12 @@ nul.dependance = Class.create({
 
 	/**
 	 * Depends also on all what 'deps' depends on
-	 * @param deps nul.dependance
+	 * @param {nul.dependance} deps
 	 */
 	also: function(deps) {
-		for(klgNm in deps.usages)
-			for(type in deps.usages[klgNm])
-				for(ndx in deps.usages[klgNm][type])
+		for(var klgNm in deps.usages)
+			for(var type in deps.usages[klgNm])
+				for(var ndx in deps.usages[klgNm][type])
 					this.depend(klgNm, type, ndx, deps.usages[klgNm][type][ndx]);
 		return this;
 	},
@@ -55,7 +55,32 @@ nul.dependance = Class.create({
 	 */
 	ior3dep: function(ior3) {
 		nul.xpr.is(ior3, nul.obj.ior3);
-		this.depend(ior3.klg.name, 'ior3', ior3.ndx);
+		this.depend(ior3.klgRef, 'ior3', ior3.ndx);
 		return this;
 	},
+	
+//////////////// Text output
+
+	toHtml : function() {
+		var rv = [];
+		for(var krf in this.usages) {
+			var ld = this.usages[krf].local;
+			var rld = [];
+			for(var l in ld) rld.push(html.td(l+':'+ld[l]));
+			rv.push(html.th(krf) + rld.join());
+		}
+		return html.table(rv.join());
+	},
+	
+	toFlat : function() {
+		var rv = [];
+		for(var krf in this.usages) {
+			var ld = this.usages[krf].local;
+			var rld = [];
+			for(var l in ld) rld.push(l+':'+ld[l]);
+			rv.push(krf + '[' + rld.join(', ') + ']');
+		}
+		return rv.join(' ');
+	},
+	
 });

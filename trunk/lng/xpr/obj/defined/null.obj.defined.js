@@ -13,8 +13,8 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 	},
 	/**
 	 * Gets an attribute
-	 * @param klg nul.xpr.knowledge
-	 * @param anm string
+	 * @param {nul.xpr.knowledge} klg
+	 * @param {string} anm
 	 * @return nul.xpr.object or nothing if unknown
 	 */
 	valAttr: function(klg, anm) {
@@ -27,9 +27,9 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 	},
 	/**
 	 * Gets a functional attribute
-	 * @param klg nul.xpr.knowledge
-	 * @param anm string
-	 * @param op nul.xpr.object
+	 * @param {nul.xpr.knowledge} klg
+	 * @param {string} anm
+	 * @param {nul.xpr.object} op
 	 * @return nul.xpr.object or nothing if unknown
 	 * @throws nul.failure
 	 */

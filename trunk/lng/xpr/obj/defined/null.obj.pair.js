@@ -8,9 +8,8 @@
 
 nul.obj.pair = Class.create(nul.obj.defined, {
 	/**
-	 * @param first Either nul.object, either {value/knowledge}
-	 * @param second JsNulObj
-	 * @param klg If <first> is JsNulObj, this is the parent knowledge
+	 * @param {nul.xpr.possible} first
+	 * @param {nul.xpr.object} second
 	 */
 	initialize: function(first, second) {
 		//Note if a klg is given, its fuziness belong to this pair' first

@@ -50,7 +50,7 @@ nul.expression = Class.create({
 	},
 	/**
 	 * Stop the modifications brought to this expression. Now, we compute some values about
-	 * @param smr The given summary
+	 * @param {association} smr The given summary
 	 */
 	summarise: function(smr) {
 		this.modify();
@@ -110,14 +110,13 @@ nul.expression = Class.create({
 	 	return rv+']';
 	},
 
-	sum_htmlTxt: function() { return nul.txt.flat.toText(this); },
-		//TODO2: return nul.txt.html.toText(this); },
+	sum_htmlTxt: function() { return nul.txt.html.toText(this); },
 	sum_flatTxt: function() { return nul.txt.flat.toText(this); },
 	sum_isList: function() { return this.isSet(); },
 	sum_dependance: function() {
 		var comps = this.summary('components');
 		var rv = new nul.dependance();
-		for(c in comps)
+		for(var c in comps) if(comps[c])
 			rv.also(comps[c].dependance());
 		return rv;
 	},

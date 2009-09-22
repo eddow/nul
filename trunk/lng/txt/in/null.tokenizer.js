@@ -52,7 +52,7 @@ nul.tokenizer = function(src)
 		},
 		/**
 		 * Compare and return next token
-		 * @param accepted A list of accepted token type
+		 * @param {array(string)} accepted A list of accepted token type
 		 * @return next token if accepted or null
 		 */
 		peek: function(accepted)
@@ -70,7 +70,7 @@ nul.tokenizer = function(src)
 		},
 		/**
 		 * Gets next token and advance if accepted.
-		 * @param accepted A list of accepted token type
+		 * @param {array(string)} accepted A list of accepted token type
 		 * @return next token if accepted or null
 		 */
 		pop: function(accepted)
@@ -82,7 +82,7 @@ nul.tokenizer = function(src)
 		},
 		/**
 		 * Gets next token and advance if accepted.
-		 * @param value The only accepted token value
+		 * @param {string} value The only accepted token value
 		 * @return true if token was token, false if nothing changed
 		 */
 		take: function(value)
@@ -93,8 +93,8 @@ nul.tokenizer = function(src)
 		},
 		/**
 		 * Take next token, asserts its value
-		 * @param value The expected value of the next token
-		 * @param rv The return value of this function
+		 * @param {string} value The expected value of the next token
+		 * @param {any} rv The return value of this function
 		 * @return the parameter 'rv'
 		 * @throws nul.synthaxException if the token is not the one expected.
 		 */
@@ -106,7 +106,7 @@ nul.tokenizer = function(src)
 		},
 		/**
 		 * Gets next characters and advance if accepted.
-		 * @param value The characters expected to de found
+		 * @param {string} value The characters expected to de found
 		 * @return true if the characters were found
 		 */
 		rawTake: function(value)
@@ -119,8 +119,8 @@ nul.tokenizer = function(src)
 		},
 		/**
 		 * Take some characters, asserts their value
-		 * @param value The expected string to find
-		 * @param rv The return value of this function
+		 * @param {string} value The expected string to find
+		 * @param {any} rv The return value of this function
 		 * @return the parameter 'rv'
 		 * @throws nul.synthaxException if the characters were not found exactly
 		 */
@@ -132,7 +132,7 @@ nul.tokenizer = function(src)
 		},
 		/**
 		 * Get a string until some character
-		 * @param seeked The bound for seeking
+		 * @param {string} seeked The bound for seeking
 		 * @return the string until the bound.
 		 */
 		fly: function(seeked)

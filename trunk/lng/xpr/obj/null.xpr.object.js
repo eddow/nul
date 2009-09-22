@@ -13,8 +13,8 @@ nul.xpr.object = Class.create(nul.expression, {
 	},
 	/**
 	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
-	 * @param o nul.xpr.object
-	 * @param klg nul.xpr.knowledge
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
 	 * @return array(nul.xpr.object or nul.xpr.possible)
 	 */
 	has: function(o) {

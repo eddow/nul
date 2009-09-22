@@ -42,7 +42,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	
  	/**
  	 * Begin modification of an equivalence class
- 	 * @param obj nul.obj or int Object whose information is brought or eqCls index
+ 	 * @param {nul.obj or int} obj Object whose information is brought or eqCls index
  	 * @return nul.xpr.knowledge.eqClass
  	 */
 	inform: function(ndx) {
@@ -60,7 +60,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	
  	/**
  	 * Add the given equivalence classes in this knowledge
- 	 * @param eqCls array(nul.xpr.knowledge.eqClass)
+ 	 * @param {array(nul.xpr.knowledge.eqClass)} eqCls
  	 * @throws nul.failure
  	 */
  	addEqCls: function(eqCls) {
@@ -80,7 +80,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 
  	/**
  	 * Gets a value out of these choices
- 	 * @param choices Array of nul.xpr.possible
+ 	 * @param {array} choices of nul.xpr.possible
  	 * @return nul.xpr.object nul.obj.ior3 indeed
  	 */
  	hesitate: function(choices) {
@@ -132,8 +132,8 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	/**
  	 * Know that all the arguments are unifiable
  	 * Modifies the knowledge
- 	 * @param JsNulObj
- 	 * @return JsNulObj The replacement value for all the given values
+ 	 * @param {nul.xpr.object}
+ 	 * @return nul.xpr.object The replacement value for all the given values
  	 * @throws nul.failure
  	 */
  	unify: function(a, b) {
@@ -151,7 +151,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		var dstEqCls = this.inform(eqClss[0]);
  		if(eqClss.length) eqClss.shift();
  		if(trys(eqClss, function(i, eqx) {
-	 			try { return this.eqCls[eqClss[eqx]].mergeTo(dstEqCls); }
+	 			try { return dstEqCls.merge(this.eqCls[eqClss[eqx]]); }
 	 			finally { this.eqCls[eqClss[eqx]] = null; }
 	 		}) ||
 			trys(solos, function() { return dstEqCls.isEq(this); }))
@@ -181,7 +181,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	
  	/**
  	 * Remove any information about locals or ior3s that are not refered anymore
- 	 * @param deps nul.dependance
+ 	 * @param {nul.dependance} deps
  	 * @return nul.xpr.knowledge
  	 */
  	prune: function(deps) {
@@ -248,7 +248,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		return rv;
 	},
 	/**
-	 * @param clean True when it is sure no equivalence class can be simplified or crossed
+	 * @param {bool} clean True when it is sure no equivalence class can be simplified or crossed
 	 */
  	built: function($super, clean) {
 		if(!clean) {
