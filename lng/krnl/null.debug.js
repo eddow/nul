@@ -199,7 +199,7 @@ nul.debug = {
 	},
 	/**
 	 * Assert this object has a member (use a member which name defines the class)
-	 * @param elm string The member to test
+	 * @param {string} elm The member to test
 	 * @return nothing
 	 * @throws assertException
 	 */
@@ -211,7 +211,7 @@ nul.debug = {
 	},
 	/**
 	 * Assert these objects has a member (use a member which name defines the class)
-	 * @param elm string The member to test
+	 * @param {string} elm The member to test
 	 * @return nothing
 	 * @throws assertException
 	 */

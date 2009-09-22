@@ -9,7 +9,7 @@
 nul.txt = {
 	toText: function(xpr) {
 		if(!this.beginDraw(xpr)) return this.recurStr;
-		try { return this.wrap((this.draw[xpr.type]||this.draw.other).apply(this.outp(xpr), [])); }
+		try { return this.wrap((this.draw[xpr.type]||this.draw.other).apply(this.outp(xpr), []), xpr); }
 		finally { this.endDraw(xpr); }
 	},
 	dispatchPair: function(xpr, obj) {
@@ -22,7 +22,6 @@ nul.txt = {
 		} 
 		return this.draw.set.apply(obj, [lstd]);
 	},
-	drawing: [],
 	beginDraw: function(xpr) {
 		if(this.drawing.contains(xpr)) return false;
 		this.drawing.push(xpr);
@@ -31,61 +30,6 @@ nul.txt = {
 	endDraw: function(xpr) {
 		if(nul.debug.assert) assert(xpr==this.drawing.pop(), 'Drawing consistency');
 		else this.drawing.pop();
-	},
-	js: {
-		tilement: '',
-		tilePos: 0,
-		tiled: function() {
-			var rv = this.tilement;
-			this.tilement = '';
-			this.tilePos = 0;
-			return rv;
-		},
-		tile: function(knd, cnt, ttl) {
-			var aCnt = '';
-			if(isArray(ttl)) {
-				for(var i=0; i<ttl.length; ++i) aCnt +=
-					'<div class="'+ttl[i].toLowerCase()+'"></div>'
-				ttl = null;
-			}
-			if(!ttl) ttl = cnt;
-			this.tilement += '<a class="'+knd+'" '+
-				'title="'+ttl+'" '+
-				'onmouseover="nul.txt.js.enter(this.parentNode, \''+knd+'\');" '+
-				'style="left: '+((this.tilePos++)*5)+'px;" '+
-				'>'+aCnt+'</a>' ;
-			return '<div class="'+knd+'" '+
-				'onmouseout="nul.txt.js.leave();" '+
-				'onmouseover="nul.txt.js.keepIn();" '+
-				'style="display: none;" '+
-				'>'+ cnt + '</div>';
-		},
-		keepIn: function() {
-			if(this.keepTimeOut) {
-				window.clearTimeout(this.keepTimeOut);
-				delete this.keepTimeOut;
-			}
-		},
-		enter: function(elm, knd) {
-			if(this.entered && elm == this.entered[0] && knd == this.entered[1]) return;
-			if(this.entered) this.leave();
-			this.entered = [elm, knd];
-			elm.addClassName('lined');
-			elm.getElementsBySelector('a.'+knd).each(Element.hide);
-			elm.getElementsBySelector('div.'+knd).each(Element.show);
-			elm.getElementsBySelector('span a.'+knd).each(Element.show);
-			elm.getElementsBySelector('span div.'+knd).each(Element.hide);
-			//this.keepTimeOut = window.setTimeout('nul.txt.js.leave();',100);
-		},
-		leave: function(elm, knd) {
-			if(!this.entered) return;
-			elm = this.entered[0];
-			knd = this.entered[1];
-			delete this.entered;
-			elm.removeClassName('lined');
-			elm.getElementsBySelector('a.'+knd).each(Element.show);
-			elm.getElementsBySelector('div.'+knd).each(Element.hide);
-		}
 	},
 	clpsSstm : function(table, uc, lcFct) {
 		return table ? table.clpsSstm = {

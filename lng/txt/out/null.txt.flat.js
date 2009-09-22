@@ -7,8 +7,8 @@
  *--------------------------------------------------------------------------*/
 
 nul.txt.flat = merge({
+	drawing: [],
 	all: function(ass) {
-		var txtr = this;
 		return maf(ass, function() { return this.toFlat(); });
 	},
 	recurStr: '[recur]',
@@ -47,7 +47,7 @@ nul.txt.flat = merge({
 		},
 		
 		dotted: function() {
-			return this.first.toFlat() + ' &rarr; ' + this.second.toFlat();
+			return this.first.toFlat() + ' &rArr; ' + this.second.toFlat();
 		},
 		singleton: function() {
 			return '{' + this.first.toFlat() + '}';

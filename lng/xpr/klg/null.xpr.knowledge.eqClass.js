@@ -7,7 +7,8 @@
  *--------------------------------------------------------------------------*/
 
 /**
- * TODO:comment
+ * A piece of knowledge:
+ * A set of objects known equivalents and a set of items they are known to belong to. 
  */
 nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	initialize: function(knowledge, index, copy) {
@@ -28,7 +29,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	/**
 	 * Add an object in the equivlence.
-	 * @param o JsNulObj object to add
+	 * @param {nul.xpr.object} o object to add
 	 * @return bool failure
 	 */
 	isEq: function(o) {
@@ -44,7 +45,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	/**
 	 * Add an object as a belongs.
-	 * @param o JsNulObj object that belongs the class
+	 * @param {nul.xpr.object} o object that belongs the class
 	 * @return bool failure
 	 */
 	isIn: function(s) {
@@ -55,16 +56,16 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	/**
 	 * Add this to another whole equivalence class
-	 * @param o JsNulEqClass
+	 * @param {nul.xpr.knowledge.eqClass} c 
 	 * @return bool failure
 	 */
-	mergeTo: function(c) {
-		this.use(); c.modify();
+	merge: function(c) {
+		this.modify(); nul.xpr.use(c, nul.xpr.knowledge.eqClass);
 		
-		var rv = this.prototyp?c.isEq(this.prototyp):false;
-		return rv ||
-			trys(this.values, function() { return c.isEq(this); }) ||
-			trys(this.belongs, function() { return c.isIn(this); });
+		var tec = this;
+		return (c.prototyp?this.isEq(c.prototyp):false) ||
+			trys(c.values, function() { return tec.isEq(c); }) ||
+			trys(c.belongs, function() { return tec.isIn(c); });
 	},
 
 //////////////// nul.expression implementation

@@ -10,8 +10,8 @@ nul.browser = Class.create({
 	initialize: function() {},
 	/**
 	 * Called after sub-element browsing
-	 * @param bwsd An assocation of the components browsed mapping the result of the browsing
-	 * @param xpr The xpr given to this function
+	 * @param {association} bwsd An assocation of the components browsed mapping the result of the browsing
+	 * @param {nul.expression} xpr The xpr given to this function
 	 * @return Whatever this browse function should return
 	 */
 	makeRV: function(xpr, bwsd) { throw 'abstract'; },

@@ -98,7 +98,7 @@ span.local .desc .sub {
 	display: table-row;
 }
 
-a.shortStr, a.locals, a.dependances, a.flags, a.autoRef, a.belongs, a.fuzze {
+a.shortStr, a.index, a.locals, a.dependances, a.flags, a.reference {
 	display: table-cell;
 	font-size: 4px;
 	cursor: none;
@@ -111,7 +111,7 @@ a.shortStr, a.locals, a.dependances, a.flags, a.autoRef, a.belongs, a.fuzze {
 	vertical-align: top;
 }
 
-div.shortStr, div.locals, div.dependances, div.flags, div.autoRef, div.belongs, div.fuzze {
+div.shortStr, div.index, div.locals, div.dependances, div.reference {
 	cursor: default;
 	font-size: 1em;
 	position: absolute;
@@ -123,29 +123,14 @@ div.shortStr, div.locals, div.dependances, div.flags, div.autoRef, div.belongs, 
 	white-space: nowrap;
 }
 
-a.flags div {
-	width: 3px;
-	height: 1px;
-	border: 0;
-}
-
-.flags .failable { background-color: red; }
-.flags .dirty { background-color: blue; }
-.flags .extractible { background-color: orange; }
-
-.flags {
-	border-color: lightgrey;
-	background-color: ivory;
-}
-
 .shortStr {
 	border-color: blue;
 	background-color: lightblue;
 }
 
-.autoRef {
-	border-color: black;
-	background-color: grey;
+.index {
+	border-color: darkgrey;
+	background-color: lightgrey;
 }
 
 .locals {
@@ -153,9 +138,14 @@ a.flags div {
 	background-color: orange;
 }
 
-.belongs {
-	border-color: firebrick;
-	background-color: plum;
+.dependances {
+	border-color: darkgreen;
+	background-color: lightgreen;
+}
+
+.reference {
+	border-color: black;
+	background-color: grey;
 }
 
 div.dependances {
@@ -163,15 +153,13 @@ div.dependances {
 	padding-top: 2.5em;
 }
 
-.dependances {
-	border-color: darkgreen;
-	background-color: lightgreen;
+/*
+.belongs {
+	border-color: firebrick;
+	background-color: plum;
 }
 
-.fuzze {
-	border-color: lightgreen;
-	background-color: darkgreen;
-}
+*/
 
 .dependances table {
 	empty-cells: show;

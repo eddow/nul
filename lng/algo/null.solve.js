@@ -9,7 +9,7 @@
 /**
  * Interface function of Solver.
  * Gets a distributed list of fuzzies that don't contains ior3 anymore
- * @param fz nul.xpr.possible
+ * @param {nul.xpr.possible} fz
  * @return array(nul.xpr.possible)
  */
 nul.solve = function(fz) {
@@ -52,7 +52,7 @@ nul.solve = function(fz) {
 /**
  * Interface function of Solver.
  * Distribute sub-fuzzies
- * @param array(nul.xpr.possible)
+ * @param {array(nul.xpr.possible)} fzs
  * @return array(nul.xpr.possible) Each element of the returned arrays contain no ior3
  */
 nul.solve.ior3 = function(fzs) {

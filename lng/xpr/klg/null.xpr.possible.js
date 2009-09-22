@@ -20,7 +20,7 @@ nul.xpr.possible = Class.create(nul.expression, {
 
 	/**
 	 * 'klg' now knows all what this possible knows
-	 * @param klg nul.xpr.knowledge destination knowledge
+	 * @param {nul.xpr.knowledge} klg destination knowledge
 	 * @return nul.xpr.object This modified value (to refer the new knowledge)
 	 */
 	stepUp: function(klg) {
@@ -53,8 +53,8 @@ nul.xpr.possible = Class.create(nul.expression, {
 
 /**
  * Create a possible out of a unification
- * @param p nul.xpr.object or nul.xpr.possible
- * @param o nul.xpr.object
+ * @param {nul.xpr.possible} p
+ * @param {nul.xpr.object} o
  * @return nul.xpr.object or nul.xpr.possible
  */
 nul.xpr.possible.unification = function(p, o) {
