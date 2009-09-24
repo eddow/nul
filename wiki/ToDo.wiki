@@ -1,5 +1,7 @@
 #summary TODOs et idées
 
+{ a, a } (1, _)
+
 === xpr ===
 
 reflect the nul.xpr in the wiki
