@@ -20,7 +20,7 @@ nul.obj.operation = Class.create(nul.obj.undefined, {
 	
 //////////////// nul.expression implementation
 	
-	type: 'operation',
+	expression: 'operation',
 	components: ['operands'],
 });
 

@@ -77,16 +77,16 @@ nul.txt.html = merge({
 		}
 		return html.span('xpr',
 			tilePopups+tileSquares+
-				html.span(xpr.type, txt['']));
+				html.span(xpr.expression, txt['']));
 	},
 	outp: function(xpr) { return xpr; },
 	draw: {
 		pair: function() { return nul.txt.html.dispatchPair(this, this); },
 		
-		local: function() {
+		local: function(ctx) {
 			return {
-				'': this.dbgName()? (
-                	this.dbgName()+
+				'': this.dbgName(ctx)? (
+                	this.dbgName(ctx)+
                 	html.span('desc', html.span('sup',this.ndx)+
                 	html.span('sub',this.klgRef))
                 ) : this.ndx+html.span('desc', html.span('sub',this.klgRef))};
@@ -117,7 +117,7 @@ nul.txt.html = merge({
 			return {'': '&#x2124;'};
 		},
 		other: function() {
-			return {'': this.type};
+			return {'': this.expression};
 		},
 		
 		dotted: function() {
@@ -140,7 +140,7 @@ nul.txt.html = merge({
 		},
 		ior3: function() {
 			return {'': html.op('(') +
-				nul.txt.html.all(this.possibles()).join(html.op('&#9633;')) +
+				nul.txt.html.all(this.possibles(ctx)).join(html.op('&#9633;')) +
 				html.op(')')};
 		},
 		

@@ -52,7 +52,7 @@ nul.xpr.knowledge.ior3 = Class.create(nul.expression, {
 
 //////////////// nul.expression implementation
 
-	type: 'kior3',
+	expression: 'kior3',
 	components: ['choices'],
 	placed: function($super, prnt) {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);

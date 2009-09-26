@@ -15,9 +15,8 @@ nul.summary = function(itm) {
  
 nul.expression = Class.create({
  	initialize: function(tp) {
- 		if(tp) this.type = tp;
+ 		if(tp) this.expression = tp;
  	},
-	expression: true,
 	components: [],
 	
 //////////////// Assertion functionment
@@ -43,7 +42,7 @@ nul.expression = Class.create({
 	summary: function(itm) {
 		this.use();
 		if('undefined'== typeof this.summarised[itm]) {
-			assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.type);
+			assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
 			this.summarised[itm] = this['sum_'+itm].apply(this);
 		}
 		return this.summarised[itm];
@@ -141,9 +140,9 @@ nul.expression = Class.create({
 		return this.indexedSub(vals(this.sum_components()));
 	},
 	indexedSub: function(items) {
-		if(nul.debug.assert) assert(this.type, 'NDX builder implemented');
+		nul.xpr.is(this);
 	 	items = beArrg(arguments);
-	 	var rv = '['+this.type;
+	 	var rv = '['+this.expression;
 	 	if(items && items.length) rv += ':' + items.join('|');
 	 	return rv+']';
 	},
@@ -165,8 +164,8 @@ nul.xpr = {
 	is: function(x, t) {
 		nul.debug.is('expression')(x);
 		if(t) {
-			t = t.prototype.type;
-			(function() { return x.type == t; }.asserted('Expected "'+t+'" expression'));
+			t = t.prototype.expression;
+			(function() { return x.expression == t; }.asserted('Expected "'+t+'" expression'));
 		}
 	},
 	use: function(x, t) {

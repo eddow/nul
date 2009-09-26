@@ -70,7 +70,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 
 //////////////// nul.expression implementation
 	
-	type: 'eqCls',
+	expression: 'eqCls',
 	components: ['prototyp', 'values', 'belongs'],
 	modifiable: function($super) {
 		var rv = $super();

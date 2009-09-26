@@ -23,17 +23,17 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, {
 
 	/**
 	 * Gather the list of values as 'possible' thanks to the associated the knowledge.
+	 * @param {array(nul.xpr.knowledge)} ctx
 	 * @return array(nul.xpr.possible)
 	 */
-	possibles: function() {/*TODO1
+	possibles: function(ctx) {
 		var rv = [];
-		var chx = this.klg.ior3[this.ndx].choices;
+		var chx = ctx[this.klgRef].ior3[this.ndx].choices;
 		if(nul.debug.assert) assert(this.values.length == chx.length,
 			'IOR3 has same values as the correspondant knowledge entry')
 		for(var i=0; i<this.values.length; ++i)
 			rv.push(new nul.xpr.possible(this.values[i], chx[i]).built());
-		return rv;*/
-		return this.values;
+		return rv;
 	},
 	
 //////////////// nul.expression summaries
@@ -47,6 +47,6 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, {
 	
 //////////////// nul.expression implementation
 	
-	type: 'ior3',
+	expression: 'ior3',
 	components: ['values'],
 });

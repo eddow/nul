@@ -9,8 +9,17 @@
 nul.txt = {
 	toText: function(xpr) {
 		if(!this.beginDraw(xpr)) return this.recurStr;
-		try { return this.wrap((this.draw[xpr.type]||this.draw.other).apply(this.outp(xpr), []), xpr); }
-		finally { this.endDraw(xpr); }
+		var ctx = this.enterContext(xpr);
+		try {
+			return this.wrap(
+				(this.draw[xpr.expression]||this.draw.other)
+					.apply(this.outp(xpr), [this.context]),
+				xpr);
+		}
+		finally {
+			this.leaveContext(ctx);
+			this.endDraw(xpr);
+		}
 	},
 	dispatchPair: function(xpr, obj) {
 		if(!xpr.isSet()) return this.draw.dotted.apply(obj, []);
@@ -91,5 +100,15 @@ nul.txt = {
 		while(tbl && !tbl.clpsSstm) tbl = tbl.parentNode;
 		assert(tbl,'No orphan collapsers');
 		return tbl.clpsSstm.uncollapse(lc);
-	}	
+	},
+//////////////// Knowledge data retrieval
+	context: {},
+	enterContext: function(xpr) {
+		if(!xpr.knowledge || this.context[xpr.knowledge.name]) return;
+		return this.context[xpr.knowledge.name] = xpr.knowledge;
+	},
+	leaveContext: function(xpr) {
+		if(xpr)
+			delete this.context[xpr.name];
+	},
 };

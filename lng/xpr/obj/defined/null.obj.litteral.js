@@ -9,7 +9,7 @@
 nul.obj.litteral = Class.create(nul.obj.defined, {
 	initialize: function(val) {
 		this.value = val;
-		this.type = typeof(val);
+		this.expression = typeof(val);
 		this.attr = nul.obj.litteral.attr[typeof(val)]
 		this.alreadyBuilt({
 			isSet: false,
@@ -25,18 +25,18 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 	
 //////////////// nul.expression implementation
 
-	//type: set on initialise
+	//expression: set on initialise
 	sum_index: function() { return this.indexedSub(this.value.toString().replace(']','[|]')); },
 });
 
-nul.obj.litteral.straightArythmetics = function(type, oprtr, srnd) {
+nul.obj.litteral.straightArythmetics = function(expression, oprtr, srnd) {
 	srnd = srnd || '';
 	return function(op1, op2, klg) {
-		if(type== op2.type) 
+		if(expression== op2.expression) 
 			return nul.obj.litteral(eval(
 				srnd + op1.value + oprtr + op2.value + srnd
 			));
-		if(op2.isDefined()) return nul.fail(op2, ' is not a ', type);
+		if(op2.isDefined()) return nul.fail(op2, ' is not a ', expression);
 	}
 };
 
