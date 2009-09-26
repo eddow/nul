@@ -23,7 +23,7 @@ nul.xpr.possible = Class.create(nul.expression, {
 	 * @param {nul.xpr.knowledge} klg destination knowledge
 	 * @return nul.xpr.object This modified value (to refer the new knowledge)
 	 */
-	stepUp: function(klg) {
+	valueKnowing: function(klg) {
 		return klg.merge(this.knowledge, this.value);
 	},
 	
@@ -37,7 +37,7 @@ nul.xpr.possible = Class.create(nul.expression, {
 
 //////////////// nul.expression implementation
 	
-	type: 'possible',
+	expression: 'possible',
 	components: ['value','knowledge'],
 	fix: function($super) {
 		if(!this.knowledge) return this.value;
@@ -56,7 +56,7 @@ nul.xpr.possible = Class.create(nul.expression, {
  */
 nul.xpr.possible.unification = function(p, o) {
 	var v, klg;
-	if('possible'== p.type) {
+	if('possible'== p.expression) {
 		v = p.value;
 		klg = p.knowledge.modifiable();
 	} else {

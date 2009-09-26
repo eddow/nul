@@ -14,7 +14,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	initialize: function(first, second) {
 		//Note if a klg is given, its fuziness belong to this pair' first
 		nul.xpr.use(first); nul.obj.use(second);
-		if('possible'== first.type) {
+		if('possible'== first.expression) {
 			first.use();
 			var ops = nul.solve(first);
 			first = ops.shift();
@@ -38,8 +38,8 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		do {
 			rv.push(brwsr.first);
 			brwsr = brwsr.second;
-		} while('pair'== brwsr.type);
-		if('&phi;'!= brwsr.type) rv.follow = brwsr;
+		} while('pair'== brwsr.expression);
+		if('&phi;'!= brwsr.expression) rv.follow = brwsr;
 		return rv;
 	},
 
@@ -58,8 +58,8 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 //////////////// nul.obj.defined implementation
 
 	unified: function(o, klg) {
-		if('pair'!= o.type) return;
-		if('possible'!= this.first.type && 'possible'!= o.first.type)
+		if('pair'!= o.expression) return;
+		if('possible'!= this.first.expression && 'possible'!= o.first.expression)
 			return new nul.obj.pair(
 				klg.unify(this.first, o.first),
 				klg.unify(this.second, o.second));
@@ -68,7 +68,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	
 //////////////// nul.expression implementation
 
-	type: 'pair',
+	expression: 'pair',
 	components: ['first', 'second'],
 	sum_isSet: function() { return this.second.isSet(); },
 	sum_isList: function() {

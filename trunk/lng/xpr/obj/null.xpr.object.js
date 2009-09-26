@@ -22,6 +22,11 @@ nul.xpr.object = Class.create(nul.expression, {
 		klg.belong(o, this);
 		return [new nul.xpr.possible(o, klg.built()).built()];
 	},
+	
+	/**
+	 * Abstract defined also by nul.xpr.possible
+	 */
+	valueKnowing: function(klg) { return this; },
 });
 
 nul.obj = {
@@ -29,8 +34,8 @@ nul.obj = {
 	is: function(x, t) {
 		nul.debug.is('object')(x);
 		if(t) {
-			t = t.prototype.type;
-			(function() { return x.type == t; }.asserted('Expected "'+t+'" object'));
+			t = t.prototype.expression;
+			(function() { return x.expression == t; }.asserted('Expected "'+t+'" object'));
 		}
 	},
 	use: function(x, t) {

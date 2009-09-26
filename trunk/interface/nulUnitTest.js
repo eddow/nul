@@ -12,110 +12,22 @@ Array.prototype.named = function(nm) { this.name = nm; return this; };
 
 tests = [
 	[
-		{xpr: '{ Q x :- 2*x } 4',
-		rslt: '{8}'},
-		{xpr: 't;  { t=Q _ } 5',
-		rslt: '{5}'},
-		{xpr: 'x; (y+1, y) = (x, 4)',
-		rslt: '{5}'},
-		{xpr: '((a+1)=F(b,2))= z, F(c,3)=z, a=2',
-		rslt: '{(3 , 3 , 2)}'},
-		{xpr: '(z+1, z+2) = (Q a, Q b); z=3',
-		rslt: '{(4 , 5)}'},
-		{xpr: 'd 4; d = { Q x :- x * 2 }',
-		rslt: '{8}'},
-		{xpr: '(a+1)=(a+2)=(a+3); Q a',
-		rslt: '{(&#x211a;+&#x211a;   (a[0|fc1] , 1)); (&#x211a;   a[0|fc1]) ; ((&#x211a;+&#x211a;   (a[0|fc1] , 1)) = (&#x211a;+&#x211a;   (a[0|fc1] , 2)) = (&#x211a;+&#x211a;   (a[0|fc1] , 3)))}'},
-		{xpr: 'S(n+1,"str"); S= {1, c}; Q n',
-		rslt: '{(1 , "str")}'},
-		{xpr: '{n :- {(Q x, Q y) :- x+y} (1, n)} 10',
-		rslt: '{11}'},
-		{xpr: 'Z x > 0',
-		rslt: '{x[0|fc1]; (&#x2124;   x[0|fc1]) ; (0 &lt; x[0|fc1])}'}
+		{xpr: '{ a, a } ( 1, 1 )',
+		rslt: '{(1, 1); (1 = a[g|0])}'},
+		{xpr: '{ a, a } ( 1, 2 )',
+		rslt: '&phi;'},
 	].named('Local management'),
 	[
-		{xpr: '6 - (5 [] 2)',
-		rslt: '(1 , 4)'},
-		{xpr: 'v = (1 [] 2)',
-		rslt: '(1 , 2)'},
-		{xpr: 'v; (z=1 [] z=2); v=z',
-		rslt: '(1 , 2)'},
-		{xpr: '(z+1)=(1 [] 2); Q z',
-		rslt: '(1 , 2)'},
-		
-		{xpr: '\\/a \\/b { a [] b } 5, Q a, Q b',
-		rslt: 'g1:((5 , 5 , b[0|g1]); (&#x211a;   b[0|g1]) , (5 , a[0|g1] , 5); (&#x211a;   a[0|g1]))'},
-		{xpr: '{ Q a [] Q b } 5, a, b',
-		rslt: 'g1:((5 , a[0|g1] , b[1|g1]) , (5 , a[0|g1] , b[1|g1]))'},
-		{xpr: '(z*1)=(((x+1=x+2);(z = 1)) [] z = 2); Q x',
-		rslt: '(1 , 2)'},
-		{xpr: '{ (a,b,c) [] (d,e,f) }(_,1,2)',
-		rslt: 'g1:((_[0|g1] , 1 , 2) , (_[0|g1] , 1 , 2))'},
-		{xpr: '\\/E Q x ? {1 [] E x}; E = {4 [] 5 [] "o"}',
-		rslt: '(1 , 4 , 5)'},
 	].named('OR-s management'),
 	[
-		{xpr: '(z+2)=z=1',
-		rslt: '&phi;'},
-		{xpr: '(e= 1-e) = (0 [] 1)',
-		rslt: '&phi;'},
-		{xpr: 'x; (y, F y) = (x, x)',
-		rslt: 'g1:{y[0|g1]; (y[0|g1] = (F[1|g1]   y[0|g1]))}'},
-		{xpr: '{ x= (_, x) }(5,(5,(5,(5,(5,_)))))',
-		rslt:  ''},
-		
-		/*
-		 
-		 list = { type :- { {} [] type _,.. list type _ } }
-		 * should be
-		 list = { type :- {:tlist {} [] type _,.. tlist _} }
-
-* 
-	list Q (1, "e") should fail
-* 
- 
-		{xpr: '{ x= (_, x) }(5,(5,(5,(5,(5,_)))))',
-		rslt:  '(5 , x[&crarr;|1])'},
-		{xpr: '[b [a (a,_)] = (b,5) ]',
-		rslt: '(a[&crarr;|1] , 5)'},
-*/
 	].named('Auto-reference'),
 	[
-		{xpr: 'x.a; (5 ::a 7) = x',
-		rslt: '{7}'},
-		{xpr: 'y; (z ::a 4) = (z ::a y)',
-		rslt: '{4}'},
 	].named('Attributes management'),
 	[
-		{xpr: 'x; (1, 2, 3, 4, 5) = (1, 2, 3,.. x)',
-		rslt: '{(4 , 5)}'},
-		{xpr: '(p(1,1) [] p(1,2) [] p(2,5)) ; p= ((1,5), (2,5),.. { Q x, x })',
-		rslt: '((1 , 1) , (2 , 5))'},
-		{xpr: '{:ld 0 :- {} [] (Z n > 0) :- ((n, _) ,.. ld (n-1)) } 5',
-		rslt: '{((5 , _[0|c2]) , (4 , _[1|c2]) , (3 , _[2|c2]) , (2 , _[3|c2]) , (1 , _[4|c2]))}'}
 	].named('Lists management'),
 	[
-		{xpr: '{:f 0 :- 1 [] Z n > 0 :- n * f(n-1)} 5',
-		desc: 'Factorial of 5',
-		rslt: '{120}'},
-		{xpr: '{:fib (0 [] 1) :- 1 [] Z n > 0 :- fib(n-1) + fib(n-2) } 5',
-		desc: 'Unoptimised Fibbonacci on 5',
-		rslt: '{8}'},
-		{xpr: '{Z n > 0 :- {:fibaux (Z x, _, 0) :- x [] (Z x, Z y, Z z > 0) :- fibaux(y, x+y, z-1) } (1, 1, n) } 5',
-		desc: 'Accumulated Fibbonacci on 5',
-		rslt: '{8}'}
-		/*{xpr: '[f{ 1 [] ({_}x x>1?x:- x * f[x-1]) }][5]',
-		rslt: '120'},
-		{xpr: '{ {_}n n:- [fib { {_}x x, _, 1 :- x [] {_}x {_}y {_}z z > 1 ? (x, y, z) :- fib[y, y+x, z-1] }][1, 1, n] }[5]',
-		desc: 'Accumulated Fibbonacci on 5',
-		rslt: '5'}*/
 	].named('Recursive algorithms'),
 	[
-		{xpr: 'S = ((1, _, _), (2, _, _), (3, _, _)); S(1,_,"a"); S(3,"b",_); S(_,"c","d")',
-		desc: 'Solution 3 items/3 components',
-		rslt: '{((1 , _[0|c2] , "a") , (2 , "c" , "d") , (3 , "b" , _[1|c2]))}'},
-		{xpr: 'x; S=( (1,a), (2,b), (3,c) ); S(x,9); S(1,8)',
-		rslt: '(2 , 3)'}
 	].named('Resolutions')
 ].named('Unit testing');
 
@@ -205,7 +117,7 @@ function doTest(tn) {
 	var v, test = tbody.rows[tn].test;
 	nul.debug.assert = !$('qndTst').checked;
 	try {
-		v = v = nul.expression(test.xpr).toFlat();
+		v = nul.read(test.xpr).toFlat();
 	} catch(err) {
 		nul.exception.notice(err);
 		if(nul.erroneusJS) throw nul.erroneusJS;

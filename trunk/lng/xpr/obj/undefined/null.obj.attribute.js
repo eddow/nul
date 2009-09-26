@@ -19,7 +19,7 @@ nul.obj.attribute = Class.create(nul.obj.undefined, {
 
 //////////////// nl.xpr implementation
 
-	type: 'attribute',
+	expression: 'attribute',
 	sum_index: function() { return this.indexedSub(this.ofObject, this.attributeName); },
 	components: ['ofObject'],
 });

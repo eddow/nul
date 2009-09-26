@@ -26,15 +26,21 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 
 //////////////// public
 
-	dbgName: function() {
-		//TODO1: return this.klg.dbgName(this.ndx) || '';
-		return 'lcl';
+	/**
+	 * Retrieve the name of the local to display it.
+	 * @param {array(nul.xpr.knowledge)} ctx
+	 * @return string
+	 */
+	 dbgName: function(ctx) {
+		return !ctx[this.klgRef]?'':
+			ctx[this.klgRef].dbgName(this.ndx);
 	},
+	
 	sum_dependance: function($super) {
 		return new nul.dependance(this);
 	},
 	
 //////////////// nul.expression implementation
 
-	type: 'local',
+	expression: 'local',
 });

@@ -111,13 +111,12 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		case 0:
 			nul.fail('No choices');
 		case 1:
-			this.merge(choices[0].knowledge);
-			return choices[0].value;
+			return choices[0].valueKnowing(this);
 		default:
 			var vals = [];
 			var klgs = [];
 			map(choices, function() {
-				if('possible'== this.type) {
+				if('possible'== this.expression) {
 					vals.push(this.value);
 					klgs.push(this.knowledge);
 				} else {
@@ -138,10 +137,9 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	merge: function(klg, val) {
  		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
 
- 		this.concatLocals(klg);
-
  		var brwsr = new nul.xpr.knowledge.stepUp(klg, this, this.ior3.length, this.nbrLocals());
 		
+ 		this.concatLocals(klg);
 		klg = brwsr.browse(klg);
 
 		this.addEqCls(klg.eqCls);
@@ -236,7 +234,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 
 //////////////// nul.expression implementation
 	
-	type: 'klg',
+	expression: 'klg',
 	components: ['eqCls','ior3'],
 	modifiable: function($super) {
 		var rv = $super();
@@ -283,12 +281,12 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 	},
 	transform: function(xpr) {
 		//TODO2: use klg only instead of klg.name ?
-		if('local'== xpr.type && this.srcKlg.name == xpr.klgRef )
+		if('local'== xpr.expression && this.srcKlg.name == xpr.klgRef )
 			return new nul.obj.local(this.dstKlg.name, 
 				'number'== typeof xpr.ndx ?
 					xpr.ndx+this.deltaLclNdx :
 					xpr.ndx);
-		if('ior3'== xpr.type && this.srcKlg.name  == xpr.klgRef )
+		if('ior3'== xpr.expression && this.srcKlg.name  == xpr.klgRef )
 			return new nul.obj.ior3(this.dstKlg.name, xpr.ndx+this.deltaIor3ndx, xpr.values);
 		return nul.browser.bijectif.unchanged;
 	},
@@ -335,7 +333,7 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
 		this.locals[ndx] = name;
  		return new nul.obj.local(this.name, ndx)
  	},
-}); else if(nul.debug) merge(nul.xpr.knowledge.prototype, {
+}); else merge(nul.xpr.knowledge.prototype, {
 	/**
 	 * Remove the names of the unused locals
 	 */

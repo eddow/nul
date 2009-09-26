@@ -24,7 +24,7 @@ merge(nul.obj.empty = new nul.obj.hcSet(), {
 
 //////////////// nul.expression implementation
 
-	type: '&phi;',
+	expression: '&phi;',
 });
 
 merge(nul.obj.whole = new nul.obj.hcSet(), {
@@ -37,62 +37,63 @@ merge(nul.obj.whole = new nul.obj.hcSet(), {
 
 //////////////// nul.expression implementation
 
-	type: 'any',
+	expression: 'any',
 });
 
 merge(nul.obj.number = new nul.obj.hcSet(), {
 	intersect: function(o) {
-		if('range'== o.type) return o;
+		if('range'== o.expression) return o;
 	},
 	has: function(o) {
-		if('number'== o.type) return [o];
+		if('number'== o.expression) return [o];
 		if(o.isDefined()) return [];
 	},
 
 //////////////// nul.expression implementation
 
-	type: '&#x211a;',
+	expression: '&#x211a;',
 });
 
 nul.obj.string = Class.create(nul.obj.hcSet, {
 	has: function(o) {
-		if('string'== o.type) return [o];
+		if('string'== o.expression) return [o];
 		if(o.isDefined()) return [];
 	},
 
 //////////////// nul.expression implementation
 
-	type: 'str',
+	expression: 'str',
 });
 
 nul.obj.bool = Class.create(nul.obj.hcSet, {
 	has: function(o) {
-		if('boolean'== o.type) return [o];
+		if('boolean'== o.expression) return [o];
 		if(o.isDefined()) return [];
 	},
 
 //////////////// nul.expression implementation
 
-	type: 'bool',
+	expression: 'bool',
 });
 
 nul.obj.range = Class.create(nul.obj.hcSet, {
 	intersect: function(o) {
-		if('number'== o.type) return this;
-		if('range'== o.type) {
+		if('number'== o.expression) return this;
+		if('range'== o.expression) {
 			var lwr = this.lower<o.lower?o.lower:this.lower;
 			var upr = this.upper>o.upper?o.upper:this.upper;
 			if(lwr > upr) return [];
 			return new nul.obj.range(lwr, upr);
 		}
 	},
-	initialize: function(lwr, upr) {
+	initialize: function($super, lwr, upr) {
 		this.lower = lwr || ninf;
 		this.upper = upr || pinf;
+		$super();
 	},
 	has: function(o) {
 		if(!o.isDefined()) return;
-		if('number'!= o.type) return [];
+		if('number'!= o.expression) return [];
 		if(!nul.isJsInt(o.value)) return [];
 		if( o.value < this.lower || o.value > this.upper) return [];
 		return [o];
@@ -100,6 +101,6 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 
 //////////////// nul.expression implementation
 
-	type: 'range',
+	expression: 'range',
 	sum_index: function() { return this.indexedSub(this.lower, this.upper); },
 });
