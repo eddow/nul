@@ -64,12 +64,50 @@ nul.expression = Class.create({
 		this.use();
 		return maf(this, function(ndx, obj) { if('summarised'!= ndx) return obj; });
 	},
-	
+
+//////////////// Virtuals
+
+	/**
+	 * Return a built version of this expression when the components has bee modified by browse
+	 */
+	chew: function() {
+		this.modify();
+		return this.built();
+	},	
 	/**
 	 * Return a summarised version of this.
 	 */
 	built: function(smr) {
+		for(var comp in this.components) if(cstmNdx(comp)) {
+			var cname = this.components[comp];
+			if(isArray(this[cname])) {
+				for(var ci in this[cname]) if(cstmNdx(ci) && this[cname][ci])
+					this[cname][ci] = this[cname][ci].placed(this);
+			} else if(this[cname]) this[cname] = this[cname].placed(this);
+		}
 		this.summarise(smr);
+		return this.fix();
+	},
+	/**
+	 * Built called in a constructor.
+	 * No return value, assume it returns this
+	 */
+	alreadyBuilt: function(smr) {
+		var built = this.built(smr);
+		if(nul.debug.assert) assert(this===built, 'Already built fix self');
+	},
+	/**
+	 * Modify internal representation : you won't be changed anymore
+	 */
+	fix: function() {
+		this.use();
+		return this;
+	},
+	/**
+	 * Get the version to set as a child of 'prnt' to represent me
+	 */
+	placed: function(prnt) {
+		this.use(); nul.xpr.mod(prnt);
 		return this;
 	},
 

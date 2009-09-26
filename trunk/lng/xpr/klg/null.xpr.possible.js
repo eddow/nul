@@ -39,16 +39,13 @@ nul.xpr.possible = Class.create(nul.expression, {
 	
 	type: 'possible',
 	components: ['value','knowledge'],
-	built: function($super) {
-		//TODO1
-		/*if(this.knowledge) {
-			this.dependance();
-			this.knowledge = this.knowledge.prune(this.usage);
-		}*/
+	fix: function($super) {
 		if(!this.knowledge) return this.value;
-		
-		return $super();
-	},	
+		this.dependance();
+		var nklg = this.knowledge.prune(this.usage);
+		if(!nklg) return $super();
+		return (new nul.xpr.possible(this.value, nklg)).built();
+	},
 });
 
 /**
@@ -67,5 +64,5 @@ nul.xpr.possible.unification = function(p, o) {
 		klg = new nul.xpr.knowledge();
 	}
 	v = klg.unify(v, o);
-	return new nul.xpr.possible(v, klg.built('clean'));
+	return new nul.xpr.possible(v, klg.built());
 };

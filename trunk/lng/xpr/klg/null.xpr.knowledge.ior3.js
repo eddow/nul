@@ -12,7 +12,24 @@
 nul.xpr.knowledge.ior3 = Class.create(nul.expression, {
 	initialize: function(choices) {
 		this.choices = choices;
-		this.summarise();
+		this.mult = 0;
+		this.alreadyBuilt();
+	},
+
+//////////////// Internal
+
+	/**
+	 * Specify this cases are not refered by any nul.obj.ior3
+	 * @return {bool} weither something changed
+	 */
+	unrefer: function() {
+		var ol = this.choices.length;
+		for(var j=0; j<this.choices.length;) 
+			if(!this.choices[j]) {
+				++this.mult;
+				this.choices.splice(j, 1);
+			} else ++j;
+		return ol != this.choices.length;
 	},
 
 //////////////// Existence summaries
@@ -37,4 +54,12 @@ nul.xpr.knowledge.ior3 = Class.create(nul.expression, {
 
 	type: 'kior3',
 	components: ['choices'],
+	placed: function($super, prnt) {
+		nul.xpr.mod(prnt, nul.xpr.knowledge);
+ 		if(!this.choices.length) {
+ 			prnt.mult *= this.mult;
+ 			return;
+ 		} 
+		return $super(prnt);
+	},
 });

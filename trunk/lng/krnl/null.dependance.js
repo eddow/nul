@@ -22,8 +22,7 @@ nul.dependance = Class.create({
 	
 	depend: function(klgNm, type, ndx, qtt) {
 		if(!qtt) qtt = 1;
-		if(!this.usages[klgNm]) this.usages[klgNm] = {};
-		if(!this.usages[klgNm][type]) this.usages[klgNm][type] = {};
+		if(!this.usages[klgNm]) this.usages[klgNm] = { local: {}, ior3: {} };
 		if(!this.usages[klgNm][type][ndx]) this.usages[klgNm][type][ndx] = qtt;
 		else this.usages[klgNm][type][ndx] += qtt;
 	},
@@ -34,7 +33,7 @@ nul.dependance = Class.create({
 	 * Retrieve a usage and forget about it
 	 */
 	usage: function(klg) {
-		try{ return this.usages[klg.name]; }
+		try{ return this.usages[klg.name] || { local: {}, ior3: {} }; }
 		finally { delete this.usages[klg.name]; }
 	},
 

@@ -15,7 +15,7 @@ nul.obj.operation = Class.create(nul.obj.undefined, {
 		nul.obj.use(ops);
 		this.operator = operator;
 		this.operands = ops;
-		this.summarise();
+		this.alreadyBuilt();
 	},
 	
 //////////////// nul.expression implementation

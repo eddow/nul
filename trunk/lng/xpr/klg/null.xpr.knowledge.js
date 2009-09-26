@@ -12,8 +12,7 @@
 nul.xpr.knowledge = Class.create(nul.expression, {
 	initialize: function(klgName) {
  		//Create new objects each time
-        if(nul.debug) this.locals = [];
-        else this.locals = 0;
+        this.locals = this.emptyLocals();
  		this.eqCls = [];		//Array of equivalence classes.
  		this.access = {};		//Access from an obj.ndx to an eq class it's in.
  		this.ior3 = [];	//List of unchoosed IOR3
@@ -72,11 +71,34 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		}
  	},
  	
- 	valBrowsed: function(brwsr, val, rv) {
- 		return val?(new nul.xpr.possible(brwsr.browse(val), rv)).built():rv;
+ 	/**
+ 	 * Remove any information about locals or ior3s that are not refered anymore
+ 	 * @param {nul.dependance.usage} deps
+	 * @return {bool} weither something changed
+ 	 */
+ 	pruned: function(deps) {
+ 		this.modify();
+ 		var i, chgd = false;
+ 		
+ 		for(i=0; i<this.ior3.length; ++i) if(!deps.ior3[i]) {
+ 			var nior3 = this.ior3[i].modifiable();
+ 			if(nior3.unrefer()) {
+ 				chgd = true;
+	 			this.ior3[i] = nior3.built().placed(this);
+ 			}
+ 		}
+ 		//Remove trailing empty ior3s (not more to preserve indexes)
+ 		while(this.ior3.length && !this.ior3[this.ior3.length-1]) this.ior3.pop();
+ 		
+ 		//Remove trailing unrefered locals (not more to preserve indexes)
+ 		var ol = this.nbrLocals();
+		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();
+ 		this.clearLocalNames(deps.local);
+ 		
+ 		return chgd || ol != this.nbrLocals();
  	},
-
-//////////////// publics
+ 
+ //////////////// publics
 
  	/**
  	 * Gets a value out of these choices
@@ -116,10 +138,9 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	merge: function(klg, val) {
  		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
 
- 		if(nul.debug) this.locals.pushs(klg.locals);
- 		else klg.locals += klg.locals;
+ 		this.concatLocals(klg);
 
- 		var brwsr = new nul.xpr.knowledge.stepUp(klg, this, this.ior3.length, this.locals.length);
+ 		var brwsr = new nul.xpr.knowledge.stepUp(klg, this, this.ior3.length, this.nbrLocals());
 		
 		klg = brwsr.browse(klg);
 
@@ -156,6 +177,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	 		}) ||
 			trys(solos, function() { return dstEqCls.isEq(this); }))
 			nul.fail('Unification', a)
+		nul.debug.log('klg')(dstEqCls.prototyp?['neq', dstEqCls.prototyp]:['neq'], dstEqCls.values);
 		return dstEqCls.taken();
  	}.describe(function() {
  		return 'Unification : ' +
@@ -178,39 +200,18 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(ss[s]);
  		return dstEC.taken();
  	},
- 	
+
  	/**
- 	 * Remove any information about locals or ior3s that are not refered anymore
- 	 * @param {nul.dependance} deps
- 	 * @return nul.xpr.knowledge
+ 	 * Get a pruned knowledge
+ 	 * @param {nul.dependance.usage} deps
+	 * @return {nul.xpr.knowledge} Either either another built knowledge
  	 */
  	prune: function(deps) {
- 		//TODO1
- 		return this;
+ 		var pruned = this.modifiable();
+ 		if(!pruned.pruned(deps)) return;
+ 		return pruned.built();
  	},
- 	
-//////////////// Locals management
 
-	concat: function(klg) {
-	},
-	
-	/**
-	 * Get the debug name of a local
-	 */
-	dbgName: function(ndx) {
-		if(nul.debug) return this.locals[ndx];
-	},
-
-	/**
-	 * Register a new local
-	 */
- 	newLocal: function(name, ndx) {
- 		if('undefined'== typeof ndx)
- 			ndx = nul.debug?this.locals.length:(this.locals++);
-		if(nul.debug) this.locals[ndx] = name;
- 		return new nul.obj.local(this.name, ndx)
- 	},
-	
 //////////////// Existence summaries
 
 	maxXst: nul.summary('maxXst'), 	
@@ -228,7 +229,6 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 			rv *= this.ior3[h].minXst();
 		return rv;
 	},
-	sum_isFixed: function() { return !this.ior3.length && !this.eqCls.length; },
 
 	sum_index: function() {
 		return this.indexedSub(this.name, this.eqCls, this.ior3);
@@ -247,32 +247,36 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		rv.ior3 = clone1(rv.ior3);
 		return rv;
 	},
+	
+	chew: function($super) {
+		var nwEqCls = this.eqCls;
+		this.eqCls = [];
+		this.access = {};
+		this.addEqCls(nwEqCls);
+			//TODO1: repasser les belongs par xpr.has(o)
+		return $super();
+	},
 	/**
 	 * @param {bool} clean True when it is sure no equivalence class can be simplified or crossed
 	 */
- 	built: function($super, clean) {
-		if(!clean) {
-			//rechew the knowledge. Perhaps an item in the equivalence class was replaced.
-			var nwEqCls = this.eqCls;
-			this.eqCls = [];
-			this.access = {};
-			this.addEqCls(nwEqCls);
-			//TODO1: repasser les belongs par xpr.has(o)
-		}
+ 	fix: function($super) {
 		for(var i=0; i<this.eqCls.length;)
 			if(this.eqCls[i]) ++i;
 			else this.eqCls.splice(i,1);
 		delete this.access;	//If no delete, redo the index after this.eqCls.splice
- 		if(!this.eqCls.length && !this.locals.length && !this.ior3.length) return; 
  		return $super();
  	},
+	placed: function($super, prnt) {
+ 		if(!this.eqCls.length && !this.nbrLocals() && !this.ior3.length) return; 
+		return $super(prnt);
+	},
 
 });
 
 nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 	initialize: function($super, srcKlg, dstKlg, deltaIor3ndx, deltaLclNdx) {
 		this.srcKlg = srcKlg;
-		this.dstklg = dstKlg;
+		this.dstKlg = dstKlg;
 		this.deltaIor3ndx = deltaIor3ndx;
 		this.deltaLclNdx = deltaLclNdx;
 		$super();
@@ -285,7 +289,88 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 					xpr.ndx+this.deltaLclNdx :
 					xpr.ndx);
 		if('ior3'== xpr.type && this.srcKlg.name  == xpr.klgRef )
-			return new nul.obj.ior3(this.dstklg.name, xpr.ndx+this.deltaIor3ndx, xpr.values);
+			return new nul.obj.ior3(this.dstKlg.name, xpr.ndx+this.deltaIor3ndx, xpr.values);
 		return nul.browser.bijectif.unchanged;
 	},
+});
+
+if(nul.debug) merge(nul.xpr.knowledge.prototype, {
+	/**
+	 * Remove the names of the unused locals
+	 */
+	clearLocalNames: function(keep) {
+		for(var i=0; i<this.locals.length; ++i) if(!keep[i]) this.locals[i] = null;
+	},
+
+	/**
+	 * An empty set of managed locals
+	 */
+	emptyLocals: function() { return []; },
+
+	/**
+	 * This knowledge now manage this new knowledge locals too
+	 */
+	concatLocals: function(klg) { this.locals.pushs(klg.locals); },
+	
+	/**
+	 * Unallocate the last local
+	 */
+	freeLastLocal: function() { this.locals.pop(); },
+	
+	/**
+	 * Get the number of locals this knowledge manage
+	 */
+	nbrLocals: function() { return this.locals.length; },
+	
+	/**
+	 * Get the debug name of a local
+	 */
+	dbgName: function(ndx) { if(nul.debug) return this.locals[ndx]; },
+
+	/**
+	 * Register a new local
+	 */
+ 	newLocal: function(name, ndx) {
+ 		if('undefined'== typeof ndx) ndx = this.locals.length;
+		this.locals[ndx] = name;
+ 		return new nul.obj.local(this.name, ndx)
+ 	},
+}); else if(nul.debug) merge(nul.xpr.knowledge.prototype, {
+	/**
+	 * Remove the names of the unused locals
+	 */
+	clearLocalNames: function(keep) {},
+
+	/**
+	 * An empty set of managed locals
+	 */
+	emptyLocals: function() { return 0; },
+	
+	/**
+	 * This knowledge now manage this new knowledge locals too
+	 */
+	concatLocals: function(klg) { this.locals += klg.locals; },
+	
+	/**
+	 * Unallocate the last local
+	 */
+	freeLastLocal: function() { --this.locals; },
+	
+	/**
+	 * Get the number of locals this knowledge manage
+	 */
+	nbrLocals: function() { return this.locals; },
+	
+	/**
+	 * Get the debug name of a local
+	 */
+	dbgName: function(ndx) {},
+
+	/**
+	 * Register a new local
+	 */
+ 	newLocal: function(name, ndx) {
+ 		if('undefined'== typeof ndx) ndx = this.locals++;
+ 		return new nul.obj.local(this.name, ndx)
+ 	},
 });

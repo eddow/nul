@@ -8,7 +8,7 @@
 
 nul.obj.hcSet = Class.create(nul.obj.defined, {
 	initialize: function() {
-		this.summarise({
+		this.alreadyBuilt({
 			isSet: true,
 		});
 	},

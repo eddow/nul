@@ -19,7 +19,7 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 	initialize: function(klgRef, ndx) {
 		this.klgRef = klgRef;
 		this.ndx = ndx;
-		this.summarise({
+		this.alreadyBuilt({
 			index: this.indexedSub(this.klgRef, this.ndx),
 		});
 	},

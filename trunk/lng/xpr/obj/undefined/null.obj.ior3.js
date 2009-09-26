@@ -16,7 +16,7 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, {
 		this.klgRef = klgRef;
 		this.values = items;
 		this.ndx = ndx;
-		this.summarise();
+		this.alreadyBuilt();
 	},
 
 //////////////// public
