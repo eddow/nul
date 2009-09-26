@@ -14,7 +14,7 @@ nul.obj.attribute = Class.create(nul.obj.undefined, {
 		nul.obj.use(ofo);
 		this.ofObject = ofo;
 		this.attributeName = anm;
-		this.summarise();
+		this.alreadyBuilt();
 	},
 
 //////////////// nl.xpr implementation

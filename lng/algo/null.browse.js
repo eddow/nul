@@ -101,7 +101,7 @@ nul.browser.bijectif = Class.create(nul.browser.cached, {
 				mod[c] = nwItm;
 			}
 		}
-		mod = mod?mod.built():xpr;
+		mod = mod?mod.chew():xpr;
 		var trn = mod?this.transform(mod):null;
 		if(trn && nul.browser.bijectif.unchanged!= trn) nul.xpr.use(trn);
 		return nul.browser.bijectif.firstChange(trn, mod); 

@@ -25,7 +25,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		}
 		this.first = first;
 		this.second = second;
-		this.summarise();
+		this.alreadyBuilt();
 	},
 	
 //////////////// Summary
@@ -57,20 +57,14 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 //////////////// nul.obj.defined implementation
 
-	attr: {	
-		'& ': function(op, klg) {
-			//TODO3: more complex cases?
-			if('possible'!= op.first.type) return op.first;
-		},
-		'* ': function(op, klg) {
-			if('possible'!= op.first.type) return op.second;
-		},
+	unified: function(o, klg) {
+		if('pair'!= o.type) return;
+		if('posible'!= this.first.type && 'posible'!= o.first.type)
+			return new nul.obj.pair(
+				klg.unify(this.first, o.first),
+				klg.unify(this.second, o.second));
+		//TODO: autres cas que valeurs fixes
 	},
-
-	/*unified: function(o, klg) {
-		if('pair'!= o.type) nul.fail(this, ' does not unify to ', o);
-		//TODO4
-	},*/
 	
 //////////////// nul.expression implementation
 

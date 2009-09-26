@@ -34,7 +34,7 @@ nul.solve = function(fz) {
 			rv.push((new nul.solve.browser(fz.knowledge, ndx))
 				.browse(
 					!klg?fz:
-					(new nul.xpr.possible(fz.value, klg.built('clean'))).built()
+					(new nul.xpr.possible(fz.value, klg.built())).built()
 				));
 		} catch(err) { nul.failed(err); }
 	    //increment indexes

@@ -11,7 +11,7 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 		this.value = val;
 		this.type = typeof(val);
 		this.attr = nul.obj.litteral.attr[typeof(val)]
-		this.summarise({
+		this.alreadyBuilt({
 			isSet: false,
 			isList: false,
 		}); 

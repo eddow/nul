@@ -37,6 +37,7 @@ function testEvaluation()
 		if($('shwLogging').checked) {
 			nul.debug.logging = {error: true, fail: true};
 			nul.debug.logging.acts = $('shwLoggingActs').checked;
+			nul.debug.logging.klg = $('shwLoggingKlg').checked;
 		} else nul.debug.logging = false;
 	}
 	nul.execution.reset();

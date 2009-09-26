@@ -17,7 +17,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
  		//Create new objects each time
 		this.values = copy?clone1(copy.values):[];		//Equal values
 		this.belongs = copy?clone1(copy.belongs):[];	//Sets the values belong to
-		this.prototyp = null;
+		this.prototyp = copy?copy.prototyp:null;		//The values all equals to, used as prototype
 	},
 	taken: function() {
 		if(nul.debug.assert) assert(this.knowledge, 'Take from freshly created equivalence class');
@@ -80,16 +80,20 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		rv.belongs = clone1(rv.belongs);	//Sets the values belong to
 		return rv;		
 	},
-	built: function($super) {
+	fix: function($super) {
 		if(this.knowledge) {
 			delete this.knowledge;
 			delete this.index;
 		}
 		this.equivalents = this.prototyp?this.values.added(this.prototyp):this.values;
+		this.good = this.prototyp || this.values[0];
+		return $super();
+	},
+	placed: function($super, prnt) {
+		nul.xpr.mod(prnt, nul.xpr.knowledge);
 		if(!this.equivalents.length ||
 			(!this.belongs.length && 1== this.equivalents.length))
 				return;
-		this.good = this.prototyp || this.values[0];
-		return $super();
+		return $super(prnt);
 	},
 });

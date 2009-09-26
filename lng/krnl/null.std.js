@@ -13,8 +13,7 @@ var nul = {
 	 * @param reason items to shape a sentence
 	 */
 	fail: function(reason) {
-		reason = beArrg(arguments)
-		//TODO2: log
+		nul.debug.log('fail')('Failure', beArrg(arguments));
 		throw nul.failure;
 	},
 	/**

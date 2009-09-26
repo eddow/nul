@@ -11,7 +11,7 @@ nul.obj.extension = Class.create(nul.obj.defined, {
 		nul.obj.use(vals(attr));
 		this.attr = attr||{};
 		this.ndx = ++nul.obj.extension.nameSpace;
-		this.summarise({
+		this.alreadyBuilt({
 			index: this.indexedSub(this.extensionNdx),
 		});
 	},
