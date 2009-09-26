@@ -59,7 +59,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 	unified: function(o, klg) {
 		if('pair'!= o.type) return;
-		if('posible'!= this.first.type && 'posible'!= o.first.type)
+		if('possible'!= this.first.type && 'possible'!= o.first.type)
 			return new nul.obj.pair(
 				klg.unify(this.first, o.first),
 				klg.unify(this.second, o.second));
