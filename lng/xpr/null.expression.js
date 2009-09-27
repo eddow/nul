@@ -117,11 +117,15 @@ nul.expression = Class.create({
 		if(100>f.length) return this.toHtml();
 		return f;
 	},
-	
+	invalidateTexts: function() {
+		//TODO3: invalidate parent texts ?
+		delete this.summarised.flatTxt;
+		delete this.summarised.htmlTxt;
+	},
 
 //////////////// Summary users
 
-	toString: nul.summary('index'),			//TODO: faire qqch pour pas qu'il l'appelle dans firebug
+	toString: nul.summary('index'),			//TODO4: faire qqch pour pas qu'il l'appelle dans firebug
 	toHtml: nul.summary('htmlTxt'),			//The HTML representation of an expression
 	toFlat: nul.summary('flatTxt'),			//The flat-text representation of an expression
 	isSet: nul.summary('isSet'),			//Weither this expression is a set

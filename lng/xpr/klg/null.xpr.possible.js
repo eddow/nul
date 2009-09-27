@@ -6,14 +6,15 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO2: use "usage" to clean knowledge ...
 /**
  * A possible value; refering a value and a condition
  */
 nul.xpr.possible = Class.create(nul.expression, {
 	initialize: function(value, knowledge) {
+		nul.obj.use(value); nul.xpr.use(knowledge, nul.xpr.knowledge);
 		this.value = value;
 		this.knowledge = knowledge;
+		this.alreadyBuilt();
 	},
 
 //////////////// public
@@ -39,16 +40,8 @@ nul.xpr.possible = Class.create(nul.expression, {
 	
 	expression: 'possible',
 	components: ['value','knowledge'],
-	built: function($super) {
-		var rpsbl = this.knowledge.represent(this.value);
-		if(rpsbl) return rpsbl;
-		return $super();
-	},
 	fix: function($super) {
 		if(!this.knowledge) return this.value;
-		this.dependance();
-		var pklg = this.knowledge.prune(this.usage);
-		if(pklg) return (new nul.xpr.possible(this.value, pklg)).chew();
 		return $super();
 	},
 });
@@ -69,5 +62,5 @@ nul.xpr.possible.unification = function(p, o) {
 		klg = new nul.xpr.knowledge();
 	}
 	v = klg.unify(v, o);
-	return new nul.xpr.possible(v, klg.built());
+	return klg.wrap(v);
 };

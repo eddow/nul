@@ -16,9 +16,10 @@
  * Define an object that is a value of a local
  */
 nul.obj.local = Class.create(nul.obj.undefined, {
-	initialize: function(klgRef, ndx) {
+	initialize: function(klgRef, ndx, dbgName) {
 		this.klgRef = klgRef;
 		this.ndx = ndx;
+		this.dbgName = dbgName;
 		this.alreadyBuilt({
 			index: this.indexedSub(this.klgRef, this.ndx),
 		});
@@ -26,16 +27,6 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 
 //////////////// public
 
-	/**
-	 * Retrieve the name of the local to display it.
-	 * @param {array(nul.xpr.knowledge)} ctx
-	 * @return string
-	 */
-	 dbgName: function(ctx) {
-		return !ctx[this.klgRef]?'':
-			ctx[this.klgRef].dbgName(this.ndx);
-	},
-	
 	sum_dependance: function($super) {
 		return new nul.dependance(this);
 	},
@@ -43,4 +34,8 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 //////////////// nul.expression implementation
 
 	expression: 'local',
+	invalidateTexts: function($super, dbgName) {
+		this.dbgName = dbgName;
+		$super();
+	},
 });

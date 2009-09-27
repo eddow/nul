@@ -13,7 +13,6 @@ function isArray(itm) {
 	return itm &&
 		typeof(itm) == 'object' &&
 		typeof itm.length === 'number' &&
-//		!itm.propertyIsEnumerable('length') &&
 		typeof itm.splice === 'function';
 }
 

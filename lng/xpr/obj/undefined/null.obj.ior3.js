@@ -8,7 +8,6 @@
 
 /**
  * Defined an object that can be several one, on a choice
- * TODO: comment link w/ knowledge
  */
 nul.obj.ior3 = Class.create(nul.obj.undefined, {
 	initialize: function(klgRef, ndx, items) {
@@ -26,13 +25,11 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, {
 	 * @param {array(nul.xpr.knowledge)} ctx
 	 * @return array(nul.xpr.possible)
 	 */
-	possibles: function(ctx) {
+	possibles: function() {
+		if(!this.choices) return this.values;
 		var rv = [];
-		var chx = ctx[this.klgRef].ior3[this.ndx].choices;
-		if(nul.debug.assert) assert(this.values.length == chx.length,
-			'IOR3 has same values as the correspondant knowledge entry')
 		for(var i=0; i<this.values.length; ++i)
-			rv.push(new nul.xpr.possible(this.values[i], chx[i]).built());
+			rv.push(new nul.xpr.possible(this.values[i], this.choices[i]).built());
 		return rv;
 	},
 	
@@ -49,4 +46,10 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, {
 	
 	expression: 'ior3',
 	components: ['values'],
+	invalidateTexts: function($super, chxs) {
+		this.choices = chxs;
+		if(nul.debug.assert) assert(this.values.length == this.choices.length,
+			'IOR3 has same values as the correspondant knowledge entry')
+		$super();
+	},
 });

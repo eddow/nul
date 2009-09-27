@@ -63,7 +63,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 			return new nul.obj.pair(
 				klg.unify(this.first, o.first),
 				klg.unify(this.second, o.second));
-		//TODO: autres cas que valeurs fixes
+		//TODO4: unifier les possibles
 	},
 	
 //////////////// nul.expression implementation

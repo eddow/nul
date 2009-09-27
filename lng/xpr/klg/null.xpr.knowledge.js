@@ -74,30 +74,48 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	/**
  	 * Remove any information about locals or ior3s that are not refered anymore
  	 * @param {nul.dependance.usage} deps
-	 * @return {bool} weither something changed
  	 */
- 	pruned: function(deps) {
+ 	pruned: function(value) {
  		this.modify();
- 		var i, chgd = false;
+ 		var i;
+ 		var deps = this.usage(value);
  		
+ 		//Remove eqCls members that are alone to refer a local
+ 		for(i in deps.local) if(1== deps.local[i].number)	//If the local 'i' is refered one
+ 			for(var c=0; c<this.eqCls.length;)
+ 				if(this.eqCls[c].dependance().usage(this).local[i]) {
+ 					this.eqCls[c] = this.eqCls[c].unused(new nul.obj.local(this.name, 0+i));
+ 					if(this.eqCls[c]) ++c;
+ 					else this.eqCls.splice(c, 1);
+ 					deps = this.usage(value);	//TODO4: perhaps not needed to recompute all
+ 				} else ++c;
+ 		
+		//Remove unrefered ior3 tautologies, affect the 'mult' property 
  		for(i=0; i<this.ior3.length; ++i) if(!deps.ior3[i]) {
  			var nior3 = this.ior3[i].modifiable();
- 			if(nior3.unrefer()) {
- 				chgd = true;
-	 			this.ior3[i] = nior3.built().placed(this);
- 			}
+ 			if(nior3.unrefer()) this.ior3[i] = nior3.built().placed(this);
  		}
+ 		
  		//Remove trailing empty ior3s (not more to preserve indexes)
  		while(this.ior3.length && !this.ior3[this.ior3.length-1]) this.ior3.pop();
+ 		this.useIor3Choices(deps.ior3);
  		
- 		//TODO3: remove the locals refered once in the eqClass if possible
  		//Remove trailing unrefered locals (not more to preserve indexes)
- 		var ol = this.nbrLocals();
 		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();
- 		this.clearLocalNames(deps.local);
- 		
- 		return chgd || ol != this.nbrLocals();
+ 		this.useLocalNames(deps.local);
  	},
+ 	
+ 	/**
+ 	 * Gets the dependance of an hypothetic possible while this knowledge is not summarised.
+ 	 */
+ 	usage: function(value) {
+		var rv = new nul.dependance();
+		var comps = [];
+		comps.pushs(this.eqCls, this.ior3, [value]);
+		for(var c=0; c<comps.length; ++c)
+			rv.also(comps[c].dependance());
+		return rv.usage(this);
+	},
  
  //////////////// publics
 
@@ -202,41 +220,30 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	},
 
  	/**
- 	 * Get a pruned knowledge
- 	 * @param {nul.dependance.usage} deps
-	 * @return {nul.xpr.knowledge} Either either another built knowledge
- 	 */
- 	prune: function(deps) {
- 		var pruned = this.modifiable();
- 		if(!pruned.pruned(deps)) return;
- 		return pruned.built();
- 	},
- 	
- 	/**
- 	 * Replace the objects by their equivalent class' reference.
+ 	 * Get a pruned possible
  	 * @param {nul.xpr.object} value
- 	 * @return nul.xpr.possible if a value is provided. nul.xpr.knowledge if not. 
+	 * @return nul.xpr.possible or  nul.xpr.object
  	 */
- 	represent: function(value) {
+ 	wrap: function(value) {
+ 		this.modify(); nul.obj.use(value);
  		
- 		nul.obj.use(value); this.use();
- 		var nval = value;
- 		var nEqCls = [], i, j;
- 		for(i=0; i<this.eqCls.length; ++i) {
- 			var representer = (nEqCls[i]||this.eqCls[i]).represent();
- 			if(value) nval = representer.browse(nval)
- 			for(j=0; j<this.eqCls.length; ++j) if(i!=j)
- 				nEqCls[j] = nul.browser.bijectif.firstChange(
- 					representer.recursion(nEqCls[j] || this.eqCls[j]), null);
+ 		//Represent equivalence classes in values and eqCls
+ 		for(var i=0; i<this.eqCls.length; ++i) {
+ 			var representer = this.eqCls[i].represent();
+ 			value = representer.browse(value)
+ 			for(var j=0; j<this.eqCls.length; ++j) if(i!=j)
+ 				this.eqCls[j] = nul.browser.bijectif.firstChange(
+ 					representer.recursion(this.eqCls[j]), this.eqCls[j]);
  		}
- 		for(i=0; i<nEqCls.length; ++i) if(!nEqCls[i]) nEqCls[i] = nul.browser.bijectif.unchanged;
- 		var nklg = nul.browser.bijectif.merge(this, {eqCls: nEqCls});
- 		if(nklg) nklg = nklg.chew();
- 		if(nval===value && !nklg) return;
- 		if(!value) return nklg;
- 		return (new nul.xpr.possible(nval || value, nklg || this)).chew();
- 	}.describe('Representation', function(value) {
-		return (value?(value.dbgHtml()+' ; '):'') + this.dbgHtml();
+ 		
+ 		this.unaccede();
+ 		this.pruned(value);
+ 		
+ 		var klg = this.chew();
+ 		if(klg.isFixed()) return value;
+ 		return new nul.xpr.possible(value, klg);
+ 	}.describe('Wrapping', function(value) {
+		return value.dbgHtml();// + ' ; ' + this.dbgHtml();
 	}),
 
 //////////////// Existence summaries
@@ -260,7 +267,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	sum_index: function() {
 		return this.indexedSub(this.name, this.eqCls, this.ior3);
 	},
-
+	
 //////////////// nul.expression implementation
 	
 	expression: 'klg',
@@ -280,21 +287,32 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		this.eqCls = [];
 		this.access = {};
 		this.addEqCls(nwEqCls);
-			//TODO1: repasser les belongs par xpr.has(o)
+			//TODO3: repasser les belongs par xpr.has(o)
 		return $super();
 	},
+	
+	/**
+	 * Forget the accesses and remove empty equivalence classes.
+	 */
+	unaccede: function() {
+		for(var i=0; i<this.eqCls.length;)
+			if(this.eqCls[i]) ++i;
+			else this.eqCls.splice(i,1);
+		delete this.access;
+	},
+	
 	/**
 	 * @param {bool} clean True when it is sure no equivalence class can be simplified or crossed
 	 */
  	fix: function($super) {
-		for(var i=0; i<this.eqCls.length;)
-			if(this.eqCls[i]) ++i;
-			else this.eqCls.splice(i,1);
-		delete this.access;	//If no delete, redo the index after this.eqCls.splice
+ 		this.unaccede();
  		return $super();
  	},
+ 	isFixed: function() {
+ 		return (!this.eqCls.length && !this.nbrLocals() && !this.ior3.length);
+ 	},
 	placed: function($super, prnt) {
- 		if(!this.eqCls.length && !this.nbrLocals() && !this.ior3.length) return; 
+ 		if(this.isFixed()) return; 
 		return $super(prnt);
 	},
 
@@ -314,7 +332,8 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 			return new nul.obj.local(this.dstKlg.name, 
 				'number'== typeof xpr.ndx ?
 					xpr.ndx+this.deltaLclNdx :
-					xpr.ndx);
+					xpr.ndx,
+					xpr.dbgName);
 		if('ior3'== xpr.expression && this.srcKlg.name  == xpr.klgRef )
 			return new nul.obj.ior3(this.dstKlg.name, xpr.ndx+this.deltaIor3ndx, xpr.values);
 		return nul.browser.bijectif.unchanged;
@@ -322,11 +341,25 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 });
 
 if(nul.debug) merge(nul.xpr.knowledge.prototype, {
+
 	/**
-	 * Remove the names of the unused locals
+	 * Use the ior3 choices to textualise ior3 references.
 	 */
-	clearLocalNames: function(keep) {
-		for(var i=0; i<this.locals.length; ++i) if(!keep[i]) this.locals[i] = null;
+	useIor3Choices: function(keep) {
+		for(var i=0; i<this.ior3.length; ++i)
+			if(keep[i]) for(var l = 0; l<keep[i].length; ++l)
+				keep[i][l].invalidateTexts(this.ior3[i]);
+	},
+
+	/**
+	 * Remove the names of the unused locals.
+	 * Use the local names to textualise locals references.
+	 */
+	useLocalNames: function(keep) {
+		for(var i=0; i<this.locals.length; ++i)
+			if(!keep[i]) this.locals[i] = null;
+			else for(var l = 0; l<keep[i].length; ++l)		//TODO4: useful ? locals should have correct dbgName now
+				keep[i][l].invalidateTexts(this.locals[i]);
 	},
 
 	/**
@@ -350,23 +383,23 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
 	nbrLocals: function() { return this.locals.length; },
 	
 	/**
-	 * Get the debug name of a local
-	 */
-	dbgName: function(ndx) { if(nul.debug) return this.locals[ndx]; },
-
-	/**
 	 * Register a new local
 	 */
  	newLocal: function(name, ndx) {
  		if('undefined'== typeof ndx) ndx = this.locals.length;
 		this.locals[ndx] = name;
- 		return new nul.obj.local(this.name, ndx)
+ 		return new nul.obj.local(this.name, ndx, name)
  	},
 }); else merge(nul.xpr.knowledge.prototype, {
 	/**
+	 * Use the ior3 choices to textualise ior3 references.
+	 */
+	useIor3Choices: function() {},
+	
+	/**
 	 * Remove the names of the unused locals
 	 */
-	clearLocalNames: function(keep) {},
+	useLocalNames: function(keep) {},
 
 	/**
 	 * An empty set of managed locals
@@ -388,11 +421,6 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
 	 */
 	nbrLocals: function() { return this.locals; },
 	
-	/**
-	 * Get the debug name of a local
-	 */
-	dbgName: function(ndx) {},
-
 	/**
 	 * Register a new local
 	 */

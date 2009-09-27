@@ -12,14 +12,16 @@ Array.prototype.named = function(nm) { this.name = nm; return this; };
 
 tests = [
 	[
-		{xpr: '{ a, a } ( 1, 1 )',
-		rslt: '{(1, 1); (1 = a[g|0])}'},
-		{xpr: '{ a, a } ( 1, 2 )',
+		{xpr: '{ a, a } (1, 1)',
+		rslt: '{(1, 1)}'},
+		{xpr: '{ a, a } (1, _)',
+		rslt: '{(1, 1)}'},
+		{xpr: '{ a, a } (1, 2)',
 		rslt: '&phi;'},
 	].named('Local management'),
 	[
 		{xpr: '{x => (x,x)}[1]',
-		rslt: ''},
+		rslt: '{(1, 1)}'},
 	].named('Taking'),
 ].named('Unit testing');
 
@@ -37,7 +39,7 @@ function rsltDiv(rslt) {
 		'text-align: center; '+
 		'background-color: '+rslt.clr+'; '+
 		'font-size: 1.4em;">'+
-		(nul.debug.assert?rslt.chr:rslt.chr.toLowerCase())+'</div>';
+		rslt.chr+'</div>';
 }
 
 function drawTests(tests, cs, lvl) {
@@ -107,7 +109,6 @@ function prgTest(tn) {
 
 function doTest(tn) {
 	var v, test = tbody.rows[tn].test;
-	nul.debug.assert = !$('qndTst').checked;
 	try {
 		v = nul.read(test.xpr).toFlat();
 	} catch(err) {
