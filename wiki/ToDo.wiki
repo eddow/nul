@@ -1,6 +1,7 @@
 #summary TODOs et idées
 
 { a, a } (1, _)
+{x => (x,x)}[1] : pq ne pas garder le 1 = x ???
 
 === xpr ===
 
