@@ -47,7 +47,7 @@ function cstmNdx(ndx, ass) {
  * Internal (helper) use for mapping functions
  */
 function mapCb(fct, ndx, itm) {
-	return fct.apply( ['object','function'].contains(typeof itm)?itm:null, [reTyped(ndx), itm]);
+	return fct?fct.apply( ['object','function'].contains(typeof itm)?itm:null, [reTyped(ndx), itm]):itm;
 }
 
 /**
@@ -92,7 +92,7 @@ function maf(itm, fct) {
 	for(var i in itm) if(cstmNdx(i, itm)) {
 		var ndx = reTyped(i); 
 		var trv = mapCb(fct, i, itm[i]);
-		if('undefined'!= typeof trv) {
+		if('undefined'!= typeof trv && null!== trv) {
 			if('number'== typeof ndx) rv.push(trv);
 			else rv[ndx] = trv;
 		}
