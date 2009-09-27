@@ -17,11 +17,23 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 		this.alreadyBuilt({isSet: false});
 	},
 	
+//////////////// public
+
+	/**
+	 * Specify this belongs ot a set (not a function).
+	 * Build a possible value where point=image in 's'
+	 * @param {nul.xpr.object} s
+	 * @return nul.xpr.possible
+	 */
+	isInSet: function(s) {
+		var klg = new nul.xpr.knowledge();
+		return klg.wrap(klg.hesitate(s.has(klg.unify(this.point, this.image))));
+	},
+
 //////////////// nul.obj.defined implementation
 
 	unified: function(o, klg) {
-		if('lambda'!= o.expression) return;
-		//TODO1: " (a => b) = c " peut aussi être a = b = c
+		if('lambda'!= o.expression) nul.fail(o, ' not a lambda');
 		return new nul.obj.lambda(
 			klg.unify(this.point, o.point),
 			klg.unify(this.image, o.image));

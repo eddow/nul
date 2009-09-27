@@ -14,6 +14,8 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 
 	/**
 	 * Unify two defined objects
+	 * @return nul.obj.defined
+	 * @throws nul.failure
 	 */
 	unified: function(o, klg) {
 		this.use(); nul.obj.use(o); nul.xpr.mod(klg, nul.xpr.knowledge);

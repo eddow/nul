@@ -14,15 +14,19 @@ tests = [
 	[
 		{xpr: '{ a, a } (1, 1)',
 		rslt: '{(1, 1)}'},
-		{xpr: '{ a, a } (1, _)',
-		rslt: '{(1, 1)}'},
 		{xpr: '{ a, a } (1, 2)',
 		rslt: '&phi;'},
+		{xpr: '{ a, a } (1, _)',
+		rslt: '{(1, 1)}'},
 	].named('Local management'),
 	[
-		{xpr: '{x => (x,x)}[1]',
+		{xpr: '{x => (x,x)} 1',
 		rslt: '{(1, 1)}'},
 	].named('Taking'),
+	[
+		{xpr: 'x; [..] (x=>1)',
+		rslt: '{1}'},
+	].named('Lambda'),
 ].named('Unit testing');
 
 function rsltDiv(rslt) {
