@@ -17,7 +17,7 @@ nul.txt.flat = merge({
 	draw: {
 		pair: function() { return nul.txt.flat.dispatchPair(this, this); },
 		
-		local: function(ctx) {
+		local: function() {
 			return (this.dbgName||'') + '[' + this.klgRef + '|' + this.ndx + ']';
 		},
 		attribute: function() {
@@ -27,7 +27,7 @@ nul.txt.flat = merge({
 			return '(' + nul.txt.flat.all(this.operands).join(' '+this.operator+' ') + ')';
 		},
 		extension: function() {
-			//TODO2
+			//TODO3
 		},
 		number: function() {
 			return ''+this.value;
@@ -39,7 +39,7 @@ nul.txt.flat = merge({
 			return this.value?'true':'false';
 		},
 		range: function() {
-			//TODO2: draw real range  
+			//TODO4: draw real range  
 			return '&#x2124;';
 		},
 		other: function() {
@@ -63,8 +63,8 @@ nul.txt.flat = merge({
 			return '{' + nul.txt.flat.all(flat).join(' &#9633; ') + '}' +
 				(flat.follow?(' &cup; '+flat.follow.toFlat()):'');
 		},
-		ior3: function(ctx) {
-			return '(' + nul.txt.flat.all(this.possibles(ctx)).join(' &#9633; ') + ')';
+		ior3: function() {
+			return '(' + nul.txt.flat.all(this.possibles()).join(' &#9633; ') + ')';
 		},
 		
 		eqCls: function() {

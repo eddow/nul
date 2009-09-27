@@ -29,7 +29,7 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, {
 		if(!this.choices) return this.values;
 		var rv = [];
 		for(var i=0; i<this.values.length; ++i)
-			rv.push(new nul.xpr.possible(this.values[i], this.choices[i]).built());
+			rv.push(nul.xpr.possible.ifKlg(this.values[i], this.choices[i]));
 		return rv;
 	},
 	

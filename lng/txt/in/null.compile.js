@@ -176,7 +176,7 @@ nul.compiler = function(txt)
 					return this.tknzr.expect('}', nul.compiled.set(this.expression(), sr));
 				}
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
-                if(this.tknzr.rawTake('[')) {
+                if('[]'!= this.tknzr.token.value && this.tknzr.rawTake('[')) {
                     var lwr, upr;
                     if(!this.tknzr.rawTake('..'))
 						lwr = this.tknzr.rawExpect('..',this.number());
