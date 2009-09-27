@@ -63,8 +63,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @throws nul.failure
  	 */
  	addEqCls: function(eqCls) {
- 		//TODO2: peut-être des null avec
- 		// nul.xpr.use(eqCls, nul.xpr.knowledge.eqCls);
+ 		nul.xpr.use(eqCls, nul.xpr.knowledge.eqCls);
  		for(var ec in eqCls) if(cstmNdx(ec) && eqCls[ec]) {
  			var unf = this.unify(eqCls[ec].equivalents), blg = null;
  			if(unf) blg = this.belong(unf, eqCls[ec].belongs);
@@ -177,11 +176,12 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	 		}) ||
 			trys(solos, function() { return dstEqCls.isEq(this); }))
 			nul.fail('Unification', a)
-		nul.debug.log('klg')(dstEqCls.prototyp?['neq', dstEqCls.prototyp]:['neq'], dstEqCls.values);
+		nul.debug.log('Knowledge')('neq',
+			dstEqCls.prototyp || '&phi;',
+			dstEqCls.values);
 		return dstEqCls.taken();
- 	}.describe(function() {
- 		return 'Unification : ' +
- 			map(beArrg(arguments), function() { return this.toHtml(); }).join(' = ');
+ 	}.describe('Unification', function() {
+ 		return map(beArrg(arguments), function() { return this.dbgHtml(); }).join(' = ');
  	}),
  	
  	 	
@@ -218,22 +218,26 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @return nul.xpr.possible if a value is provided. nul.xpr.knowledge if not. 
  	 */
  	represent: function(value) {
- 		this.use();
+ 		
+ 		nul.obj.use(value); this.use();
  		var nval = value;
- 		var nEqCls = [];
- 		for(var i=0; i<this.eqCls.length; ++i) {
+ 		var nEqCls = [], i, j;
+ 		for(i=0; i<this.eqCls.length; ++i) {
  			var representer = (nEqCls[i]||this.eqCls[i]).represent();
  			if(value) nval = representer.browse(nval)
- 			for(var j=0; j<this.eqCls.length; ++j) if(i!=j)
+ 			for(j=0; j<this.eqCls.length; ++j) if(i!=j)
  				nEqCls[j] = nul.browser.bijectif.firstChange(
  					representer.recursion(nEqCls[j] || this.eqCls[j]), null);
  		}
+ 		for(i=0; i<nEqCls.length; ++i) if(!nEqCls[i]) nEqCls[i] = nul.browser.bijectif.unchanged;
  		var nklg = nul.browser.bijectif.merge(this, {eqCls: nEqCls});
  		if(nklg) nklg = nklg.chew();
  		if(nval===value && !nklg) return;
  		if(!value) return nklg;
  		return (new nul.xpr.possible(nval || value, nklg || this)).chew();
- 	},
+ 	}.describe('Representation', function(value) {
+		return (value?(value.dbgHtml()+' ; '):'') + this.dbgHtml();
+	}),
 
 //////////////// Existence summaries
 

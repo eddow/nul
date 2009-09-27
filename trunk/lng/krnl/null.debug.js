@@ -124,7 +124,7 @@ nul.debug = {
 			for(var i=0; i<v.length; ++i) rv.push(nul.debug.toLogText(v[i]));
 			return rv.join(' ');
 		}
-		if(v.dbgHTML) return v.dbgHTML();
+		if(v.dbgHtml) return v.dbgHtml();
 		return v.toFlat?v.toFlat():v.toString();
 	},
 	log: function(tp) {
@@ -163,25 +163,27 @@ nul.debug = {
 	ctxTable: function(ctx) {
 		var rv = '';
 		for(var i=0; i<ctx.length; ++i)
-			rv += '<tr><th>'+i+'</th><td>'+ctx.lvals[i].dbgHTML()+'</td></tr>';
+			rv += '<tr><th>'+i+'</th><td>'+ctx.lvals[i].dbgHtml()+'</td></tr>';
 		return ['', '<table class="context">'+rv+'</table>'];
 	},
-	described: function(dscr) {
+	described: function(name, dscr) {
 		var ftc = this;
 		return function() {
 			var cargs = arrg(arguments);
 			var d, abrt = false, lgd = false, rv;
 			try {
 				d = dscr.apply(this, cargs);
-				nul.debug.log('acts')(nul.debug.lcs.collapser('Begin'),d);
+				nul.debug.log(name)(nul.debug.lcs.collapser(name+' begin'),d);
 				lgd = true;
 				rv = ftc.apply(this, cargs);
 				return rv;
 			} catch(err) { abrt = true; nul.exception.notice(err); throw err;
 			} finally {
-				if(lgd) nul.debug.log('acts')(
-					nul.debug.lcs.endCollapser(abrt?'Abort':'End', abrt?'Failed':'Done'),
-					rv?[rv]:['&phi;']);
+				if(lgd) nul.debug.log(name)(
+					nul.debug.lcs.endCollapser(
+						name+' '+ (abrt?'abort':'end'),
+						name+' '+ (abrt?'failed':'done')),
+					rv?[rv]:['&phi;'], d);
 			}
 		};
 	},

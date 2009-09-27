@@ -109,6 +109,15 @@ nul.expression = Class.create({
 		this.use(); nul.xpr.mod(prnt);
 		return this;
 	},
+	
+//////////////// Public
+
+	dbgHtml: function() {
+		var f = this.toFlat();
+		if(100>f.length) return this.toHtml();
+		return f;
+	},
+	
 
 //////////////// Summary users
 
