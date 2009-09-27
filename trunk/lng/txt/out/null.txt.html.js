@@ -84,7 +84,7 @@ nul.txt.html = merge({
 	draw: {
 		pair: function() { return nul.txt.html.dispatchPair(this, this); },
 		
-		local: function(ctx) {
+		local: function() {
 			return {
 				'': this.dbgName? (
                 	this.dbgName+
@@ -102,7 +102,7 @@ nul.txt.html = merge({
 				html.op(')')};
 		},
 		extension: function() {
-			//TODO2
+			//TODO3
 		},
 		number: function() {
 			return {'': ''+this.value};
@@ -114,7 +114,7 @@ nul.txt.html = merge({
 			return {'': this.value?'true':'false'};
 		},
 		range: function() {
-			//TODO2: draw real range  
+			//TODO4: draw real range  
 			return {'': '&#x2124;'};
 		},
 		other: function() {
@@ -144,7 +144,7 @@ nul.txt.html = merge({
 		},
 		ior3: function() {
 			return {'': html.op('(') +
-				nul.txt.html.all(this.possibles(ctx)).join(html.op('&#9633;')) +
+				nul.txt.html.all(this.possibles()).join(html.op('&#9633;')) +
 				html.op(')')};
 		},
 		

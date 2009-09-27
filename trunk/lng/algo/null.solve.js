@@ -66,7 +66,7 @@ nul.solve.browser = Class.create(nul.browser.bijectif, {
 		$super();
 	},
 	transform: function(xpr) {
-		if('ior3'== xpr.type && this.klg.name == xpr.klgRef)
+		if('ior3'== xpr.expression && this.klg.name == xpr.klgRef)
 			return xpr.values[this.tries[xpr.ndx]];
 		return nul.browser.bijectif.unchanged;
 	},

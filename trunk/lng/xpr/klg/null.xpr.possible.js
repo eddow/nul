@@ -40,11 +40,19 @@ nul.xpr.possible = Class.create(nul.expression, {
 	
 	expression: 'possible',
 	components: ['value','knowledge'],
+	chew: function() {
+		return this.knowledge.modifiable().wrap(this.value);
+	},	
 	fix: function($super) {
 		if(!this.knowledge) return this.value;
 		return $super();
 	},
 });
+
+nul.xpr.possible.ifKlg = function(v, k) {
+	if(!k) return v;
+	return new nul.xpr.possible(v, k);
+};
 
 /**
  * Create a possible out of a unification

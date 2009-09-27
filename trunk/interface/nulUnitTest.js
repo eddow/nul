@@ -27,6 +27,10 @@ tests = [
 		{xpr: 'x; [..] (x=>1)',
 		rslt: '{1}'},
 	].named('Lambda'),
+	[
+		{xpr: 'dec 4; dec= {5 => 4 [] 4 => 3 [] 3 => 2 [] 2 => 1}',
+		rslt: '{1}'},
+	].named('ior3'),
 ].named('Unit testing');
 
 function rsltDiv(rslt) {

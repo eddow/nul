@@ -329,7 +329,7 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 		$super();
 	},
 	transform: function(xpr) {
-		//TODO2: use klg only instead of klg.name ?
+		//TODO4: use klg only instead of klg.name ?
 		if('local'== xpr.expression && this.srcKlg.name == xpr.klgRef )
 			return new nul.obj.local(this.dstKlg.name, xpr.ndx+this.deltaLclNdx, xpr.dbgName);
 		if('ior3'== xpr.expression && this.srcKlg.name  == xpr.klgRef )
@@ -346,7 +346,7 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
 	useIor3Choices: function(keep) {
 		for(var i=0; i<this.ior3.length; ++i)
 			if(keep[i]) for(var l = 0; l<keep[i].length; ++l)
-				keep[i][l].invalidateTexts(this.ior3[i]);
+				keep[i][l].invalidateTexts(this.ior3[i].choices);
 	},
 
 	/**
