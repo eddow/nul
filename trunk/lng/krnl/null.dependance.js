@@ -21,10 +21,17 @@ nul.dependance = Class.create({
 //////////////// private
 	
 	depend: function(klgNm, type, ndx, objs) {
-		objs = beArrg(arguments,3);
+		if(!isArray(objs)) {
+			objs = [objs];
+			objs.number = 1;
+		}
 		if(!this.usages[klgNm]) this.usages[klgNm] = { local: {}, ior3: {} };
-		if(!this.usages[klgNm][type][ndx]) this.usages[klgNm][type][ndx] = objs;
-		else this.usages[klgNm][type][ndx].union(objs);
+		if(!this.usages[klgNm][type][ndx]) {
+			this.usages[klgNm][type][ndx] = [];
+			this.usages[klgNm][type][ndx].number = 0;
+		}
+		this.usages[klgNm][type][ndx].union(objs);
+		this.usages[klgNm][type][ndx].number += objs.number;
 	},
 
 //////////////// public
@@ -65,7 +72,7 @@ nul.dependance = Class.create({
 		for(var krf in this.usages) {
 			var ld = this.usages[krf].local;
 			var rld = [];
-			for(var l in ld) rld.push(html.td(l+':'+ld[l].length));
+			for(var l in ld) rld.push(html.td(l+':'+ld[l].number));
 			rv.push(html.th(krf) + rld.join());
 		}
 		return html.table(rv.join());
@@ -76,7 +83,7 @@ nul.dependance = Class.create({
 		for(var krf in this.usages) {
 			var ld = this.usages[krf].local;
 			var rld = [];
-			for(var l in ld) rld.push(l+':'+ld[l].length);
+			for(var l in ld) rld.push(l+':'+ld[l].number);
 			rv.push(krf + '[' + rld.join(', ') + ']');
 		}
 		return rv.join(' ');

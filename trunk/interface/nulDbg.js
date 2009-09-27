@@ -36,7 +36,7 @@ function testEvaluation()
 			nul.debug.logging = {error: true, fail: true};
 			nul.debug.logging.Resolution = $('shwLoggingResolution').checked;
 			nul.debug.logging.Unification = $('shwLoggingUnification').checked;
-			nul.debug.logging.Representation = $('shwLoggingRepresentation').checked;
+			nul.debug.logging.Wrapping = $('shwLoggingWrapping').checked;
 			nul.debug.logging.Knowledge = $('shwLoggingKnowledge').checked;
 		} else nul.debug.logging = false;
 	}

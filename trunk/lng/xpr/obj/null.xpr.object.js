@@ -17,7 +17,7 @@ nul.xpr.object = Class.create(nul.expression, {
 	has: function(o) {
 		var klg = new nul.xpr.knowledge();
 		klg.belong(o, this);
-		return [new nul.xpr.possible(o, klg.built()).built()];
+		return [klg.wrap(o)];
 	},
 	
 	/**

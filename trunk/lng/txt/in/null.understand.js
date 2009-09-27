@@ -120,7 +120,7 @@ nul.understanding.base = Class.create({
 		return this.prntUb.createFreedom(name, value);
 	},
 	understand: function(cnt) {
-		return (new nul.xpr.possible(cnt.understand(this),this.klg.built())).built();
+		return this.klg.wrap(cnt.understand(this));
 	},
 });
 
@@ -149,7 +149,7 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 	understand: function(cnt) {
 		try {
 			return new nul.obj.pair(
-				(new nul.xpr.possible(cnt.understand(this), this.klg.built())).built(),
+				this.klg.wrap(cnt.understand(this)),
 				nul.obj.empty);
 		} catch(err) {
 			nul.failed(err);

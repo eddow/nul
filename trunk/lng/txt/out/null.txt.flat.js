@@ -18,7 +18,7 @@ nul.txt.flat = merge({
 		pair: function() { return nul.txt.flat.dispatchPair(this, this); },
 		
 		local: function(ctx) {
-			return (this.dbgName(ctx)||'') + '[' + this.klgRef + '|' + this.ndx + ']';
+			return (this.dbgName||'') + '[' + this.klgRef + '|' + this.ndx + ']';
 		},
 		attribute: function() {
 			return this.ofObject.toFlat() + '&rarr;' + this.attributeName;
@@ -27,7 +27,7 @@ nul.txt.flat = merge({
 			return '(' + nul.txt.flat.all(this.operands).join(' '+this.operator+' ') + ')';
 		},
 		extension: function() {
-			//TODO
+			//TODO2
 		},
 		number: function() {
 			return ''+this.value;
@@ -71,7 +71,7 @@ nul.txt.flat = merge({
 			return '(' + nul.txt.flat.all(this.equivalents).join(' = ') + ')' +
 				(this.belongs.length?(' &isin; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
 		},
-		klg: function() {	//TODO: draw ior3s ?
+		klg: function() {	//TODO3: draw ior3s ?
 			return nul.txt.flat.all(this.eqCls).join('; ');
 		},
 		possible: function() {

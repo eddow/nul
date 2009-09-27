@@ -87,6 +87,27 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 			trys(c.values, function() { return tec.isEq(c); }) ||
 			trys(c.belongs, function() { return tec.isIn(c); });
 	},
+	
+	/**
+	 * The object appears only in this equivalence class.
+	 * Retrive an equivalence class that doesn't bother with useless knowledge
+	 * @param {nul.xpr.object} o
+	 * @return nul.xpr.knowledge.eqClass or null
+	 */
+	unused: function(o) {
+		var unused = function(eqc, tbl, str) {
+			for(var e=0; e<tbl.length; ++e)
+				if(tbl[e].toString() == str) {
+					tbl.splice(e, 1);
+					return eqc.built();
+				}
+		};
+		
+		nul.obj.use(o);
+		var oStr = o.toString();
+		var rv = this.modifiable();
+		return unused(rv, rv.values, oStr) || unused(rv, rv.belongs, oStr); 
+	},
 
 //////////////// nul.expression implementation
 	
@@ -109,9 +130,11 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	placed: function($super, prnt) {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);
-		if(!this.equivalents.length ||
-			(!this.belongs.length && 1== this.equivalents.length))
-				return;
+		if(!this.belongs.length && 1>= this.equivalents.length) return;
+		if(!this.equivalents.length) {
+			//TODO3: add \/i this.belongs[i] not empty
+			return;
+		}
 		return $super(prnt);
 	},
 });

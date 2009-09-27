@@ -86,8 +86,8 @@ nul.txt.html = merge({
 		
 		local: function(ctx) {
 			return {
-				'': this.dbgName(ctx)? (
-                	this.dbgName(ctx)+
+				'': this.dbgName? (
+                	this.dbgName+
                 	html.span('desc', html.span('sup',this.ndx)+
                 	html.span('sub',this.klgRef))
                 ) : this.ndx+html.span('desc', html.span('sub',this.klgRef))};
@@ -102,7 +102,7 @@ nul.txt.html = merge({
 				html.op(')')};
 		},
 		extension: function() {
-			//TODO
+			//TODO2
 		},
 		number: function() {
 			return {'': ''+this.value};
@@ -156,7 +156,7 @@ nul.txt.html = merge({
 					(html.op('&isin;') + nul.txt.html.all(this.belongs).join(html.op(','))):
 					'')};
 		},
-		klg: function() {	//TODO: draw ior3s ?
+		klg: function() {	//TODO3: draw ior3s ?
 			return {
 				'': nul.txt.html.all(this.eqCls).join(html.op(';')),
 				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):''),
