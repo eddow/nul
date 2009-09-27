@@ -1,8 +1,5 @@
 #summary TODOs et idées
 
-{ a, a } (1, _)
-{x => (x,x)}[1] : pq ne pas garder le 1 = x ???
-
 === xpr ===
 
 reflect the nul.xpr in the wiki
@@ -13,10 +10,3 @@ show "dependancy descriptors"
 Les classes d'équivalences retiennent aussi une liste d'attributs spécifiés (par exemple, quand on y tape un objet hand-attributed)
 
 Ces attributs sont utilisés sur le `one` - donc appliqués lors de changement d'attribut ou le changement de prototype.
-
-=== locals ===
-
-On peut bien prendre garde à faire descendre la déclaration des locales pour qu'elles soient utiles.
-Prune !!
-
-nul.xpr.possible peut avoir les handles =D
