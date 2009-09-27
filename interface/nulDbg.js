@@ -11,8 +11,6 @@ function init()
 	selectNamedTab($('info'),$('infoTS').value);
 	nul.debug.callStack.table = $('callStack');
 	nul.debug.logs.table = $('logs');
-	if(!nul.debug.acts) $('shwLoggingActs').disabled = true;
-	else $('shwLoggingActs').checked = true;
 	src = document.getElementById('source');
 	evd = document.getElementById('evaled');
 	wtc = document.getElementById('watch');
@@ -36,8 +34,10 @@ function testEvaluation()
 	if(nul.debug) {
 		if($('shwLogging').checked) {
 			nul.debug.logging = {error: true, fail: true};
-			nul.debug.logging.acts = $('shwLoggingActs').checked;
-			nul.debug.logging.klg = $('shwLoggingKlg').checked;
+			nul.debug.logging.Resolution = $('shwLoggingResolution').checked;
+			nul.debug.logging.Unification = $('shwLoggingUnification').checked;
+			nul.debug.logging.Representation = $('shwLoggingRepresentation').checked;
+			nul.debug.logging.Knowledge = $('shwLoggingKnowledge').checked;
 		} else nul.debug.logging = false;
 	}
 	nul.execution.reset();

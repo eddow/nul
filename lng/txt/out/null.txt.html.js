@@ -71,8 +71,9 @@ nul.txt.html = merge({
 		}
 		
 		var deps = xpr.dependance();
-		if(!isEmpty(deps)) {
-			tileSquares += html.tileSquare('dependances', deps.toFlat(), spos++);
+		var df = deps.toFlat();
+		if(df) {
+			tileSquares += html.tileSquare('dependances', df, spos++);
 			tilePopups += html.tilePopup('dependances', deps.toHtml());
 		}
 		return html.span('xpr',

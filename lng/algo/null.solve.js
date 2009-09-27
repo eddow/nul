@@ -44,9 +44,8 @@ nul.solve = function(fz) {
 		}
 	}
 	return rv;
-}.describe(function() {
-	return 'Resolution : ' +
-		map(beArrg(arguments), function() { return this.toHtml(); }).join(' &#9633; ');
+}.describe('Resolution', function() {
+	return map(beArrg(arguments), function() { return this.dbgHtml(); }).join(' &#9633; ');
 });
 
 /**

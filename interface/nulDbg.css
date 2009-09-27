@@ -71,10 +71,9 @@ td.ke.c0 {
 	border-right: 1px solid black;
 }
 
-#logs .knowledge.log { background-color: pink; }
-#logs .evals.log { background-color: lightblue; }
+#logs .Knowledge.log { background-color: pink; }
+#logs .Resolution.log { background-color: papayawhip; }
+#logs .Unification.log { background-color: lightblue; }
+#logs .Representation.log { background-color: lightgreen; }
 #logs .error.log { background-color: red; }
 #logs .fail.log { background-color: pink; }
-#logs .solve.log { background-color: papayawhip; }
-#logs .acts.log { background-color: lightgreen; }
-#logs .ctxs.log { background-color: chocolate; }
