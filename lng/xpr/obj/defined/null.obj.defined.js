@@ -11,36 +11,6 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 		var ownSmr = { isDefined: true };
 		$super(smr?merge(ownSmr,smr):ownSmr);
 	},
-	/**
-	 * Gets an attribute
-	 * @param {nul.xpr.knowledge} klg
-	 * @param {string} anm
-	 * @return nul.xpr.object or nothing if unknown
-	 */
-	valAttr: function(klg, anm) {
-		this.use();
-		
-		var avl = this.attr[anm];
-		if(!avl) return;
-		if('function'!= typeof(avl)) return avl;
-		return avl(this, klg);
-	},
-	/**
-	 * Gets a functional attribute
-	 * @param {nul.xpr.knowledge} klg
-	 * @param {string} anm
-	 * @param {nul.xpr.object} op
-	 * @return nul.xpr.object or nothing if unknown
-	 * @throws nul.failure
-	 */
-	fctAttr: function(klg, anm, op) {
-		this.use(); op.use();
-		
-		var avl = this.attr[anm];
-		if(!avl) return;
-		if('function'!= typeof(avl)) return op.through(avl, klg);
-		return avl(this, op, klg);
-	},
 
 	/**
 	 * Unify two defined objects

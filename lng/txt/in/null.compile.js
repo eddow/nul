@@ -56,7 +56,7 @@ nul.operators = [
 	['[]','m'],								//booleans:meta OR
 	[';','m'],								//booleans:meta AND
 	[',','k'],				 				//list
-	[':-','r'],								//lambda
+	['=>','r'],								//lambda
 	['!','p'],
 	['=','m'], [':=','m'],					//unify
 	[':','m'],								//booleans:meta XOR
@@ -67,6 +67,7 @@ nul.operators = [
 	['-','p'], ['#','p'],
 	['*','m'], ['/','l'], ['%','l'],
 	['$','p'],
+	['|','r'],								//pair
 ];
 
 nul.compiler = function(txt)

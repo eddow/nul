@@ -19,14 +19,32 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		this.belongs = copy?clone1(copy.belongs):[];	//Sets the values belong to
 		this.prototyp = copy?copy.prototyp:null;		//The values all equals to, used as prototype
 	},
+
+//////////////// internal
+
+	/**
+	 * Build and get a representative value for this class.
+	 */
 	taken: function() {
 		if(nul.debug.assert) assert(this.knowledge, 'Take from freshly created equivalence class');
 		var rv = this.prototyp || this.values[0];
 		var knowledge = this.knowledge;
 		var index = this.index;
 		var rec = knowledge.accede(index, this.built());
-		return rec?rec.good:rv;
+		return rec?rec.equivalents[0]:rv;
 	},
+
+	/**
+	 * Creates a browser that replace all occurence of the expressions refered
+	 * by this class by this class representant.
+	 */
+	represent: function() {
+		this.use();
+		return new nul.xpr.knowledge.eqClass.represent(this);
+	},
+
+//////////////// public
+
 	/**
 	 * Add an object in the equivlence.
 	 * @param {nul.xpr.object} o object to add
@@ -41,7 +59,9 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 				if(!unf) return true;
 				if(true!== unf) this.prototyp = unf;
 			} else this.prototyp = o;
-		} else this.values.push(o);	//TODO2: sort not to have ior3 as 'good'
+		} else this.values.push(o);
+		//TODO2: sort :
+		//independants, locals dependant, ior3 dependant
 	},
 	/**
 	 * Add an object as a belongs.
@@ -75,7 +95,6 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	modifiable: function($super) {
 		var rv = $super();
 		delete rv.equivalents;
-		delete rv.good;
 		rv.values = clone1(rv.values);		//Equal values
 		rv.belongs = clone1(rv.belongs);	//Sets the values belong to
 		return rv;		
@@ -86,7 +105,6 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 			delete this.index;
 		}
 		this.equivalents = this.prototyp?this.values.added(this.prototyp):this.values;
-		this.good = this.prototyp || this.values[0];
 		return $super();
 	},
 	placed: function($super, prnt) {
@@ -95,5 +113,17 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 			(!this.belongs.length && 1== this.equivalents.length))
 				return;
 		return $super(prnt);
+	},
+});
+
+nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
+	initialize: function($super, eqCls) {
+		this.tbl = {};
+		for(var i=1; i<eqCls.equivalents.length; ++i)
+			this.tbl[eqCls.equivalents[i]] = eqCls.equivalents[0];
+		$super();
+	},
+	transform: function(xpr) {
+		return this.tbl[xpr] || nul.browser.bijectif.unchanged;
 	},
 });

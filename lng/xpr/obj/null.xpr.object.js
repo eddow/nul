@@ -8,9 +8,6 @@
 
 nul.xpr.object = Class.create(nul.expression, {
 	object: true,
-	through: function(o) {
-		//TODO2: return o[this]
-	},
 	/**
 	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
 	 * @param {nul.xpr.object} o

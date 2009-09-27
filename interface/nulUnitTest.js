@@ -18,17 +18,9 @@ tests = [
 		rslt: '&phi;'},
 	].named('Local management'),
 	[
-	].named('OR-s management'),
-	[
-	].named('Auto-reference'),
-	[
-	].named('Attributes management'),
-	[
-	].named('Lists management'),
-	[
-	].named('Recursive algorithms'),
-	[
-	].named('Resolutions')
+		{xpr: '{x => (x,x)}[1]',
+		rslt: ''},
+	].named('Taking'),
 ].named('Unit testing');
 
 function rsltDiv(rslt) {

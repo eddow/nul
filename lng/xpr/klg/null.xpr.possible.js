@@ -39,12 +39,17 @@ nul.xpr.possible = Class.create(nul.expression, {
 	
 	expression: 'possible',
 	components: ['value','knowledge'],
+	built: function($super) {
+		var rpsbl = this.knowledge.represent(this.value);
+		if(rpsbl) return rpsbl;
+		return $super();
+	},
 	fix: function($super) {
 		if(!this.knowledge) return this.value;
 		this.dependance();
-		var nklg = this.knowledge.prune(this.usage);
-		if(!nklg) return $super();
-		return (new nul.xpr.possible(this.value, nklg)).built();
+		var pklg = this.knowledge.prune(this.usage);
+		if(pklg) return (new nul.xpr.possible(this.value, pklg)).chew();
+		return $super();
 	},
 });
 

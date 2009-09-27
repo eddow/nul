@@ -188,6 +188,18 @@ function merge(a, b, cb) {
 	return this; 
 });
 
+[].union || (Array.prototype.union = function(){
+	for(var j=0; j<arguments.length; ++j) {
+		var o = arguments[j];
+		for(var i=0; i<o.length; ++i) {
+			var s;
+			for(s=0; s<this.length; ++s) if(this[s]===o[i]) break;
+			if(s>=this.length) this.push(o[i]);
+		}
+	}
+	return this; 
+});
+
 [].added || (Array.prototype.added = function(v){
 	var rv = clone1(this);
 	rv.unshift(v);
