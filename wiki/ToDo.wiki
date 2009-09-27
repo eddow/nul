@@ -1,5 +1,7 @@
 #summary TODOs et idées
 
+dec 4; dec= (1, 2, 3, 4, 5)
+
 === xpr ===
 
 reflect the nul.xpr in the wiki
