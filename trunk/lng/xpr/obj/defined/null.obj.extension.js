@@ -19,8 +19,9 @@ nul.obj.extension = Class.create(nul.obj.defined, {
 //////////////// nul.xpr.object implementation
 
 	has: function($super, o, klg) {
-		if(this.attr[' ']) return this.fctAttr(klg, ' ', o);	//TODO
-		return $super();
+		var rv = [];
+		if(this.attr[' ']) rv.pushs(this.attr[' '].has(o, klg));
+		return rv.pushs($super());
 	},
 
 //////////////// nul.expression implementation

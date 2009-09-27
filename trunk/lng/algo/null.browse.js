@@ -86,25 +86,12 @@ nul.browser.bijectif = Class.create(nul.browser.cached, {
 	 * @return Either a new object or 'null' if nothing changed
 	 */
 	makeRV: function(xpr, bwsd) {
-		var mod, base = nul.browser.bijectif.firstChange(this.prepare(xpr), xpr);
-		for(var c in bwsd) {
-			var nwItm = bwsd[c];
-			if(isArray(nwItm)) {
-				//bwsd[c] contient des null-s et des valeurs
-				if(nul.browser.bijectif.unchanged != nul.browser.bijectif.firstChange(nwItm))
-					//If at least one non-null return value,
-					nwItm = merge(nwItm, base[c], nul.browser.bijectif.firstChange);
-				else nwItm = nul.browser.bijectif.unchanged;
-			}
-			if(nul.browser.bijectif.unchanged!= nwItm) {
-				if(!mod) mod = base.modifiable();
-				mod[c] = nwItm;
-			}
-		}
-		mod = mod?mod.chew():xpr;
-		var trn = mod?this.transform(mod):null;
-		if(trn && nul.browser.bijectif.unchanged!= trn) nul.xpr.use(trn);
-		return nul.browser.bijectif.firstChange(trn, mod); 
+		var evl = new nul.browser.bijectif.evolution(xpr);
+		evl.receive(this.prepare(evl.value));
+		var mod = nul.browser.bijectif.merge(evl.value, bwsd);
+		if(mod) evl.receive(mod.chew());
+		evl.receive(this.transform(evl.value));
+		return evl.changed; 
 	},
  	/**
  	 * Entry point of browsing
@@ -116,7 +103,37 @@ nul.browser.bijectif = Class.create(nul.browser.cached, {
 
 //////////////// Bijectif browser statics
 
+nul.browser.bijectif.merge = function(xpr, bwsd) {
+	var mod;
+	for(var c in bwsd) {
+		var nwItm = bwsd[c];
+		if(isArray(nwItm)) {
+			//bwsd[c] contient des null-s et des valeurs
+			if(nul.browser.bijectif.unchanged != nul.browser.bijectif.firstChange(nwItm))
+				//If at least one non-null return value,
+				nwItm = merge(nwItm, xpr[c], nul.browser.bijectif.firstChange);
+			else nwItm = nul.browser.bijectif.unchanged;
+		}
+		if(nul.browser.bijectif.unchanged!= nwItm) {
+			if(!mod) mod = xpr.modifiable();
+			mod[c] = nwItm;
+		}
+	}
+	return mod;
+};
+
 nul.browser.bijectif.unchanged = 'bijectif.unchanged';
+nul.browser.bijectif.evolution = Class.create({
+	initialize: function(xpr) {
+		this.value = xpr;
+		this.changed = nul.browser.bijectif.unchanged;
+	},
+	receive: function(xpr) {
+		if(nul.browser.bijectif.unchanged== xpr) return;
+		this.changed = this.value = xpr;
+		if(xpr) nul.xpr.use(xpr);
+	},
+});
 nul.browser.bijectif.firstChange = function(vals) {
 	vals = beArrg(arguments);
 	for(var i = 0; i<vals.length; ++i)

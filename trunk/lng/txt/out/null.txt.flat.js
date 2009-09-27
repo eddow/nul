@@ -46,8 +46,11 @@ nul.txt.flat = merge({
 			return this.expression;
 		},
 		
+		lambda: function() {
+			return this.point.toFlat() + ' &rArr; ' + this.image.toFlat();
+		},
 		dotted: function() {
-			return this.first.toFlat() + ' &rArr; ' + this.second.toFlat();
+			return this.first.toFlat() + ' | ' + this.second.toFlat();
 		},
 		singleton: function() {
 			return '{' + this.first.toFlat() + '}';

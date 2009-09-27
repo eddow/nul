@@ -140,6 +140,7 @@ nul.expression = Class.create({
 		return this.indexedSub(vals(this.sum_components()));
 	},
 	indexedSub: function(items) {
+		//TODO3: assert no infinite recursion
 		nul.xpr.is(this);
 	 	items = beArrg(arguments);
 	 	var rv = '['+this.expression;

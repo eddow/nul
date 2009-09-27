@@ -63,7 +63,8 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @throws nul.failure
  	 */
  	addEqCls: function(eqCls) {
- 		nul.xpr.use(eqCls, nul.xpr.knowledge.eqCls);
+ 		//TODO2: peut-être des null avec
+ 		// nul.xpr.use(eqCls, nul.xpr.knowledge.eqCls);
  		for(var ec in eqCls) if(cstmNdx(ec) && eqCls[ec]) {
  			var unf = this.unify(eqCls[ec].equivalents), blg = null;
  			if(unf) blg = this.belong(unf, eqCls[ec].belongs);
@@ -90,6 +91,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		//Remove trailing empty ior3s (not more to preserve indexes)
  		while(this.ior3.length && !this.ior3[this.ior3.length-1]) this.ior3.pop();
  		
+ 		//TODO3: remove the locals refered once in the eqClass if possible
  		//Remove trailing unrefered locals (not more to preserve indexes)
  		var ol = this.nbrLocals();
 		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();
@@ -208,6 +210,29 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		var pruned = this.modifiable();
  		if(!pruned.pruned(deps)) return;
  		return pruned.built();
+ 	},
+ 	
+ 	/**
+ 	 * Replace the objects by their equivalent class' reference.
+ 	 * @param {nul.xpr.object} value
+ 	 * @return nul.xpr.possible if a value is provided. nul.xpr.knowledge if not. 
+ 	 */
+ 	represent: function(value) {
+ 		this.use();
+ 		var nval = value;
+ 		var nEqCls = [];
+ 		for(var i=0; i<this.eqCls.length; ++i) {
+ 			var representer = (nEqCls[i]||this.eqCls[i]).represent();
+ 			if(value) nval = representer.browse(nval)
+ 			for(var j=0; j<this.eqCls.length; ++j) if(i!=j)
+ 				nEqCls[j] = nul.browser.bijectif.firstChange(
+ 					representer.recursion(nEqCls[j] || this.eqCls[j]), null);
+ 		}
+ 		var nklg = nul.browser.bijectif.merge(this, {eqCls: nEqCls});
+ 		if(nklg) nklg = nklg.chew();
+ 		if(nval===value && !nklg) return;
+ 		if(!value) return nklg;
+ 		return (new nul.xpr.possible(nval || value, nklg || this)).chew();
  	},
 
 //////////////// Existence summaries

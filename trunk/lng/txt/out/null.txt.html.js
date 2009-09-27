@@ -120,8 +120,11 @@ nul.txt.html = merge({
 			return {'': this.expression};
 		},
 		
+		lambda: function() {
+			return {'': this.point.toHtml() + html.op('&rArr;') + this.image.toHtml()};
+		},
 		dotted: function() {
-			return {'': this.first.toHtml() + html.op('&rArr;') + this.second.toHtml()};
+			return {'': this.first.toHtml() + html.op('|') + this.second.toHtml()};
 		},
 		singleton: function() {
 			return {'': html.op('{') + this.first.toHtml() + html.op('}')};
