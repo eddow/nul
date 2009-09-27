@@ -37,10 +37,17 @@ nul.dependance = Class.create({
 //////////////// public
 
 	/**
-	 * Retrieve a usage and forget about it
+	 * Retrieve a usage
 	 */
 	usage: function(klg) {
-		try{ return this.usages[klg.name] || { local: {}, ior3: {} }; }
+		return this.usages[klg.name] || { local: {}, ior3: {} };
+	},
+
+	/**
+	 * Retrieve a usage and forget about it
+	 */
+	use: function(klg) {
+		try{ return this.usage(klg); }
 		finally { delete this.usages[klg.name]; }
 	},
 

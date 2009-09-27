@@ -12,6 +12,16 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 			isSet: true,
 		});
 	},
+	
+	/**
+	 * Consider this set is not a transformation
+	 */
+	has: function($super, o) {
+		nul.obj.use(o);
+		if(o.isInSet) return [o.isInSet(this)];
+		if(o.isDefined()) return [];
+		return $super(o);
+	}
 });
 
 merge(nul.obj.empty = new nul.obj.hcSet(), {
@@ -44,9 +54,9 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 	intersect: function(o) {
 		if('range'== o.expression) return o;
 	},
-	has: function(o) {
+	has: function($super, o) {
 		if('number'== o.expression) return [o];
-		if(o.isDefined()) return [];
+		return $super(o);
 	},
 
 //////////////// nul.expression implementation
@@ -55,9 +65,9 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 });
 
 nul.obj.string = Class.create(nul.obj.hcSet, {
-	has: function(o) {
+	has: function($super, o) {
 		if('string'== o.expression) return [o];
-		if(o.isDefined()) return [];
+		return $super(o);
 	},
 
 //////////////// nul.expression implementation
@@ -66,9 +76,9 @@ nul.obj.string = Class.create(nul.obj.hcSet, {
 });
 
 nul.obj.bool = Class.create(nul.obj.hcSet, {
-	has: function(o) {
+	has: function($super, o) {
 		if('boolean'== o.expression) return [o];
-		if(o.isDefined()) return [];
+		return $super(o);
 	},
 
 //////////////// nul.expression implementation
@@ -91,9 +101,8 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		this.upper = upr || pinf;
 		$super();
 	},
-	has: function(o) {
-		if(!o.isDefined()) return;
-		if('number'!= o.expression) return [];
+	has: function($super, o) {
+		if(!o.isDefined() || 'number'!= o.expression) return $super(o);
 		if(!nul.isJsInt(o.value)) return [];
 		if( o.value < this.lower || o.value > this.upper) return [];
 		return [o];

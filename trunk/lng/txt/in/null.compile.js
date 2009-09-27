@@ -133,8 +133,8 @@ nul.compiler = function(txt)
 			{
 				var tst;
 				if(this.tknzr.take('.')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
-				else if(this.tknzr.take('['))
-					rv = nul.compiled.taking(rv, this.tknzr.expect(']', this.expression())); 				
+				/*else if(this.tknzr.take('['))
+					rv = nul.compiled.taking(rv, this.tknzr.expect(']', this.expression()));*/ 				
 				else if(tst = this.item('lax')) rv = nul.compiled.application(rv, tst);
 				else return rv;
 			} while(true);
@@ -176,7 +176,7 @@ nul.compiler = function(txt)
 					return this.tknzr.expect('}', nul.compiled.set(this.expression(), sr));
 				}
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
-                if(this.tknzr.take('[')) {
+                if(this.tknzr.rawTake('[')) {
                     var lwr, upr;
                     if(!this.tknzr.rawTake('..'))
 						lwr = this.tknzr.rawExpect('..',this.number());

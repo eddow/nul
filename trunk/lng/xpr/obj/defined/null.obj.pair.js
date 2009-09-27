@@ -58,7 +58,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 //////////////// nul.obj.defined implementation
 
 	unified: function(o, klg) {
-		if('pair'!= o.expression) return;
+		if('pair'!= o.expression) nul.fail(o, ' not a pair');
 		if('possible'!= this.first.expression && 'possible'!= o.first.expression)
 			return new nul.obj.pair(
 				klg.unify(this.first, o.first),

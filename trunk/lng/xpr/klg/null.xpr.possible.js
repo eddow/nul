@@ -32,7 +32,7 @@ nul.xpr.possible = Class.create(nul.expression, {
 
 	sum_dependance: function($super) {
 		var rv = $super();
-		this.usage = rv.usage(this.knowledge);
+		this.usage = rv.use(this.knowledge);
 		return rv;
 	},
 

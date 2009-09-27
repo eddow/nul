@@ -49,11 +49,14 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		
 		var obj;
 		if(ndx && ndx.expression) ndx = this.access[obj=ndx];
-		if(ndx || 0=== ndx) return new nul.xpr.knowledge.eqClass(this, ndx, this.eqCls[ndx]);
+		if('number'== typeof ndx) return new nul.xpr.knowledge.eqClass(this, ndx, this.eqCls[ndx]);
 
  		var rv = new nul.xpr.knowledge.eqClass(this, this.eqCls.length);
  		this.eqCls.push(rv);
- 		if(obj) rv.isEq(obj);
+ 		if(obj) {
+ 			var ae = rv.isEq(obj);
+ 			if(nul.debug.assert) assert(!ae.length, 'isEq on empty equivalence class returns empty');
+ 		}
  		return rv;
 	},
  	
@@ -79,16 +82,21 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		this.modify();
  		var i;
  		var deps = this.usage(value);
+ 		var lclRemove = true;
  		
- 		//Remove eqCls members that are alone to refer a local
- 		for(i in deps.local) if(1== deps.local[i].number)	//If the local 'i' is refered one
- 			for(var c=0; c<this.eqCls.length;)
- 				if(this.eqCls[c].dependance().usage(this).local[i]) {
- 					this.eqCls[c] = this.eqCls[c].unused(new nul.obj.local(this.name, 0+i));
- 					if(this.eqCls[c]) ++c;
- 					else this.eqCls.splice(c, 1);
- 					deps = this.usage(value);	//TODO4: perhaps not needed to recompute all
- 				} else ++c;
+ 		while(lclRemove) {
+ 			lclRemove = false;
+	 		//Remove eqCls members that are alone to refer a local
+	 		for(i in deps.local) if(deps.local[i] && 1== deps.local[i].number)	//If the local 'i' is refered once
+	 			for(var c=0; c<this.eqCls.length;)
+	 				if(this.eqCls[c].dependance().usage(this).local[i]) {
+	 					this.eqCls[c] = this.eqCls[c].unused(new nul.obj.local(this.name, 0+i));
+	 					if(this.eqCls[c]) ++c;
+	 					else this.eqCls.splice(c, 1);
+	 					deps = this.usage(value);	//TODO4: perhaps not needed to recompute all
+	 					lclRemove = true;
+	 				} else ++c;
+ 		}
  		
 		//Remove unrefered ior3 tautologies, affect the 'mult' property 
  		for(i=0; i<this.ior3.length; ++i) if(!deps.ior3[i]) {
@@ -114,7 +122,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		comps.pushs(this.eqCls, this.ior3, [value]);
 		for(var c=0; c<comps.length; ++c)
 			rv.also(comps[c].dependance());
-		return rv.usage(this);
+		return rv.use(this);
 	},
  
  //////////////// publics
@@ -122,7 +130,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	/**
  	 * Gets a value out of these choices
  	 * @param {array} choices of nul.xpr.possible
- 	 * @return nul.xpr.object nul.obj.ior3 indeed
+ 	 * @return nul.xpr.object
  	 */
  	hesitate: function(choices) {
  		this.modify();
@@ -175,26 +183,22 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @throws nul.failure
  	 */
  	unify: function(a, b) {
- 		this.modify();
- 		var a = beArrg(arguments);
- 		//1- a are JnNulObj : gathering eqClasses so that we have a list of eqClasses to merge and a list
- 		// of solo objects
- 		var eqClss = {};
- 		var solos = [];
- 		for(var i=0; i<a.length; ++i) {
- 			if('undefined'!= typeof this.access[a[i]]) eqClss[this.access[a[i]]] = true;
- 			else solos.push(a[i]);
- 		}	//TODO2: null.obj.extension management
- 		eqClss = keys(eqClss);
- 		var dstEqCls = this.inform(eqClss[0]);
- 		if(eqClss.length) eqClss.shift();
- 		if(trys(eqClss, function(i, eqx) {
-	 			try { return dstEqCls.merge(this.eqCls[eqClss[eqx]]); }
-	 			finally { this.eqCls[eqClss[eqx]] = null; }
-	 		}) ||
-			trys(solos, function() { return dstEqCls.isEq(this); }))
-			nul.fail('Unification', a)
-		nul.debug.log('Knowledge')('neq',
+ 		//TODO2: null.obj.extension management
+ 		a = beArrg(arguments);
+ 		this.modify(); nul.obj.use(a);
+ 		var dstEqCls = this.inform();
+ 		while(a.length) {
+ 			var v = a.shift();
+ 			if('undefined'!= typeof this.access[v]) {
+ 				var nv = this.eqCls[this.access[v]];
+ 				if(nv) {
+ 					delete this.eqCls[this.access[v]];
+ 					v = nv;
+ 				}
+ 			}
+ 			a.pushs(dstEqCls.isEq(v));
+ 		}
+		nul.debug.log('Knowledge')('EqCls',
 			dstEqCls.prototyp || '&phi;',
 			dstEqCls.values);
 		return dstEqCls.taken();
@@ -227,6 +231,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
  		
+ 		this.unaccede();
  		//Represent equivalence classes in values and eqCls
  		for(var i=0; i<this.eqCls.length; ++i) {
  			var representer = this.eqCls[i].represent();
@@ -236,7 +241,6 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  					representer.recursion(this.eqCls[j]), this.eqCls[j]);
  		}
  		
- 		this.unaccede();
  		this.pruned(value);
  		
  		var klg = this.chew();
@@ -327,11 +331,7 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 	transform: function(xpr) {
 		//TODO2: use klg only instead of klg.name ?
 		if('local'== xpr.expression && this.srcKlg.name == xpr.klgRef )
-			return new nul.obj.local(this.dstKlg.name, 
-				'number'== typeof xpr.ndx ?
-					xpr.ndx+this.deltaLclNdx :
-					xpr.ndx,
-					xpr.dbgName);
+			return new nul.obj.local(this.dstKlg.name, xpr.ndx+this.deltaLclNdx, xpr.dbgName);
 		if('ior3'== xpr.expression && this.srcKlg.name  == xpr.klgRef )
 			return new nul.obj.ior3(this.dstKlg.name, xpr.ndx+this.deltaIor3ndx, xpr.values);
 		return nul.browser.bijectif.unchanged;
