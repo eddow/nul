@@ -295,10 +295,8 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	 * Forget the accesses and remove empty equivalence classes.
 	 */
 	unaccede: function() {
-		for(var i=0; i<this.eqCls.length;)
-			if(this.eqCls[i]) ++i;
-			else this.eqCls.splice(i,1);
 		delete this.access;
+		this.eqCls = maf(this.eqCls);
 	},
 	
 	/**
