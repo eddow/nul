@@ -25,11 +25,11 @@ nul.browser = Class.create({
 		var bwsd = {};
  		for(var comp in xpr.components) if(cstmNdx(comp)) {
  			comp = xpr.components[comp];
- 			if(isArray(xpr[comp])) {
+ 			if(isArray(xpr[comp])) {	//TODO2: catch failure; make xpr.failure()
  				var brwsr = this;
  				bwsd[comp] = map(xpr[comp], function(i, o) { return brwsr.recursion(o); });
  			} else
- 				bwsd[comp] = this.recursion(xpr[comp]);
+ 				bwsd[comp] = this.recursion(xpr[comp], comp);
  		}
  		return this.makeRV(xpr, bwsd);
  	},
@@ -46,9 +46,25 @@ nul.browser = Class.create({
  */
 nul.browser.cached = Class.create(nul.browser, {
 	initialize: function($super) {
-		this.cachedExpressions = [];
-		this.name = 'browseCache' + ++nul.browser.cached.nameSpace;
+		this.invalidateCache();
 		$super();
+	},
+	/**
+	 * Remove the cache info from an object
+	 */
+	uncache: function(xpr) {
+		delete xpr[this.name];
+	},
+	/**
+	 * Destroy the cache of returned expression
+	 */
+	invalidateCache: function() {
+		if(!this.cachedExpressions)
+			this.name = 'browseCache' + ++nul.browser.cached.nameSpace;
+		if(this.cachedExpressions)
+			while(this.cachedExpressions.length)
+				this.uncache(this.cachedExpressions.pop());
+		this.cachedExpressions = [];
 	},
 	/**
 	 * Recursion function over an expression
@@ -66,10 +82,7 @@ nul.browser.cached = Class.create(nul.browser, {
  	 */
  	browse: function($super, xpr) {
  		try { return $super(xpr); }
- 		finally {
- 			while(this.cachedExpressions.length)
- 				delete this.cachedExpressions.pop()[this.name];
- 		}
+ 		finally { this.invalidateCache(); }
  	},
 });
 

@@ -52,7 +52,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		var rv = [];
 		try { rv.push( nul.xpr.possible.unification(this.first, o) ); }
 		catch(err) { nul.failed(err); }
-		return rv.pushs(this.second.has(o));
+		return rv.pushs(this.second.having(o));
 	},
 
 //////////////// nul.obj.defined implementation
