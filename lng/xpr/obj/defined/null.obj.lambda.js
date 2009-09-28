@@ -27,7 +27,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 	 */
 	isInSet: function(s) {
 		var klg = new nul.xpr.knowledge();
-		return klg.wrap(klg.hesitate(s.has(klg.unify(this.point, this.image))));
+		return klg.wrap(klg.hesitate(s.having(klg.unify(this.point, this.image))));
 	},
 
 //////////////// nul.obj.defined implementation
@@ -43,4 +43,9 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 
 	expression: 'lambda',
 	components: ['point', 'image'],
+	built: function($super) {
+		if(this.point.toString() == this.image.toString())
+			return this.point;	//TODO4: another comparison?
+		return $super();
+	},
 });

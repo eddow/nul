@@ -40,7 +40,8 @@ nul.expression = Class.create({
 	 * Retrieve a computed value about this expression
 	 */
 	summary: function(itm) {
-		this.use();
+		if(!this.summarised) return this['sum_'+itm].apply(this);
+		//this.use();
 		if('undefined'== typeof this.summarised[itm]) {
 			assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
 			this.summarised[itm] = this['sum_'+itm].apply(this);
@@ -125,7 +126,7 @@ nul.expression = Class.create({
 
 //////////////// Summary users
 
-	toString: nul.summary('index'),			//TODO4: faire qqch pour pas qu'il l'appelle dans firebug
+	toString: nul.summary('index'),
 	toHtml: nul.summary('htmlTxt'),			//The HTML representation of an expression
 	toFlat: nul.summary('flatTxt'),			//The flat-text representation of an expression
 	isSet: nul.summary('isSet'),			//Weither this expression is a set

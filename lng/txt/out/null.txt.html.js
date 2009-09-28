@@ -150,7 +150,7 @@ nul.txt.html = merge({
 		
 		eqCls: function() {
 			return {'': html.op('(') +
-				nul.txt.html.all(this.equivalents).join(html.op('=')) +
+				nul.txt.html.all(this.equivalents()).join(html.op('=')) +
 				html.op(')') +
 				(this.belongs.length?
 					(html.op('&isin;') + nul.txt.html.all(this.belongs).join(html.op(','))):

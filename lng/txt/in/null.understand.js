@@ -27,7 +27,7 @@ nul.understanding = {
 			case '/':
 			case '%':
 				return new nul.obj.operation.binary(this.operator, ops);
-			//TODO2: > < >= <=
+			//TODO3: > < >= <=
 			case '=>':
 				return new nul.obj.lambda(ops[0], ops[1]);
 			case '|':
@@ -71,12 +71,12 @@ nul.understanding = {
 		return new nul.obj.litteral(value);
 	},
 	application: function(ub) {
-		/*return ub.klg.hesitate(this.item.understand(ub).has(this.applied.understand(ub)));
+		/*return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
 	},
 	taking: function(ub) {*/
 		//TODO4: choose a name for 'rv'
 		var rv = ub.createFreedom('rv');
-		ub.klg.hesitate(this.item.understand(ub).has(
+		ub.klg.hesitate(this.item.understand(ub).having(
 			new nul.obj.lambda(
 				this.applied.understand(ub), rv)));
 		return rv;

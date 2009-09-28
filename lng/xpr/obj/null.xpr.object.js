@@ -8,17 +8,28 @@
 
 nul.xpr.object = Class.create(nul.expression, {
 	object: true,
+
 	/**
 	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
 	 * @param {nul.xpr.object} o
 	 * @param {nul.xpr.knowledge} klg
 	 * @return array(nul.xpr.object or nul.xpr.possible)
 	 */
-	has: function(o) {
+	having: function(o) {
+		var rv = this.has(o);
+		if(rv) return rv;
 		var klg = new nul.xpr.knowledge();
 		klg.belong(o, this);
 		return [klg.wrap(o)];
 	},
+	/**
+	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
+	 * Or nothing if nothing can be simplified
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 * @return array(nul.xpr.object or nul.xpr.possible)
+	 */
+	has: function(o) {},
 	
 	/**
 	 * Abstract defined also by nul.xpr.possible
