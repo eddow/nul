@@ -8,6 +8,7 @@
 //ℕ  &#x2115;
 //ℚ	 &#x211a;
 //□  &#9633;
+//∈ &isin;
 Array.prototype.named = function(nm) { this.name = nm; return this; };
 
 tests = [
@@ -18,6 +19,8 @@ tests = [
 		rslt: '&phi;'},
 		{xpr: '{ a, a } (1, _)',
 		rslt: '{(1, 1)}'},
+		{xpr: 'Q n',
+		rslt: '{n[g|1]; (n[g|1]) &isin; &#x211a;}'},
 	].named('Local management'),
 	[
 		{xpr: '{x => (x,x)} 1',
