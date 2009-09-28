@@ -1,6 +1,8 @@
 #summary TODOs et idées
 
-dec 4; dec= (1, 2, 3, 4, 5)
+On enlève le prune pour tester "frère"
+
+Pour le prune on prune les eqCls members qui ne réfèrent que ce knowledge ou aucun knowledge du tout (si ce n'est le prototype?)
 
 === xpr ===
 
