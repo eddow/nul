@@ -7,6 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 nul.understanding = {
+	rvName : '&crarr;',
 	unresolvable: 'unresolved identifier',
 	expression: function(ub) {
 		var ops;
@@ -71,7 +72,7 @@ nul.understanding = {
 		return new nul.obj.litteral(value);
 	},
 	application: function(ub) {
-		var rv = ub.createFreedom('&crarr;');
+		var rv = ub.createFreedom(nul.understanding.rvName);
 		ub.klg.hesitate(this.item.understand(ub).having(
 			new nul.obj.lambda(
 				this.applied.understand(ub), rv)));
@@ -134,7 +135,7 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 	allocLocal: function(name) {
 		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
 		var rv = this.klg.newLocal(name);
-		if('_'!= name) this.parms[name] = rv;
+		if('_'!= name && nul.understanding.rvName!= name) this.parms[name] = rv;
 		return rv;
 	},
 	createFreedom: function(name, value) {
