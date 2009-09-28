@@ -24,7 +24,7 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 	}
 });
 
-merge(nul.obj.empty = new nul.obj.hcSet(), {
+nul.obj.empty = new (Class.create(nul.obj.hcSet, {
 	intersect: function(o) {
 		return [this];
 	},
@@ -35,9 +35,9 @@ merge(nul.obj.empty = new nul.obj.hcSet(), {
 //////////////// nul.expression implementation
 
 	expression: '&phi;',
-});
+}))();
 
-merge(nul.obj.whole = new nul.obj.hcSet(), {
+nul.obj.whole = new (Class.create(nul.obj.hcSet, {
 	intersect: function(o) {
 		return [o];
 	},
@@ -48,9 +48,9 @@ merge(nul.obj.whole = new nul.obj.hcSet(), {
 //////////////// nul.expression implementation
 
 	expression: 'any',
-});
+}))();
 
-merge(nul.obj.number = new nul.obj.hcSet(), {
+nul.obj.number = new (Class.create(nul.obj.hcSet, {
 	intersect: function(o) {
 		if('range'== o.expression) return o;
 	},
@@ -62,9 +62,9 @@ merge(nul.obj.number = new nul.obj.hcSet(), {
 //////////////// nul.expression implementation
 
 	expression: '&#x211a;',
-});
+}))();
 
-nul.obj.string = Class.create(nul.obj.hcSet, {
+nul.obj.string = new (Class.create(nul.obj.hcSet, {
 	has: function($super, o) {
 		if('string'== o.expression) return [o];
 		return $super(o);
@@ -73,9 +73,9 @@ nul.obj.string = Class.create(nul.obj.hcSet, {
 //////////////// nul.expression implementation
 
 	expression: 'str',
-});
+}))();
 
-nul.obj.bool = Class.create(nul.obj.hcSet, {
+nul.obj.bool = new (Class.create(nul.obj.hcSet, {
 	has: function($super, o) {
 		if('boolean'== o.expression) return [o];
 		return $super(o);
@@ -84,7 +84,7 @@ nul.obj.bool = Class.create(nul.obj.hcSet, {
 //////////////// nul.expression implementation
 
 	expression: 'bool',
-});
+}))();
 
 nul.obj.range = Class.create(nul.obj.hcSet, {
 	intersect: function(o) {
@@ -113,3 +113,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 	expression: 'range',
 	sum_index: function() { return this.indexedSub(this.lower, this.upper); },
 });
+
+nul.globals.Q = nul.obj.number;
+nul.globals.string = nul.obj.string;
+nul.globals.bool = nul.obj.bool;

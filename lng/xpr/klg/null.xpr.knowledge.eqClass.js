@@ -77,8 +77,6 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 */
 	isIn: function(s) {
  		this.modify(); s.use();
-		
-		//TODO3 : virer les intersections
 		this.belongs.push(s);
 	},
 	

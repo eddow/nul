@@ -71,11 +71,7 @@ nul.understanding = {
 		return new nul.obj.litteral(value);
 	},
 	application: function(ub) {
-		/*return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
-	},
-	taking: function(ub) {*/
-		//TODO4: choose a name for 'rv'
-		var rv = ub.createFreedom('rv');
+		var rv = ub.createFreedom('&crarr;');
 		ub.klg.hesitate(this.item.understand(ub).having(
 			new nul.obj.lambda(
 				this.applied.understand(ub), rv)));

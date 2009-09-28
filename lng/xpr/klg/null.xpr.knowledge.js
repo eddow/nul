@@ -92,11 +92,12 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	 		for(i in deps.local) if(deps.local[i] && 1== deps.local[i].number)	//If the local 'i' is refered once
 	 			for(var c=0; c<this.eqCls.length;)
 	 				if(this.eqCls[c].dependance().usage(this).local[i]) {
-	 					this.eqCls[c] = this.eqCls[c].unused(new nul.obj.local(this.name, 0+i));
+	 					this.eqCls[c] = this.eqCls[c].unused(new nul.obj.local(this.name, parseInt(i)));
+	 					if(this.eqCls[c]) this.eqCls[c] = this.eqCls[c].placed(this);
 	 					if(this.eqCls[c]) ++c;
 	 					else this.eqCls.splice(c, 1);
-	 					deps = this.usage(value);	//TODO4: perhaps not needed to recompute all
-	 					//lclRemove = true;
+	 					deps = this.usage(value);	//TODO0: perhaps not needed to recompute all
+	 					lclRemove = true;	//TODO0: useful ?
 	 				} else ++c;
  		}
  		
@@ -119,7 +120,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * Gets the dependance of an hypothetic possible while this knowledge is not summarised.
  	 */
  	usage: function(value) {
- 		//TODO3: use 	dependance: nul.summary('dependance', 'temp'),
+ 		//TODO0: use 	dependance: nul.summary('dependance', 'temp'),
 		var rv = new nul.dependance();
 		var comps = [];
 		comps.pushs(this.eqCls, this.ior3, [value]);
@@ -303,7 +304,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 			}
 		}
 
-//TODO4: represent sur ior3s : useful or post-resolution ?
+//TODO0: represent sur ior3s : useful or post-resolution ?
 		value = representer.browse(value);
 
  		this.pruned(value);
@@ -385,7 +386,6 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 		$super();
 	},
 	transform: function(xpr) {
-		//TODO4: use klg only instead of klg.name ?
 		if('local'== xpr.expression && this.srcKlg.name == xpr.klgRef )
 			return new nul.obj.local(this.dstKlg.name, xpr.ndx+this.deltaLclNdx, xpr.dbgName);
 		if('ior3'== xpr.expression && this.srcKlg.name  == xpr.klgRef )
@@ -412,7 +412,7 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
 	useLocalNames: function(keep) {
 		for(var i=0; i<this.locals.length; ++i)
 			if(!keep[i]) this.locals[i] = null;
-			else for(var l = 0; l<keep[i].length; ++l)		//TODO4: useful ? locals should have correct dbgName now
+			else for(var l = 0; l<keep[i].length; ++l)		//TODO0: useful ? locals should have correct dbgName now
 				keep[i][l].invalidateTexts(this.locals[i]);
 	},
 

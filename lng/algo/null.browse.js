@@ -25,7 +25,7 @@ nul.browser = Class.create({
 		var bwsd = {};
  		for(var comp in xpr.components) if(cstmNdx(comp)) {
  			comp = xpr.components[comp];
- 			if(isArray(xpr[comp])) {	//TODO2: catch failure; make xpr.failure()
+ 			if(isArray(xpr[comp])) {	//TODO0: catch failure; make xpr.failure() ? useful for ior3 - unolved
  				var brwsr = this;
  				bwsd[comp] = map(xpr[comp], function(i, o) { return brwsr.recursion(o); });
  			} else
