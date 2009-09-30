@@ -29,23 +29,7 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, {
 	has: function(o) {
 		return [];
 	},
-
-//////////////// nul.expression implementation
-
 	expression: '&phi;',
-}))();
-
-nul.obj.whole = new (Class.create(nul.obj.hcSet, {
-	intersect: function(o) {
-		return [o];
-	},
-	has: function(o) {
-		return [o];
-	},
-
-//////////////// nul.expression implementation
-
-	expression: 'any',
 }))();
 
 nul.obj.number = new (Class.create(nul.obj.hcSet, {
@@ -56,9 +40,6 @@ nul.obj.number = new (Class.create(nul.obj.hcSet, {
 		if('number'== o.expression) return [o];
 		return $super(o);
 	},
-
-//////////////// nul.expression implementation
-
 	expression: '&#x211a;',
 }))();
 
@@ -67,9 +48,6 @@ nul.obj.string = new (Class.create(nul.obj.hcSet, {
 		if('string'== o.expression) return [o];
 		return $super(o);
 	},
-
-//////////////// nul.expression implementation
-
 	expression: 'str',
 }))();
 
@@ -78,9 +56,6 @@ nul.obj.bool = new (Class.create(nul.obj.hcSet, {
 		if('boolean'== o.expression) return [o];
 		return $super(o);
 	},
-
-//////////////// nul.expression implementation
-
 	expression: 'bool',
 }))();
 

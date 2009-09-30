@@ -178,19 +178,17 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 });
 
 nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
-	initialize: function($super) {
+	initialize: function($super, ec) {
 		this.tbl = {};
-		$super();
-	},
-	represent: function(ec) {
-		if(isArray(ec)) { for(var i in ec) if(cstmNdx(i)) this.represent(ec[i]); }
-		else {
+		for(var i in ec) if(cstmNdx(i)) {
 			this.invalidateCache();
-			nul.xpr.use(ec, nul.xpr.knowledge.eqClass);
-			var eqs = ec.equivalents();
+			nul.xpr.use(ec[i], nul.xpr.knowledge.eqClass);
+			var eqs = ec[i].equivalents();
 			for(var i=1; i<eqs.length; ++i)
 				this.tbl[eqs[i]] = eqs[0];
 		}
+		$super();
+		this.prepStack = [];
 	},
 	subBrowse: function(xpr) {
 		nul.xpr.use(xpr, nul.xpr.knowledge.eqClass);
@@ -203,9 +201,18 @@ nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
 			delete this.protect;
 		}
 	},
+	prepare: function($super, xpr) {
+		this.prepStack.push(xpr);
+		return $super();
+	},
 	transform: function(xpr) {
+		this.prepStack.pop();
 		if((this.protect && this.protect[xpr]) || !this.tbl[xpr]) return nul.browser.bijectif.unchanged;
 		do xpr = this.tbl[xpr]; while(this.tbl[xpr]);
+		//If I'm replacing a value by an expression that contains this value, just don't
+		for(var i=0; i<this.prepStack.length; ++i)
+			if(this.prepStack[i] === xpr)
+				return nul.browser.bijectif.unchanged;
 		return xpr;
 	},
 });
