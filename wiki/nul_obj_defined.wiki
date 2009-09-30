@@ -1,0 +1,6 @@
+#summary Internal representation of NUL defined objects.
+#sidebar ExpressionClassTree
+
+= Description =
+
+Virtually centralise unification. The general behaviour is to fail when the [nul_expression#String_indexes string-index] doesn't match.
