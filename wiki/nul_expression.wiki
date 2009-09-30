@@ -1,4 +1,4 @@
-#summary Expressions in NUL.
+#summary Internal representation of  NUL expressions.
 #labels Phase-Implementation
 #sidebar ExpressionClassTree
 
