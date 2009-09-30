@@ -8,7 +8,7 @@ dec 3
 
 
 
-dblAll
+dblAll (1,2)
 ; dbl = { x => (x,x) }
 ; dblAll =
  { {} => {}

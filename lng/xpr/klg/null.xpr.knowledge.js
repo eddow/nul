@@ -20,6 +20,17 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		this.mult = 1;
  	},
 
+	reallocateName: function(val) {
+		var newName = ++nul.xpr.knowledge.nameSpace;
+		var brwsr = new nul.xpr.knowledge.stepUp(this, newName);
+		this.eqCls = map(this.eqCls, function() { return brwsr.browse(this); });
+		this.ior3 = map(this.ior3, function() { return brwsr.browse(this); });
+		delete access;
+		val = brwsr.browse(val);
+		this.name = newName;
+		return this.wrap(val);
+	},
+
 //////////////// privates
 
 	/**
@@ -251,7 +262,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	merge: function(klg, val) {
  		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
 
- 		var brwsr = new nul.xpr.knowledge.stepUp(klg, this, this.ior3.length, this.nbrLocals());
+ 		var brwsr = new nul.xpr.knowledge.stepUp(klg, this.name, this.ior3.length, this.nbrLocals());
 		
  		this.concatLocals(klg);
 		klg = brwsr.browse(klg);
@@ -297,9 +308,8 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 */
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
-		var representer = new nul.xpr.knowledge.eqClass.represent();
+		var representer = new nul.xpr.knowledge.eqClass.represent(this.eqCls);
 		
-		representer.represent(this.eqCls);
 		for(var i=0; i<this.eqCls.length;) {
 			var nec = representer.subBrowse(this.eqCls[i]);
 			if(nul.browser.bijectif.unchanged == nec) ++i;
@@ -307,7 +317,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 				this.unaccede(i);
 				nec = this.unification(nec).built();
 				if(nec) this.accede(this.eqCls.length, nec);
-				representer.represent(this.eqCls);
+				representer = new nul.xpr.knowledge.eqClass.represent(this.eqCls);
 				nul.debug.log('Represent')('Representation', this);
 				i = 0;
 			}
@@ -359,6 +369,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		for(var i=0; i<this.eqCls.length; ++i)
 			rv.accede(i, this.eqCls[i]);
 		rv.ior3 = clone1(rv.ior3);
+		rv.locals = clone1(rv.locals);
 		return rv;
 	},
 	
@@ -388,18 +399,18 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 });
 
 nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
-	initialize: function($super, srcKlg, dstKlg, deltaIor3ndx, deltaLclNdx) {
+	initialize: function($super, srcKlg, dstKlgRef, deltaIor3ndx, deltaLclNdx) {
 		this.srcKlg = srcKlg;
-		this.dstKlg = dstKlg;
-		this.deltaIor3ndx = deltaIor3ndx;
-		this.deltaLclNdx = deltaLclNdx;
+		this.dstKlgRef = dstKlgRef;
+		this.deltaIor3ndx = deltaIor3ndx || 0;
+		this.deltaLclNdx = deltaLclNdx || 0;
 		$super();
 	},
 	transform: function(xpr) {
 		if('local'== xpr.expression && this.srcKlg.name == xpr.klgRef )
-			return new nul.obj.local(this.dstKlg.name, xpr.ndx+this.deltaLclNdx, xpr.dbgName);
+			return new nul.obj.local(this.dstKlgRef, xpr.ndx+this.deltaLclNdx, xpr.dbgName);
 		if('ior3'== xpr.expression && this.srcKlg.name  == xpr.klgRef )
-			return new nul.obj.ior3(this.dstKlg.name, xpr.ndx+this.deltaIor3ndx, xpr.values);
+			return new nul.obj.ior3(this.dstKlgRef, xpr.ndx+this.deltaIor3ndx, xpr.values);
 		return nul.browser.bijectif.unchanged;
 	},
 });
