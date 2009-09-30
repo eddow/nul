@@ -42,8 +42,13 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		//TODO3: summarise a tree of fixed values (=> ram db)
 		//make a table fct also
 		var rv = [];
-		try { rv.push( nul.xpr.possible.unification(this.first, o) ); }
-		catch(err) { nul.failed(err); }
+		try {
+			var trv = nul.xpr.possible.unification(this.first, o);
+			if(nul.debug.assert && 'possible'== this.first.expression)
+				assert(!trv.dependance().usages[this.first.knowledge.name],
+					'Out of knowledge, no more deps');
+			rv.push(trv);
+		} catch(err) { nul.failed(err); }
 		return rv.pushs(this.second.having(o));
 	},
 

@@ -7,22 +7,15 @@ dec 3
 ; dec = {5 => 4 [] 4 => 3 [] 3 => 2 [] 2 => 1 [] 1 => 0}
 
 
-dblAll =
+
+dblAll
+; dbl = { x => (x,x) }
+; dblAll =
  { {} => {}
 [] (a,.. as) => (dbl a),.. (dblAll as)
 }
-; dbl = { x => (x,x) }
-
 
 
 frere "françois"
-; parent = (
-("luc", "françois"),
-("rené", "luc"),
-("luc", "olivier") )
+; parent = (("luc", "françois"), ("rené", "luc"), ("luc", "olivier"))
 ; frere = { (a => b); parent(p, a); parent(p, b) }
-
-
-f
-; p = (("l", "f"),("r", "l"),("l", "o") )
-; f = { (a, b); p(b, a) }

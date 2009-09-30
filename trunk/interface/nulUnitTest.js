@@ -34,6 +34,12 @@ tests = [
 		{xpr: 'dec 4; dec= {5 => 4 [] 4 => 3 [] 3 => 2 [] 2 => 1}',
 		rslt: '{3}'},
 	].named('Ior3'),
+	[
+		{xpr: 'brother "John"'+
+			'; father = (("Luke", "John"), ("Abraham", "Luke"), ("Luke", "Peter"))'+
+			'; brother = { (a => b); father(f, a); father(f, b) }',
+		rslt: '("John", "Peter")'},
+	].named('Complexs'),
 ].named('Unit testing');
 
 function rsltDiv(rslt) {
