@@ -16,3 +16,5 @@ TODO
 TODO
 === Summary system ===
 TODO
+== String indexes ==
+TODO
