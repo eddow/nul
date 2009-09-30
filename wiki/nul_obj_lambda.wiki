@@ -1,0 +1,19 @@
+#summary Internal representation of NUL lambdas.
+
+Internal representation of NulLambda.
+
+= Description =
+
+Components : point, image.
+Syntax: `point => image`
+
+== overrides ==
+
+=== unified ===
+To simply unify the points and the image (the unification of the point and the image if needed is done in [nul_xpr_knowledge_eqClass#isEq]
+
+=== isInSet ===
+To make the point/image unification when asked to belong to a [nul_obj_hcSet nul.obj.hcSet]
+
+=== placed ===
+To retrieved one item that is `point`and `image`, when they are equal.
