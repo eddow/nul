@@ -2,7 +2,7 @@
 
 Class [nul_xpr_object nul.xpr.object].
 
-The objects are the "values" NUL deal with. From simple object like {{{5}}} to complex ones like sets or {{#the attribute "length" of the unknown local "a"}}}, all the questions and knowledge is represented with Objects.
+The objects are the "values" NUL deal with. From simple object like {{{5}}} to complex ones like sets or {{{the attribute "length" of the unknown local "a"}}}, all the questions and knowledge is represented with Objects.
 
 NUL can deal with 'defined' and 'undefined' objects.
 
