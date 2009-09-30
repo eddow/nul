@@ -1,0 +1,8 @@
+#summary Internal representation of NUL litterals.
+#sidebar ExpressionClassTree
+
+Internal representation of NulLitteral
+
+= Description =
+
+Litterals have a member `value` that is the litteral value represented : string, number or boolean.
