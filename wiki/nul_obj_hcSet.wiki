@@ -1,0 +1,33 @@
+#summary Internal representation of NUL JS sets.
+#sidebar ExpressionClassTree
+
+Internal representation of NulJsSet.
+
+= Description =
+
+These are specifics objects defined in !JavaScript.
+
+== Empty set ==
+
+Syntax : *`{}`*
+Contains nothing.
+
+== Litterals sets ==
+
+ * `Q` is the set f rational numbers.
+ * `str` is the set of strings
+ * `bool` is the set of booleans
+
+== Ranges ==
+
+Ranges define a set of integer numbers.
+
+Syntax :
+ * *`[..]`* : All the natural numbers.
+ * *`[l..]`* : All the natural numbers bigger than `l`.
+ * *`[..`u`]`* : All the natural numbers lower than `u`.
+ * *`[`l`..`u`]`* : All the natural numbers between `l` and `u`.
+
+`l` and `u` are direct values, not NUL expressions.
+
+The components are `lower` and `upper` : they are numbers or the !Javascript value `Number.POSITIVE_INFINITY` or `Number.NEGATIVE_INFINITY`.
