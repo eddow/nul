@@ -5,7 +5,8 @@ Internal representation of NulLambda.
 
 = Description =
 
-Syntax: `point => image`
+Syntax: point *=>* image
+
 == Components ==
  * [nul_xpr_object] `point` : The origin of the relation.
  * [nul_xpr_object] `image` : The destination of the relation.
