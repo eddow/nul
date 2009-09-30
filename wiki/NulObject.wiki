@@ -18,6 +18,6 @@ The undefined are the one we can find it out.
   * NulAttribute - [nul_obj_attribute nul.obj.attribute] - The attribute of another object.
  * [nul_obj_defined nul.obj.defined] - Defined objects
   * NulLitteral - [nul_obj_litteral nul.obj.litteral] - An atomic meaningful given value.
-  * NulSets - [nul_obj_pair nul.obj.pair] - A pair of objects (base of sets and lists)
+  * NulSet - [nul_obj_pair nul.obj.pair] - A pair of objects (base of sets and lists)
   * NulLambda - [nul_obj_lambda nul.obj.lambda] - A value used to associate an object to another.
   * NulJsSet - [nul_obj_hcSet nul.obj.hcSet] - Some !JavaScript hard-coded sets.
