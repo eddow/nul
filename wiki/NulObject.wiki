@@ -1,4 +1,5 @@
 #summary Objects used by the NUL language
+#sidebar NulObject
 
 Class [nul_xpr_object nul.xpr.object].
 
