@@ -7,8 +7,8 @@ Internal representation of NulLocal
 
 == Components ==
  * [nul_xpr_knowledge#name] `klgRef` : knowledge reference.
- * [number] `ndx` : Index of the local for the knowledge.
- * [string] `dbgName` : The name to display for this local. Only if debug.
+ * number `ndx` : Index of the local for the knowledge.
+ * string `dbgName` : The name to display for this local. Only if debug.
 
 == Overrides ==
 
