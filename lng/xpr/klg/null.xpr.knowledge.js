@@ -109,7 +109,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		this.useLocalNames(deps.local);
  		return this;
  	}.describe('Prune', function(value) {
-		return value.dbgHtml() + ' ; ' + this.dbgHtml();
+		return this.name+': ' + value.dbgHtml() + ' ; ' + this.dbgHtml();
 	}),
  	
  	/**
@@ -138,7 +138,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		this.modify(); nul.xpr.use(toUnify);
  		var dstEqCls = new nul.xpr.knowledge.eqClass();
  		var alreadyEqd = {}, alreadyBlg = {};
- 		var toBelong = [], toMerge = [];
+ 		var toBelong = [];
  		while(toUnify.length || toBelong.length) {
  			while(toUnify.length) {
 	 			var v = toUnify.shift();
@@ -168,8 +168,19 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 						nul.fail('Unification failed');
 					case 1:
 						if('possible'== chx[0].expression) {
-							toUnify.push(chx[0].value);
-							toMerge.push(chx[0].knowledge);
+							toUnify.push(this.merge(chx[0].knowledge, chx[0].value));
+							//TODO0: Reset unification, to do it knowing the newly brought knowledge
+							/*
+							alreadyEqd = {};
+							alreadyBlg = {};
+							toUnify.pushs(dstEqCls.values);
+							toBelong.pushs(dstEqCls.belongs);
+							dstEqCls.values = [];
+							dstEqCls.belongs = [];
+							if(dstEqCls.prototyp) {
+								toUnify.push(dstEqCls.prototyp);
+								dstEqCls.prototyp = null;
+							}*/
 						} else toUnify.push(chx[0]);
 						break;
 					default:
@@ -192,6 +203,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 				}
 	 		}
  		}
+ 		
 		nul.debug.log('Knowledge')('EqCls '+this.name,
 			dstEqCls.prototyp || '&phi;',
 			dstEqCls.values);
@@ -233,7 +245,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	
  	/**
  	 * Know all what klg knows
- 	 * @return nul.xpr.knowledge
+ 	 * @return {nul.xpr.object} Value expressed under this knowledge
  	 * @throws nul.failure
  	 */
  	merge: function(klg, val) {
@@ -310,7 +322,8 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		if(klg.isFixed()) return value;
  		return new nul.xpr.possible(value, klg);
  	}.describe('Wrapping', function(value) {
-		return value.dbgHtml() + ' ; ' + this.dbgHtml();
+ 		//TODO4: standardise the knowledge name in logs
+		return this.name+': ' + value.dbgHtml() + ' ; ' + this.dbgHtml();
 	}),
 
 //////////////// Existence summaries

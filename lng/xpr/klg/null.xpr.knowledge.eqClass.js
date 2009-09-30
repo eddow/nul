@@ -22,6 +22,24 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		}
 	},
 
+//////////////// private
+	
+	/**
+	 * Order the values to equal.
+	 * @param {nul.xpr.object} v
+	 * @param {nul.xpr.knowledge} klg 
+	 * @return A big number if not interesting, a small one if a good "replacement value"
+	 * Note: v is undefined 
+	 */
+	orderEqs: function(v, klg) {
+		var d = v.dependance();
+		var rv = 0;
+		if(d.otherThan(klg)) rv += 1;
+		if(!isEmpty(d.usage(klg).local)) rv += 2;
+		if(!isEmpty(d.usage(klg).ior3)) rv += 4;
+		return rv;
+	},
+
 //////////////// internal
 
 	/**
@@ -64,11 +82,15 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 					else throw err;
 				}
 			else this.prototyp = o;
-		} else this.values.push(o);
-		//TODO2: sort :
-		//	independants, locals dependant, ior3 dependant
+		} else {
+			var p = 0;
+			var ordr = this.orderEqs(o, klg);
+			for(p=0; p<this.values.length; ++p) if(ordr<this.orderEqs(this.values[p], klg)) break;
+			this.values.splice(p,0,o);
+		}
 		return rv;
 	},
+
 	/**
 	 * Add an object as a belongs.
 	 * @param {nul.xpr.object} o object that belongs the class
