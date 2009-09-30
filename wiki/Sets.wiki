@@ -1,19 +1,21 @@
 #summary Finite and infinite sets construction
 #labels Language
 
-A set is a way to transform a fuzzy epression into a "set containing all the values this fuzzy expression can take". It is ment by writing {{{ { ... } }}} around the fuzzy expression.
+= The braces =
 
-==== Examples ====
+The braces a way to transform a fuzzy epression into a "set containing all the values this fuzzy expression can take". It is ment by writing {{{ { ... } }}} around the fuzzy expression.
+
+== Examples ==
 
 {{{ 5, _ }}} means *a* pair begining by 5.
 
 {{{ { 5, _ } }}} means *a set containing all the* pairs begining by 5.
 
-{{{ 2 [] 3 }}} means either two, either three.
+{{{ 2 [] 3 }}} means *either* two, *either* three.
 
-{{{ { 2 [] 3 } }}} means the set containing two and three.
+{{{ { 2 [] 3 } }}} means *the* set containing two *and* three.
 
-===== Note =====
+== Note ==
 
 If the expression is not fuzzy, the set will then be a singleton. As sets and lists are the same entity, this syntax is used to write lists with one elements :
 {{{
@@ -23,17 +25,25 @@ If the expression is not fuzzy, the set will then be a singleton. As sets and li
 ...
 }}}
 
-== Self-reference Shortcut ==
+= The fuzzy-space =
 
-To write a recursive set, the set needs a name to specify "himself".
-One way is to create a variable in the upper context and use it in the set :
+Locals are defined within a _fuzzy-space_ .
+To force a local to be declare in this _fuzzy-space_, it can be written {{{ \/x expression }}}
+Where `expression` is a regular NUL expression and where `\/` stands for "for all"
 
-{{{mySet = { ... mySet ... } }}}
+== In english ==
 
-Then, {{{mySet}}} is defined in {{{mySet}}} and, indeed, the containing set (or even higher if declared)
+|| \/x { x } || *a* singleton || "For any X, a set containing X" || X is defined out of the set ||
+|| { \/x x } || *the* universal set || "A set containing any X" || X is defined in the set ||
 
-Sometimes, especially for _auxiliary functions_, a recursive set doesn't need to be used more than once : therefore, it is useless to give it a name in the parent context but it still need some to refer itself. This is done by adding a column {{{:}}} and then an identifier at the begining of the set definition.
+The singleton can still be unified to many values, like to `{ 1 }`, `{ "John" }`, ...
 
-{{{ {:mySet ... mySet ... } }}}
+If this singleton has to contain the number 42, it will, but it won't contain anything else then.
 
-Here, the set can access himself through the identifier {{{mySet}}} but this identifier is not useable outside of the set - this is then clearly a shortcut used for self-references only.
+The universal set contains `1`, `"John"` and 42 ... all of these. It can beside be unified only to the universal set, as the number 5 can only be unified to the number 5 : it is not a fuzzy value.
+
+`\/x { x }` is a singleton : which singleton? It depends of `x`.
+
+`{ \/x x }` is a a set containing everything, it *doesn't* depends on `x` : `x` is not defined where we speak, outside of the set.
+
+Exercice : Conceive {{{ \/x { \/y x, y } }}}
