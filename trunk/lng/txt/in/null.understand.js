@@ -31,8 +31,6 @@ nul.understanding = {
 			//TODO3: > < >= <=
 			case '=>':
 				return new nul.obj.lambda(ops[0], ops[1]);
-			case '|':
-				return new nul.obj.pair(ops[0], ops[1]);
 			case ',':
 				var rv = ops.follow?ops.follow:nul.obj.empty;
 				while(ops.length) rv = new nul.obj.pair(ops.pop(), rv);
@@ -72,12 +70,12 @@ nul.understanding = {
 		return new nul.obj.litteral(value);
 	},
 	application: function(ub) {
+		//return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
 		var rv = ub.createFreedom(nul.understanding.rvName);
 		ub.klg.hesitate(this.item.understand(ub).having(
 			new nul.obj.lambda(
 				this.applied.understand(ub), rv)));
 		return rv;
-		//return this.token.understand(ub).through(this.item.understand(ub));
 	},
 	set: function(ub) {
  		if(!this.content) return nul.obj.empty;

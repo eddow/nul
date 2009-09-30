@@ -38,6 +38,8 @@ function testEvaluation()
 			nul.debug.logging.Unification = $('shwLoggingUnification').checked;
 			nul.debug.logging.Wrapping = $('shwLoggingWrapping').checked;
 			nul.debug.logging.Knowledge = $('shwLoggingKnowledge').checked;
+			nul.debug.logging.Represent = $('shwLoggingRepresent').checked;
+			nul.debug.logging.Prune = $('shwLoggingPrune').checked;
 		} else nul.debug.logging = false;
 	}
 	nul.execution.reset();

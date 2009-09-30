@@ -85,6 +85,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 * Retrive an equivalence class that doesn't bother with useless knowledge
 	 * @param {nul.xpr.object} o
 	 * @return nul.xpr.knowledge.eqClass or null
+	 * TODO3: this function is useless
 	 */
 	unused: function(o) {
 		var unused = function(eqc, tbl, str) {
@@ -92,14 +93,36 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 				if(tbl[e].toString() == str) {
 					nul.debug.log('Knowledge')('Forget', tbl[e]);
 					tbl.splice(e, 1);
-					return eqc.built();
+					return eqc;
 				}
 		};
 		
 		this.use(); nul.obj.use(o);
 		var oStr = o.toString();
 		var rv = this.modifiable();
-		return unused(rv, rv.values, oStr) || unused(rv, rv.belongs, oStr); 
+		unused = unused(rv, rv.values, oStr) || unused(rv, rv.belongs, oStr);
+		if(unused) return unused.built();
+		return this; 
+	},
+	
+	/**
+	 * Remove items that are not used in this knowledge
+	 * Not used = depending on nothing else than the useless locals of thisknowledge
+	 * @param {nul.xpr.knowledge} klg the pruned knowledge
+	 * TODO3: reprendre toutes les locales qui sont gardées quand-même et les lister pour les garder ?
+	 */
+	pruned: function(klg, usg) {
+		//TODO3: 'faut élaguer les belongs aussi !
+		var nVals = maf(this.values, function() {
+			var deps = this.dependance();
+			if(deps.otherThan(klg)) return this;	//If depends on another knowledge, keep
+			deps = deps.usage(klg);
+			for(var l in usg.local) if(deps.local[l]) return this;	//If depends on a common local, keep
+		});
+		if(nVals.length == this.values.length) return this;
+		var rv = this.modifiable();
+		rv.values = nVals;
+		return rv.built().placed(klg); 
 	},
 	
 	equivalents: nul.summary('equivalents'),

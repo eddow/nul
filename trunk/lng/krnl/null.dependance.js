@@ -72,6 +72,13 @@ nul.dependance = Class.create({
 		return this;
 	},
 	
+	/**
+	 * Retrieve if this dependance refers another knowledge than the given one
+	 */
+	otherThan: function(klg) {
+		for(var u in this.usages) if(!klg || u!= klg.name) return u;
+	},
+	
 //////////////// Text output
 
 	toHtml : function() {

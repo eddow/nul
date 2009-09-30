@@ -129,7 +129,6 @@ nul.expression = Class.create({
 	toString: nul.summary('index'),
 	toHtml: nul.summary('htmlTxt'),			//The HTML representation of an expression
 	toFlat: nul.summary('flatTxt'),			//The flat-text representation of an expression
-	isSet: nul.summary('isSet'),			//Weither this expression is a set
 	isList: nul.summary('isList'),			//Weither this expression is a list
 	isDefined: nul.summary('isDefined'),	//Weither this expression has its attributes defined
 	dependance: nul.summary('dependance'),	//nul.dependance
@@ -164,7 +163,6 @@ nul.expression = Class.create({
 
 	sum_htmlTxt: function() { return nul.txt.html.toText(this); },
 	sum_flatTxt: function() { return nul.txt.flat.toText(this); },
-	sum_isList: function() { return this.isSet(); },
 	sum_dependance: function() {
 		var comps = this.summary('components');
 		var rv = new nul.dependance();
@@ -172,6 +170,7 @@ nul.expression = Class.create({
 			rv.also(comps[c].dependance());
 		return rv;
 	},
+	sum_isList: function() { return true; },
 });
 
 nul.xpr = {

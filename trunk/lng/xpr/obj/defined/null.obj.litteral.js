@@ -11,7 +11,7 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 		this.value = val;
 		this.expression = typeof(val);
 		this.attr = nul.obj.litteral.attr[typeof(val)]
-		this.alreadyBuilt({isSet: false}); 
+		this.alreadyBuilt(); 
 	},
 	
 //////////////// nul.xpr.object implementation

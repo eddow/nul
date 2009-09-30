@@ -33,7 +33,7 @@ nul.txt.flat = merge({
 			return ''+this.value;
 		},
 		string: function() {
-			return this.value;
+			return '"'+this.value+'"';
 		},
 		'boolean': function() {
 			return this.value?'true':'false';
@@ -48,9 +48,6 @@ nul.txt.flat = merge({
 		
 		lambda: function() {
 			return this.point.toFlat() + ' &rArr; ' + this.image.toFlat();
-		},
-		dotted: function() {
-			return this.first.toFlat() + ' | ' + this.second.toFlat();
 		},
 		singleton: function() {
 			return '{' + this.first.toFlat() + '}';
@@ -71,8 +68,16 @@ nul.txt.flat = merge({
 			return '(' + nul.txt.flat.all(this.equivalents()).join(' = ') + ')' +
 				(this.belongs.length?(' &isin; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
 		},
-		klg: function() {	//TODO3: draw ior3s ?
-			return nul.txt.flat.all(this.eqCls).join('; ');
+		klg: function() {
+			var rv = nul.txt.flat.all(this.eqCls).join(' &and; ');
+			//var deps = this.usage();
+			var kior3;// = nul.txt.flat.all(this.ior3).join(' &and; ')
+			if(rv && kior3) rv += ' &and; ' + kior3;
+			else if(kior3) rv = kior3;
+			return rv;
+		},
+		kior3: function() {
+			return '('+nul.txt.flat.all(this.choices).join(' &or; ')+')';
 		},
 		possible: function() {
 			var klgStr = this.knowledge.toFlat();
