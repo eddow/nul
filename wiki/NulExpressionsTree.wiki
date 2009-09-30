@@ -1,6 +1,6 @@
 #summary TOC of expressions encountered with NUL
 
- *NulExpression
+ * NulExpression
   * Knowledge related
    * NulKnowledge
    * NulPossible
