@@ -1,0 +1,4 @@
+#summary Internal representation of NUL undefined objects.
+#sidebar ExpressionClassTree
+
+Does nothing.
