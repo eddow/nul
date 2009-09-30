@@ -1,0 +1,18 @@
+#summary Expressions in NUL.
+#labels Phase-Implementation
+#sidebar ExpressionClassTree
+
+Internal representation of NulExpression
+
+= Description =
+
+Expressions are tree-structured. Therefore, each kind of expressions define components.
+
+Components are other expressions (sometimes restricted to some kind of expressions, like most objects are mainly composed of other objects).
+
+== Dependance ==
+TODO
+== Building and using ==
+TODO
+=== Summary system ===
+TODO
