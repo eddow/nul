@@ -1,5 +1,7 @@
 #summary TOC of expressions representation in JavaScript
 
+Expressions class tree.
+
  * [nul_expression nul.expression]
   * Knowledge related
    * [nul_xpr_knowledge nul.xpr.knowledge]
