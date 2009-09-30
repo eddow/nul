@@ -1,0 +1,12 @@
+#summary Internal representation of NUL objects.
+#sidebar ExpressionClassTree
+
+= Introduction =
+
+Internal representation of NulObj.
+
+= Details =
+
+The centralised functionnality are :
+
+ * Object transformation through belongment (the function `has`)
