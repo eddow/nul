@@ -7,7 +7,7 @@ Internal representation of NulLambda.
 Components : point, image.
 Syntax: `point => image`
 
-== overrides ==
+== Overrides ==
 
 === unified ===
 To simply unify the points and the image (the unification of the point and the image if needed is done in [nul_xpr_knowledge_eqClass#isEq]
