@@ -5,7 +5,8 @@ Internal representation of NulIor3.
 
 = Description =
 
-Syntax: `value1 [] value2 [] value3 [] ...`
+Syntax: value1 *[]* value2 *[]* value3 *[]* ...
+
 == Components ==
  * array([nul_xpr_object]) `values` : The possible values this can take.
  * [nul_xpr_knowledge#name] klgRef : knowledge reference. 
