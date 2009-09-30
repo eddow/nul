@@ -1,4 +1,5 @@
 #summary Objects used by the NUL language
+#labels Phase-Design
 #sidebar NulExpressionsTree
 
 Class [nul_xpr_object nul.xpr.object].
