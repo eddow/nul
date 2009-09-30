@@ -1,0 +1,22 @@
+#summary Internal representation of NUL pairs.
+#sidebar ExpressionClassTree
+
+Internal representation of NulSets.
+
+= Description =
+
+Syntaxes:
+ * *{* value *}*
+ * value1*,* value2*,* value3*,..* remainingValues
+
+== Components ==
+ * [nul_expression] `first` : The first component(s). (list head)
+ * [nul_xpr_object] `second` : The remaining component(s). (list queue)
+
+== Overrides ==
+
+=== has ===
+Redefines the condition for an object to belong to the set defined here.
+
+=== unified ===
+Unify each elements together
