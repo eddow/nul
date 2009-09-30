@@ -1,4 +1,5 @@
 #summary Internal representation of NUL undefined objects.
+#labels Phase-Implementation
 #sidebar ExpressionClassTree
 
 Does nothing.
