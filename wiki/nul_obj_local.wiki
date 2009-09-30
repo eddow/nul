@@ -5,7 +5,7 @@ Internal representation of NulLocal
 
 = Description =
 
-Defined by a knowledge reference (nul_xpr_knowledge#name) and a local index.
+Defined by a [nul_xpr_knowledge#name knowledge reference] and a local index.
 It contains a `dbgName` (debug-name), a string of its name to describe it when it has to be drawn.
 
 == Overrides ==
