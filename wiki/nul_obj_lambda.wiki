@@ -1,4 +1,5 @@
 #summary Internal representation of NUL lambdas.
+#labels Phase-Implementation
 #sidebar ExpressionClassTree
 
 Internal representation of NulLambda.
