@@ -1,7 +1,7 @@
 #summary Internal representation of NUL pairs.
 #sidebar ExpressionClassTree
 
-Internal representation of NulSets.
+Internal representation of NulSet.
 
 = Description =
 
