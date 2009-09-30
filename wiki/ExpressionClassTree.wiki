@@ -1,0 +1,20 @@
+#summary TOC of expressions representation in JavaScript
+
+ * [nul_expression nul.expression]
+  * Knowledge related
+   * [nul_xpr_knowledge nul.xpr.knowledge]
+   * [nul_xpr_knowledge_eqClass nul.xpr.knowledge.eqClass]
+   * [nul_xpr_knowledge_ior3 nul.xpr.knowledge.ior3]
+   * [nul_xpr_possible nul.xpr.possible]
+  * [nul_xpr_object nul.xpr.object]
+   * [nul_obj_defined nul.obj.defined]
+    * [nul_obj_lambda nul.obj.lambda]
+    * [nul_obj_litteral nul.obj.litteral]
+    * [nul_obj_pair nul.obj.pair]
+    * [nul_obj_hcSet nul.obj.hcSet]
+    * [nul_obj_extension nul.obj.extension] TODO
+   * [nul_obj_undefined nul.obj.undefined]
+    * [nul_obj_local nul.obj.local]
+    * [nul_obj_ior3 nul.obj.ior3]
+    * [nul_obj_attribute nul.obj.attribute]
+    * [nul_obj_operation nul.obj.operation] TODO
