@@ -1,4 +1,5 @@
 #summary Internal representation of NUL litterals.
+#labels Phase-Implementation
 #sidebar ExpressionClassTree
 
 Internal representation of NulLitteral
