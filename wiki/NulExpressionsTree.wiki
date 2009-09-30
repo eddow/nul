@@ -1,0 +1,17 @@
+#summary TOC of expressions encountered with NUL
+
+Expressions tree.
+
+ * Knowledge related
+  * NulKnowledge
+  * NulPossible
+ * Objects
+  * Undefined objects
+   * NulLocal - A local unknown value - a name bound to a knowledge.
+   * NulIor3 - Several values that can be taken.
+   * NulAttribute - The attribute of another object.
+  * Defined objects
+   * NulLitteral - An atomic meaningful given value.
+   * NulSet - A pair of objects (base of sets and lists)
+   * NulLambda - A value used to associate an object to another.
+   * NulJsSet - Some !JavaScript hard-coded sets.
