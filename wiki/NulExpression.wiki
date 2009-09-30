@@ -1,0 +1,7 @@
+#summary Expressions in NUL.
+
+Class [nul_expression nul.expression]
+
+= Introduction =
+
+Nul expressions can represent everything that can be represented by NUL. First, the NulObject but also the NulKnowledge or the NulPossible, object associated with a NulKnowledge.
