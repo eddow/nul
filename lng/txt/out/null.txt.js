@@ -22,7 +22,6 @@ nul.txt = {
 		}
 	},
 	dispatchPair: function(xpr, obj) {
-		if(!xpr.isSet()) return this.draw.dotted.apply(obj, []);
 		var lstd = xpr.listed();
 		if(xpr.isList()) {
 			if(1== lstd.length && !lstd.follow)

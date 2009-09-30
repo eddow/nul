@@ -14,18 +14,10 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	initialize: function(first, second) {
 		//Note if a klg is given, its fuziness belong to this pair' first
 		nul.xpr.use(first); nul.obj.use(second);
-		if('possible'== first.expression) {
-			first.use();
-			var ops = nul.solve(first);
-			first = ops.shift();
-			while(ops.length) {
-				var op = ops.pop();
-				second = new nul.obj.pair(op, second);
-			}
-		}
 		this.first = first;
 		this.second = second;
-		this.alreadyBuilt();
+		this.chew();
+		//this.alreadyBuilt();
 	},
 	
 //////////////// Summary
@@ -70,8 +62,18 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 	expression: 'pair',
 	components: ['first', 'second'],
-	sum_isSet: function() { return this.second.isSet(); },
 	sum_isList: function() {
 		return this.first.object && this.second.isList();
 	},
+	chew: function() {
+		if('possible'== this.first.expression) {
+			var ops = nul.solve(this.first);
+			this.first = ops.shift();
+			while(ops.length) {
+				var op = ops.pop();
+				this.second = new nul.obj.pair(op, this.second);
+			}
+		}
+		return this.built();
+	},	
 });

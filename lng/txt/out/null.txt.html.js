@@ -108,7 +108,7 @@ nul.txt.html = merge({
 			return {'': ''+this.value};
 		},
 		string: function() {
-			return {'': this.value};
+			return {'': '"'+this.value+'"'};
 		},
 		'boolean': function() {
 			return {'': this.value?'true':'false'};
@@ -123,9 +123,6 @@ nul.txt.html = merge({
 		
 		lambda: function() {
 			return {'': this.point.toHtml() + html.op('&rArr;') + this.image.toHtml()};
-		},
-		dotted: function() {
-			return {'': this.first.toHtml() + html.op('|') + this.second.toHtml()};
 		},
 		singleton: function() {
 			return {'': html.op('{') + this.first.toHtml() + html.op('}')};
@@ -156,12 +153,27 @@ nul.txt.html = merge({
 					(html.op('&isin;') + nul.txt.html.all(this.belongs).join(html.op(','))):
 					'')};
 		},
-		klg: function() {	//TODO3: draw ior3s ?
+		klg: function() {
+			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
+			/*var dior3 = [], deps = this.	//TODO2: retrieve usage
+			for(var i=0; i< this.ior3.length; ++i)
+				if()*/
+			var kior3;// = nul.txt.html.all(this.ior3).join(html.op('&and;'))
+			if(rv && kior3) rv += html.op('&and;') + kior3;
+			else if(kior3) rv = kior3;
+			
 			return {
-				'': nul.txt.html.all(this.eqCls).join(html.op(';')),
+				'': rv,
 				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):''),
 			};
 		},
+		kior3: function() {
+			return {
+				'': html.op('(')+nul.txt.html.all(this.choices).join(html.op('&or;'))+html.op(')'),
+			};
+		},
+		
+		
 		possible: function() {
 			return {
 				'': html.table(

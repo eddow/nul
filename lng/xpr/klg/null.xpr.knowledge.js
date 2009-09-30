@@ -79,28 +79,21 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	/**
  	 * Remove any information about locals or ior3s that are not refered anymore
  	 * @param {nul.dependance.usage} deps
+ 	 * remove all access before : these are not preserved
  	 */
  	pruned: function(value) {
  		this.modify();
  		var i;
+ 		var vdps = value.dependance().usage(this);
+
+		//Remove useless equivalence class specifications
+		for(var c=0; c<this.eqCls.length;) {
+			this.eqCls[c] = this.eqCls[c].pruned(this, vdps);
+			if(!this.eqCls[c]) this.eqCls.splice(c,1);
+			else ++c;
+		} 
+ 		
  		var deps = this.usage(value);
- 		var lclRemove = true;
- 		
- 		while(lclRemove) {
- 			lclRemove = false;
-	 		//Remove eqCls members that are alone to refer a local
-	 		for(i in deps.local) if(deps.local[i] && 1== deps.local[i].number)	//If the local 'i' is refered once
-	 			for(var c=0; c<this.eqCls.length;)
-	 				if(this.eqCls[c].dependance().usage(this).local[i]) {
-	 					this.eqCls[c] = this.eqCls[c].unused(new nul.obj.local(this.name, parseInt(i)));
-	 					if(this.eqCls[c]) this.eqCls[c] = this.eqCls[c].placed(this);
-	 					if(this.eqCls[c]) ++c;
-	 					else this.eqCls.splice(c, 1);
-	 					deps = this.usage(value);	//TODO0: perhaps not needed to recompute all
-	 					lclRemove = true;	//TODO0: useful ?
-	 				} else ++c;
- 		}
- 		
 		//Remove unrefered ior3 tautologies, affect the 'mult' property 
  		for(i=0; i<this.ior3.length; ++i) if(!deps.ior3[i]) {
  			var nior3 = this.ior3[i].modifiable();
@@ -114,7 +107,10 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		//Remove trailing unrefered locals (not more to preserve indexes)
 		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();
  		this.useLocalNames(deps.local);
- 	},
+ 		return this;
+ 	}.describe('Prune', function(value) {
+		return value.dbgHtml() + ' ; ' + this.dbgHtml();
+	}),
  	
  	/**
  	 * Gets the dependance of an hypothetic possible while this knowledge is not summarised.
@@ -196,7 +192,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 				}
 	 		}
  		}
-		nul.debug.log('Knowledge')('EqCls',
+		nul.debug.log('Knowledge')('EqCls '+this.name,
 			dstEqCls.prototyp || '&phi;',
 			dstEqCls.values);
 		return dstEqCls;
@@ -300,6 +296,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 				nec = this.unification(nec).built();
 				if(nec) this.accede(this.eqCls.length, nec);
 				representer.represent(this.eqCls);
+				nul.debug.log('Represent')('Representation', this);
 				i = 0;
 			}
 		}
@@ -313,7 +310,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		if(klg.isFixed()) return value;
  		return new nul.xpr.possible(value, klg);
  	}.describe('Wrapping', function(value) {
-		return value.dbgHtml();// + ' ; ' + this.dbgHtml();
+		return value.dbgHtml() + ' ; ' + this.dbgHtml();
 	}),
 
 //////////////// Existence summaries

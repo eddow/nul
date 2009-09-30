@@ -106,11 +106,7 @@ nul.debug = {
 	assert: urlOption('debug'),
 	perf: !urlOption('noperf'),
 	acts: urlOption('actLog'),
-	lcLimit: 100,
-	action: function() {
-		if(0>= nul.debug.callStack.length()) return 'Begining';
-		return nul.debug.callStack.item().get()[0];
-	},
+	lcLimit: 500,
 	logCount: function() {
 		if(0< nul.debug.lcLimit && nul.debug.lcNextLimit< nul.debug.lc) {
 			nul.debug.warnRecursion();
@@ -131,7 +127,6 @@ nul.debug = {
 		return nul.debug.logging && nul.debug.logging[tp] ? function(v) {
 			v = beArrg(arguments);
 			for(var vi = 0; vi<v.length; ++vi) v[vi] = nul.debug.toLogText(v[vi]);
-			v.unshift(nul.debug.action());
 			v.unshift(nul.debug.logCount());
 			return nul.debug.logs.log(v).addClassName(tp+' log');
 		} : nul.debug.logCount;
@@ -183,7 +178,7 @@ nul.debug = {
 					nul.debug.lcs.endCollapser(
 						name+' '+ (abrt?'abort':'end'),
 						name+' '+ (abrt?'failed':'done')),
-					rv?[rv]:['&phi;'], d);
+					rv?[rv]:['nothing'], d);
 			}
 		};
 	},

@@ -14,7 +14,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 	initialize: function(point, image) {
 		this.point = point;
 		this.image = image;
-		this.alreadyBuilt({isSet: false});
+		this.alreadyBuilt();
 	},
 	
 //////////////// public
@@ -43,9 +43,9 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 
 	expression: 'lambda',
 	components: ['point', 'image'],
-	built: function($super) {
+	placed: function($super, prnt) {
 		if(this.point.toString() == this.image.toString())
 			return this.point;	//TODO4: another comparison?
-		return $super();
+		return $super(prnt);
 	},
 });
