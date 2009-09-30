@@ -2,11 +2,9 @@
 #labels Phase-Implementation
 #sidebar ExpressionClassTree
 
-= Introduction =
-
 Internal representation of NulObj.
 
-= Details =
+= Description =
 
 The centralised functionnality are :
 
