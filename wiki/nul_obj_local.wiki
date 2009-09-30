@@ -1,4 +1,5 @@
 #summary Internal representation of NUL locals.
+#labels Phase-Implementation
 #sidebar ExpressionClassTree
 
 Internal representation of NulLocal
