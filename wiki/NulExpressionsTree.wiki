@@ -1,17 +1,16 @@
 #summary TOC of expressions encountered with NUL
 
-Expressions tree.
-
- * Knowledge related
-  * NulKnowledge
-  * NulPossible
- * Objects
-  * Undefined objects
-   * NulLocal
-   * NulIor3
-   * NulAttribute
-  * Defined objects
-   * NulLitteral
-   * NulSet
-   * NulLambda
-   * NulJsSet
+ *NulExpression
+  * Knowledge related
+   * NulKnowledge
+   * NulPossible
+  * NulObject
+   * Undefined objects
+    * NulLocal
+    * NulIor3
+    * NulAttribute
+   * Defined objects
+    * NulLitteral
+    * NulSet
+    * NulLambda
+    * NulJsSet
