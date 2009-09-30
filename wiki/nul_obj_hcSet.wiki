@@ -24,9 +24,9 @@ Ranges define a set of integer numbers.
 
 Syntax :
  * *`[..]`* : All the natural numbers.
- * *`[l..]`* : All the natural numbers bigger than `l`.
- * *`[..`u`]`* : All the natural numbers lower than `u`.
- * *`[`l`..`u`]`* : All the natural numbers between `l` and `u`.
+ * *`[`*l*`..]`* : All the natural numbers bigger than `l`.
+ * *`[..`*u*`]`* : All the natural numbers lower than `u`.
+ * *`[`*l*`..`*u*`]`* : All the natural numbers between `l` and `u`.
 
 `l` and `u` are direct values, not NUL expressions.
 
