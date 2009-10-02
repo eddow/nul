@@ -105,6 +105,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 */
 	isIn: function(s) {
  		this.modify(); s.use();
+ 		//TODO2: use intersect if possible
 		this.belongs.push(s);
 	},
 	

@@ -1,10 +1,11 @@
+todo: inOrder [1..] ?
+
+{ ((c,.._),(d,.._)); (inOrder [1..5]) (c,d) }
+; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
 
 S = ((1,_,_,_,_,_), (2,_,_,_,_,_), (3,_,_,_,_,_), (4,_,_,_,_,_), (5,_,_,_,_,_))
-; inOrder =
- { ((a,b,.. _) => (a,b))
-[] ((_,.. o) => (a,b)); (a,b) = (inOrder o)
- }
-; orderedNeighbours = { ((a,.._),(b,.._)); (a,b) = inOrder [1..5] }
+; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
+; orderedNeighbours = { ((a,.._),(b,.._)); (inOrder [1..5]) (a,b) }
 ; neighbours = { (a, b); (orderedNeighbours(a,b) [] orderedNeighbours(b,a)) }
 ; S(3,_,_,_,_,"milk")
 ; S(1,_,"norwegian",_,_,_)

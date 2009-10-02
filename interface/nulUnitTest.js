@@ -22,7 +22,7 @@ tests = [
 		{xpr: '{ a, a } (1, _)',
 		rslt: '{(1, 1)}'},
 		{xpr: 'Q n',
-		rslt: '{n[g|1]; (n[g|1]) &isin; &#x211a;}'},
+		rslt: '{n[g|1]; ((n[g|1]) &isin; &#x211a;)}'},
 		{xpr: '{x => (x,x)} 1',
 		rslt: '{(1, 1)}'},
 		{xpr: 'x; [..] (x=>1)',
