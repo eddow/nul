@@ -90,6 +90,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		for(var i in this.ior3) if(cstmNdx(i) && this.ior3[i]) vdps.also(this.ior3[i].dependance());
 		vdps = vdps.usage(this);
 
+		//TODO1: calculer l'enveloppe d'utilité
 		//Remove useless equivalence class specifications
 		for(var c=0; c<this.eqCls.length;) {
 			this.eqCls[c] = this.eqCls[c].pruned(this, vdps);
@@ -139,76 +140,81 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @throws nul.failure
  	 */
  	unification: function() { 	
- 		//TODO2: null.obj.extension management
+ 		//TODO1: null.obj.extension management
  		var toUnify = beArrg(arguments);
  		this.modify(); nul.xpr.use(toUnify);
  		var dstEqCls = new nul.xpr.knowledge.eqClass();
  		var alreadyEqd = {}, alreadyBlg = {};
  		var toBelong = [];
- 		while(toUnify.length || toBelong.length) {
- 			while(toUnify.length) {
-	 			var v = toUnify.shift();
-	 			if('undefined'!= typeof this.access[v]) {
-	 				v = this.access[v];
-	 				var ec = this.eqCls[v];
-	 				this.unaccede(v);
- 					v = ec;
-	 			}
-	 			if(!v) {}
-	 			else if('eqCls'== v.expression) {
-	 				toUnify.pushs(v.equivalents());
-					toBelong.pushs(v.belongs);
-	 			} else if(!alreadyEqd[v]) {
-	 				toUnify.pushs(dstEqCls.isEq(v, this));
-	 				alreadyEqd[v] = true;
-	 			}
+ 		var abrtVal = nul.xpr.knowledge.cloneData(this);	//Save datas in case of failure
+ 		try {
+	 		while(toUnify.length || toBelong.length) {
+	 			while(toUnify.length) {
+		 			var v = toUnify.shift();
+		 			if('undefined'!= typeof this.access[v]) {
+		 				v = this.access[v];
+		 				var ec = this.eqCls[v];
+		 				this.unaccede(v);
+	 					v = ec;
+		 			}
+		 			if(!v) {}
+		 			else if('eqCls'== v.expression) {
+		 				toUnify.pushs(v.equivalents());
+						toBelong.pushs(v.belongs);
+		 			} else if(!alreadyEqd[v]) {
+		 				toUnify.pushs(dstEqCls.isEq(v, this));
+		 				alreadyEqd[v] = true;
+		 			}
+		 		}
+		 		if(toBelong.length) {
+		 			var unf = dstEqCls.prototyp || dstEqCls.values[0];
+		 			if(nul.debug.assert) assert(unf, 'Has some value when time to belong');
+		 			var s = toBelong.shift();
+					var chx = s.has(unf);
+					if(chx) {
+						switch(chx.length) {
+						case 0:
+							nul.fail('Unification failed');
+						case 1:
+							if('possible'== chx[0].expression) {
+								toUnify.push(this.merge(chx[0].knowledge, chx[0].value));
+								//TODO0: Reset unification, to do it knowing the newly brought knowledge
+								//useful ??!?
+								
+								alreadyEqd = {};
+								alreadyBlg = {};
+								toUnify.pushs(dstEqCls.values);
+								toBelong.pushs(dstEqCls.belongs);
+								dstEqCls.values = [];
+								dstEqCls.belongs = [];
+								if(dstEqCls.prototyp) {
+									toUnify.push(dstEqCls.prototyp);
+									dstEqCls.prototyp = null;
+								}
+							} else toUnify.push(chx[0]);
+							break;
+						default:
+							var vals = [];
+							var klgs = [];
+							map(chx, function() {
+								var p = nul.xpr.possible.cast(this);
+								var klg = p.knowledge.modifiable();
+								klg.unify(p.value, unf);
+								klgs.push(klg.built());
+							});
+					 		this.ior3.push(new nul.xpr.knowledge.ior3(klgs));
+						}					
+					}
+					else if(!alreadyBlg[s]) {
+						alreadyBlg[s] = true;
+						dstEqCls.isIn(s);
+					}
+		 		}
 	 		}
-	 		if(toBelong.length) {
-	 			var unf = dstEqCls.prototyp || dstEqCls.values[0];
-	 			if(nul.debug.assert) assert(unf, 'Has some value when time to belong');
-	 			var s = toBelong.shift();
-				var chx = s.has(unf);
-				if(chx) {
-					switch(chx.length) {
-					case 0:
-						nul.fail('Unification failed');
-					case 1:
-						if('possible'== chx[0].expression) {
-							toUnify.push(this.merge(chx[0].knowledge, chx[0].value));
-							//TODO0: Reset unification, to do it knowing the newly brought knowledge
-							//useful ??!?
-							
-							alreadyEqd = {};
-							alreadyBlg = {};
-							toUnify.pushs(dstEqCls.values);
-							toBelong.pushs(dstEqCls.belongs);
-							dstEqCls.values = [];
-							dstEqCls.belongs = [];
-							if(dstEqCls.prototyp) {
-								toUnify.push(dstEqCls.prototyp);
-								dstEqCls.prototyp = null;
-							}
-						} else toUnify.push(chx[0]);
-						break;
-					default:
-						var vals = [];
-						var klgs = [];
-						map(chx, function() {
-							var p = nul.xpr.possible.cast(this);
-							var klg = p.knowledge.modifiable();
-							klg.unify(p.value, unf);
-							klgs.push(klg.built());
-						});
-				 		this.ior3.push(new nul.xpr.knowledge.ior3(klgs));
-					}					
-				}
-				else if(!alreadyBlg[s]) {
-					alreadyBlg[s] = true;
-					dstEqCls.isIn(s);
-				}
-	 		}
+ 		} catch(err) {
+ 			nul.xpr.knowledge.cloneData(abrtVal, this);
+ 			throw nul.exception.notice(err);
  		}
- 		
 		nul.debug.log('Knowledge')('EqCls '+this.name,
 			dstEqCls.prototyp || '&phi;',
 			dstEqCls.values);
@@ -399,6 +405,19 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 		return nul.browser.bijectif.unchanged;
 	},
 });
+
+/**
+ * Private use !
+ * Cone thedata from a knowledge (or a save object) to another knowledge (or a save object)
+ */
+nul.xpr.knowledge.cloneData = function(src, dst) {
+	if(!dst) dst = {};
+	dst.eqCls = clone1(src.eqCls);
+	dst.access = clone1(src.access);
+	dst.ior3 = clone1(src.ior3);
+	dst.locals = clone1(src.locals);
+	return dst;	
+};
 
 if(nul.debug) merge(nul.xpr.knowledge.prototype, {
 
