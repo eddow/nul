@@ -8,10 +8,10 @@
 
 nul.obj.defined = Class.create(nul.xpr.object, {
 	summarise: function($super, smr) {
-		var ownSmr = { isDefined: true };
-		$super(smr?merge(ownSmr,smr):ownSmr);
+		$super(smr);
 	},
-
+	defined : true,
+	
 	/**
 	 * Unify two defined objects
 	 * @return nul.obj.defined
@@ -21,6 +21,6 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 		this.use(); nul.obj.use(o); nul.xpr.mod(klg, nul.xpr.knowledge);
 		
 		if(o.toString() != this.toString()) nul.fail(this, ' does not unify to ', o);
-		return this;
+		return true;
 	},
 });

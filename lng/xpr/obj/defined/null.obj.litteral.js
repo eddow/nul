@@ -33,7 +33,7 @@ nul.obj.litteral.straightArythmetics = function(expression, oprtr, srnd) {
 			return nul.obj.litteral(eval(
 				srnd + op1.value + oprtr + op2.value + srnd
 			));
-		if(op2.isDefined()) return nul.fail(op2, ' is not a ', expression);
+		if(op2.defined) return nul.fail(op2, ' is not a ', expression);
 	}
 };
 

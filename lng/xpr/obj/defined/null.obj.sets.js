@@ -17,7 +17,7 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 	has: function($super, o) {
 		nul.obj.use(o);
 		if(o.isInSet) return [o.isInSet(this)];
-		if(o.isDefined()) return [];
+		if(o.defined) return [];
 		return $super(o);
 	}
 });
@@ -70,15 +70,33 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		}
 	},
 	initialize: function($super, lwr, upr) {
-		this.lower = lwr || ninf;
-		this.upper = upr || pinf;
+		this.lower = lwr?parseInt(lwr):ninf;
+		this.upper = upr?parseInt(upr):pinf;
 		$super();
 	},
 	has: function($super, o) {
-		if(!o.isDefined() || 'number'!= o.expression) return $super(o);
+		if(!o.defined || 'number'!= o.expression) return $super(o);
 		if(!nul.isJsInt(o.value)) return [];
 		if( o.value < this.lower || o.value > this.upper) return [];
 		return [o];
+	},
+
+//////////////// nul.obj.defined implementation
+
+	unified: function(o, klg) {
+		this.use(); nul.obj.use(o); nul.xpr.mod(klg, nul.xpr.knowledge);
+		
+		if('range'== o.expression) return (o.lower==this.lower && o.upper==this.upper);
+		if('pair'!= o.expression) nul.fail(this, ' is not a range');
+		if(ninf== this.lower) nul.fail(this, ' has no first');
+		//TODO0: warn if(pinf== this.upper)
+		klg.unify(new nul.obj.litteral(this.lower), o.first.value);
+		klg.unify(
+			(this.lower == this.upper) ?
+				nul.obj.empty :
+				new nul.obj.range(this.lower+1, this.upper),
+			o.second);
+		return this;
 	},
 
 //////////////// nul.expression implementation
@@ -88,5 +106,5 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 });
 
 nul.globals.Q = nul.obj.number;
-nul.globals.string = nul.obj.string;
+nul.globals.str = nul.obj.string;
 nul.globals.bool = nul.obj.bool;

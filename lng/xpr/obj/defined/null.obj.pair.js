@@ -12,12 +12,9 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	 * @param {nul.xpr.object} second
 	 */
 	initialize: function(first, second) {
-		//Note if a klg is given, its fuziness belong to this pair' first
 		nul.xpr.use(first); nul.obj.use(second);
-		this.first = first;
+		this.first = nul.xpr.possible.cast(first);
 		this.second = second;
-		this.chew();
-		//this.alreadyBuilt();
 	},
 	
 //////////////// Summary
@@ -43,8 +40,8 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		//make a table fct also
 		var rv = [];
 		try {
-			var trv = nul.xpr.possible.unification(this.first, o);
-			if(nul.debug.assert && 'possible'== this.first.expression)
+			var trv = this.first.unified(o);
+			if(nul.debug.assert)
 				assert(!trv.dependance().usages[this.first.knowledge.name],
 					'Out of knowledge, no more deps');
 			rv.push(trv);
@@ -56,10 +53,10 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 	unified: function(o, klg) {
 		if('pair'!= o.expression) nul.fail(o, ' not a pair');
-		if('possible'!= this.first.expression && 'possible'!= o.first.expression)
-			return new nul.obj.pair(
-				klg.unify(this.first, o.first),
-				klg.unify(this.second, o.second));
+		if(this.first.knowledge === o.first.knowledge)
+			return (new nul.obj.pair(
+				klg.unify(this.first.value, o.first.value),
+				klg.unify(this.second, o.second))).built();
 		//TODO4: unifier les possibles
 	},
 	
@@ -68,17 +65,16 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	expression: 'pair',
 	components: ['first', 'second'],
 	sum_isList: function() {
-		return this.first.object && this.second.isList();
+		return this.first.knowledge.isFixed() && this.second.isList();
 	},
-	chew: function() {
-		if('possible'== this.first.expression) {
-			var ops = nul.solve(this.first);
-			this.first = ops.shift();
-			while(ops.length) {
-				var op = ops.pop();
-				this.second = new nul.obj.pair(op, this.second);
-			}
+	built: function($super) {
+		var ops = this.first.distribute();
+		if(!ops.length) return this.second;
+		this.first = ops.shift();
+		while(ops.length) {
+			var op = ops.pop();
+			this.second = new nul.obj.pair(op, this.second).built();
 		}
-		return this.built();
-	},	
+		return $super();
+	},
 });

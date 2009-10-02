@@ -17,19 +17,8 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		this.access = {};		//Access from an obj.ndx to an eq class it's in.
  		this.ior3 = [];	//List of unchoosed IOR3
  		this.name = klgName || ++nul.xpr.knowledge.nameSpace;
- 		this.mult = 1;
+ 		//this.mult = 1;	//TODO0: 'mult' optimisation
  	},
-
-	reallocateName: function(val) {
-		var newName = ++nul.xpr.knowledge.nameSpace;
-		var brwsr = new nul.xpr.knowledge.stepUp(this, newName);
-		this.eqCls = map(this.eqCls, function() { return brwsr.browse(this); });
-		this.ior3 = map(this.ior3, function() { return brwsr.browse(this); });
-		delete access;
-		val = brwsr.browse(val);
-		this.name = newName;
-		return this.wrap(val);
-	},
 
 //////////////// privates
 
@@ -95,7 +84,11 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	pruned: function(value) {
  		this.modify();
  		var i;
- 		var vdps = value.dependance().usage(this);
+ 		var vdps = new nul.dependance();
+		
+		vdps.also(value.dependance());
+		for(var i in this.ior3) if(cstmNdx(i) && this.ior3[i]) vdps.also(this.ior3[i].dependance());
+		vdps = vdps.usage(this);
 
 		//Remove useless equivalence class specifications
 		for(var c=0; c<this.eqCls.length;) {
@@ -105,6 +98,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		} 
  		
  		var deps = this.usage(value);
+ 		/*TODO0: 'mult' optimisation
 		//Remove unrefered ior3 tautologies, affect the 'mult' property 
  		for(i=0; i<this.ior3.length; ++i) if(!deps.ior3[i]) {
  			var nior3 = this.ior3[i].modifiable();
@@ -113,6 +107,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		
  		//Remove trailing empty ior3s (not more to preserve indexes)
  		while(this.ior3.length && !this.ior3[this.ior3.length-1]) this.ior3.pop();
+ 		*/
  		this.useIor3Choices(deps.ior3);
  		
  		//Remove trailing unrefered locals (not more to preserve indexes)
@@ -181,7 +176,8 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 						if('possible'== chx[0].expression) {
 							toUnify.push(this.merge(chx[0].knowledge, chx[0].value));
 							//TODO0: Reset unification, to do it knowing the newly brought knowledge
-							/*
+							//useful ??!?
+							
 							alreadyEqd = {};
 							alreadyBlg = {};
 							toUnify.pushs(dstEqCls.values);
@@ -191,18 +187,16 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 							if(dstEqCls.prototyp) {
 								toUnify.push(dstEqCls.prototyp);
 								dstEqCls.prototyp = null;
-							}*/
+							}
 						} else toUnify.push(chx[0]);
 						break;
 					default:
 						var vals = [];
 						var klgs = [];
 						map(chx, function() {
-							var klg = ('possible'== this.expression)?
-								this.knowledge.modifiable():
-								new nul.xpr.knowledge();
-							var val = ('possible'== this.expression)?this.value:this;
-							klg.unify(val, unf);
+							var p = nul.xpr.possible.cast(this);
+							var klg = p.knowledge.modifiable();
+							klg.unify(p.value, unf);
 							klgs.push(klg.built());
 						});
 				 		this.ior3.push(new nul.xpr.knowledge.ior3(klgs));
@@ -241,13 +235,9 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 			var vals = [];
 			var klgs = [];
 			map(choices, function() {
-				if('possible'== this.expression) {
-					vals.push(this.value);
-					klgs.push(this.knowledge);
-				} else {
-					vals.push(this);
-					klgs.push(null);
-				}
+				var p = nul.xpr.possible.cast(this);
+				vals.push(p.value);
+				klgs.push(p.knowledge);
 			});
 			try { return new nul.obj.ior3(this.name, this.ior3.length, vals); }
 	 		finally { this.ior3.push(new nul.xpr.knowledge.ior3(klgs)); }
@@ -260,6 +250,9 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @throws nul.failure
  	 */
  	merge: function(klg, val) {
+ 		if(nul.xpr.knowledge.never== klg) return nul.xpr.knowledge.never;
+ 		if(nul.xpr.knowledge.always== klg) return this;
+ 		
  		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
 
  		var brwsr = new nul.xpr.knowledge.stepUp(klg, this.name, this.ior3.length, this.nbrLocals());
@@ -328,9 +321,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 
  		this.pruned(value);
  		
- 		var klg = this.built();
- 		if(klg.isFixed()) return value;
- 		return new nul.xpr.possible(value, klg);
+ 		return new nul.xpr.possible(value, this.built());
  	}.describe('Wrapping', function(value) {
  		//TODO4: standardise the knowledge name in logs
 		return this.name+': ' + value.dbgHtml() + ' ; ' + this.dbgHtml();
@@ -381,21 +372,15 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		return $super();
 	},
 	
-	/**
-	 * @param {bool} clean True when it is sure no equivalence class can be simplified or crossed
-	 */
- 	fix: function($super) {
+ 	built: function($super) {
 		delete this.access;
+		//if(0== this.mult) return nul.xpr.knowledge.never;
+ 		if(this.isFixed()) return nul.xpr.knowledge.always; 
  		return $super();
  	},
  	isFixed: function() {
  		return (!this.eqCls.length && !this.nbrLocals() && !this.ior3.length);
  	},
-	placed: function($super, prnt) {
- 		if(this.isFixed()) return; 
-		return $super(prnt);
-	},
-
 });
 
 nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
@@ -504,3 +489,23 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
  		return new nul.obj.local(this.name, ndx)
  	},
 });
+
+nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.create(nul.expression, {
+	initialize: function() { this.alreadyBuilt(); },
+	expression: 'klg',
+	name: 'Failure',
+	modifiable: function() { return this; },
+	wrap: function(value) { return nul.xpr.failure; },
+	components: [],
+}))();
+
+nul.xpr.knowledge.always = new (Class.create(nul.expression, {
+	initialize: function() { this.alreadyBuilt(); },
+	expression: 'klg',
+	name: 'Always',
+	modifiable: function() { return new nul.xpr.knowledge(); },
+	wrap: function(value) { return new nul.xpr.possible.cast(value); },
+	components: [],
+	ior3: [],
+	isFixed: function() { return true; },
+}))();

@@ -67,11 +67,17 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		var rv = [];
 		//Add an object to the equivalence class
 		nul.obj.use(o);
-		if(o.isDefined()) {
+		if(o.defined) {
 			if(this.prototyp)
 				try {
 					nul.xpr.mod(klg, nul.xpr.knowledge);
-					var unf = this.prototyp.unified(o, klg);
+					var unf;
+					try {
+						unf = this.prototyp.unified(o, klg);
+					} catch(err) {
+						nul.failed(err);
+						unf = o.unified(this.prototyp, klg);
+					}
 					if(unf && true!== unf) this.prototyp = unf;
 				} catch(err) {
 					nul.failed(err);
@@ -134,16 +140,19 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 * TODO3: reprendre toutes les locales qui sont gardées quand-même et les lister pour les garder ?
 	 */
 	pruned: function(klg, usg) {
-		//TODO3: 'faut élaguer les belongs aussi !
-		var nVals = maf(this.values, function() {
+		var remover = function() {
 			var deps = this.dependance();
+			if(isEmpty(deps.usages)) return this;	//No independant in values : if so, would be defined
 			if(deps.otherThan(klg)) return this;	//If depends on another knowledge, keep
 			deps = deps.usage(klg);
 			for(var l in usg.local) if(deps.local[l]) return this;	//If depends on a common local, keep
-		});
-		if(nVals.length == this.values.length) return this;
+		};
+		var nVals = maf(this.values, remover);
+		var nBlgs = maf(this.belongs, remover);
+		if(nVals.length == this.values.length && nBlgs.length == this.belongs.length) return this;
 		var rv = this.modifiable();
 		rv.values = nVals;
+		rv.belongs = nBlgs;
 		return rv.built().placed(klg); 
 	},
 	

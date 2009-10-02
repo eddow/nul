@@ -11,6 +11,7 @@
  */
 nul.xpr.possible = Class.create(nul.expression, {
 	initialize: function(value, knowledge) {
+		if(!knowledge) knowledge = nul.xpr.knowledge.always;
 		nul.obj.use(value); nul.xpr.use(knowledge, nul.xpr.knowledge);
 		this.value = value;
 		this.knowledge = knowledge;
@@ -26,6 +27,25 @@ nul.xpr.possible = Class.create(nul.expression, {
 	 */
 	valueKnowing: function(klg) {
 		return klg.merge(this.knowledge, this.value);
+	},
+	
+	/**
+	 * Returns a possible, this unified to o.
+	 * @param {nul.xpr.object} o
+	 * @return {nul.xpr.possible}
+	 */
+	unified: function(o) {
+		var klg = this.knowledge.modifiable();
+		return klg.wrap(klg.unify(this.value, o));
+	},
+	
+	/**
+	 * Use the resolution engine : make severa possibles without ior3
+	 * @return {array(nul.xpr.possible)}
+	 */
+	distribute: function() {
+		if(this.knowledge.ior3.length) return nul.solve(this);
+		return [this];
 	},
 	
 //////////////// nul.expression summaries
@@ -44,31 +64,23 @@ nul.xpr.possible = Class.create(nul.expression, {
 		return this.knowledge.modifiable().wrap(this.value);
 	},	
 	fix: function($super) {
-		if(!this.knowledge) return this.value;
+		assert(this.knowledge, 'Possible now always has a knowledge');
 		return $super();
 	},
 });
 
-nul.xpr.possible.ifKlg = function(v, k) {
-	if(!k) return v;
-	return new nul.xpr.possible(v, k);
-};
+nul.xpr.failure = new (Class.create(nul.expression, {
+	initialize: function() { this.alreadyBuilt(); },
+	expression: 'possible',
+	components: [],
+	distribute: function() { return []; },
+}))();
 
 /**
- * Create a possible out of a unification
- * @param {nul.xpr.possible} p
- * @param {nul.xpr.object} o
- * @return nul.xpr.object or nul.xpr.possible
+ * Have a possible for sure. Made with nul.xpr.knowledge.always if an object is given
+ * @param {nul.xpr.possible or nul.xpr.object} o
  */
-nul.xpr.possible.unification = function(p, o) {
-	var v, klg;
-	if('possible'== p.expression) {
-		v = p.value;
-		klg = p.knowledge.modifiable();
-	} else {
-		v = p;
-		klg = new nul.xpr.knowledge();
-	}
-	v = klg.unify(v, o);
-	return klg.wrap(v);
+nul.xpr.possible.cast = function(o) {
+	if('possible'== o.expression) return o;
+	return new nul.xpr.possible(o);
 };

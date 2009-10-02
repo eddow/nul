@@ -9,6 +9,8 @@
 //ℚ	 &#x211a;
 //□  &#9633;
 //∈ &isin;
+//↵	&crarr;
+//⇒	&rArr;
 Array.prototype.named = function(nm) { this.name = nm; return this; };
 
 tests = [
@@ -21,19 +23,15 @@ tests = [
 		rslt: '{(1, 1)}'},
 		{xpr: 'Q n',
 		rslt: '{n[g|1]; (n[g|1]) &isin; &#x211a;}'},
-	].named('Local management'),
-	[
 		{xpr: '{x => (x,x)} 1',
 		rslt: '{(1, 1)}'},
-	].named('Taking'),
-	[
 		{xpr: 'x; [..] (x=>1)',
 		rslt: '{1}'},
-	].named('Lambda'),
-	[
 		{xpr: 'dec 4; dec= {5 => 4 [] 4 => 3 [] 3 => 2 [] 2 => 1}',
 		rslt: '{3}'},
-	].named('Ior3'),
+		{xpr: 'S = (_,_); S 5',
+		rslt: '{(5 &rArr; &crarr;[g|3], _[g|2]) &#9633; (_[g|1], 5 &rArr; &crarr;[g|3])}'},
+	].named('Simples'),
 	[
 		{xpr: 'brother "John"'+
 			'; father = (("Luke", "John"), ("Abraham", "Luke"), ("Luke", "Peter"))'+
