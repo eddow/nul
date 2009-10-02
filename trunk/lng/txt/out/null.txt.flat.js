@@ -69,17 +69,21 @@ nul.txt.flat = merge({
 				(this.belongs.length?(' &isin; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
 		},
 		klg: function() {
+			if(this==nul.xpr.knowledge.never) return 'Never';
+			if(this==nul.xpr.knowledge.always) return '';
 			var rv = nul.txt.flat.all(this.eqCls).join(' &and; ');
 			//var deps = this.usage();
-			var kior3;// = nul.txt.flat.all(this.ior3).join(' &and; ')
+			var kior3 = nul.txt.flat.all(this.ior3).join(' &and; ')
 			if(rv && kior3) rv += ' &and; ' + kior3;
 			else if(kior3) rv = kior3;
-			return rv;
+			return rv?'('+rv+')':'';
 		},
 		kior3: function() {
-			return '('+nul.txt.flat.all(this.choices).join(' &or; ')+')';
+			return '('+nul.txt.flat.all(maf(this.choices)).join(' &or; ')+')';
 		},
 		possible: function() {
+			if(this===nul.xpr.failure) return 'Failure';
+			if(this.knowledge===nul.xpr.knowledge.always) return this.value.toFlat();
 			var klgStr = this.knowledge.toFlat();
 			var valStr = this.value.toFlat();
 			if(!klgStr) return valStr;

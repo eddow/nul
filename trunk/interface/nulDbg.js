@@ -26,7 +26,13 @@ function evaluate()
 	var v = nul.execution.benchmark.measure('*evaluation',function(){
 		return nul.read	(src.value);
 	});
-	evd.innerHTML = v.toHtml();
+	return evd.innerHTML = v.toHtml();
+	var cpt = 0;
+	while('pair'== v.expression) {
+		++cpt;
+		v = v.second;
+	}
+	evd.innerHTML = cpt;
 }
 
 function testEvaluation()

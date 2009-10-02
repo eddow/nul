@@ -154,27 +154,30 @@ nul.txt.html = merge({
 					'')};
 		},
 		klg: function() {
+			if(this==nul.xpr.knowledge.never) return {'':html.op('Never')};
+			if(this==nul.xpr.knowledge.always) return {'':''};
 			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
 			/*var dior3 = [], deps = this.	//TODO2: retrieve usage
 			for(var i=0; i< this.ior3.length; ++i)
 				if()*/
-			var kior3;// = nul.txt.html.all(this.ior3).join(html.op('&and;'))
+			var kior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'))
 			if(rv && kior3) rv += html.op('&and;') + kior3;
 			else if(kior3) rv = kior3;
-			
 			return {
-				'': rv,
+				'': rv?(html.op('(')+rv+html.op(')')):'',
 				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):''),
 			};
 		},
 		kior3: function() {
 			return {
-				'': html.op('(')+nul.txt.html.all(this.choices).join(html.op('&or;'))+html.op(')'),
+				'': html.op('(')+nul.txt.html.all(maf(this.choices)).join(html.op('&or;'))+html.op(')'),
 			};
 		},
 		
 		
 		possible: function() {
+			if(this===nul.xpr.failure) return { '': html.op('Failure') };
+			if(this.knowledge===nul.xpr.knowledge.always) return { '': this.value.toHtml() };
 			return {
 				'': html.table(
 					html.tr(html.td(this.value.toHtml(),'freedom')) +

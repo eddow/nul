@@ -33,7 +33,7 @@ nul.understanding = {
 				return new nul.obj.lambda(ops[0], ops[1]);
 			case ',':
 				var rv = ops.follow?ops.follow:nul.obj.empty;
-				while(ops.length) rv = new nul.obj.pair(ops.pop(), rv);
+				while(ops.length) rv = (new nul.obj.pair(ops.pop(), rv)).built();
 				return rv;
 			case '=': return ub.klg.unify(ops);
 			case ';': return ops[0];
@@ -143,9 +143,9 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 	},
 	understand: function(cnt) {
 		try {
-			return new nul.obj.pair(
+			return (new nul.obj.pair(
 				this.klg.wrap(cnt.understand(this)),
-				nul.obj.empty);
+				nul.obj.empty)).built();
 		} catch(err) {
 			nul.failed(err);
 			return nul.obj.empty;

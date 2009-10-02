@@ -20,18 +20,24 @@ nul.browser = Class.create({
 	 */
 	recursion: function(xpr) {
 		if(!xpr) return nul.browser.bijectif.unchanged;
-		nul.xpr.use(xpr);
-		
-		var bwsd = {};
- 		for(var comp in xpr.components) if(cstmNdx(comp)) {
- 			comp = xpr.components[comp];
- 			if(isArray(xpr[comp])) {	//TODO0: catch failure; make xpr.failure() ? useful for ior3 - unolved
- 				var brwsr = this;
- 				bwsd[comp] = map(xpr[comp], function(i, o) { return brwsr.recursion(o); });
- 			} else
- 				bwsd[comp] = this.recursion(xpr[comp], comp);
- 		}
- 		return this.makeRV(xpr, bwsd);
+		try {
+			nul.xpr.use(xpr);
+			
+			var bwsd = {};
+			for(var comp in xpr.components) if(cstmNdx(comp)) {
+				comp = xpr.components[comp];
+				if(isArray(xpr[comp])) {	//TODO0: catch failure; make xpr.failure() ? useful for ior3 - unolved
+					var brwsr = this;
+					bwsd[comp] = map(xpr[comp], function(i, o) { return brwsr.recursion(o); });
+				} else
+					bwsd[comp] = this.recursion(xpr[comp], comp);
+			}
+			return this.makeRV(xpr, bwsd);
+		} catch(err) {
+			nul.failed(err);
+			if(xpr.failure) return xpr.failure;
+			throw err;
+		}
  	},
  	/**
  	 * Entry point of browsing

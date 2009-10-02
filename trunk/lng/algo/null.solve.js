@@ -14,27 +14,22 @@
  */
 nul.solve = function(fz) {
 	nul.xpr.is(fz, nul.xpr.possible);
-
-	if(!fz.knowledge.ior3.length) return [fz];
-	
 	var cases = fz.knowledge.ior3;
 	var ndx = map(cases, function() { return 0; });
 	var rv = [];
 	var incndx = 0;
 	while(incndx < cases.length) {
-		var klg = null;
+		var klg = nul.xpr.knowledge.always;
 		try {
 			for(var i=0; i<ndx.length; ++i) {
-				if(!klg) {
+				if(nul.xpr.knowledge.always== klg) {
 					klg = fz.knowledge.modifiable();
 					klg.ior3 = [];
 				}
 				if(cases[i].choices[ndx[i]]) klg.merge(cases[i].choices[ndx[i]]);
 			}
 			rv.push((new nul.solve.browser(fz.knowledge, ndx))
-				.browse(
-					!klg?fz:klg.wrap(fz.value)
-				));
+				.browse(klg.wrap(fz.value)));
 		} catch(err) { nul.failed(err); }
 	    //increment indexes
 		for(incndx=0; incndx<cases.length; ++incndx) {

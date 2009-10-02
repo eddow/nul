@@ -1,11 +1,25 @@
-dec 3
 
-;f = 
-{  0 => {}
-[] [1..] n => ("o" | f(dec n))
-}
-; dec = {5 => 4 [] 4 => 3 [] 3 => 2 [] 2 => 1 [] 1 => 0}
-
+S = ((1,_,_,_,_,_), (2,_,_,_,_,_), (3,_,_,_,_,_), (4,_,_,_,_,_), (5,_,_,_,_,_))
+; inOrder =
+ { ((a,b,.. _) => (a,b))
+[] ((_,.. o) => (a,b)); (a,b) = (inOrder o)
+ }
+; orderedNeighbours = { ((a,.._),(b,.._)); (a,b) = inOrder [1..5] }
+; neighbours = { (a, b); (orderedNeighbours(a,b) [] orderedNeighbours(b,a)) }
+; S(3,_,_,_,_,"milk")
+; S(1,_,"norwegian",_,_,_)
+; S(_,"red","english",_,_,_)
+; S(_,_,"spaniard",_,"dog",_)
+; S(_,_,"ukrainian",_,_,"tea")
+; S(_,_,"japanese","Parliaments",_,_)
+; S(_,"green",_,_,_,"coffee")
+; S(_,_,_,"Lucky Strike",_,"orange juice")
+; S(_,_,_,"Old Gold","snails",_)
+; S(_,"yellow",_,"Kools",_,_)
+; orderedNeighbour(S(_,"green",_,_,_,_), S(_, "ivory",_,_,_,_))
+; neighbours( S(_,_,_,"Kools",_,_), S(_,_,_,_,"horse",_) )
+; neighbours( S(_,_,_,"Chesterfields",_,_), S(_,_,_,_,"fox",_) )
+; neighbours( S(_,_,"norwegian",_,_,_), S(_,"blue",_,_,_,_) )
 
 
 dblAll (1,2)

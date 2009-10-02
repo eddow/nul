@@ -130,7 +130,6 @@ nul.expression = Class.create({
 	toHtml: nul.summary('htmlTxt'),			//The HTML representation of an expression
 	toFlat: nul.summary('flatTxt'),			//The flat-text representation of an expression
 	isList: nul.summary('isList'),			//Weither this expression is a list
-	isDefined: nul.summary('isDefined'),	//Weither this expression has its attributes defined
 	dependance: nul.summary('dependance'),	//nul.dependance
 
 //////////////// Generic summary providers
