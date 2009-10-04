@@ -73,7 +73,11 @@ nul.txt.flat = merge({
 		},
 		
 		eqCls: function() {
-			return '(' + nul.txt.flat.all(this.equivls).join(' = ') + ')' +
+			var attr = [];
+			for(var anm in this.attribs) if(anm)
+				attr.push(anm+': '+this.attribs[anm].toFlat())
+			attr = (attr.length)?('['+attr.join(', ')+']'):'';
+			return '(' + attr + nul.txt.flat.all(this.equivls).join(' = ') + ')' +
 				(this.belongs.length?(' &isin; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
 		},
 		klg: function() {

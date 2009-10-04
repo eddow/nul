@@ -34,11 +34,11 @@ tests = [
 		rslt: '{(5 &rArr; &crarr;[g|3], _[g|2]) &#9633; (_[g|1], 5 &rArr; &crarr;[g|3])}'},
 	].named('Simples'),
 	[
-		{xpr: 'brother "John"'+
-			'; father = (("Luke", "John"), ("Abraham", "Luke"), ("Luke", "Peter"))'+
-			'; brother = { (a => b); father(f, a); father(f, b) }',
-		rslt: '("John", "Peter")'},
-		{xpr: 'inOrder [1..3] _ ; inOrder = { \\/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }',
+		{xpr: 't "j"'+
+			'; f = (("l", "j"), ("a", "l"), ("l", "p"))'+
+			'; t = { (a => b); f(x, a); f(x, b) }',
+		rslt: '("j", "p")'},
+		{xpr: 'i [1..3] _ ; i = { \\/x {x} => {} [] ((a,b,.. o) => (a,b),.. i(b,.. o) ) }',
 		rslt: '((1, 2), (2, 3))'},
 	].named('Complexs'),
 ].named('Unit testing');

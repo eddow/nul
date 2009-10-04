@@ -159,7 +159,13 @@ nul.txt.html = merge({
 		},
 		
 		eqCls: function() {
-			return {'': html.op('(') +
+			var attrs = [];
+			for(var an in this.attribs) if(cstmNdx(an))
+				attrs.push(html.tr(html.th(an)+html.td(this.attribs[an].toHtml())));
+
+			attrs = attrs.length?html.table(attrs.join('')):'';
+
+			return {'': html.op('(') + attrs +
 				nul.txt.html.all(this.equivls).join(html.op('=')) +
 				html.op(')') +
 				(this.belongs.length?

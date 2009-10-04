@@ -49,17 +49,17 @@ nul.obj = {
 	},
 	use: function(x, t) {
 		if(!nul.xpr.bunch(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) { if(''!==i) {
+		if(nul.debug.assert) map(x, function(i, o) {
 			nul.obj.is(o, t);
 			o.use();
-		}});
+		});
 	},
 	
 	mod: function(x, t) {
 		if(!nul.xpr.bunch(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) { if(''!==i) {
+		if(nul.debug.assert) map(x, function(i, o) {
 			nul.obj.is(o, t);
 			o.modify();
-		}});
+		});
 	},
 };
