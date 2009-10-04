@@ -80,10 +80,10 @@ nul.expression = Class.create({
 	built: function(smr) {
 		for(var comp in this.components) if(cstmNdx(comp)) {
 			var cname = this.components[comp];
-			if(isArray(this[cname])) {
-				for(var ci in this[cname]) if(cstmNdx(ci) && this[cname][ci])
+			if(nul.xpr.bunch(this[cname])) {
+				for(var ci in this[cname]) if(cstmNdx(ci) && ''!==ci)
 					this[cname][ci] = this[cname][ci].placed(this);
-			} else if(this[cname]) this[cname] = this[cname].placed(this);
+			} else this[cname] = this[cname].placed(this);
 		}
 		this.summarise(smr);
 		return this.fix();
@@ -138,8 +138,8 @@ nul.expression = Class.create({
 		var rv = {};
 		for(var comp in this.components) if(cstmNdx(comp)) {
 			var cname = this.components[comp];
-			if(isArray(this[cname])) {
-				for(var ci in this[cname]) if(cstmNdx(ci))
+			if(nul.xpr.bunch(this[cname])) {
+				for(var ci in this[cname]) if(cstmNdx(ci) && ''!==ci)
 					rv[cname+':'+ci] = this[cname][ci];
 			} else {
 				rv[cname] = this[cname];
@@ -182,18 +182,26 @@ nul.xpr = {
 		}
 	},
 	use: function(x, t) {
-		if(!isArray(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) {
+		if(!nul.xpr.bunch(x)) x = [x];
+		if(nul.debug.assert) map(x, function(i, o) { if(''!==i) {
 			nul.xpr.is(o, t);
 			o.use();
-		});
+		}});
 	},
 	
 	mod: function(x, t) {
-		if(!isArray(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) {
+		if(!nul.xpr.bunch(x)) x = [x];
+		if(nul.debug.assert) map(x, function(i, o) { if(''!==i) {
 			nul.xpr.is(o, t);
 			o.modify();
-		});
+		}});
 	},
+};
+
+/**
+ * X is either an expression either a [components] bunch of expression
+ * @return weither x is a bunch of expressions
+ */
+nul.xpr.bunch = function(x) {
+	return isArray(x) || 'xprBnch'== x[''];
 };

@@ -32,6 +32,8 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 
 //////////////// nul.obj.defined implementation
 
+	attribute: function(an) { nul.fail('Lambdas have no attributes'); },
+	
 	unified: function(o, klg) {
 		if('lambda'!= o.expression) nul.fail(o, ' not a lambda');
 		return new nul.obj.lambda(

@@ -102,9 +102,14 @@ nul.txt.html = merge({
 				html.op(')')};
 		},
 		extension: function() {
-			//TODO3
+			var attrs = [];	//TODO3: expandable table ?
+			for(var an in this.attr) if(cstmNdx(an, this.attr))
+				attrs.push(html.tr(html.th(an)+html.td(this.attr[an].toHtml())));
+			return {'': html.table(attrs.join(''))};
 		},
 		number: function() {
+			if(pinf==this.value) return {'': '+&infin;'};
+			if(ninf==this.value) return {'': '-&infin;'};
 			return {'': ''+this.value};
 		},
 		string: function() {
@@ -155,7 +160,7 @@ nul.txt.html = merge({
 		
 		eqCls: function() {
 			return {'': html.op('(') +
-				nul.txt.html.all(this.equivalents()).join(html.op('=')) +
+				nul.txt.html.all(this.equivls).join(html.op('=')) +
 				html.op(')') +
 				(this.belongs.length?
 					(html.op('&isin;') + nul.txt.html.all(this.belongs).join(html.op(','))):

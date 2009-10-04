@@ -98,10 +98,10 @@ nul.debug = {
 	assert: nul.urlOption('debug'),
 	perf: !nul.urlOption('noperf'),
 	acts: nul.urlOption('actLog'),
-	lcLimit: 5000,
+	lcLimit: 100,
 	logCount: function() {
 		if(0< nul.debug.lcLimit && nul.debug.lcNextLimit< nul.debug.lc) {
-			nul.debug.warnRecursion();
+			//nul.debug.warnRecursion();
 			nul.debug.lcNextLimit += nul.debug.lcLimit;
 		}
 		return nul.debug.lc++;

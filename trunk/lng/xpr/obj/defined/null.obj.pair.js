@@ -32,7 +32,22 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		return rv;
 	},
 
+//////////////// nul.obj.defined implementation
+
+	unified: function(o, klg) {
+		if('pair'!= o.expression) nul.fail(o, ' not a pair');
+		if(this.first.knowledge === o.first.knowledge)
+			return (new nul.obj.pair(
+				klg.unify(this.first.value, o.first.value),
+				klg.unify(this.second, o.second))).built();
+		//TODO4: unifier les possibles
+	},
+	
 //////////////// nul.xpr.object implementation
+
+	attributes: {
+		
+	},
 
 	has: function(o) {
 		this.use(); nul.obj.use(o);
@@ -49,17 +64,6 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		return rv.pushs(this.second.having(o));
 	},
 
-//////////////// nul.obj.defined implementation
-
-	unified: function(o, klg) {
-		if('pair'!= o.expression) nul.fail(o, ' not a pair');
-		if(this.first.knowledge === o.first.knowledge)
-			return (new nul.obj.pair(
-				klg.unify(this.first.value, o.first.value),
-				klg.unify(this.second, o.second))).built();
-		//TODO4: unifier les possibles
-	},
-	
 //////////////// nul.expression implementation
 
 	expression: 'pair',

@@ -69,4 +69,3 @@ var nul = {
 };
 
 new Event.observe(window, 'load', nul.onload);
-

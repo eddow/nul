@@ -7,14 +7,19 @@
  *--------------------------------------------------------------------------*/
 
 nul.obj.litteral = Class.create(nul.obj.defined, {
-	initialize: function(val) {
+	initialize: function($super, val) {
 		this.value = val;
-		this.expression = typeof(val);
-		this.attr = nul.obj.litteral.attr[typeof(val)]
-		this.alreadyBuilt(); 
+		this.alreadyBuilt();
+		$super();
 	},
-	
+});
+
+nul.obj.litteral.number = Class.create(nul.obj.litteral, {
 //////////////// nul.xpr.object implementation
+
+	attributes: {
+		
+	},
 
 	has: function(o) {
 		return [];	//TODO4: exception ?
@@ -22,9 +27,40 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 	
 //////////////// nul.expression implementation
 
-	//expression: set on initialise
+	expression: 'number',
 	sum_index: function() { return this.indexedSub(this.value.toString().replace(']','[|]')); },
 });
+nul.obj.litteral.string = Class.create(nul.obj.litteral, {
+//////////////// nul.xpr.object implementation
+
+	attributes: {
+		'# ': function() { return nul.obj.litteral.make(this.value.length); },
+	},
+
+//////////////// nul.expression implementation
+
+	expression: 'string',
+	sum_index: function() { return this.indexedSub(this.value.replace(']','[|]')); },
+});
+nul.obj.litteral['boolean'] = Class.create(nul.obj.litteral, {
+//////////////// nul.xpr.object implementation
+
+	attributes: {
+		
+	},
+
+//////////////// nul.expression implementation
+
+	expression: 'boolean',
+	sum_index: function() { return this.indexedSub(this.value?'T':'F'); },
+});
+
+/**
+ * Make a litteral from a javascript value
+ */
+nul.obj.litteral.make = function(v) {
+	return new nul.obj.litteral[typeof v](v);
+};
 
 nul.obj.litteral.straightArythmetics = function(expression, oprtr, srnd) {
 	srnd = srnd || '';

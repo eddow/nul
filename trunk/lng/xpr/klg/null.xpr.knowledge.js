@@ -32,7 +32,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		if(ec) {
 			for(var n in this.access) if(this.access[n] == ecNdx) delete this.access[n];
 	 		this.eqCls[ecNdx] = ec;
-			var eqs = this.eqCls[ecNdx].equivalents();
+			var eqs = this.eqCls[ecNdx].equivls;
 			for(var unfd in eqs) if(cstmNdx(unfd))
 				this.access[eqs[unfd]] = ecNdx;
 		}
@@ -90,7 +90,6 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		for(var i in this.ior3) if(cstmNdx(i) && this.ior3[i]) vdps.also(this.ior3[i].dependance());
 		vdps = this.localNeed(vdps.usage(this).local);
 
-		//TODO1: calculer l'enveloppe d'utilité
 		//Remove useless equivalence class specifications
 		for(var c=0; c<this.eqCls.length;) {
 			this.eqCls[c] = this.eqCls[c].pruned(this, vdps);
@@ -173,8 +172,11 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 			var ec = this.eqCls[c];
 			var elms = ec.summary('components');
 			
-			if(this.eqCls[c].prototyp || ec.dependance().otherThan(this))	//If this refer to something defined (in absolute or in another context)
+			//TODO1: or has attributes ?
+			if(ec.dependance().otherThan(this))	//If this refer to something defined in another context
 				toNeed.pushs(influence(ec.influence(this), lcls));
+			else if(this.eqCls[c].defined())	//If this refer to something defined in absolute
+				toNeed.pushs(influence(ec.influence(this, 0), lcls));
 			
 			for(var e=0; e<elms.length; ++e) {
 				var usg = elms[e].dependance().usage(this).local;
@@ -197,7 +199,6 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @throws nul.failure
  	 */
  	unification: function() { 	
- 		//TODO1: null.obj.extension management
  		var toUnify = beArrg(arguments);
  		this.modify(); nul.xpr.use(toUnify);
  		var dstEqCls = new nul.xpr.knowledge.eqClass();
@@ -216,7 +217,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		 			}
 		 			if(!v) {}
 		 			else if('eqCls'== v.expression) {
-		 				toUnify.pushs(v.equivalents());
+		 				toUnify.pushs(v.equivls);
 						toBelong.pushs(v.belongs);
 		 			} else if(!alreadyEqd[v]) {
 		 				toUnify.pushs(dstEqCls.isEq(v, this));
@@ -224,7 +225,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		 			}
 		 		}
 		 		if(toBelong.length) {
-		 			var unf = dstEqCls.prototyp || dstEqCls.values[0];
+		 			var unf = dstEqCls.equivls[0];
 		 			if(nul.debug.assert) assert(unf, 'Has some value when time to belong');
 		 			var s = toBelong.shift();
 					var chx = s.has(unf);
@@ -240,14 +241,10 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 								
 								alreadyEqd = {};
 								alreadyBlg = {};
-								toUnify.pushs(dstEqCls.values);
+								toUnify.pushs(dstEqCls.equivls);
 								toBelong.pushs(dstEqCls.belongs);
-								dstEqCls.values = [];
+								dstEqCls.equivls = [];
 								dstEqCls.belongs = [];
-								if(dstEqCls.prototyp) {
-									toUnify.push(dstEqCls.prototyp);
-									dstEqCls.prototyp = null;
-								}
 							} else toUnify.push(chx[0]);
 							break;
 						default:
@@ -272,9 +269,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  			nul.xpr.knowledge.cloneData(abrtVal, this);
  			throw nul.exception.notice(err);
  		}
-		nul.debug.log('Knowledge')('EqCls '+this.name,
-			dstEqCls.prototyp || '&phi;',
-			dstEqCls.values);
+		nul.debug.log('Knowledge')('EqCls '+this.name, dstEqCls.equivls);
 		return dstEqCls;
  	}.describe('Unification', function() {
  		return map(beArrg(arguments), function() { return this.dbgHtml(); }).join(' = ');
@@ -310,11 +305,11 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	/**
  	 * Know all what klg knows
  	 * @return {nul.xpr.object} Value expressed under this knowledge
- 	 * @throws nul.failure
+ 	 * @throws {nul.failure}
  	 */
  	merge: function(klg, val) {
- 		if(nul.xpr.knowledge.never== klg) return nul.xpr.knowledge.never;
- 		if(nul.xpr.knowledge.always== klg) return this;
+ 		if(nul.xpr.knowledge.never== klg) nul.fail('Merging failure');
+ 		if(nul.xpr.knowledge.always== klg) return val;
  		
  		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
 
@@ -354,6 +349,20 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		var dstECndx = this.inform(e);
  		var dstEC = this.eqCls[dstECndx];
  		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(ss[s]);
+ 		return dstEC.taken(this, dstECndx);
+ 	},
+ 	
+ 	/**
+ 	 * 
+ 	 */
+ 	attribute: function(e, anm, vl) {
+ 		var attrs = {};
+ 		if(vl) attrs[anm] = vl;
+ 		else attrs = anm;
+ 		
+ 		var dstECndx = this.inform(e);
+ 		var dstEC = this.eqCls[dstECndx];
+ 		dstEC.hasAttr(anm, vl);
  		return dstEC.taken(this, dstECndx);
  	},
 

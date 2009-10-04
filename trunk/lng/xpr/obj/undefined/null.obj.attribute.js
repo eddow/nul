@@ -14,12 +14,21 @@ nul.obj.attribute = Class.create(nul.obj.undefined, {
 		nul.obj.use(ofo);
 		this.ofObject = ofo;
 		this.attributeName = anm;
-		this.alreadyBuilt();
 	},
 
-//////////////// nl.xpr implementation
+//////////////// nl.expression implementation
 
 	expression: 'attribute',
 	sum_index: function() { return this.indexedSub(this.ofObject, this.attributeName); },
 	components: ['ofObject'],
+	built: function($super) {
+		var av;
+		if(this.ofObject.defined) av = this.ofObject.attribute(this.attributeName);
+		if(av) return av;
+		return $super();
+	},
 });
+
+nul.obj.attribute.take = function(o, a) {
+	return (new nul.obj.attribute(o, a)).built();
+};

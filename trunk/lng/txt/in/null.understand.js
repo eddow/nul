@@ -8,6 +8,7 @@
 
 nul.understanding = {
 	rvName : '&crarr;',
+	objName: 'obj',
 	unresolvable: 'unresolved identifier',
 	expression: function(ub) {
 		var ops;
@@ -42,10 +43,10 @@ nul.understanding = {
 		}
 	},
 	preceded: function(ub) {
-		return new nul.obj.attribute(this.operand.understand(ub), operator+' ');
+		return ub.attributed(this.operand.understand(ub), this.operator+' ');
 	},
 	postceded: function(ub) {
-		return new nul.obj.attribute(this.operand.understand(ub), ' '+operator);
+		return ub.attributed(this.operand.understand(ub), ' '+this.operator);
 	},
 	atom: function(ub) {
 		var value;
@@ -67,11 +68,11 @@ nul.understanding = {
 		default:
 			throw nul.internalException('unknown atom type: ' + this.type + ' - ' + this.value);
 		}
-		return new nul.obj.litteral(value);
+		return nul.obj.litteral.make(value);
 	},
 	application: function(ub) {
 		//return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
-		var rv = ub.createFreedom(nul.understanding.rvName);
+		var rv = ub.createFreedom(nul.understanding.rvName, false);
 		ub.klg.hesitate(this.item.understand(ub).having(
 			new nul.obj.lambda(
 				this.applied.understand(ub), rv)));
@@ -95,10 +96,13 @@ nul.understanding = {
 	},
 
 	composed: function(ub) {
-		return new nul.obj.extension(map(this.vals, function() { return this.understand(ub); }))
+		return ub.klg.unify(
+			ub.createFreedom(nul.understanding.objName, false),
+			new nul.obj.extension(map(this.values, function() { return this.understand(ub); }))
+			);
 	},
 	objectivity: function(ub) {
-		return new nul.obj.attribute(this.applied.understand(ub), this.lcl);
+		return ub.attributed(this.applied.understand(ub), this.lcl);
 	}
 };
 
@@ -111,12 +115,28 @@ nul.understanding.base = Class.create({
 		if(this.prntUb) return this.prntUb.resolve(identifier);
 		throw nul.understanding.unresolvable;
 	},
+	/**
+	 * Associate name to value.
+	 * If no value is specified, a local is created
+	 * If value is specified explicitely as 'false', a local is created and the name is not remembered
+	 */
 	createFreedom: function(name, value) {
 		return this.prntUb.createFreedom(name, value);
 	},
 	understand: function(cnt) {
 		return this.klg.wrap(cnt.understand(this));
 	},
+	attributed: function(obj, anm) {
+		//TODO3: essayer de pas créer deux variables si (a.b + a.b)
+		var av;
+		if(obj.defined) av = obj.attribute(this.attributeName);
+		if(av) return av;
+		var rv = this.createFreedom('&rarr;'+anm, false);
+		var ext = {};
+		ext[anm] = rv;
+		this.klg.unify(new nul.obj.extension(ext), obj);
+		return rv;
+	}
 });
 
 nul.understanding.base.set = Class.create(nul.understanding.base, {
@@ -130,15 +150,13 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 			return this.parms[identifier];
 		return $super(identifier);
 	},
-	allocLocal: function(name) {
-		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
-		var rv = this.klg.newLocal(name);
-		if('_'!= name && nul.understanding.rvName!= name) this.parms[name] = rv;
-		return rv;
-	},
 	createFreedom: function(name, value) {
-		if(value) this.parms[name] = value;
-		else value = this.allocLocal(name);
+		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
+		var uniqueName = true;
+		if(false===value) uniqueName = false;
+		if(!value) value = this.klg.newLocal(name);
+		if('_'== name) uniqueName = false;
+		if(uniqueName) this.parms[name] = value;
 		return value;
 	},
 	understand: function(cnt) {

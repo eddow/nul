@@ -13,12 +13,13 @@
 nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	initialize: function(obj) {
  		if(obj && 'eqCls'== obj.expression) {
-			this.values = clone1(obj.values);	//Equal values
+			this.equivls = clone1(obj.equivls);	//Equal values
 			this.belongs = clone1(obj.belongs);	//Sets the values belong to
-			this.prototyp = obj.prototyp;		//The values all equals to, used as prototype
+			this.attribs = clone1(obj.attribs);	//Sets the attributes owned
  		} else {
-			this.values = obj?[obj]:[];
+			this.equivls = obj?[obj]:[];
 			this.belongs = [];
+			this.attribs = {'':'xprBnch'};
 		}
 	},
 
@@ -32,6 +33,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 * Note: v is undefined 
 	 */
 	orderEqs: function(v, klg) {
+		if(v.defined) return -1;
 		var d = v.dependance();
 		var rv = 0;
 		if(d.otherThan(klg)) rv += 1;
@@ -46,12 +48,11 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 * Build and get a representative value for this class.
 	 */
 	taken: function(knowledge, index) {
-		var rv = this.prototyp || this.values[0];
-		var rec = this.built();
-		if(rec) knowledge.accede(index, rec);
-		if(nul.debug.assert && rec) assert(rec.prototyp || rec.values.length,
-			'Built equivalence class has equivalents');
-		return rec?rec.equivalents()[0]:rv;
+		try { return this.equivls[0]; }
+		finally {
+			var rec = this.built();
+			if(rec) knowledge.accede(index, rec);
+		}
 	},
 
 //////////////// public
@@ -68,31 +69,31 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		//Add an object to the equivalence class
 		nul.obj.use(o);
 		if(o.defined) {
-			if(this.prototyp)
+			if(this.defined())
 				try {
 					nul.xpr.mod(klg, nul.xpr.knowledge);
 					var unf;
 					try {
-						unf = this.prototyp.unified(o, klg);
+						unf = this.equivls[0].unified(o, klg);
 					} catch(err) {
 						nul.failed(err);
-						unf = o.unified(this.prototyp, klg);
+						unf = o.unified(this.equivls[0], klg);
 					}
-					if(unf && true!== unf) this.prototyp = unf;
+					if(unf && true!== unf) this.equivls[0] = unf;
 				} catch(err) {
 					nul.failed(err);
-					if('lambda'== this.prototyp.expression) {
-						var t = o; o = this.prototyp; this.prototyp = t;
+					if('lambda'== this.equivls[0].expression) {
+						var t = o; o = this.equivls[0]; this.equivls[0] = t;
 					}
 					if('lambda'== o.expression) rv.pushs([o.point, o.image]);
 					else throw err;
 				}
-			else this.prototyp = o;
+			else this.equivls.unshift(o);
 		} else {
 			var p = 0;
 			var ordr = this.orderEqs(o, klg);
-			for(p=0; p<this.values.length; ++p) if(ordr<this.orderEqs(this.values[p], klg)) break;
-			this.values.splice(p,0,o);
+			for(p=0; p<this.equivls.length; ++p) if(ordr<this.orderEqs(this.equivls[p], klg)) break;
+			this.equivls.splice(p,0,o);
 		}
 		return rv;
 	},
@@ -107,6 +108,16 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
  		this.modify(); s.use();
  		//TODO2: use intersect if possible
 		this.belongs.push(s);
+	},
+	
+	/**
+	 * Specify attributes
+	 * @param {nul.xpr.object} o object that belongs the class
+	 * @return array(nul.xpr.object) Array of objects to equal to this eqCls afterward
+	 * @throws nul.failure
+	 */
+	hasAttr: function(attrs, klg) {
+		azerty
 	},
 	
 	/**
@@ -129,7 +140,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		this.use(); nul.obj.use(o);
 		var oStr = o.toString();
 		var rv = this.modifiable();
-		unused = unused(rv, rv.values, oStr) || unused(rv, rv.belongs, oStr);
+		unused = unused(rv, rv.equivls, oStr) || unused(rv, rv.belongs, oStr);
 		if(unused) return unused.built();
 		return this; 
 	},
@@ -143,12 +154,12 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 */
 	influence: function(klg, exclElm, already) {
 		var rv = already || {};
-		var eqs = this.equivalents();
-		for(var e=0; e<eqs.length; ++e) if(e!=exclElm) {
-			var usg = eqs[e].dependance().usage(klg).local;
+		//TODO1: in attributes
+		for(var e=0; e<this.equivls.length; ++e) if(e!=exclElm) {
+			var usg = this.equivls[e].dependance().usage(klg).local;
 			for(var ndx in usg) rv[ndx] = 2;
 		}
-		for(var e=0; e<this.belongs.length; ++e) if(e!=exclElm - eqs.length) {
+		for(var e=0; e<this.belongs.length; ++e) if(e!=exclElm - this.equivls.length) {
 			var usg = this.belongs[e].dependance().usage(klg).local;
 			for(var ndx in usg) if(!rv[ndx]) rv[ndx] = 1;
 		}
@@ -164,33 +175,30 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	pruned: function(klg, lcls) {
 		var remover = function() {
 			var deps = this.dependance();
-			if(isEmpty(deps.usages)) return this;	//ex: in Q
+			if(isEmpty(deps.usages)) return this;
 			//TODO2: otherThan : only in locals or in ior3 too ?
 			if(deps.otherThan(klg)) return this;	//If depends on another knowledge, keep
 			deps = deps.usage(klg);
 			for(var l in deps.local) if(lcls[l]) return this;	//If depends on a needed local, keep
 		};
-		var nVals = maf(this.values, remover);
+		var nVals = maf(this.equivls, remover);
 		var nBlgs = maf(this.belongs, remover);
-		if(nVals.length == this.values.length && nBlgs.length == this.belongs.length) return this;
+		if(nVals.length == this.equivls.length && nBlgs.length == this.belongs.length) return this;
 		var rv = this.modifiable();
-		rv.values = nVals;
+		rv.equivls = nVals;
 		rv.belongs = nBlgs;
 		return rv.built().placed(klg); 
 	},
 	
-	equivalents: nul.summary('equivalents'),
-	sum_equivalents: function() {
-		return this.prototyp?this.values.added(this.prototyp):this.values;
-	},	
-
+	defined: function() { return this.equivls.length && this.equivls[0].defined; },
+	
 //////////////// nul.expression implementation
 	
 	expression: 'eqCls',
-	components: ['prototyp', 'values', 'belongs'],
+	components: ['equivls', 'belongs'],
 	modifiable: function($super) {
 		var rv = $super();
-		rv.values = clone1(rv.values);		//Equal values
+		rv.equivls = clone1(rv.equivls);	//Equal values
 		rv.belongs = clone1(rv.belongs);	//Sets the values belong to
 		return rv;		
 	},
@@ -199,10 +207,10 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	placed: function($super, prnt) {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);
-		var eqs = this.equivalents();
 		//TODO3: if(!this.belongs.length && !eqs.length) return;
-		if(!this.belongs.length && 1>= eqs.length) return;
-		if(!eqs.length) return;
+		if(!this.belongs.length && (!this.equivls.length || 
+			(1== this.equivls.length /*TODO1: && !this.attribs.length*/)))
+				return;
 		return $super(prnt);
 	},
 });
@@ -210,12 +218,11 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.chewer, {
 	initialize: function($super, ec) {
 		this.tbl = {};
-		for(var i in ec) if(cstmNdx(i)) {
+		for(var c in ec) if(cstmNdx(c)) {
 			this.invalidateCache();
-			nul.xpr.use(ec[i], nul.xpr.knowledge.eqClass);
-			var eqs = ec[i].equivalents();
-			for(var i=1; i<eqs.length; ++i)
-				this.tbl[eqs[i]] = eqs[0];
+			nul.xpr.use(ec[c], nul.xpr.knowledge.eqClass);
+			for(var e=1; e<ec[c].equivls.length; ++e)
+				this.tbl[ec[c].equivls[e]] = ec[c].equivls[0];
 		}
 		$super('Representation');
 		this.prepStack = [];
@@ -223,8 +230,7 @@ nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.chewer, {
 	subBrowse: function(xpr) {
 		nul.xpr.use(xpr, nul.xpr.knowledge.eqClass);
 		this.protect = [];
-		var eqs = xpr.equivalents();
-		for(var i=0; i<eqs.length; ++i) this.protect[eqs[i]] = eqs[i];
+		for(var i=0; i<xpr.equivls.length; ++i) this.protect[xpr.equivls[i]] = xpr.equivls[i];
 		try { return this.recursion(xpr); }
 		finally {
 			for(var i in this.protect) this.uncache(this.protect[i]);
@@ -240,9 +246,8 @@ nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.chewer, {
 		if((this.protect && this.protect[xpr]) || !this.tbl[xpr]) return nul.browser.bijectif.unchanged;
 		do xpr = this.tbl[xpr]; while(this.tbl[xpr]);
 		//If I'm replacing a value by an expression that contains this value, just don't
-		for(var i=0; i<this.prepStack.length; ++i)
-			if(this.prepStack[i] === xpr)
-				return nul.browser.bijectif.unchanged;
+		if(this.prepStack.contains(xpr))
+			return nul.browser.bijectif.unchanged;
 		return xpr;
 	},
 });
