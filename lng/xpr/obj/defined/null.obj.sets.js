@@ -19,7 +19,14 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 		if(o.isInSet) return [o.isInSet(this)];
 		if(o.defined) return [];
 		return $super(o);
-	}
+	},
+	
+//////////////// nul.obj.defined implementation
+
+	attributes: {
+		'# ': function() { return nul.obj.litteral.make(pinf); },
+	},
+
 });
 
 nul.obj.empty = new (Class.create(nul.obj.hcSet, {
@@ -29,7 +36,15 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, {
 	has: function(o) {
 		return [];
 	},
+	
 	expression: '&phi;',
+	
+//////////////// nul.obj.defined implementation
+
+	attributes: {
+		'# ': function() { return nul.obj.litteral.make(0); },
+	},
+	
 }))();
 
 nul.obj.number = new (Class.create(nul.obj.hcSet, {
@@ -90,13 +105,21 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		if('pair'!= o.expression) nul.fail(this, ' is not a range');
 		if(ninf== this.lower) nul.fail(this, ' has no first');
 		//TODO0: warn if(pinf== this.upper) : queue infinie
-		klg.unify(new nul.obj.litteral(this.lower), o.first.value);
+		klg.unify(nul.obj.litteral.make(this.lower), o.first.value);
 		klg.unify(
 			(this.lower == this.upper) ?
 				nul.obj.empty :
 				new nul.obj.range(this.lower+1, this.upper),
 			o.second);
 		return this;
+	},
+
+	attributes: {
+		'# ': function() {
+			if(ninf== this.lower || pinf== this.upper)
+				return nul.obj.litteral.make(pinf);
+			return nul.obj.litteral.make(this.upper-this.lower+1);
+		},
 	},
 
 //////////////// nul.expression implementation

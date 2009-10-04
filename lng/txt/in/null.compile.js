@@ -38,8 +38,8 @@ nul.compiled = {
 	xml: function(node, attrs, content) {
 		return { node: node, attributes: attrs, content: content, understand: nul.understanding.xml };
 	},
-	composed: function(vals) {
-		return { values: vals, understand: nul.understanding.composed };
+	composed: function(obj, anm, val) {
+		return { object: obj, aName: anm, value: val, understand: nul.understanding.composed };
 	},
 	objectivity: function(appl, lcl) {
 		return { applied: appl, lcl: lcl, understand: nul.understanding.objectivity };
@@ -62,7 +62,6 @@ nul.operators = [
 	[':','m'],								//booleans:meta XOR
 	['?','m'],								//booleans:meta XOR
 	['<','r'], ['>','r'], ['<=','r'], ['>=','r'],
-	['<<+','l'],
 	['+','m'], ['-','l'],
 	['-','p'], ['#','p'],
 	['*','m'], ['/','l'], ['%','l'],
@@ -135,6 +134,12 @@ nul.compiler = function(txt)
 				/*else if(this.tknzr.take('['))
 					rv = nul.compiled.taking(rv, this.tknzr.expect(']', this.expression()));*/ 				
 				else if(tst = this.item('lax')) rv = nul.compiled.application(rv, tst);
+				else if(this.tknzr.take('::')) {
+					var anm = this.tknzr.rawTake('(') ?
+							this.tokenizer.rawExpect(')', this.tokenizer.fly(')')) :
+							this.alphanum();
+					rv = nul.compiled.composed(rv, anm, this.item());					
+				}
 				else return rv;
 			} while(true);
 		},
@@ -183,15 +188,6 @@ nul.compiler = function(txt)
                     	upr = this.tknzr.expect(']',this.number());
                     return nul.compiled.range(lwr, upr);
                 }
-				if(this.tknzr.take('::')) {
-					var vals = {};
-					do {
-						vals[this.tknzr.rawTake('(') ?
-							this.tokenizer.rawExpect(')', this.tokenizer.fly(')')) :
-							this.alphanum()] =  this.item();
-					} while(this.tknzr.take('::'));
-					return nul.compiled.composed(vals);					
-				}
 				if(!lax) {
 					if(this.tknzr.take('<')) return this.xml();
 					for(var p= 0; p<nul.operators.length; ++p) {

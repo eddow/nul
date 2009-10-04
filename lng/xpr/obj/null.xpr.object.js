@@ -22,6 +22,7 @@ nul.xpr.object = Class.create(nul.expression, {
 		klg.belong(o, this);
 		return [klg.wrap(o)];
 	},
+	
 	/**
 	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
 	 * Or nothing if nothing can be simplified
@@ -47,18 +48,18 @@ nul.obj = {
 		}
 	},
 	use: function(x, t) {
-		if(!isArray(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) {
+		if(!nul.xpr.bunch(x)) x = [x];
+		if(nul.debug.assert) map(x, function(i, o) { if(''!==i) {
 			nul.obj.is(o, t);
 			o.use();
-		});
+		}});
 	},
 	
 	mod: function(x, t) {
-		if(!isArray(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) {
+		if(!nul.xpr.bunch(x)) x = [x];
+		if(nul.debug.assert) map(x, function(i, o) { if(''!==i) {
 			nul.obj.is(o, t);
 			o.modify();
-		});
+		}});
 	},
 };

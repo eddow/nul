@@ -12,6 +12,8 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 	},
 	defined : true,
 	
+//////////////// public
+
 	/**
 	 * Unify two defined objects
 	 * @return nul.obj.defined
@@ -23,4 +25,20 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 		if(o.toString() != this.toString()) nul.fail(this, ' does not unify to ', o);
 		return true;
 	},
+	
+//////////////// nul.xpr.object implementation
+
+	/**
+	 * Retrieve an attribute
+	 * @param {string} an Attribute Name
+	 * @return {nul.xpr.object}
+	 * @throws {nul.failure}
+	 */
+	attribute: function(an) {
+		if(' '== an) return this;
+		var af = this.attributes[an];
+		if(!af) nul.fail(this, 'doesnt have the attribute "'+an+'"');
+		return af.apply(this);
+	},
+
 });

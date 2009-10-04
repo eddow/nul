@@ -1,25 +1,27 @@
+S = (::number 1, ::number 2, ::number 3)
+; S(::number 3 ::drink "milk")
+
 todo: inOrder [1..] ?
 
 S = houses [1..5]
-; house = { n => (n,_,_,_,_,_) }
-; houses = { {} [] (n,.. ns) =>  house n,.. houses ns }
+; houses = { {} [] (n,.. ns) =>  (_::number n),.. houses ns }
 ; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
 ; orderedNeighbours = { (a, b); (inOrder S) (a,b) }
 ; neighbours = { (a, b); (orderedNeighbours(a,b) [] orderedNeighbours(b,a)) }
-; S(3,_,_,_,_,"milk")
-; S(1,_,"norwegian",_,_,_)
-; S(_,"red","english",_,_,_)
-; S(_,_,"spaniard",_,"dog",_)
-; S(_,_,"ukrainian",_,_,"tea")
-; S(_,_,"japanese","Parliaments",_,_)
-; S(_,"green",_,_,_,"coffee")
-; S(_,_,_,"Lucky Strike",_,"orange juice")
-; S(_,_,_,"Old Gold","snails",_)
-; S(_,"yellow",_,"Kools",_,_)
-; orderedNeighbour(S(_,"green",_,_,_,_), S(_, "ivory",_,_,_,_))
-; neighbours( S(_,_,_,"Kools",_,_), S(_,_,_,_,"horse",_) )
-; neighbours( S(_,_,_,"Chesterfields",_,_), S(_,_,_,_,"fox",_) )
-; neighbours( S(_,_,"norwegian",_,_,_), S(_,"blue",_,_,_,_) )
+; S(_ ::number 3 ::drink "milk")
+; S(_ ::number 1 ::nation "norwegian")
+; S(_ ::color "red" ::nation "english")
+; S(_ ::nation "spaniard" ::animal "dog")
+; S(_ ::nation "ukrainian" ::drink "tea")
+; S(_ ::nation "japanese" ::smoke "Parliaments")
+; S(_ ::color "green" ::drink "coffee")
+; S(_ ::smoke "Lucky Strike" ::drink "orange juice")
+; S(_ ::smoke "Old Gold" ::animal "snails")
+; S(_ ::color "yellow" ::smoke "Kools")
+; orderedNeighbour(S(_ ::color "green"), S(_ ::color "ivory"))
+; neighbours( S(_ ::smoke "Kools"), S(_ ::animal "horse") )
+; neighbours( S(_ ::smoke "Chesterfields"), S(_ ::animal "fox") )
+; neighbours( S(_ ::nation "norwegian"), S(_ ::color "blue") )
 
 
 dblAll (1,2)

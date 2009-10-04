@@ -28,9 +28,11 @@ nul.browser = Class.create({
 			var bwsd = {};
 			for(var comp in xpr.components) if(cstmNdx(comp)) {
 				comp = xpr.components[comp];
-				if(isArray(xpr[comp])) {	//TODO0: catch failure; make xpr.failure() ? useful for ior3 - unolved
+				if(nul.xpr.bunch(xpr[comp])) {
 					var brwsr = this;
-					bwsd[comp] = map(xpr[comp], function(i, o) { return brwsr.recursion(o); });
+					bwsd[comp] = map(xpr[comp], function(i, o) {
+						return (''!==i)?brwsr.recursion(o):nul.browser.bijectif.unchanged;
+					});
 				} else
 					bwsd[comp] = this.recursion(xpr[comp], comp);
 			}
@@ -158,7 +160,7 @@ nul.browser.bijectif.merge = function(xpr, bwsd) {
 	var mod;
 	for(var c in bwsd) {
 		var nwItm = bwsd[c];
-		if(isArray(nwItm)) {
+		if(nul.xpr.bunch(nwItm)) {
 			//bwsd[c] contient des null-s et des valeurs
 			if(nul.browser.bijectif.unchanged != nul.browser.bijectif.firstChange(nwItm))
 				//If at least one non-null return value,
@@ -187,7 +189,7 @@ nul.browser.bijectif.evolution = Class.create({
 });
 nul.browser.bijectif.firstChange = function(vals) {
 	vals = beArrg(arguments);
-	for(var i = 0; i<vals.length; ++i)
+	for(var i in vals) if(cstmNdx(i,vals))
 		if(vals[i] != nul.browser.bijectif.unchanged)
 			return vals[i];
 	return nul.browser.bijectif.unchanged;

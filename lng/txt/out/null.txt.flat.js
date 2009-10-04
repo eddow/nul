@@ -27,9 +27,14 @@ nul.txt.flat = merge({
 			return '(' + nul.txt.flat.all(this.operands).join(' '+this.operator+' ') + ')';
 		},
 		extension: function() {
-			//TODO3
+			var attrs = [];
+			for(var an in this.attr) if(cstmNdx(an, this.attr))
+				attrs.push('::' + an + ' ' + this.attr[an].toFlat());
+			return '[' + attrs.join(' ') + ']';
 		},
 		number: function() {
+			if(pinf==this.value) return '+&infin;';
+			if(ninf==this.value) return '-&infin;';
 			return ''+this.value;
 		},
 		string: function() {
@@ -68,7 +73,7 @@ nul.txt.flat = merge({
 		},
 		
 		eqCls: function() {
-			return '(' + nul.txt.flat.all(this.equivalents()).join(' = ') + ')' +
+			return '(' + nul.txt.flat.all(this.equivls).join(' = ') + ')' +
 				(this.belongs.length?(' &isin; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
 		},
 		klg: function() {
