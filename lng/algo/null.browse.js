@@ -30,9 +30,7 @@ nul.browser = Class.create({
 				comp = xpr.components[comp];
 				if(nul.xpr.bunch(xpr[comp])) {
 					var brwsr = this;
-					bwsd[comp] = map(xpr[comp], function(i, o) {
-						return (''!==i)?brwsr.recursion(o):nul.browser.bijectif.unchanged;
-					});
+					bwsd[comp] = map(xpr[comp], function(i, o) { return brwsr.recursion(o); });
 				} else
 					bwsd[comp] = this.recursion(xpr[comp], comp);
 			}
@@ -160,7 +158,8 @@ nul.browser.bijectif.merge = function(xpr, bwsd) {
 	var mod;
 	for(var c in bwsd) {
 		var nwItm = bwsd[c];
-		if(nul.xpr.bunch(nwItm)) {
+		if(nul.xpr.bunch(xpr[c])) {
+			nwItm[''] = nul.browser.bijectif.unchanged;
 			//bwsd[c] contient des null-s et des valeurs
 			if(nul.browser.bijectif.unchanged != nul.browser.bijectif.firstChange(nwItm))
 				//If at least one non-null return value,
@@ -187,8 +186,8 @@ nul.browser.bijectif.evolution = Class.create({
 		if(xpr) nul.xpr.use(xpr);
 	},
 });
-nul.browser.bijectif.firstChange = function(vals) {
-	vals = beArrg(arguments);
+nul.browser.bijectif.firstChange = function(vals, b) {
+	if(b) vals = [vals, b];
 	for(var i in vals) if(cstmNdx(i,vals))
 		if(vals[i] != nul.browser.bijectif.unchanged)
 			return vals[i];

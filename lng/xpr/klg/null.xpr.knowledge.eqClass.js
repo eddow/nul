@@ -47,11 +47,11 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	/**
 	 * Build and get a representative value for this class.
 	 */
-	taken: function(knowledge, index) {
+	taken: function(knowledge) {
 		try { return this.equivls[0]; }
 		finally {
 			var rec = this.built();
-			if(rec) knowledge.accede(index, rec);
+			if(rec) knowledge.accede(rec);
 		}
 	},
 
@@ -112,12 +112,14 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	
 	/**
 	 * Specify attributes
-	 * @param {nul.xpr.object} o object that belongs the class
+	 * @param {{string: nul.xpr.object}} attrs 
 	 * @return array(nul.xpr.object) Array of objects to equal to this eqCls afterward
 	 * @throws nul.failure
 	 */
 	hasAttr: function(attrs, klg) {
-		azerty
+		this.attribs = merge(this.attribs, attrs, function(a,b) {
+			return a&&b?klg.unify(a,b):a||b;
+		});
 	},
 	
 	/**
@@ -195,7 +197,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 //////////////// nul.expression implementation
 	
 	expression: 'eqCls',
-	components: ['equivls', 'belongs'],
+	components: ['equivls', 'belongs', 'attribs'],
 	modifiable: function($super) {
 		var rv = $super();
 		rv.equivls = clone1(rv.equivls);	//Equal values
@@ -209,7 +211,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);
 		//TODO3: if(!this.belongs.length && !eqs.length) return;
 		if(!this.belongs.length && (!this.equivls.length || 
-			(1== this.equivls.length /*TODO1: && !this.attribs.length*/)))
+			(1== this.equivls.length && isEmpty(this.attribs,['']))))
 				return;
 		return $super(prnt);
 	},

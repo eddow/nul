@@ -78,10 +78,11 @@ nul.expression = Class.create({
 	 * Return a summarised version of this.
 	 */
 	built: function(smr) {
+		this.modify();
 		for(var comp in this.components) if(cstmNdx(comp)) {
 			var cname = this.components[comp];
 			if(nul.xpr.bunch(this[cname])) {
-				for(var ci in this[cname]) if(cstmNdx(ci) && ''!==ci)
+				for(var ci in this[cname]) if(cstmNdx(ci))
 					this[cname][ci] = this[cname][ci].placed(this);
 			} else this[cname] = this[cname].placed(this);
 		}
@@ -139,7 +140,7 @@ nul.expression = Class.create({
 		for(var comp in this.components) if(cstmNdx(comp)) {
 			var cname = this.components[comp];
 			if(nul.xpr.bunch(this[cname])) {
-				for(var ci in this[cname]) if(cstmNdx(ci) && ''!==ci)
+				for(var ci in this[cname]) if(cstmNdx(ci))
 					rv[cname+':'+ci] = this[cname][ci];
 			} else {
 				rv[cname] = this[cname];
@@ -183,18 +184,18 @@ nul.xpr = {
 	},
 	use: function(x, t) {
 		if(!nul.xpr.bunch(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) { if(''!==i) {
+		if(nul.debug.assert) map(x, function(i, o) {
 			nul.xpr.is(o, t);
 			o.use();
-		}});
+		});
 	},
 	
 	mod: function(x, t) {
 		if(!nul.xpr.bunch(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) { if(''!==i) {
+		if(nul.debug.assert) map(x, function(i, o) {
 			nul.xpr.is(o, t);
 			o.modify();
-		}});
+		});
 	},
 };
 

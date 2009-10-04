@@ -96,10 +96,7 @@ nul.understanding = {
 	},
 
 	composed: function(ub) {
-		return ub.klg.unify(
-			ub.createFreedom(nul.understanding.objName, false),
-			new nul.obj.extension(map(this.values, function() { return this.understand(ub); }))
-			);
+		return ub.klg.attribute(this.object.understand(ub), this.aName, this.value.understand(ub));
 	},
 	objectivity: function(ub) {
 		return ub.attributed(this.applied.understand(ub), this.lcl);

@@ -41,7 +41,8 @@ function clone1(myObj) {
  * Returns false for all the default properties of the arrays.
  */
 function cstmNdx(ndx, ass) {
-	return (ass && (!isArray(ass) || ass[ndx]!= [][ndx])) || 'undefined'== typeof [][ndx];
+	return ''!== ndx && 
+		((ass && (!isArray(ass) || ass[ndx]!= [][ndx])) || 'undefined'== typeof [][ndx]);
 }
 /**
  * Internal (helper) use for mapping functions

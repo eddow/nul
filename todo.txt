@@ -1,7 +1,11 @@
 S = (::number 1, ::number 2, ::number 3)
 ; S(::number 3 ::drink "milk")
 
-todo: inOrder [1..] ?
+todo {
+inOrder [1..]			//inf decomposition
+\/a { _ ::attr a } a	//attribute self-ref 
+}
+
 
 S = houses [1..5]
 ; houses = { {} [] (n,.. ns) =>  (_::number n),.. houses ns }
