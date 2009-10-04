@@ -38,8 +38,8 @@ tests = [
 			'; father = (("Luke", "John"), ("Abraham", "Luke"), ("Luke", "Peter"))'+
 			'; brother = { (a => b); father(f, a); father(f, b) }',
 		rslt: '("John", "Peter")'},
-		{xpr: 'inOrder [1..5] _ ; inOrder = { \\/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }',
-		rslt: '((1, 2), (2, 3), (3, 4), (4, 5))'},
+		{xpr: 'inOrder [1..3] _ ; inOrder = { \\/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }',
+		rslt: '((1, 2), (2, 3))'},
 	].named('Complexs'),
 ].named('Unit testing');
 

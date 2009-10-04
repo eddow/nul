@@ -23,9 +23,7 @@ function evaluate()
 {
 	wtc.innerHTML = '';
 	evd.innerHTML = '';
-	var v = nul.execution.benchmark.measure('*evaluation',function(){
-		return nul.read	(src.value);
-	});
+	var v = nul.read(src.value);
 	return evd.innerHTML = v.toHtml();
 	var cpt = 0;
 	while('pair'== v.expression) {
