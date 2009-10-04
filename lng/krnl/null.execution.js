@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
  
-nul.execution = {
+nul.execution = {	//TODO2: réactiver les benchmarks
 	reset: function()
 	{
 		nul.erroneus = false;

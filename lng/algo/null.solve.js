@@ -7,6 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 /**
+ * TODO0: a real resolution engine ! :)
  * Interface function of Solver.
  * Gets a distributed list of fuzzies that don't contains ior3 anymore
  * @param {nul.xpr.possible} fz

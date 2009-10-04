@@ -82,18 +82,18 @@ span.failure {
 	color: #800020;
 }
 
-span.local .desc {
+.desc {
 	font-size: xx-small;
 	color: #004040;
 	vertical-align: top;
 }
 
-span.local .desc .sup {
+.desc .sup {
 	vertical-align: top;
 	display: table-row;
 }
 
-span.local .desc .sub {
+.desc .sub {
 	vertical-align: bottom;
 	display: table-row;
 }

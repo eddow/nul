@@ -89,7 +89,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		if('range'== o.expression) return (o.lower==this.lower && o.upper==this.upper);
 		if('pair'!= o.expression) nul.fail(this, ' is not a range');
 		if(ninf== this.lower) nul.fail(this, ' has no first');
-		//TODO0: warn if(pinf== this.upper)
+		//TODO0: warn if(pinf== this.upper) : queue infinie
 		klg.unify(new nul.obj.litteral(this.lower), o.first.value);
 		klg.unify(
 			(this.lower == this.upper) ?

@@ -68,13 +68,13 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		return this.first.knowledge.isFixed() && this.second.isList();
 	},
 	built: function($super) {
+		if(!this.first.distribuable()) return $super();
 		var ops = this.first.distribute();
-		if(!ops.length) return this.second;
-		this.first = ops.shift();
+		var rv = this.second;
 		while(ops.length) {
 			var op = ops.pop();
-			this.second = new nul.obj.pair(op, this.second).built();
+			rv = (new nul.obj.pair(op, rv)).built();
 		}
-		return $super();
+		return rv;
 	},
 });
