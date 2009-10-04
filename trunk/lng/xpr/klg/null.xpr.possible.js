@@ -40,6 +40,14 @@ nul.xpr.possible = Class.create(nul.expression, {
 	},
 	
 	/**
+	 * Determine wether the resolution engine can change anything
+	 * @return {bool}
+	 */
+	distribuable: function() {
+		return !!this.knowledge.ior3.length;
+	},
+	
+	/**
 	 * Use the resolution engine : make severa possibles without ior3
 	 * @return {array(nul.xpr.possible)}
 	 */
@@ -73,6 +81,7 @@ nul.xpr.failure = new (Class.create(nul.expression, {
 	initialize: function() { this.alreadyBuilt(); },
 	expression: 'possible',
 	components: [],
+	distribuable: function() { return true; },
 	distribute: function() { return []; },
 }))();
 

@@ -7,10 +7,11 @@
  *--------------------------------------------------------------------------*/
 //ℕ  &#x2115;
 //ℚ	 &#x211a;
+//ℤ  '&#x2124;'
 //□  &#9633;
-//∈ &isin;
-//↵	&crarr;
-//⇒	&rArr;
+//∈  &isin;
+//↵  &crarr;
+//⇒  &rArr;
 Array.prototype.named = function(nm) { this.name = nm; return this; };
 
 tests = [
@@ -37,6 +38,8 @@ tests = [
 			'; father = (("Luke", "John"), ("Abraham", "Luke"), ("Luke", "Peter"))'+
 			'; brother = { (a => b); father(f, a); father(f, b) }',
 		rslt: '("John", "Peter")'},
+		{xpr: 'inOrder [1..5] _ ; inOrder = { \\/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }',
+		rslt: '((1, 2), (2, 3), (3, 4), (4, 5))'},
 	].named('Complexs'),
 ].named('Unit testing');
 

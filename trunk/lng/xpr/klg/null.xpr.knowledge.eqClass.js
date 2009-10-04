@@ -135,18 +135,40 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	
 	/**
+	 * Compute the influence of this equivalence class (excluded 'exclElm')
+	 * @param {nul.xpr.knowledge} klg
+	 * @param {integer} exclElm Element to exclude, from the summary.components
+	 * @param {association(ndx=>infl)} already The influences already computed
+	 * @return {association(ndx=>infl)} Where 'ndx' is a local index and 'infl' 1 or 2 
+	 */
+	influence: function(klg, exclElm, already) {
+		var rv = already || {};
+		var eqs = this.equivalents();
+		for(var e=0; e<eqs.length; ++e) if(e!=exclElm) {
+			var usg = eqs[e].dependance().usage(klg).local;
+			for(var ndx in usg) rv[ndx] = 2;
+		}
+		for(var e=0; e<this.belongs.length; ++e) if(e!=exclElm - eqs.length) {
+			var usg = this.belongs[e].dependance().usage(klg).local;
+			for(var ndx in usg) if(!rv[ndx]) rv[ndx] = 1;
+		}
+		return rv;
+	},
+	
+	/**
 	 * Remove items that are not used in this knowledge
 	 * Not used = depending on nothing else than the useless locals of thisknowledge
-	 * @param {nul.xpr.knowledge} klg the pruned knowledge
-	 * TODO3: reprendre toutes les locales qui sont gardées quand-même et les lister pour les garder ?
+	 * @param {nul.xpr.knowledge} klg Pruned knowledge this class belongs to
+	 * @param {association(ndx: true)} lcls List of used locals
 	 */
-	pruned: function(klg, usg) {
+	pruned: function(klg, lcls) {
 		var remover = function() {
 			var deps = this.dependance();
-			if(isEmpty(deps.usages)) return this;	//No independant in values : if so, would be defined
+			if(isEmpty(deps.usages)) return this;	//ex: in Q
+			//TODO2: otherThan : only in locals or in ior3 too ?
 			if(deps.otherThan(klg)) return this;	//If depends on another knowledge, keep
 			deps = deps.usage(klg);
-			for(var l in usg.local) if(deps.local[l]) return this;	//If depends on a common local, keep
+			for(var l in deps.local) if(lcls[l]) return this;	//If depends on a needed local, keep
 		};
 		var nVals = maf(this.values, remover);
 		var nBlgs = maf(this.belongs, remover);
@@ -178,11 +200,9 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	placed: function($super, prnt) {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);
 		var eqs = this.equivalents();
+		//TODO3: if(!this.belongs.length && !eqs.length) return;
 		if(!this.belongs.length && 1>= eqs.length) return;
-		if(!eqs.length) {
-			//TODO3: add \/i this.belongs[i] not empty
-			return;
-		}
+		if(!eqs.length) return;
 		return $super(prnt);
 	},
 });

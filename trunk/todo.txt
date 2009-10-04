@@ -1,6 +1,10 @@
 todo: inOrder [1..] ?
 
-{ ((c,.._),(d,.._)); (inOrder [1..5]) (c,d) }
+inOrder [1..2] _ _
+; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
+::::: a un comportement bizarre (ne développe pas les 2 premières paires)
+
+\/inOrder { ((c,.._),(d,.._)); (inOrder [1..5]) (c,d) }
 ; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
 
 S = ((1,_,_,_,_,_), (2,_,_,_,_,_), (3,_,_,_,_,_), (4,_,_,_,_,_), (5,_,_,_,_,_))

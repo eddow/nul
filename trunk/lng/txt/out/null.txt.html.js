@@ -114,8 +114,16 @@ nul.txt.html = merge({
 			return {'': this.value?'true':'false'};
 		},
 		range: function() {
-			//TODO4: draw real range  
-			return {'': '&#x2124;'};
+			var ltr = 0> this.lower ?
+				'&#x2124;':	//ℤ
+				'&#x2115;';	//ℕ
+			if(pinf==this.upper) {
+				if(ninf==this.lower) return {'': ltr};
+				if(0== this.lower) return {'': ltr};
+			}
+			return {'': ltr+html.span('desc',
+				html.span('sup',(pinf==this.upper)?'&infin;':this.upper)+
+                html.span('sub',(ninf==this.lower)?'&infin;':this.lower))};
 		},
 		other: function() {
 			return {'': this.expression};

@@ -88,7 +88,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		
 		vdps.also(value.dependance());
 		for(var i in this.ior3) if(cstmNdx(i) && this.ior3[i]) vdps.also(this.ior3[i].dependance());
-		vdps = vdps.usage(this);
+		vdps = this.localNeed(vdps.usage(this).local);
 
 		//TODO1: calculer l'enveloppe d'utilité
 		//Remove useless equivalence class specifications
@@ -123,15 +123,72 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * Gets the dependance of an hypothetic possible while this knowledge is not summarised.
  	 */
  	usage: function(value) {
- 		//TODO0: use 	dependance: nul.summary('dependance', 'temp'),
+ 		//TODO0: use summary if possible.
 		var rv = new nul.dependance();
-		var comps = [];
-		comps.pushs(this.eqCls, this.ior3, [value]);
+		var comps = value?[value]:[];
+		comps.pushs(this.eqCls, this.ior3);
 		for(var c=0; c<comps.length; ++c)
 			rv.also(comps[c].dependance());
 		return rv.use(this);
 	},
- 
+
+	/**
+	 * Make the need envelope of locals.
+	 * If at least 'lcls' are needed to determine a value, then determine which locals are needed
+	 * to determine a value, for this knowledge, regarding the equivalence classes
+	 * @param {association(ndx: any)} lcls List of needed locals at least
+	 * @return {association(ndx: true)} lcls List of needed locals
+	 */
+	localNeed: function(lcls) {
+		lcls = map(lcls,function() { return 3; });
+		var toNeed = keys(lcls);
+		///1: calculate influences
+		var max = function(a,b) { return !a?b:!b?a:a>b?a:b; };
+		/**
+		 * Change the list of local needs and determine which local is discovered needed
+		 * knowing that local 'ndx' is needed 'infl' (infl = 1(belong) or 2(equival))
+		 * @param {index} ndx Local index
+		 * @param {number} infl 1: something belongs to this local. 2: Something is equived to this local
+		 * @param {association(ndx:need)} lcls how locals are already known to be needed
+		 * @return {array[index]} Locals freshly disvorered to be needed
+		 */
+		var influence = function(infl, lcls) {
+/*(infl \ lcls[ndx] :	('>' means 'more than 2')
+ * 			0	1	2	>
+ * 		1	1	1	>	>
+ * 		2	2	>	>	>
+ */
+ 			var rv = [];
+ 			for(var ndx in infl)
+				if( (1!= lcls[ndx] || 1!= infl[ndx]) &&
+					(2< (lcls[ndx] = (lcls[ndx]||0)+infl[ndx])) )
+						rv.push(ndx);
+			return rv;
+		};
+		var lclInfl = {};	//nx => {ndx: [0, 1, 2]}
+		//	0: no need
+		//	1: define content
+		//	2: define equivalence
+		for(var c=0; c<this.eqCls.length; ++c) {
+			var ec = this.eqCls[c];
+			var elms = ec.summary('components');
+			
+			if(this.eqCls[c].prototyp || ec.dependance().otherThan(this))	//If this refer to something defined (in absolute or in another context)
+				toNeed.pushs(influence(ec.influence(this), lcls));
+			
+			for(var e=0; e<elms.length; ++e) {
+				var usg = elms[e].dependance().usage(this).local;
+				//For each usage of this element, influence each other usage of the eqclass
+				for(var srcNdx in elms[e].dependance().usage(this).local)
+					lclInfl[srcNdx] = ec.influence(this, e, lclInfl[srcNdx]);
+			}
+		}
+		//2: use influence to need all influenced locals
+		while(toNeed.length)
+			toNeed.pushs(influence(lclInfl[toNeed.shift()], lcls));
+		return map(lcls,function(i, o) { return 3<=o; });
+	},
+	
   	/**
  	 * Know that all the arguments are unifiable
  	 * Modifies the knowledge

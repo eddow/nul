@@ -39,8 +39,11 @@ nul.txt.flat = merge({
 			return this.value?'true':'false';
 		},
 		range: function() {
-			//TODO4: draw real range  
-			return '&#x2124;';
+			var rv = '&#x2124;[';
+			if(ninf!= this.lower) rv += this.lower;
+			rv += '..';
+			if(pinf!= this.upper) rv += this.upper;
+			return rv + ']';
 		},
 		other: function() {
 			return this.expression;
