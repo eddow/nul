@@ -89,23 +89,15 @@ function tableStack(nm, tbl) {
 		}
 	};
 }
-/**
- * Weither the string opt appear in the url parameters
- */
-function urlOption(opt) {
-	var srch = window.location.href.split('?')[1];
-	if(!srch) return;
-	return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
-}
 
 nul.debug = {
 	callStack: tableStack('callStack'),
 	logs: tableStack('logs'),
 	logging: false,
 	watches: false,
-	assert: urlOption('debug'),
-	perf: !urlOption('noperf'),
-	acts: urlOption('actLog'),
+	assert: nul.urlOption('debug'),
+	perf: !nul.urlOption('noperf'),
+	acts: nul.urlOption('actLog'),
 	lcLimit: 5000,
 	logCount: function() {
 		if(0< nul.debug.lcLimit && nul.debug.lcNextLimit< nul.debug.lc) {
@@ -162,7 +154,7 @@ nul.debug = {
 		return ['', '<table class="context">'+rv+'</table>'];
 	},
 	described: function(name, dscr) {
-		var ftc = this;
+		var ftc = this.perform(name);
 		return function() {
 			var cargs = arrg(arguments);
 			var d, abrt = false, lgd = false, rv;
@@ -221,7 +213,7 @@ nul.debug = {
 };
 
 if(nul.debug.acts) Function.prototype.describe = nul.debug.described;
-else Function.prototype.describe = function() { return this; };
+else Function.prototype.describe = function(name) { return this.perform(name); };
 
 Function.prototype.contract = nul.debug.contract;
 if(nul.debug.assert) Function.prototype.asserted = nul.debug.asserted;

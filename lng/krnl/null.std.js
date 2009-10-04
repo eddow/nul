@@ -37,7 +37,9 @@ var nul = {
 	read: function(txt)
 	{
 		nul.execution.reset();
-		return nul.globalsUse().understand(nul.compile(txt));
+		return nul.execution.benchmark.measure('*reading',function(){
+			return nul.globalsUse().understand(nul.compile(txt));
+		});
 	},
 	html: function(txt)
 	{
@@ -55,20 +57,16 @@ var nul = {
 		for(p in nul.natives)
 			nul.globals[p] = nul.natives[p];
 	},
+
+	/**
+	 * Weither the string opt appear in the url parameters
+	 */
+	urlOption: function(opt) {
+		var srch = window.location.href.split('?')[1];
+		if(!srch) return;
+		return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
+	},
 };
 
 new Event.observe(window, 'load', nul.onload);
-if(-1< window.location.href.indexOf('noperf'))
-	Function.prototype.perform = function(name) { return this; };
-else
-	Function.prototype.perform = function(name) {
-		var ftc = this;
-		return function() {
-			var cargs = arrg(arguments);
-			var obj = this;
-			if('function'== typeof name) name = name.apply(obj, cargs);
-			nul.execution.benchmark.enter(name);
-			try { return ftc.apply(obj, cargs); }
-			finally { nul.execution.benchmark.leave(name); }
-		};
-	};
+

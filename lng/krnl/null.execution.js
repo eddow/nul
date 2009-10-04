@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
  
-nul.execution = {	//TODO2: réactiver les benchmarks
+nul.execution = {
 	reset: function()
 	{
 		nul.erroneus = false;
@@ -65,3 +65,18 @@ nul.execution = {	//TODO2: réactiver les benchmarks
 		}
 	}
 };
+
+if(nul.urlOption('noperf'))
+	Function.prototype.perform = function(name) { return this; };
+else
+	Function.prototype.perform = function(name) {
+		var ftc = this;
+		return function() {
+			var cargs = arrg(arguments);
+			var obj = this;
+			if('function'== typeof name) name = name.apply(obj, cargs);
+			nul.execution.benchmark.enter(name);
+			try { return ftc.apply(obj, cargs); }
+			finally { nul.execution.benchmark.leave(name); }
+		};
+	};

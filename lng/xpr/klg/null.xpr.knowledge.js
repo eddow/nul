@@ -452,7 +452,7 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 		this.dstKlgRef = dstKlgRef;
 		this.deltaIor3ndx = deltaIor3ndx || 0;
 		this.deltaLclNdx = deltaLclNdx || 0;
-		$super();
+		$super('StepUp');
 	},
 	transform: function(xpr) {
 		if('local'== xpr.expression && this.srcKlg.name == xpr.klgRef )

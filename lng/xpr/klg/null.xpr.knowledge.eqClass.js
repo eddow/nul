@@ -207,7 +207,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 });
 
-nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
+nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.chewer, {
 	initialize: function($super, ec) {
 		this.tbl = {};
 		for(var i in ec) if(cstmNdx(i)) {
@@ -217,7 +217,7 @@ nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
 			for(var i=1; i<eqs.length; ++i)
 				this.tbl[eqs[i]] = eqs[0];
 		}
-		$super();
+		$super('Representation');
 		this.prepStack = [];
 	},
 	subBrowse: function(xpr) {

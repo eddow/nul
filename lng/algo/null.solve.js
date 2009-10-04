@@ -59,7 +59,7 @@ nul.solve.browser = Class.create(nul.browser.bijectif, {
 	initialize: function($super, klg, tries) {
 		this.klg = klg;
 		this.tries = tries;
-		$super();
+		$super('Resolution');
 	},
 	transform: function(xpr) {
 		if('ior3'== xpr.expression && this.klg.name == xpr.klgRef)
