@@ -1,5 +1,10 @@
-S = (::number 1, ::number 2, ::number 3)
-; S(::number 3 ::drink "milk")
+inOrder S
+; S = houses [1..5]
+; houses = { {} [] (n,.. ns) =>  (_::number n),.. houses ns }
+; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
+
+a; N (a.nbr)
+
 
 todo {
 inOrder [1..]			//inf decomposition
@@ -10,8 +15,7 @@ inOrder [1..]			//inf decomposition
 S = houses [1..5]
 ; houses = { {} [] (n,.. ns) =>  (_::number n),.. houses ns }
 ; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
-; orderedNeighbours = { (a, b); (inOrder S) (a,b) }
-; neighbours = { (a, b); (orderedNeighbours(a,b) [] orderedNeighbours(b,a)) }
+; neighbours = { inOrder S [] (a, b); (inOrder S)(b,a) }
 ; S(_ ::number 3 ::drink "milk")
 ; S(_ ::number 1 ::nation "norwegian")
 ; S(_ ::color "red" ::nation "english")
@@ -22,10 +26,10 @@ S = houses [1..5]
 ; S(_ ::smoke "Lucky Strike" ::drink "orange juice")
 ; S(_ ::smoke "Old Gold" ::animal "snails")
 ; S(_ ::color "yellow" ::smoke "Kools")
-; orderedNeighbour(S(_ ::color "green"), S(_ ::color "ivory"))
-; neighbours( S(_ ::smoke "Kools"), S(_ ::animal "horse") )
-; neighbours( S(_ ::smoke "Chesterfields"), S(_ ::animal "fox") )
-; neighbours( S(_ ::nation "norwegian"), S(_ ::color "blue") )
+; (inOrder S)(_ ::color "green", _ ::color "ivory")
+; neighbours(_ ::smoke "Kools", _ ::animal "horse")
+; neighbours(_ ::smoke "Chesterfields", _ ::animal "fox")
+; neighbours(_ ::nation "norwegian", _ ::color "blue")
 
 
 dblAll (1,2)

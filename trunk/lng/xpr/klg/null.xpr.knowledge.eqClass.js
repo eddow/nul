@@ -11,7 +11,7 @@
  * A set of objects known equivalents and a set of items they are known to belong to. 
  */
 nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
-	initialize: function(obj) {
+	initialize: function(obj, attr) {
  		if(obj && 'eqCls'== obj.expression) {
 			this.equivls = clone1(obj.equivls);	//Equal values
 			this.belongs = clone1(obj.belongs);	//Sets the values belong to
@@ -19,7 +19,8 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
  		} else {
 			this.equivls = obj?[obj]:[];
 			this.belongs = [];
-			this.attribs = {'':'xprBnch'};
+			this.attribs = attr||{};
+			this.attribs[''] = 'xprBunch';
 		}
 	},
 
@@ -88,7 +89,10 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 					if('lambda'== o.expression) rv.pushs([o.point, o.image]);
 					else throw err;
 				}
-			else this.equivls.unshift(o);
+			else {
+				this.equivls.unshift(o);
+				rv.pushs(this.hasAttr(this.attribs, klg));
+			}
 		} else {
 			var p = 0;
 			var ordr = this.orderEqs(o, klg);
@@ -117,9 +121,19 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 * @throws nul.failure
 	 */
 	hasAttr: function(attrs, klg) {
-		this.attribs = merge(this.attribs, attrs, function(a,b) {
-			return a&&b?klg.unify(a,b):a||b;
-		});
+		var rv = [];
+		if(this.equivls[0] && 'lambda'== this.equivls[0].expression && !isEmpty(attrs,[''])) {
+			var o = this.equivls.shift();
+			rv = [o.point, o.image];
+		}
+		if(!rv.length && this.defined()) {
+			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
+			this.attribs = {'':'xprBunch'};
+		} else if(this.attribs !== attrs)
+			this.attribs = merge(this.attribs, attrs, function(a,b) {
+				return a&&b?klg.unify(a,b):a||b;
+			});
+		return rv;
 	},
 	
 	/**
@@ -202,6 +216,8 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		var rv = $super();
 		rv.equivls = clone1(rv.equivls);	//Equal values
 		rv.belongs = clone1(rv.belongs);	//Sets the values belong to
+		rv.attribs = clone1(rv.attribs);
+		rv.attribs[''] = 'xprBunch';
 		return rv;		
 	},
 	fix: function($super) {

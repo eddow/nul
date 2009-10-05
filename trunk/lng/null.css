@@ -24,13 +24,14 @@ tr.uncollapsing span.uncollapser.end { display: inline; }
 tr.unsubcollapsing span.collapser.start { display: none; }
 tr.unsubcollapsing span.uncollapser.start { display: inline; }
 
-table.object {
+table.attributes {
 	display: inline-block;
 	border-width: 0 1px;
 	border-color: black;
 	border-style: solid;
+	vertical-align: middle;
 }
-td.objhd {
+.attributes th {
 	text-align: center;
 	border-bottom: 1px black dotted;
 }

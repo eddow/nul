@@ -161,10 +161,11 @@ nul.browser.bijectif.merge = function(xpr, bwsd) {
 		if(nul.xpr.bunch(xpr[c])) {
 			nwItm[''] = nul.browser.bijectif.unchanged;
 			//bwsd[c] contient des null-s et des valeurs
-			if(nul.browser.bijectif.unchanged != nul.browser.bijectif.firstChange(nwItm))
+			if(nul.browser.bijectif.unchanged != nul.browser.bijectif.firstChange(nwItm)) {
 				//If at least one non-null return value,
 				nwItm = merge(nwItm, xpr[c], nul.browser.bijectif.firstChange);
-			else nwItm = nul.browser.bijectif.unchanged;
+				nwItm[''] = xpr[c][''];	//Peculiar case of 'xprBunch'
+			} else nwItm = nul.browser.bijectif.unchanged;
 		}
 		if(nul.browser.bijectif.unchanged!= nwItm) {
 			if(!mod) mod = xpr.modifiable();

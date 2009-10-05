@@ -41,6 +41,12 @@ tests = [
 		{xpr: 'i [1..3] _ ; i = { \\/x {x} => {} [] ((a,b,.. o) => (a,b),.. i(b,.. o) ) }',
 		rslt: '((1, 2), (2, 3))'},
 	].named('Complexs'),
+	[
+		{xpr: '( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")',
+		rslt: '{u[g|1]; (([e: "o", f: "u", n: 1]u[g|1]))}'},
+		{xpr: 'a; N (a.nbr)',
+		rslt: 'todo'},
+	].named('Attributes'),
 ].named('Unit testing');
 
 function rsltDiv(rslt) {

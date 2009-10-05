@@ -26,8 +26,6 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 		return true;
 	},
 	
-//////////////// nul.xpr.object implementation
-
 	/**
 	 * Retrieve an attribute
 	 * @param {string} an Attribute Name
@@ -35,9 +33,11 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 	 * @throws {nul.failure}
 	 */
 	attribute: function(an) {
-		if(' '== an) return this;
 		var af = this.attributes[an];
-		if(!af) nul.fail(this, 'doesnt have the attribute "'+an+'"');
+		if(!af) {
+			if(an) nul.fail(this, 'doesnt have the attribute "'+an+'"');
+			return this;
+		}
 		return af.apply(this);
 	},
 
