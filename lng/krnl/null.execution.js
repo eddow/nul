@@ -11,7 +11,6 @@ nul.execution = {
 	{
 		nul.erroneus = false;
 		//namespaces
-		nul.obj.extension.nameSpace = 0;
 		nul.xpr.knowledge.nameSpace = 0;
 		nul.browser.cached.nameSpace = 0;
 		

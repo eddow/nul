@@ -125,13 +125,9 @@ nul.understanding.base = Class.create({
 	},
 	attributed: function(obj, anm) {
 		//TODO3: essayer de pas créer deux variables si (a.b + a.b)
-		var av;
-		if(obj.defined) av = obj.attribute(this.attributeName);
-		if(av) return av;
+		if(obj.defined) return obj.attribute(this.attributeName);
 		var rv = this.createFreedom('&rarr;'+anm, false);
-		var ext = {};
-		ext[anm] = rv;
-		this.klg.unify(new nul.obj.extension(ext), obj);
+		this.klg.attribute(obj, anm, rv);
 		return rv;
 	}
 });

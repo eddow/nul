@@ -220,7 +220,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		 			else if('eqCls'== v.expression) {
 		 				toUnify.pushs(v.equivls);
 						toBelong.pushs(v.belongs);
-						dstEqCls.hasAttr(v.attribs, this);
+						toUnify.pushs(dstEqCls.hasAttr(v.attribs, this));
 		 			} else if(!alreadyEqd[v]) {
 		 				toUnify.pushs(dstEqCls.isEq(v, this));
 		 				alreadyEqd[v] = true;
@@ -354,16 +354,20 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	},
  	
  	/**
- 	 * 
+ 	 * States that 'e.anm = vl'
+ 	 * @param {nul.xpr.object} e
+ 	 * @param {string} anm
+ 	 * @param {nul.xpr.object} vl
+ 	 * @return {nul.xpr.object}
+ 	 * @throws {nul.failure}
  	 */
  	attribute: function(e, anm, vl) {
  		var attrs = {};
  		if(vl) attrs[anm] = vl;
  		else attrs = anm;
  		
- 		var dstEC = this.inform(e);
- 		dstEC.hasAttr(attrs, this);
- 		return dstEC.taken(this);
+ 		var ec = new nul.xpr.knowledge.eqClass(e, attrs).built();
+ 		return this.unify(ec);
  	},
 
  	/**

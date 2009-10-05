@@ -81,6 +81,8 @@ nul.expression = Class.create({
 		this.modify();
 		for(var comp in this.components) if(cstmNdx(comp)) {
 			var cname = this.components[comp];
+			if(nul.debug.assert) assert('attribs'!= cname || nul.xpr.bunch(this[cname]),
+				'Attributes ARE bunch');
 			if(nul.xpr.bunch(this[cname])) {
 				for(var ci in this[cname]) if(cstmNdx(ci))
 					this[cname][ci] = this[cname][ci].placed(this);
@@ -204,5 +206,5 @@ nul.xpr = {
  * @return weither x is a bunch of expressions
  */
 nul.xpr.bunch = function(x) {
-	return isArray(x) || 'xprBnch'== x[''];
+	return isArray(x) || 'xprBunch'== x[''];
 };
