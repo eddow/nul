@@ -27,6 +27,18 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 	},
 	
 	/**
+	 * Intersect two defined objects
+	 * @return nul.obj.defined
+	 * @throws nul.failure
+	 */
+	intersect: function(o, klg) {
+		this.use(); nul.obj.use(o); nul.xpr.mod(klg, nul.xpr.knowledge);
+		
+		if(o.toString() != this.toString()) nul.fail(this, ' does not intersect with ', o);
+		return true;
+	},
+	
+	/**
 	 * Retrieve an attribute
 	 * @param {string} an Attribute Name
 	 * @return {nul.xpr.object}

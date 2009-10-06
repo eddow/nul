@@ -31,7 +31,7 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 
 nul.obj.empty = new (Class.create(nul.obj.hcSet, {
 	intersect: function(o) {
-		return [this];
+		nul.fail('No intersection with ', this);
 	},
 	has: function(o) {
 		return [];
@@ -48,8 +48,9 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, {
 }))();
 
 nul.obj.number = new (Class.create(nul.obj.hcSet, {
-	intersect: function(o) {
+	intersect: function($super, o, klg) {
 		if('range'== o.expression) return o;
+		return $super(o, klg);
 	},
 	has: function($super, o) {
 		if('number'== o.expression) return [o];
@@ -75,14 +76,14 @@ nul.obj.bool = new (Class.create(nul.obj.hcSet, {
 }))();
 
 nul.obj.range = Class.create(nul.obj.hcSet, {
-	intersect: function(o) {
-		if('number'== o.expression) return this;
+	intersect: function($super, o, klg) {
 		if('range'== o.expression) {
 			var lwr = this.lower<o.lower?o.lower:this.lower;
 			var upr = this.upper>o.upper?o.upper:this.upper;
 			if(lwr > upr) return [];
 			return new nul.obj.range(lwr, upr);
 		}
+		return $super(o, klg);
 	},
 	initialize: function($super, lwr, upr) {
 		this.lower = lwr?parseInt(lwr):ninf;
@@ -90,6 +91,9 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		$super();
 	},
 	has: function($super, o) {
+		if(this.lower==this.upper && !o.defined) {
+			//TODO3: return "o=nbr[this.bound]"
+		}
 		if(!o.defined || 'number'!= o.expression) return $super(o);
 		if(!nul.isJsInt(o.value)) return [];
 		if( o.value < this.lower || o.value > this.upper) return [];
@@ -102,7 +106,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		this.use(); nul.obj.use(o); nul.xpr.mod(klg, nul.xpr.knowledge);
 		
 		if('range'== o.expression) return (o.lower==this.lower && o.upper==this.upper);
-		if('pair'!= o.expression) nul.fail(this, ' is not a range');
+		if('pair'!= o.expression) nul.fail(o, ' is not a range nor a pair');
 		if(ninf== this.lower) nul.fail(this, ' has no first');
 		//TODO0: warn if(pinf== this.upper) : queue infinie
 		klg.unify(nul.obj.litteral.make(this.lower), o.first.value);

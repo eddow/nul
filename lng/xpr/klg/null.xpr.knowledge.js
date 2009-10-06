@@ -148,19 +148,20 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		 * Change the list of local needs and determine which local is discovered needed
 		 * knowing that local 'ndx' is needed 'infl' (infl = 1(belong) or 2(equival))
 		 * @param {index} ndx Local index
-		 * @param {number} infl 1: something belongs to this local. 2: Something is equived to this local
+		 * @param {association(ndx:influence)} infl Influence = 1: something belongs to this local. 2: Something is equived to this local
 		 * @param {association(ndx:need)} lcls how locals are already known to be needed
 		 * @return {array[index]} Locals freshly disvorered to be needed
 		 */
 		var influence = function(infl, lcls) {
-/*(infl \ lcls[ndx] :	('>' means 'more than 2')
+/*(infl[ndx] \ lcls[ndx] :	('>' means 'more than 2')
  * 			0	1	2	>
  * 		1	1	1	>	>
  * 		2	2	>	>	>
  */
  			var rv = [];
  			for(var ndx in infl)
-				if( (1!= lcls[ndx] || 1!= infl[ndx]) &&
+				if( (1!= lcls[ndx] || 1!= infl[ndx]) &&	
+					(!lcls[ndx] || 2>= lcls[ndx]) &&
 					(2< (lcls[ndx] = (lcls[ndx]||0)+infl[ndx])) )
 						rv.push(ndx);
 			return rv;
@@ -172,18 +173,31 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		for(var c=0; c<this.eqCls.length; ++c) {
 			var ec = this.eqCls[c];
 			var elms = ec.summary('components');
+			var extInfl = false;
 			
-			//TODO1: or has attributes ?
-			if(ec.dependance().otherThan(this))	//If this refer to something defined in another context
-				toNeed.pushs(influence(ec.influence(this), lcls));
-			else if(this.eqCls[c].defined())	//If this refer to something defined in absolute
-				toNeed.pushs(influence(ec.influence(this, 0), lcls));
+			//Compute influence from other knowledge.
+			// If influence from several elements, influence the whole class
+			// If influence from only one element, influence the class without that element 
+			for(var e in elms) if(cstmNdx(e)) {
+				if(elms[e].dependance().otherThan(this)) {
+					extInfl = extInfl?true:e;
+					if(true=== extInfl) break;
+				}
+			}
+			//If this refer to something defined by its attributes
+			if(true!== extInfl && !isEmpty(ec.attribs,[''])) extInfl = extInfl?true:'attribs:*';
+			//If this refer to something equaled in absolute
+			if(true!== extInfl && this.eqCls[c].eqvlDefined()) extInfl = extInfl?true:'equivls:0';
+			//If this refer to something beblonging in absolute
+			if(true!== extInfl && this.eqCls[c].blngDefined()) extInfl = extInfl?true:'belongs:0';
 			
-			for(var e=0; e<elms.length; ++e) {
-				var usg = elms[e].dependance().usage(this).local;
+			if(extInfl) //If this refer to something defined in another context
+				toNeed.pushs(influence(ec.influence(this, extInfl), lcls));
+			if(true!== extInfl) for(var e in elms) if(cstmNdx(e)) {
+				//var usg = elms[e].dependance().usage(this).local;
 				//For each usage of this element, influence each other usage of the eqclass
 				for(var srcNdx in elms[e].dependance().usage(this).local)
-					lclInfl[srcNdx] = ec.influence(this, e, lclInfl[srcNdx]);
+					lclInfl[srcNdx] = ec.influence(this, e, extInfl, lclInfl[srcNdx]);
 			}
 		}
 		//2: use influence to need all influenced locals
@@ -263,7 +277,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 					}
 					else if(!alreadyBlg[s]) {
 						alreadyBlg[s] = true;
-						dstEqCls.isIn(s);
+						dstEqCls.isIn(s, this);
 					}
 		 		}
 	 		}
@@ -349,7 +363,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		ss = beArrg(arguments, 1);
  		if(!ss.length) return e;
  		var dstEC = this.inform(e);
- 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(ss[s]);
+ 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(ss[s], this);
  		return dstEC.taken(this);
  	},
  	
