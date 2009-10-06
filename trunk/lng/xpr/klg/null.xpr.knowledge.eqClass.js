@@ -70,7 +70,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		//Add an object to the equivalence class
 		nul.obj.use(o);
 		if(o.defined) {
-			if(this.defined())
+			if(this.eqvlDefined())
 				try {
 					nul.xpr.mod(klg, nul.xpr.knowledge);
 					var unf;
@@ -108,10 +108,21 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 * @return array(nul.xpr.object) Array of objects to equal to this eqCls afterward
 	 * @throws nul.failure
 	 */
-	isIn: function(s) {
+	isIn: function(s, klg) {
  		this.modify(); s.use();
- 		//TODO2: use intersect if possible
-		this.belongs.push(s);
+ 		if(s.defined) {
+ 			if(this.blngDefined()) {
+				nul.xpr.mod(klg, nul.xpr.knowledge);
+				var ntr;
+				try {
+					ntr = this.belongs[0].intersect(s, klg);
+				} catch(err) {
+					nul.failed(err);
+					ntr = s.intersect(this.belongs[0], klg);
+				}
+				if(ntr && true!== ntr) this.belongs[0] = unf;
+ 			} else this.belongs.unshift(s);
+ 		} else this.belongs.push(s);
 	},
 	
 	/**
@@ -126,7 +137,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 			var o = this.equivls.shift();
 			rv = [o.point, o.image];
 		}
-		if(!rv.length && this.defined()) {
+		if(!rv.length && this.eqvlDefined()) {
 			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
 			this.attribs = {'':'xprBunch'};
 		} else if(this.attribs !== attrs)
@@ -164,21 +175,25 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	/**
 	 * Compute the influence of this equivalence class (excluded 'exclElm')
 	 * @param {nul.xpr.knowledge} klg
-	 * @param {integer} exclElm Element to exclude, from the summary.components
-	 * @param {association(ndx=>infl)} already The influences already computed
+	 * @param {string: integer} excl Element to exclude, from the summary.components
+	 * @param {association(ndx=>infl)} already The influences already computed (modified by side-effect)
 	 * @return {association(ndx=>infl)} Where 'ndx' is a local index and 'infl' 1 or 2 
 	 */
-	influence: function(klg, exclElm, already) {
+	influence: function(klg, excl, only, already) {
 		var rv = already || {};
-		//TODO1: in attributes
-		for(var e=0; e<this.equivls.length; ++e) if(e!=exclElm) {
-			var usg = this.equivls[e].dependance().usage(klg).local;
-			for(var ndx in usg) rv[ndx] = 2;
+		var eqc = this;
+		var destSelect = function(cn, ndx) {
+			return excl!= cn+':'+ndx && excl!= cn+':*' && (!only || only==cn+':'+ndx || only==cn+':*')
+		};
+		var subInfluence = function(cn, infl) {
+			if(destSelect(cn))
+				for(var e in eqc[cn]) if(cstmNdx(e) && destSelect(cn, e))
+					for(var ndx in eqc[cn][e].dependance().usage(klg).local)
+						if(!rv[ndx] || rv[ndx]<infl) rv[ndx] = infl;
 		}
-		for(var e=0; e<this.belongs.length; ++e) if(e!=exclElm - this.equivls.length) {
-			var usg = this.belongs[e].dependance().usage(klg).local;
-			for(var ndx in usg) if(!rv[ndx]) rv[ndx] = 1;
-		}
+		subInfluence('equivls', 2);
+		subInfluence('belongs', 1);
+		subInfluence('attribs', 1);
 		return rv;
 	},
 	
@@ -199,14 +214,19 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		};
 		var nVals = maf(this.equivls, remover);
 		var nBlgs = maf(this.belongs, remover);
-		if(nVals.length == this.equivls.length && nBlgs.length == this.belongs.length) return this;
+		//TODO3: FA: do we forget attributes ?
+		//FA var nAtts = maf(this.attribs, remover);
+		if(nVals.length == this.equivls.length && nBlgs.length == this.belongs.length
+			/*FA && nAtts.length == this.attribs.length*/) return this;
 		var rv = this.modifiable();
 		rv.equivls = nVals;
 		rv.belongs = nBlgs;
+		//FA rv.attribs = nAtts;
 		return rv.built().placed(klg); 
 	},
 	
-	defined: function() { return this.equivls.length && this.equivls[0].defined; },
+	eqvlDefined: function() { return this.equivls.length && this.equivls[0].defined; },
+	blngDefined: function() { return this.belongs.length && this.belongs[0].defined; },
 	
 //////////////// nul.expression implementation
 	

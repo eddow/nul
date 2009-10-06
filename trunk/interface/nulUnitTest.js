@@ -7,7 +7,7 @@
  *--------------------------------------------------------------------------*/
 //ℕ  &#x2115;
 //ℚ	 &#x211a;
-//ℤ  '&#x2124;'
+//ℤ  &#x2124;
 //□  &#9633;
 //∈  &isin;
 //↵  &crarr;
@@ -44,8 +44,8 @@ tests = [
 	[
 		{xpr: '( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")',
 		rslt: '{u[g|1]; (([e: "o", f: "u", n: 1]u[g|1]))}'},
-		{xpr: 'a; N (a.nbr)',
-		rslt: 'todo'},
+		{xpr: 'a; Q (a.nbr)',
+		rslt: '{a[g|0]; (([nbr: &rarr;nbr[g|2]]a[g|0]) &and; (&rarr;nbr[g|2]) &isin; &#x211a;)}'},
 	].named('Attributes'),
 ].named('Unit testing');
 

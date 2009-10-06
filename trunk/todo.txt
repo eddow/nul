@@ -1,3 +1,5 @@
+; S = (_ ::number 1,_ ::number 2,_ ::number 3,_ ::number 4,_ ::number 5)
+
 inOrder S
 ; S = houses [1..5]
 ; houses = { {} [] (n,.. ns) =>  (_::number n),.. houses ns }
