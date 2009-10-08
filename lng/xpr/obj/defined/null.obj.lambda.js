@@ -40,13 +40,20 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 			klg.unify(this.point, o.point),
 			klg.unify(this.image, o.image));
 	},
-	
+
+//////////////// nul.xpr.object implementation
+
+	has: function($super, o) {
+		//TODO3
+	},
+		
 //////////////// nul.expression implementation
 
 	expression: 'lambda',
 	components: ['point', 'image'],
 	placed: function($super, prnt) {
 		if(this.point.toString() == this.image.toString())
+			//TODO0 Knowledge can bring this info too
 			return this.point;	//TODO4: another comparison?
 		return $super(prnt);
 	},

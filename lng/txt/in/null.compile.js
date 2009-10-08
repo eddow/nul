@@ -55,12 +55,10 @@ nul.compiled = {
 nul.operators = [
 	['[]','m'],								//booleans:meta OR
 	[';','m'],								//booleans:meta AND
-	['=>','r'],								//lambda
 	[',','k'],				 				//list
+	['=>','r'],								//lambda
 	['!','p'],
-	['=','m'], [':=','m'],					//unify
-	[':','m'],								//booleans:meta XOR
-	['?','m'],								//booleans:meta XOR
+	['=','m'], ['!=','r'],					//unify
 	['<','r'], ['>','r'], ['<=','r'], ['>=','r'],
 	['+','m'], ['-','l'],
 	['-','p'], ['#','p'],

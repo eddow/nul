@@ -19,8 +19,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
  		} else {
 			this.equivls = obj?[obj]:[];
 			this.belongs = [];
-			this.attribs = attr||{};
-			this.attribs[''] = 'xprBunch';
+			this.attribs = nul.xpr.beBunch(attr);
 		}
 	},
 
@@ -139,7 +138,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		}
 		if(!rv.length && this.eqvlDefined()) {
 			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
-			this.attribs = {'':'xprBunch'};
+			this.attribs = nul.xpr.beBunch();
 		} else if(this.attribs !== attrs)
 			this.attribs = merge(this.attribs, attrs, function(a,b) {
 				return a&&b?klg.unify(a,b):a||b;
@@ -236,8 +235,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		var rv = $super();
 		rv.equivls = clone1(rv.equivls);	//Equal values
 		rv.belongs = clone1(rv.belongs);	//Sets the values belong to
-		rv.attribs = clone1(rv.attribs);
-		rv.attribs[''] = 'xprBunch';
+		rv.attribs = nul.xpr.beBunch(clone1(rv.attribs));
 		return rv;		
 	},
 	fix: function($super) {

@@ -13,6 +13,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	initialize: function(klgName) {
  		//Create new objects each time
         this.locals = this.emptyLocals();
+        this.veto = [];
  		this.eqCls = [];		//Array of equivalence classes.
  		this.access = {};		//Access from an obj.ndx to an eq class it's in.
  		this.ior3 = [];	//List of unchoosed IOR3
@@ -166,6 +167,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 						rv.push(ndx);
 			return rv;
 		};
+		//TODO1: need opposition
 		var lclInfl = {};	//nx => {ndx: [0, 1, 2]}
 		//	0: no need
 		//	1: define content
@@ -336,6 +338,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 
 		this.addEqCls(klg.eqCls);
 		this.ior3.pushs(klg.ior3);
+ 		this.veto.pushs(klg.veto);
  		
  		if(val) return brwsr.browse(val);
  	},
@@ -358,7 +361,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @throws nul.failure
  	 */
  	belong: function(e, ss) {
- 		this.modify(); e.use(); nul.obj.use(ss);
+ 		this.modify(); nul.obj.use(e); nul.obj.use(ss);
 		
  		ss = beArrg(arguments, 1);
  		if(!ss.length) return e;
@@ -376,6 +379,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @throws {nul.failure}
  	 */
  	attribute: function(e, anm, vl) {
+ 		this.modify(); nul.obj.use(e); nul.obj.use(vl);
  		var attrs = {};
  		if(vl) attrs[anm] = vl;
  		else attrs = anm;
@@ -384,6 +388,21 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		return this.unify(ec);
  	},
 
+	/**
+	 * Brings a knowledge in opposition
+	 */
+	oppose: function(klg) {
+		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
+		if(klg.veto && klg.veto.length) {
+			klg = klg.modifiable();
+			while(klg.veto.length) this.merge(klg.veto.pop());
+			klg = klg.built();
+		}
+		if(0< klg.minXst()) nul.fail('Opposition : ', klg);
+		if(nul.xpr.knowledge.never!= klg) this.veto.push(klg);
+		return this;
+	},
+	 
  	/**
  	 * Get a pruned possible
  	 * @param {nul.xpr.object} value
@@ -408,7 +427,11 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 
 //TODO0: represent sur ior3s : useful or post-resolution ?
 		value = representer.browse(value);
-
+		
+		var opposition = this.veto;
+		this.veto = [];
+		while(opposition.length)
+			this.oppose(representer.browse(opposition.shift()));
  		this.pruned(value);
  		
  		return new nul.xpr.possible(value, this.built());
@@ -428,7 +451,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		return rv;
 	},
 	sum_minXst: function() {
-		if(this.eqCls.length) return 0;
+		if(this.eqCls.length || this.veto.length) return 0;
 		var rv = 1;
 		for(var h in this.ior3) if(cstmNdx(h))
 			rv *= this.ior3[h].minXst();
@@ -442,7 +465,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 //////////////// nul.expression implementation
 	
 	expression: 'klg',
-	components: ['eqCls','ior3'],
+	components: ['eqCls','ior3','veto'],
 	modifiable: function($super) {
 		var rv = $super();
 		rv.eqCls = [];
@@ -451,14 +474,18 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 			rv.accede(this.eqCls[i], i);
 		rv.ior3 = clone1(rv.ior3);
 		rv.locals = clone1(rv.locals);
+		rv.veto = clone1(rv.veto);
 		return rv;
 	},
 	
 	chew: function($super) {
 		var nwEqCls = this.eqCls;
+		var nwOppstn = this.veto;
+		this.veto = [];
 		this.eqCls = [];
 		this.access = {};
 		this.addEqCls(nwEqCls);
+		while(nwOppstn.length) this.oppose(nwOppstn.shift());
 		return $super();
 	},
 	
@@ -469,7 +496,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		return $super();
  	},
  	isFixed: function() {
- 		return (!this.eqCls.length && !this.nbrLocals() && !this.ior3.length);
+ 		return (!this.eqCls.length && !this.nbrLocals() && !this.ior3.length && !this.veto.length);
  	},
 });
 
@@ -600,6 +627,8 @@ nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.creat
 	modifiable: function() { return this; },
 	wrap: function(value) { return nul.xpr.failure; },
 	components: [],
+	minXst: function() { return 0; },
+	maxXst: function() { return 0; },
 }))();
 
 nul.xpr.knowledge.always = new (Class.create(nul.expression, {
@@ -611,4 +640,14 @@ nul.xpr.knowledge.always = new (Class.create(nul.expression, {
 	components: [],
 	ior3: [],
 	isFixed: function() { return true; },
+	minXst: function() { return 1; },
+	maxXst: function() { return 1; },
 }))();
+
+nul.xpr.knowledge.unification = function(objs) {
+	objs = beArrg(arguments);
+	nul.obj.use(objs);
+	var klg = new nul.xpr.knowledge();
+	klg.unify(objs);
+	return klg.built();
+};

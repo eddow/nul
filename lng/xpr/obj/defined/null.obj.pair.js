@@ -35,6 +35,10 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 //////////////// nul.obj.defined implementation
 
 	unified: function(o, klg) {
+		if('&phi;'== o.expression) {
+			klg.oppose(this.first.knowledge);
+			return klg.unify(this.second, o);
+		}
 		if('pair'!= o.expression) nul.fail(o, ' not a pair');
 		if(this.first.knowledge === o.first.knowledge)
 			return (new nul.obj.pair(
@@ -49,8 +53,9 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		
 	},
 
-	has: function(o) {
+	has: function($super, o) {
 		this.use(); nul.obj.use(o);
+		
 		//TODO3: summarise a tree of fixed values (=> ram db)
 		//make a table fct also
 		var rv = [];
@@ -73,12 +78,14 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	},
 	built: function($super) {
 		if(!this.first.distribuable()) return $super();
-		var ops = this.first.distribute();
-		var rv = this.second;
-		while(ops.length) {
-			var op = ops.pop();
-			rv = (new nul.obj.pair(op, rv)).built();
-		}
-		return rv;
+		return nul.obj.pair.list(this.second, this.first.distribute());
 	},
 });
+
+nul.obj.pair.list = function(flw, elms) {
+	elms = beArrg(arguments, 1);
+	nul.xpr.use(elms);
+	var rv = flw?flw:nul.obj.empty;
+	while(elms.length) rv = (new nul.obj.pair(elms.pop(), rv)).built();
+	return rv;
+};

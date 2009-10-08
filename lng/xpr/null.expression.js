@@ -158,9 +158,10 @@ nul.expression = Class.create({
 		//TODO3: assert no infinite recursion
 		nul.xpr.is(this);
 	 	items = beArrg(arguments);
-	 	var rv = '['+this.expression;
-	 	if(items && items.length) rv += ':' + items.join('|');
-	 	return rv+']';
+	 	var rv = [];
+	 	if(items) for(var e in items) if(cstmNdx(e))
+	 		rv.push(nul.xpr.indexedBunch(items[e]));
+	 	return '['+this.expression + (rv.length?(':' + rv.join('|')):'') +']';
 	},
 
 	sum_htmlTxt: function() { return nul.txt.html.toText(this); },
@@ -207,4 +208,21 @@ nul.xpr = {
  */
 nul.xpr.bunch = function(x) {
 	return isArray(x) || 'xprBunch'== x[''];
+};
+/**
+ * Mark an object as an expression bunch
+ * @param {association} x
+ * @return x that has been modified
+ */
+nul.xpr.beBunch = function(x) {
+	if(!x) x = {};
+	x[''] = 'xprBunch';
+	return x;
+};
+nul.xpr.indexedBunch = function(b) {
+	if(!nul.xpr.bunch(b)) return b.toString();
+	var rv = [];
+	for(var e in b) if(cstmNdx(e))
+		rv.push(e+':'+b.toString());
+	return rv.join('/');
 };

@@ -30,13 +30,11 @@ nul.understanding = {
 			case '%':
 				return new nul.obj.operation.binary(this.operator, ops);
 			//TODO3: > < >= <=
-			case '=>':
-				return new nul.obj.lambda(ops[0], ops[1]);
-			case ',':
-				var rv = ops.follow?ops.follow:nul.obj.empty;
-				while(ops.length) rv = (new nul.obj.pair(ops.pop(), rv)).built();
-				return rv;
+			case '=>': return new nul.obj.lambda(ops[0], ops[1]);
+			case ',': return nul.obj.pair.list(ops.follow, ops);
 			case '=': return ub.klg.unify(ops);
+			case '!=': ub.klg.oppose(nul.xpr.knowledge.unification(ops));
+				return ops[0];
 			case ';': return ops[0];
 			default:
 				throw nul.internalException('Unknown operator: "'+operator+'"');
@@ -92,7 +90,18 @@ nul.understanding = {
 	},
 
 	xml: function(ub) {
-		//TODO3
+		var attrs = {};
+		for(var an in this.attributes) if(cstmNdx(an))
+			attrs[an] = this.attributes[an].understand(ub);
+		//TODO2: content
+		return new nul.obj.node(
+			this.node,
+			map(this.attributes, function() {
+				return this.understand(ub);
+			}),
+			nul.obj.pair.list(null, map(this.content, function() {
+				return this.understand(ub);
+			})));
 	},
 
 	composed: function(ub) {
@@ -154,9 +163,7 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 	},
 	understand: function(cnt) {
 		try {
-			return (new nul.obj.pair(
-				this.klg.wrap(cnt.understand(this)),
-				nul.obj.empty)).built();
+			return nul.obj.pair.list(null, this.klg.wrap(cnt.understand(this)));
 		} catch(err) {
 			nul.failed(err);
 			return nul.obj.empty;
