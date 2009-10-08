@@ -162,7 +162,7 @@ function arrg(args, ndx) {
 function beArrg(args, ndx) {
 	if(!ndx) ndx = 0;
 	if(ndx >= args.length) return [];
-	if(1+ndx== args.length && isArray(args[ndx])) return args[ndx];
+	if(1+ndx== args.length && isArray(args[ndx])) return clone1(args[ndx]);
 	return arrg(args, ndx);
 }
 

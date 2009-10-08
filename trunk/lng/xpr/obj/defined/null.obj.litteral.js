@@ -22,7 +22,7 @@ nul.obj.litteral.number = Class.create(nul.obj.litteral, {
 	},
 
 	has: function(o) {
-		return [];	//TODO4: exception ?
+		nul.fail(o, ' doesnt contains anything');
 	},
 	
 //////////////// nul.expression implementation

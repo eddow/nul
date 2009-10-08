@@ -47,10 +47,10 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 	attribute: function(an) {
 		var af = this.attributes[an];
 		if(!af) {
-			if(an) nul.fail(this, 'doesnt have the attribute "'+an+'"');
-			return this;
+			if(' '!= an) nul.fail(this, 'doesnt have the attribute "'+an+'"');
+			return this;	//TODO4: useful ?
 		}
-		return af.apply(this);
+		return ('function'== typeof af)?af.apply(this):af;
 	},
 
 });

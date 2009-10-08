@@ -34,11 +34,11 @@ tests = [
 		rslt: '{(5 &rArr; &crarr;[g|3], _[g|2]) &#9633; (_[g|1], 5 &rArr; &crarr;[g|3])}'},
 	].named('Simples'),
 	[
-		{xpr: 't "j"'+
-			'; f = (("l", "j"), ("a", "l"), ("l", "p"))'+
-			'; t = { (a => b); f(x, a); f(x, b) }',
-		rslt: '("j", "p")'},
-		{xpr: 'i [1..3] _ ; i = { \\/x {x} => {} [] ((a,b,.. o) => (a,b),.. i(b,.. o) ) }',
+		{xpr: 'b "j"'+
+			'; f = ("j"=>"l", "l"=>"a", "p"=>"l")'+
+			'; b = { x => y != x; f x = f y }',
+		rslt: '{"p"}'},
+		{xpr: 'i [1..3] _ ; i = { \\/x {x} => {} [] (a,b,.. o) => ((a,b),.. i(b,.. o) ) }',
 		rslt: '((1, 2), (2, 3))'},
 	].named('Complexs'),
 	[
@@ -46,6 +46,8 @@ tests = [
 		rslt: '{u[g|1]; (([e: "o", f: "u", n: 1]u[g|1]))}'},
 		{xpr: 'a; Q (a.nbr)',
 		rslt: '{a[g|0]; (([nbr: &rarr;nbr[g|2]]a[g|0]) &and; (&rarr;nbr[g|2]) &isin; &#x211a;)}'},
+		{xpr: '(cmplx c).pair ; c.real = 5 ; c.img = 3 ; cmplx = {_ ::real(Q r) ::img(Q i) ::pair(i,r)}',
+		rslt: '{(3, 5)}'},
 	].named('Attributes'),
 ].named('Unit testing');
 

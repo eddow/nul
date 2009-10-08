@@ -174,14 +174,17 @@ nul.txt.html = merge({
 		},
 		klg: function() {
 			if(this==nul.xpr.knowledge.never) return {'':html.op('Never')};
-			if(this==nul.xpr.knowledge.always) return {'':''};
+			if(this==nul.xpr.knowledge.always) return {'':html.op('Always')};
 			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
 			/*var dior3 = [], deps = this.	//TODO2: retrieve usage
 			for(var i=0; i< this.ior3.length; ++i)
 				if()*/
 			var kior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'))
+			var veto = nul.txt.html.all(this.veto).join(html.op('&or;'))
 			if(rv && kior3) rv += html.op('&and;') + kior3;
 			else if(kior3) rv = kior3;
+			if(rv && veto) rv += html.op('&and;')+html.op('&not;') + veto;
+			else if(veto) rv = html.op('&not;') + veto;
 			return {
 				'': rv?(html.op('(')+rv+html.op(')')):'',
 				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):''),

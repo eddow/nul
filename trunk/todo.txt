@@ -1,4 +1,24 @@
-; S = (_ ::number 1,_ ::number 2,_ ::number 3,_ ::number 4,_ ::number 5)
+\/people
+<table>
+	<tr><th>Name></th><th>Father name</th></tr>
+	<(
+		\/p <tr><td><(p.name)></td><td><(p.father)></td></tr>
+		; people p
+	)>
+</table>
+
+; people =
+<ppl>
+<person name="jean" father="luc" />
+<person name="luc" father="andre" />
+<person name="pierre" father="luc" />
+</ppl>
+; brother = { (people x) => (people y) ::father(x.father) != x}
+
+
+
+
+cmplx c ; c.real = 5 ; c.img = 3 ; cmplx = {_ ::real(Q r) ::img(Q i) ::pair(i,r)}
 
 inOrder S
 ; S = houses [1..5]
@@ -14,6 +34,7 @@ inOrder [1..]			//inf decomposition
 }
 
 
+; S = (_ ::number 1,_ ::number 2,_ ::number 3,_ ::number 4,_ ::number 5)
 S = houses [1..5]
 ; houses = { {} [] (n,.. ns) =>  (_::number n),.. houses ns }
 ; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
@@ -43,5 +64,9 @@ dblAll (1,2)
 
 
 frere "françois"
-; parent = (("luc", "françois"), ("rené", "luc"), ("luc", "olivier"))
-; frere = { (a => b); parent(p, a); parent(p, b) }
+; fils = ("luc"=>"françois", "rené"=>"luc", "luc"=>"olivier")
+; frere = { fils x => fils x }
+
+frere "françois"
+; pere = ("françois"=>"luc", "luc"=>"rené", "olivier"=>"luc")
+; frere = { a => b; pere a = pere b; {}={a=b} }
