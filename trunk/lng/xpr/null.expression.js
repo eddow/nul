@@ -152,7 +152,10 @@ nul.expression = Class.create({
 	},
 	
 	sum_index: function() {
-		return this.indexedSub(vals(this.sum_components()));
+		var cs = [];
+		for(var c in this.components) if(cstmNdx(c))
+			cs.push(this[this.components[c]]);
+		return this.indexedSub(cs);
 	},
 	indexedSub: function(items) {
 		//TODO3: assert no infinite recursion
@@ -223,6 +226,6 @@ nul.xpr.indexedBunch = function(b) {
 	if(!nul.xpr.bunch(b)) return b.toString();
 	var rv = [];
 	for(var e in b) if(cstmNdx(e))
-		rv.push(e+':'+b.toString());
+		rv.push(e+':'+b[e].toString());
 	return rv.join('/');
 };
