@@ -5,7 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
+
 var nul = {
 	failure: 'failure',
 	/**
@@ -45,17 +45,9 @@ var nul = {
 	{
 		nul.erroneus = false;
 		var comps = nul.compiler(txt+' </').innerXML();
-		var gu = nul.globalsUse();
-		for(var i=0; i<comps.length; ++i) {
-			var ub = new nul.understanding.base.set(gu);
-			comps[i] = ub.valued(comps[i]);
-		}
-		gu.valued();
+		for(var i=0; i<comps.length; ++i)
+			comps[i] = nul.globalsUse().understand(comps[i]);
 		return comps;
-	},
-	onload: function() {
-		for(p in nul.natives)
-			nul.globals[p] = nul.natives[p];
 	},
 
 	/**
@@ -67,5 +59,3 @@ var nul = {
 		return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
 	},
 };
-
-new Event.observe(window, 'load', nul.onload);
