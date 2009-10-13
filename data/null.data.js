@@ -48,4 +48,13 @@ nul.data = Class.create({
 	 */
 	index: null,	//Abstract
 });
- 
+
+nul.data.query = function(obj) {
+	nul.obj.use(obj);
+	
+};
+
+nul.data.querier = Class.create(nul.browser.bijectif, {
+//TODO
+});
+}
