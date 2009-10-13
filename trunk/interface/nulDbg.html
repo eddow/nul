@@ -9,61 +9,14 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 <html>
 <head>
 <link href="nulDbg.css" rel="stylesheet" type="text/css"></link>
-<link href="../lng/null.css" rel="stylesheet" type="text/css"></link>
 
-<script type="text/javascript" src="../prototype.js"></script>
-
-<script type="text/javascript" src="../lng/krnl/null.std.js"></script>
-<script type="text/javascript" src="../lng/krnl/null.debug.js"></script>
-<script type="text/javascript" src="../lng/krnl/null.exception.js"></script>
-<script type="text/javascript" src="../lng/krnl/null.execution.js"></script>
-<script type="text/javascript" src="../lng/krnl/null.helper.js"></script>
-<script type="text/javascript" src="../lng/krnl/null.dependance.js"></script>
-
-<script type="text/javascript" src="../lng/txt/in/null.understand.js"></script>
-<script type="text/javascript" src="../lng/txt/in/null.compile.js"></script>
-<script type="text/javascript" src="../lng/txt/in/null.tokenizer.js"></script>
-
-<script type="text/javascript" src="../lng/txt/out/null.txt.js"></script>
-<script type="text/javascript" src="../lng/txt/out/null.txt.flat.js"></script>
-<script type="text/javascript" src="../lng/txt/out/null.txt.html.js"></script>
-
-<script type="text/javascript" src="../lng/xpr/null.expression.js"></script>
-
-<script type="text/javascript" src="../lng/algo/null.browse.js"></script>
-<script type="text/javascript" src="../lng/algo/null.solve.js"></script>
-
-<script type="text/javascript" src="../lng/xpr/klg/null.xpr.knowledge.js"></script>
-<script type="text/javascript" src="../lng/xpr/klg/null.xpr.knowledge.eqClass.js"></script>
-<script type="text/javascript" src="../lng/xpr/klg/null.xpr.knowledge.ior3.js"></script>
-<script type="text/javascript" src="../lng/xpr/klg/null.xpr.possible.js"></script>
-
-<script type="text/javascript" src="../lng/xpr/obj/null.xpr.object.js"></script>
-
-<script type="text/javascript" src="../lng/xpr/obj/defined/null.obj.defined.js"></script>
-<script type="text/javascript" src="../lng/xpr/obj/defined/null.obj.data.js"></script>
-<script type="text/javascript" src="../lng/xpr/obj/defined/null.obj.litteral.js"></script>
-<script type="text/javascript" src="../lng/xpr/obj/defined/null.obj.pair.js"></script>
-<script type="text/javascript" src="../lng/xpr/obj/defined/null.obj.sets.js"></script>
-<script type="text/javascript" src="../lng/xpr/obj/defined/null.obj.lambda.js"></script>
-<script type="text/javascript" src="../lng/xpr/obj/defined/null.obj.node.js"></script>
-
-<script type="text/javascript" src="../lng/xpr/obj/undefined/null.obj.undefined.js"></script>
-<script type="text/javascript" src="../lng/xpr/obj/undefined/null.obj.local.js"></script>
-<script type="text/javascript" src="../lng/xpr/obj/undefined/null.obj.operation.js"></script>
-<script type="text/javascript" src="../lng/xpr/obj/undefined/null.obj.ior3.js"></script>
-
-<script type="text/javascript" src="../web/null.page.js"></script>
-
-<script type="text/javascript" src="../data/null.data.js"></script>
-<script type="text/javascript" src="../data/null.data.onPage.js"></script>
-
+<script type="text/javascript" src="../null.js"></script>
 <script type="text/javascript" src="nulDbg.js"></script>
 
 </head>
-<body onload="init();">
+<body>
 	<div id="dbgOptions">
-		<input type="button" onclick="nul.page.loads();" value="Reload"></input>
+		<input type="button" onclick="nul.page.load();" value="reload"></input>
 		<fieldset>
 		<legend>
 			<input id="shwLogging" type="checkbox" onclick="shwLoggingClk();" checked="checked"/>
@@ -94,7 +47,7 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 		</div>
 		<div>
 			<div class="msTab" name="values">
-				<nul:place id="sandBox"><b>yh</b><i>oo</i></div>
+				<nul:place id="sandBox"><b t="3">yh</b><i t="4">oo</i></div>
 			</div>
 			<div class="msTab" name="runtime">
 				<fieldset><legend>Call stack</legend><table id="callStack"></table></fieldset>

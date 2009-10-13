@@ -1,13 +1,12 @@
 nul.page = {
-	loads: function() {
+	load: function() {
 		for(var l in nul.page.load)
-			if(cstmNdx(l, nul.page.load))
+			if(!function(){}[l])
 				nul.page.load[l].apply(document);
 	},
-	load: {},
 	error: function(msg) {
 		//alert(msg);
 	},
 };
 
-new Event.observe(window, 'load', nul.page.loads);
+new Event.observe(window, 'load', nul.page.load);

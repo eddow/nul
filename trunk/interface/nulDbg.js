@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
  
-function init()
+nul.page.load.nulDbg = function()
 {
 	selectNamedTab($('info'),$('infoTS').value);
 	nul.debug.callStack.table = $('callStack');
@@ -14,10 +14,8 @@ function init()
 	src = document.getElementById('source');
 	evd = document.getElementById('evaled');
 	wtc = document.getElementById('watch');
-	sbx = document.getElementById('sandBox');
-	//nul.globals.sandBox = nul.?.htmlPlace(sbx);
-	for(var i in this) knGlobs[i] = true;
-}
+	for(var i in window) knGlobs[i] = true;
+};
 
 function evaluate()
 {
