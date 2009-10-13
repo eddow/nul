@@ -644,8 +644,12 @@ nul.dependance = Class.create({
 	initialize: function(lcl) {
 		this.usages = {};
 		if(lcl) {
-			nul.xpr.is(lcl, nul.obj.lcl);
-			this.depend(lcl.klgRef, 'local', lcl.ndx, lcl);
+			nul.obj.is(lcl);
+			switch(lcl.expression) {
+			case 'local': this.depend(lcl.klgRef, 'local', lcl.ndx, lcl); break;
+			case 'data': this.depend(lcl.source.context, 'local', lcl.source.index, lcl); break;
+			default: throw nul.internalException('No dependance defined for '+lcl.expression);
+			}
 		}
 	},
 	
@@ -773,6 +777,10 @@ nul.understanding = {
 			case '!=': ub.klg.oppose(nul.xpr.knowledge.unification(ops));
 				return ops[0];
 			case ';': return ops[0];
+			case ':': 
+				var rv = ub.createFreedom(nul.understanding.rvName, false);
+				ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
+				return rv;
 			default:
 				throw nul.internalException('Unknown operator: "'+operator+'"');
 		}
@@ -972,7 +980,7 @@ nul.operators = [
 	['+','m'], ['-','l'],
 	['-','p'], ['#','p'],
 	['*','m'], ['/','l'], ['%','l'],
-	['$','p'],
+	['$','p'], [':','l'],
 ];
 
 nul.compiler = function(txt)
@@ -1435,6 +1443,9 @@ nul.txt.flat = merge({
 			if(pinf!= this.upper) rv += this.upper;
 			return rv + ']';
 		},
+		data: function() {
+			return '['+this.source.context+':'+this.source.index+']';
+		},
 		other: function() {
 			return this.expression;
 		},
@@ -1576,10 +1587,11 @@ nul.txt.html = merge({
 		local: function() {
 			return {
 				'': this.dbgName? (
-                	this.dbgName+
-                	html.span('desc', html.span('sup',this.ndx)+
-                	html.span('sub',this.klgRef))
-                ) : this.ndx+html.span('desc', html.span('sub',this.klgRef))};
+	                	this.dbgName+
+	                	html.span('desc', html.span('sup',this.ndx)+
+	                	html.span('sub',this.klgRef))
+                	) : this.ndx+html.span('desc', html.span('sub',this.klgRef))
+                };
 		},
 		attribute: function() {
 			return {'': this.ofObject.toHtml() + html.op('&rarr;' + this.attributeName)};
@@ -1618,6 +1630,13 @@ nul.txt.html = merge({
 			return {'': ltr+html.span('desc',
 				html.span('sup',(pinf==this.upper)?'&infin;':this.upper)+
                 html.span('sub',(ninf==this.lower)?'&infin;':this.lower))};
+		},
+		data: function() {
+			return {
+				'': html.span('op','&Dagger;') +
+	                	html.span('desc', html.span('sup',this.source.index)+
+	                	html.span('sub',this.source.context))
+                };
 		},
 		other: function() {
 			return {'': this.expression};
@@ -2519,6 +2538,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @return nul.xpr.object
  	 */
  	hesitate: function(choices) {
+ 		choices = beArrg(arguments);
  		this.modify();
 		switch(choices.length) {
 		case 0:
@@ -3113,7 +3133,10 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	placed: function($super, prnt) {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);
-		//TODO3: if(!this.belongs.length && !eqs.length) return;
+		if(!this.equivls.length && isEmpty(this.attribs,['']) && 1== this.belongs.length && this.blngDefined()) {
+			if('&phi;'== this.belongs[0].expression) nul.fail("&phi; is empty");
+			return;
+		}
 		if(!this.belongs.length && (!this.equivls.length || 
 			(1== this.equivls.length && isEmpty(this.attribs,['']))))
 				return;
@@ -3496,9 +3519,10 @@ nul.obj.litteral['boolean'] = Class.create(nul.obj.litteral, {
  * Make a litteral from a javascript value
  */
 nul.obj.litteral.make = function(v) {
+	if(nul.debug.assert) assert(nul.obj.litteral[typeof v], (typeof v)+' is a litteral type')
 	return new nul.obj.litteral[typeof v](v);
 };
-
+/*
 nul.obj.litteral.straightArythmetics = function(expression, oprtr, srnd) {
 	srnd = srnd || '';
 	return function(op1, op2, klg) {
@@ -3518,7 +3542,7 @@ nul.obj.litteral.attr.string['+'] = nul.obj.litteral.straightArythmetics('string
 //TODO4: integers and & | ^
 map(['+', '-', '*', '/', '%'],
 	function(i,v) { nul.obj.litteral.attr.number[v] = nul.obj.litteral.straightArythmetics('number',v); });
-/*  NUL language JavaScript framework
+*//*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
  *
  * NUL is freely distributable under the terms of GNU GPLv3 license.
@@ -3643,9 +3667,7 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, {
 	intersect: function(o) {
 		nul.fail('No intersection with ', this);
 	},
-	has: function(o) {
-		return [];
-	},
+	has: function() { return []; },
 	
 	expression: '&phi;',
 	
@@ -3767,7 +3789,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 //////////////// public
 
 	/**
-	 * Specify this belongs ot a set (not a function).
+	 * Specify this belongs to a set (not a function).
 	 * Build a possible value where point=image in 's'
 	 * @param {nul.xpr.object} s
 	 * @return nul.xpr.possible
@@ -3775,6 +3797,32 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 	isInSet: function(s) {
 		var klg = new nul.xpr.knowledge();
 		return klg.wrap(klg.hesitate(s.having(klg.unify(this.point, this.image))));
+	},
+
+	/**
+	 * Specify this belongs to a set (not a function).
+	 * Build a possible value where point=image in 's'
+	 * @param {nul.xpr.object} p Domain / Lambda set (optional)
+	 * @param {nul.xpr.object} i Image set
+	 * @return nul.xpr.possible
+	 */
+	isInFct: function(p, i) {
+		var l;
+		if(i) l = new nul.obj.lambda(p, i);
+		else {
+			l = p;
+			p = l.point;
+			i = l.image;
+		}
+		var klg = new nul.xpr.knowledge();
+		var kSep = new nul.xpr.knowledge();	//a=>b in A=>B iif a in A and b in B
+		var vSep = kSep.wrap(
+				new nul.obj.lambda(
+						kSep.hesitate(p.having(this.point)),
+						kSep.hesitate(i.having(this.image)) )
+				);
+		var vMut = this.isInSet(l);	//a=>b in A=>B iif (a=b) in A=>B
+		return klg.wrap(klg.hesitate(vSep, vMut));
 	},
 
 //////////////// nul.obj.defined implementation
@@ -3791,7 +3839,12 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 //////////////// nul.xpr.object implementation
 
 	has: function($super, o) {
-		//TODO3
+		if(!o.defined) return $super(o);
+		if('lambda'!= o.expression) {
+			var klg = new nul.xpr.knowledge();
+			return klg.wrap(klg.hesitate(this.point.having(klg.hesitate(this.image.having(o)))));
+		}
+		return o.isInFct(this);
 	},
 		
 //////////////// nul.expression implementation
@@ -3885,14 +3938,12 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 		});
 	},
 
-//////////////// public
+////////////////nul.expression implementation
 
 	sum_dependance: function($super) {
 		return new nul.dependance(this);
 	},
 	
-//////////////// nul.expression implementation
-
 	expression: 'local',
 	invalidateTexts: function($super, dbgName) {
 		this.dbgName = dbgName;
@@ -3984,4 +4035,16 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, {
 			'IOR3 has same values as the correspondant knowledge entry')
 		$super();
 	},
-});
+});nul.page = {
+	loads: function() {
+		for(var l in nul.page.load)
+			if(cstmNdx(l, nul.page.load))
+				nul.page.load[l].apply(document);
+	},
+	load: {},
+	error: function(msg) {
+		//alert(msg);
+	},
+};
+
+new Event.observe(window, 'load', nul.page.loads);

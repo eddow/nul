@@ -59,9 +59,10 @@ nul.obj.litteral['boolean'] = Class.create(nul.obj.litteral, {
  * Make a litteral from a javascript value
  */
 nul.obj.litteral.make = function(v) {
+	if(nul.debug.assert) assert(nul.obj.litteral[typeof v], (typeof v)+' is a litteral type')
 	return new nul.obj.litteral[typeof v](v);
 };
-
+/*
 nul.obj.litteral.straightArythmetics = function(expression, oprtr, srnd) {
 	srnd = srnd || '';
 	return function(op1, op2, klg) {
@@ -81,3 +82,4 @@ nul.obj.litteral.attr.string['+'] = nul.obj.litteral.straightArythmetics('string
 //TODO4: integers and & | ^
 map(['+', '-', '*', '/', '%'],
 	function(i,v) { nul.obj.litteral.attr.number[v] = nul.obj.litteral.straightArythmetics('number',v); });
+*/

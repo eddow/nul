@@ -20,7 +20,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 //////////////// public
 
 	/**
-	 * Specify this belongs ot a set (not a function).
+	 * Specify this belongs to a set (not a function).
 	 * Build a possible value where point=image in 's'
 	 * @param {nul.xpr.object} s
 	 * @return nul.xpr.possible
@@ -28,6 +28,32 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 	isInSet: function(s) {
 		var klg = new nul.xpr.knowledge();
 		return klg.wrap(klg.hesitate(s.having(klg.unify(this.point, this.image))));
+	},
+
+	/**
+	 * Specify this belongs to a set (not a function).
+	 * Build a possible value where point=image in 's'
+	 * @param {nul.xpr.object} p Domain / Lambda set (optional)
+	 * @param {nul.xpr.object} i Image set
+	 * @return nul.xpr.possible
+	 */
+	isInFct: function(p, i) {
+		var l;
+		if(i) l = new nul.obj.lambda(p, i);
+		else {
+			l = p;
+			p = l.point;
+			i = l.image;
+		}
+		var klg = new nul.xpr.knowledge();
+		var kSep = new nul.xpr.knowledge();	//a=>b in A=>B iif a in A and b in B
+		var vSep = kSep.wrap(
+				new nul.obj.lambda(
+						kSep.hesitate(p.having(this.point)),
+						kSep.hesitate(i.having(this.image)) )
+				);
+		var vMut = this.isInSet(l);	//a=>b in A=>B iif (a=b) in A=>B
+		return klg.wrap(klg.hesitate(vSep, vMut));
 	},
 
 //////////////// nul.obj.defined implementation
@@ -44,7 +70,12 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 //////////////// nul.xpr.object implementation
 
 	has: function($super, o) {
-		//TODO3
+		if(!o.defined) return $super(o);
+		if('lambda'!= o.expression) {
+			var klg = new nul.xpr.knowledge();
+			return klg.wrap(klg.hesitate(this.point.having(klg.hesitate(this.image.having(o)))));
+		}
+		return o.isInFct(this);
 	},
 		
 //////////////// nul.expression implementation

@@ -50,6 +50,9 @@ nul.txt.flat = merge({
 			if(pinf!= this.upper) rv += this.upper;
 			return rv + ']';
 		},
+		data: function() {
+			return '['+this.source.context+':'+this.source.index+']';
+		},
 		other: function() {
 			return this.expression;
 		},

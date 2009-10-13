@@ -33,9 +33,7 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, {
 	intersect: function(o) {
 		nul.fail('No intersection with ', this);
 	},
-	has: function(o) {
-		return [];
-	},
+	has: function() { return []; },
 	
 	expression: '&phi;',
 	

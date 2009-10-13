@@ -301,6 +301,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @return nul.xpr.object
  	 */
  	hesitate: function(choices) {
+ 		choices = beArrg(arguments);
  		this.modify();
 		switch(choices.length) {
 		case 0:

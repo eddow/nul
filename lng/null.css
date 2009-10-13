@@ -86,17 +86,20 @@ span.failure {
 .desc {
 	font-size: xx-small;
 	color: #004040;
-	vertical-align: top;
+	vertical-align: middle;
+	display: inline-table;
+}
+
+.desc span {
+	display: table-row;
 }
 
 .desc .sup {
-	vertical-align: top;
-	display: table-row;
+	vertical-align: text-top;
 }
 
 .desc .sub {
-	vertical-align: bottom;
-	display: table-row;
+	vertical-align: text-bottom;
 }
 
 a.shortStr, a.index, a.locals, a.dependances, a.flags, a.reference {
