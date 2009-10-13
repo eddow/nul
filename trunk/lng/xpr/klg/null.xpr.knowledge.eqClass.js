@@ -243,7 +243,10 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	placed: function($super, prnt) {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);
-		//TODO3: if(!this.belongs.length && !eqs.length) return;
+		if(!this.equivls.length && isEmpty(this.attribs,['']) && 1== this.belongs.length && this.blngDefined()) {
+			if('&phi;'== this.belongs[0].expression) nul.fail("&phi; is empty");
+			return;
+		}
 		if(!this.belongs.length && (!this.equivls.length || 
 			(1== this.equivls.length && isEmpty(this.attribs,['']))))
 				return;

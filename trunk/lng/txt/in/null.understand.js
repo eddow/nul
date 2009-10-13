@@ -36,6 +36,10 @@ nul.understanding = {
 			case '!=': ub.klg.oppose(nul.xpr.knowledge.unification(ops));
 				return ops[0];
 			case ';': return ops[0];
+			case ':': 
+				var rv = ub.createFreedom(nul.understanding.rvName, false);
+				ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
+				return rv;
 			default:
 				throw nul.internalException('Unknown operator: "'+operator+'"');
 		}

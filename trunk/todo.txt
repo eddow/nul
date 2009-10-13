@@ -1,3 +1,5 @@
+(Q => [..]) (a => b)
+
 \/people
 <table>
 	<tr><th>Name></th><th>Father name</th></tr>

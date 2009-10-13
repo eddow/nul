@@ -1,19 +1,13 @@
-nul.page = function() {
-	var elms = document.getElementsByTagName('nul:cnst');
-	for(var e in elms) if(cstmNdx(e)) {
-		var cnst = nul.html(elms[e].innerHTML);
-		for(var n in cnst) if(cstmNdx(n)) {
-			nul.xpr.use(cnst[n], nul.obj.node);
-			if(nul.globals[cnst[n].tag])
-				nul.page.error(cnst[n].tag + ' defined twice');
-			else nul.globals[cnst[n].tag] = cnst[n];
-		}
-		//TODO: remove nul:cnst element
-	}
+nul.page = {
+	loads: function() {
+		for(var l in nul.page.load)
+			if(cstmNdx(l, nul.page.load))
+				nul.page.load[l].apply(document);
+	},
+	load: {},
+	error: function(msg) {
+		//alert(msg);
+	},
 };
 
-nul.page.error = function(msg) {
-	alert(msg);
-};
-
-new Event.observe(window, 'load', nul.page);
+new Event.observe(window, 'load', nul.page.loads);

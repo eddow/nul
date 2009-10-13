@@ -13,8 +13,12 @@ nul.dependance = Class.create({
 	initialize: function(lcl) {
 		this.usages = {};
 		if(lcl) {
-			nul.xpr.is(lcl, nul.obj.lcl);
-			this.depend(lcl.klgRef, 'local', lcl.ndx, lcl);
+			nul.obj.is(lcl);
+			switch(lcl.expression) {
+			case 'local': this.depend(lcl.klgRef, 'local', lcl.ndx, lcl); break;
+			case 'data': this.depend(lcl.source.context, 'local', lcl.source.index, lcl); break;
+			default: throw nul.internalException('No dependance defined for '+lcl.expression);
+			}
 		}
 	},
 	

@@ -25,14 +25,12 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 		});
 	},
 
-//////////////// public
+////////////////nul.expression implementation
 
 	sum_dependance: function($super) {
 		return new nul.dependance(this);
 	},
 	
-//////////////// nul.expression implementation
-
 	expression: 'local',
 	invalidateTexts: function($super, dbgName) {
 		this.dbgName = dbgName;

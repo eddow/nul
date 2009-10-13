@@ -87,10 +87,11 @@ nul.txt.html = merge({
 		local: function() {
 			return {
 				'': this.dbgName? (
-                	this.dbgName+
-                	html.span('desc', html.span('sup',this.ndx)+
-                	html.span('sub',this.klgRef))
-                ) : this.ndx+html.span('desc', html.span('sub',this.klgRef))};
+	                	this.dbgName+
+	                	html.span('desc', html.span('sup',this.ndx)+
+	                	html.span('sub',this.klgRef))
+                	) : this.ndx+html.span('desc', html.span('sub',this.klgRef))
+                };
 		},
 		attribute: function() {
 			return {'': this.ofObject.toHtml() + html.op('&rarr;' + this.attributeName)};
@@ -129,6 +130,13 @@ nul.txt.html = merge({
 			return {'': ltr+html.span('desc',
 				html.span('sup',(pinf==this.upper)?'&infin;':this.upper)+
                 html.span('sub',(ninf==this.lower)?'&infin;':this.lower))};
+		},
+		data: function() {
+			return {
+				'': html.span('op','&Dagger;') +
+	                	html.span('desc', html.span('sup',this.source.index)+
+	                	html.span('sub',this.source.context))
+                };
 		},
 		other: function() {
 			return {'': this.expression};
