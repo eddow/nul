@@ -1,0 +1,14 @@
+<set
+
+tuple
+={	{} => { {} }
+[]	(T,.. Ts) => ( T _,.. set.tuple Ts )
+}
+
+sub
+={ {} => {}
+[] (a,.. r) => (a,.. set.sub r)
+[] (_,.. r) => set.sub r 
+}
+
+/>

@@ -6,15 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
  
-nul.alphabets = {
-	number:		'(\\d+(\\.\\d+)?)',
-	alphanum:	'([_\\w@]+)',
-	string:		'"([^"]*)"',
-	space:		'\\s+',
-	comm1:		'\\/\\/.*\n/',
-	comm2:		'\\/\\*.*\\*\\/',
-	oprtr:		'([\\~\\:\\+\\-\\>\\<\\=\\*\\/\\!\\&\\|\\\\\\/\\.\\?\\[\\]\\,]+)'
-};
 nul.tokenizer = function(src)
 {
 	var rv = {
@@ -30,7 +21,7 @@ nul.tokenizer = function(src)
 			{
 				if(''== this.txt)
 					return this.token = { value: '', type: 'eof' };
-				for(alphabet in nul.alphabets)
+				for(alphabet in nul.tokenizer.alphabets)
 					if(match = nul.tokenizer.isAB(this.txt, alphabet))
 					{
 						this.token = {
@@ -149,6 +140,17 @@ nul.tokenizer = function(src)
 	rv.next();
 	return rv;
 };
+
 nul.tokenizer.isAB = function(v, alphabet) {
-	return (new RegExp('^'+nul.alphabets[alphabet], 'g')).exec(v);
+	return (new RegExp('^'+nul.tokenizer.alphabets[alphabet], 'g')).exec(v);
 };
+
+nul.tokenizer.alphabets = {
+		number:		'(\\d+(\\.\\d+)?)',
+		alphanum:	'([_\\w@]+)',
+		string:		'"([^"]*)"',
+		space:		'\\s+',
+		comm1:		'\\/\\/.*\n',
+		comm2:		'\\/\\*.*\\*\\/',
+		oprtr:		'([\\~\\:\\+\\-\\>\\<\\=\\*\\/\\!\\&\\|\\\\\\/\\.\\?\\[\\]\\,]+)'
+	};

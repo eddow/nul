@@ -51,10 +51,22 @@ nul.data = Class.create({
 
 nul.data.query = function(obj) {
 	nul.obj.use(obj);
-	
+	//TODO2
 };
 
 nul.data.querier = Class.create(nul.browser.bijectif, {
-//TODO
+	initialize: function($super) {
+		this.klgs = [];
+	},
+	prepare: function(xpr) {
+		if('possible'== xpr.expression) {
+			var nklg = xpr.knowledge.modifiable();
+			nklg.merge(this.klgs[0]);
+			this.klgs.unshift(nklg);
+		}
+	},
+	transform: function(xpr) {
+		if('possible'== xpr.expression)
+			this.klgs.shift();
+	},
 });
-}

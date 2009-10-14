@@ -93,7 +93,9 @@ if (document.getElementsByTagName) {
 				}catch(e){}
 			return null;
 		}
-		//while(nulFiles.length) addRef(head, nsn, 'script', {type: 'text/javascript', src: path+nulFiles.shift()+'.js'});
+		//*
+		while(nulFiles.length) addRef(head, nsn, 'script', {type: 'text/javascript', src: path+nulFiles.shift()+'.js'});
+		/*/
 		while(nulFiles.length)
 		{
 			
@@ -101,7 +103,7 @@ if (document.getElementsByTagName) {
 			oXML.open('GET', path+nulFiles.shift()+'.js', false);
 			oXML.send('');
 			eval(oXML.responseText);
-		}
+		}	//*/
 		
 		addRef(head, nsn, 'link', {href: path+'lng/null.css', rel: 'stylesheet', type: 'text/css'});
 	}

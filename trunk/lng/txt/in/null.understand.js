@@ -28,7 +28,7 @@ nul.understanding = {
 			case '-':
 			case '/':
 			case '%':
-				return new nul.obj.operation.binary(this.operator, ops);
+				return nul.obj.operation.binary(this.operator, ops);
 			//TODO3: > < >= <=
 			case '=>': return new nul.obj.lambda(ops[0], ops[1]);
 			case ',': return nul.obj.pair.list(ops.follow, ops);
@@ -36,6 +36,7 @@ nul.understanding = {
 			case '!=': ub.klg.oppose(nul.xpr.knowledge.unification(ops));
 				return ops[0];
 			case ';': return ops[0];
+			case '?': return ops[1];
 			case ':': 
 				var rv = ub.createFreedom(nul.understanding.rvName, false);
 				ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
@@ -74,6 +75,7 @@ nul.understanding = {
 	},
 	application: function(ub) {
 		//return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
+		return nul.expression.application(this.item.understand(ub), this.applied.understand(ub), ub.klg);
 		var rv = ub.createFreedom(nul.understanding.rvName, false);
 		ub.klg.hesitate(this.item.understand(ub).having(
 			new nul.obj.lambda(
@@ -109,11 +111,14 @@ nul.understanding = {
 	},
 
 	composed: function(ub) {
-		return ub.klg.attribute(this.object.understand(ub), this.aName, this.value.understand(ub));
+		return ub.klg.attributed(this.object.understand(ub), this.aName, this.value.understand(ub));
 	},
 	objectivity: function(ub) {
 		return ub.attributed(this.applied.understand(ub), this.lcl);
-	}
+	},
+	hardcode: function(ub) {
+		return this.value;
+	},
 };
 
 nul.understanding.base = Class.create({
@@ -140,7 +145,7 @@ nul.understanding.base = Class.create({
 		//TODO3: essayer de pas créer deux variables si (a.b + a.b)
 		if(obj.defined) return obj.attribute(anm);
 		var rv = this.createFreedom('&rarr;'+anm, false);
-		this.klg.attribute(obj, anm, rv);
+		this.klg.attributed(obj, anm, rv);
 		return rv;
 	}
 });

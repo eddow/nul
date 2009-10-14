@@ -43,7 +43,10 @@ nul.compiled = {
 	},
 	objectivity: function(appl, lcl) {
 		return { applied: appl, lcl: lcl, understand: nul.understanding.objectivity };
-	}
+	},
+	hardcode: function(val) {
+		return { value: val, understand: nul.understanding.hardcode };
+	},
 };
 
 //l => left built ((a . b) . c)
@@ -58,6 +61,7 @@ nul.operators = [
 	[',','k'],				 				//list
 	['=>','r'],								//lambda
 	['!','p'],
+	['?','l'],
 	['=','m'], ['!=','r'],					//unify
 	['<','r'], ['>','r'], ['<=','r'], ['>=','r'],
 	['+','m'], ['-','l'],
@@ -170,14 +174,21 @@ nul.compiler = function(txt)
 		item: function(lax) {
 			var rv;
 			if('eof'!= this.tknzr.token.type) {
+				//hard-code
+				if(this.tknzr.rawTake('<{')) return nul.compiled.hardcode(eval(this.tknzr.rawExpect('}>', this.tknzr.fly('}>'))));
+				
+				//declaration
 				if(this.tknzr.take('\\/')) return nul.compiled.definition(this.alphanum(), this.expression());
+				//Singletons
 				if(this.tknzr.take('{')) {
 					if(this.tknzr.take('}')) return nul.compiled.set();
 					var sr;
 					if(this.tknzr.take(':')) sr = this.alphanum();
 					return this.tknzr.expect('}', nul.compiled.set(this.expression(), sr));
 				}
+				//Parenthesis
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
+				//Ranges
                 if('[]'!= this.tknzr.token.value && this.tknzr.rawTake('[')) {
                     var lwr, upr;
                     if(!this.tknzr.rawTake('..'))

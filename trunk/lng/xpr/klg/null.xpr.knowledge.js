@@ -10,14 +10,20 @@
  * A list of conditions and fuzziness reduction.
  */
 nul.xpr.knowledge = Class.create(nul.expression, {
-	initialize: function(klgName) {
- 		//Create new objects each time
-        this.locals = this.emptyLocals();
-        this.veto = [];
- 		this.eqCls = [];		//Array of equivalence classes.
- 		this.access = {};		//Access from an obj.ndx to an eq class it's in.
- 		this.ior3 = [];	//List of unchoosed IOR3
- 		this.name = klgName || ++nul.xpr.knowledge.nameSpace;
+	initialize: function(klg) {
+		if(!klg || "string"== typeof klg) { 
+	 		//Create new objects each time
+	        this.locals = this.emptyLocals();
+	        this.veto = [];
+	 		this.eqCls = [];		//Array of equivalence classes.
+	 		this.access = {};		//Access from an obj.ndx to an eq class it's in.
+	 		this.ior3 = [];	//List of unchoosed IOR3
+	 		this.name = klg || ++nul.xpr.knowledge.nameSpace;
+		} else {
+			nul.xpr.is(klg, nul.xpr.knowledge);
+			nul.xpr.knowledge.cloneData(klg, this);
+	 		this.name = 'c';
+		}
  		//this.mult = 1;	//TODO0: 'mult' optimisation
  	},
 
@@ -244,9 +250,9 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		 		}
 		 		if(toBelong.length) {
 		 			var unf = dstEqCls.equivls[0];
-		 			if(nul.debug.assert) assert(unf, 'Has some value when time to belong');
 		 			var s = toBelong.shift();
-					var chx = s.has(unf);
+		 			//if(nul.debug.assert) assert(unf, 'Has some value when time to belong');
+					var chx = unf?s.has(unf):false;
 					if(chx) {
 						switch(chx.length) {
 						case 0:
@@ -335,13 +341,15 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		var brwsr = new nul.xpr.knowledge.stepUp(klg, this.name, this.ior3.length, this.nbrLocals());
 		
  		this.concatLocals(klg);
-		klg = brwsr.browse(klg);
 
+		klg = brwsr.browse(klg);
+		
 		this.addEqCls(klg.eqCls);
 		this.ior3.pushs(klg.ior3);
  		this.veto.pushs(klg.veto);
  		
  		if(val) return brwsr.browse(val);
+ 		return brwsr;
  	},
 
  	/**
@@ -379,7 +387,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @return {nul.xpr.object}
  	 * @throws {nul.failure}
  	 */
- 	attribute: function(e, anm, vl) {
+ 	attributed: function(e, anm, vl) {
  		this.modify(); nul.obj.use(e); nul.obj.use(vl);
  		var attrs = {};
  		if(vl) attrs[anm] = vl;
@@ -389,6 +397,21 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		return this.unify(ec);
  	},
 
+ 	/**
+ 	 * Retrieve the attribute 'anm' stated for 'e'
+ 	 * @param {nul.xpr.object} e
+ 	 * @param {string} anm
+ 	 * @return {nul.xpr.object} Or null if not specified
+ 	 * @throws {nul.failure}
+ 	 */
+ 	attribute: function(e, anm) {
+ 		this.use(); nul.obj.use(e);
+ 		if(e.defined) return e.attribute(anm);
+		var ndx = this.access[obj];
+		if('number'!= typeof ndx) return;
+ 		return this.eqCls[ndx].attribs[anm];
+ 	},
+ 	
 	/**
 	 * Brings a knowledge in opposition
 	 */
@@ -469,13 +492,11 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	components: ['eqCls','ior3','veto'],
 	modifiable: function($super) {
 		var rv = $super();
+		nul.xpr.knowledge.cloneData(this, rv);
 		rv.eqCls = [];
 		rv.access = {};
 		for(var i=0; i<this.eqCls.length; ++i)
 			rv.accede(this.eqCls[i], i);
-		rv.ior3 = clone1(rv.ior3);
-		rv.locals = clone1(rv.locals);
-		rv.veto = clone1(rv.veto);
 		return rv;
 	},
 	
@@ -528,6 +549,7 @@ nul.xpr.knowledge.cloneData = function(src, dst) {
 	dst.access = clone1(src.access);
 	dst.ior3 = clone1(src.ior3);
 	dst.locals = clone1(src.locals);
+	dst.veto = clone1(src.veto);
 	return dst;	
 };
 
@@ -581,6 +603,7 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
 		this.locals[ndx] = name;
  		return new nul.obj.local(this.name, ndx, name)
  	},
+ 	
 }); else merge(nul.xpr.knowledge.prototype, {
 	/**
 	 * Use the ior3 choices to textualise ior3 references.
@@ -619,7 +642,8 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
  		if('undefined'== typeof ndx) ndx = this.locals++;
  		return new nul.obj.local(this.name, ndx)
  	},
-});
+ 	
+ });
 
 nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.create(nul.expression, {
 	initialize: function() { this.alreadyBuilt(); },

@@ -179,6 +179,15 @@ nul.expression = Class.create({
 	sum_isList: function() { return true; },
 });
 
+/**
+ * set itm ==> rv; set(itm=>rv)
+ */
+nul.expression.application = function(set, itm, klg) {
+	var rv = klg.newLocal(nul.understanding.rvName);
+	klg.hesitate(set.having(new nul.obj.lambda(itm, rv)));
+	return rv;
+};
+
 nul.xpr = {
 	are: nul.debug.are('expression'),
 	is: function(x, t) {
