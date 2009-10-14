@@ -117,12 +117,12 @@ function drawTests(tests, cs, lvl) {
 	preCollapsed('uncollapsing')
 }
 
-function init() {
+nul.load.unitTest = function() {
 	if(!nul.debug.perf) $('perfTbl').hide();
 	clpsSstm = nul.txt.clpsSstm(tbody = $('tests'),'up');
 	drawTests(tests, clpsSstm, 0);
 	nul.execution.reset();
-}
+};
 
 function setResult(tn, rslt, comm) {
 	var rw = tbody.rows[tn];

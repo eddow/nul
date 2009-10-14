@@ -10,15 +10,40 @@
  * This file just load the needed files. 
  */
 
-var nulFiles = [
+nul = {
+	load: {},
+	loading : function() {
+		if (document.getElementsByTagName) {
+			nul.loading.head = document.getElementsByTagName("HEAD");
+			if (nul.loading.head) {
+				nul.loading.head = nul.loading.head[0];
+				var nss = nul.loading.head.getElementsByTagName("SCRIPT");
+				for(var i=0; i<nss.length; ++i) if(nss[i].src) {
+					var spl = nss[i].src.split('null.js');
+					if(1< spl.length && ''==spl[1]) {
+						nul.loading.path = spl[0];
+						nul.loading.nsn = nss[i];
+						break;
+					}
+				}
+
+				nul.loading.addNexScriptRef();
+				nul.loading.addRef('link', {href: nul.loading.path+'lng/null.css', rel: 'stylesheet', type: 'text/css'});
+			}
+		}
+	}
+};
+
+nul.loading.files = [
 'prototype',
 
-'lng/krnl/null.std',
-'lng/krnl/null.debug',
-'lng/krnl/null.exception',
-'lng/krnl/null.execution',
-'lng/krnl/null.helper',
-'lng/krnl/null.dependance',
+'krnl/null.helper',
+'krnl/null.std',
+'krnl/null.debug',
+'krnl/null.exception',
+'krnl/null.dependance',
+
+'lng/null.execution',
 
 'lng/txt/in/null.understand',
 'lng/txt/in/null.compile',
@@ -59,54 +84,34 @@ var nulFiles = [
 'data/null.data.onPage',
 ];
 
-function addRef(hd, nsn, tag, props) {
+nul.loading.addRef = function(tag, props) {
 	var elm = document.createElement(tag);
 	for(l in props) if(!{}[l]) elm[l] = props[l];
-	if(true) hd.appendChild(elm);
-	else hd.insertBefore(elm, nsn);
-}
+	if(nul.loading.nsn) nul.loading.head.appendChild(elm);
+	else nul.loading.head.insertBefore(elm, nul.loading.nsn);
+};
 
-if (document.getElementsByTagName) {
-	var head = document.getElementsByTagName("HEAD");
-	if (head) {
-		head = head[0];
-		var path = '';
-		var nss = head.getElementsByTagName("SCRIPT");
-		var nsn;
-		for(var i=0; i<nss.length; ++i) if(nss[i].src) {
-			var spl = nss[i].src.split('null.js');
-			if(1< spl.length && ''==spl[1]) {
-				path = spl[0];
-				nsn = nss[i];
-				break;
-			}
-		}
-		var getXMLHttpObj = function(){
-			if(typeof(XMLHttpRequest)!='undefined')
-				return new XMLHttpRequest();
-
-			var axO=['Msxml2.XMLHTTP.6.0', 'Msxml2.XMLHTTP.4.0',
-				'Msxml2.XMLHTTP.3.0', 'Msxml2.XMLHTTP', 'Microsoft.XMLHTTP'], i;
-			for(i=0;i<axO.length;i++)
-				try{
-					return new ActiveXObject(axO[i]);
-				}catch(e){}
-			return null;
-		}
-		//*
-		while(nulFiles.length) addRef(head, nsn, 'script', {type: 'text/javascript', src: path+nulFiles.shift()+'.js'});
-		/*/
-		while(nulFiles.length)
-		{
-			
-			var oXML = getXMLHttpObj();
-			oXML.open('GET', path+nulFiles.shift()+'.js', false);
-			oXML.send('');
-			eval(oXML.responseText);
-		}	//*/
-		
-		addRef(head, nsn, 'link', {href: path+'lng/null.css', rel: 'stylesheet', type: 'text/css'});
+nul.loading.onreadystatechange = function() {
+	if(this.readyState == 'loaded' || this.readyState == 'complete') {
+		this.onreadystatechange = function(){};
+		nul.loading.addNexScriptRef();
 	}
-}
-delete nulFiles;
-delete addRef;
+};
+
+nul.loading.addNexScriptRef = function() {
+	if(!nul.loading.files.length) {
+		delete nul.loading;
+		nul.page.load();
+		return;
+	}
+	var sf = nul.loading.files.shift();
+	nul.loading.addRef('script', {
+		type: 'text/javascript',
+		src: nul.loading.path+sf+'.js',
+		onreadystatechange: nul.loading.onreadystatechange,
+		onload: nul.loading.addNexScriptRef,
+	});
+};
+nul.loading.path = '';
+
+nul.loading();

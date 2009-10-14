@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
  
-nul.page.load.nulDbg = function()
+nul.load.nulDbg = function()
 {
 	selectNamedTab($('info'),$('infoTS').value);
 	nul.debug.callStack.table = $('callStack');
