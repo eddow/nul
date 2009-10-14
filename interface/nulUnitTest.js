@@ -23,7 +23,7 @@ tests = [
 		{xpr: '{ a, a } (1, _)',
 		rslt: '{(1, 1)}'},
 		{xpr: 'Q n',
-		rslt: '{n[g|1]; ((n[g|1]) &isin; &#x211a;)}'},
+		rslt: '{n[g|0]; ((n[g|0]) &isin; &#x211a;)}'},
 		{xpr: '{x => (x,x)} 1',
 		rslt: '{(1, 1)}'},
 		{xpr: '{x => (x,x)} : (1,1)',
@@ -34,6 +34,8 @@ tests = [
 		rslt: '{3}'},
 		{xpr: 'S = (_,_); S 5',
 		rslt: '{(5 &rArr; &crarr;[g|3], _[g|2]) &#9633; (_[g|1], 5 &rArr; &crarr;[g|3])}'},
+		{xpr: '<{ nul.obj.litteral.make(34) }>',
+		rslt: '{34}'},
 	].named('Simples'),
 	[
 		{xpr: 'b "j"'+
@@ -45,9 +47,9 @@ tests = [
 	].named('Complexs'),
 	[
 		{xpr: '( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")',
-		rslt: '{u[g|1]; (([e: "o", f: "u", n: 1]u[g|1]))}'},
+		rslt: '{u[g|0]; (([e: "o", f: "u", n: 1]u[g|0]))}'},
 		{xpr: 'a; Q (a.nbr)',
-		rslt: '{a[g|0]; (([nbr: &rarr;nbr[g|2]]a[g|0]) &and; (&rarr;nbr[g|2]) &isin; &#x211a;)}'},
+		rslt: '{a[g|0]; (([nbr: &rarr;nbr[g|1]]a[g|0]) &and; (&rarr;nbr[g|1]) &isin; &#x211a;)}'},
 		{xpr: '(cmplx c).pair ; c.real = 5 ; c.img = 3 ; cmplx = {_ ::real(Q r) ::img(Q i) ::pair(i,r)}',
 		rslt: '{(3, 5)}'},
 	].named('Attributes'),
