@@ -30,7 +30,7 @@ nul.data.onPage = Class.create(nul.data, {
 	context: 'page',
 });
 
-nul.page.load.placeHolders = function(doc) {
+nul.load.placeHolders = function(doc) {
 	var elms = arrg(this.getElementsByTagName('nul:place'));
 	var places = [];
 	for(var e in elms) if(cstmNdx(e))

@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-var nul = {
+merge(nul, {
 	failure: 'failure',
 	/**
 	 * Throw a failure
@@ -58,4 +58,4 @@ var nul = {
 		if(!srch) return;
 		return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
 	},
-};
+});
