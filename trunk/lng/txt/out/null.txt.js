@@ -109,5 +109,5 @@ nul.txt = {
 	leaveContext: function(xpr) {
 		if(xpr)
 			delete this.context[xpr.name];
-	},
+	}
 };

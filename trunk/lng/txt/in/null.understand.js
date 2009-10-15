@@ -118,7 +118,7 @@ nul.understanding = {
 	},
 	hardcode: function(ub) {
 		return this.value;
-	},
+	}
 };
 
 nul.understanding.base = Class.create({
@@ -177,5 +177,5 @@ nul.understanding.base.set = Class.create(nul.understanding.base, {
 			nul.failed(err);
 			return nul.obj.empty;
 		}
-	},
+	}
 });

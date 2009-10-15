@@ -37,7 +37,7 @@ html = {
 			html.tagged('div', {
 				'class': knd,
 		        onmouseout: 'nul.txt.html.js.leave();',
-		        style: 'display: none;',
+		        style: 'display: none;'
 			}, cnt);
 	},
 	tileSquare: function(knd, ttl, pos) {
@@ -46,9 +46,9 @@ html = {
 				'class': knd,
 				title: ttl,
 		        onmouseover: 'nul.txt.html.js.enter(this.parentNode, \''+knd+'\');',
-		        style: 'left: '+(5*pos)+'px;',
+		        style: 'left: '+(5*pos)+'px;'
 			}, '');
-	},
+	}
 };
 
 nul.txt.html = merge({
@@ -195,12 +195,12 @@ nul.txt.html = merge({
 			else if(veto) rv = html.op('&not;') + veto;
 			return {
 				'': rv?(html.op('(')+rv+html.op(')')):'',
-				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):''),
+				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):'')
 			};
 		},
 		kior3: function() {
 			return {
-				'': html.op('(')+nul.txt.html.all(maf(this.choices)).join(html.op('&or;'))+html.op(')'),
+				'': html.op('(')+nul.txt.html.all(maf(this.choices)).join(html.op('&or;'))+html.op(')')
 			};
 		},
 		
@@ -212,9 +212,9 @@ nul.txt.html = merge({
 				'': html.table(
 					html.tr(html.td(this.value.toHtml(),'freedom')) +
 					html.tr(html.th(this.knowledge.toHtml(),'freedom')),
-					'xpr freedom'),
+					'xpr freedom')
 			};
-		},
+		}
 	},
 	
 	js: {
@@ -238,5 +238,5 @@ nul.txt.html = merge({
 			elm.getElementsBySelector('a.'+knd).each(Element.show);
 			elm.getElementsBySelector('div.'+knd).each(Element.hide);
 		}
-	},
+	}
 }, nul.txt)

@@ -51,6 +51,5 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 			return this;	//TODO4: useful ?
 		}
 		return ('function'== typeof af)?af.apply(this):af;
-	},
-
+	}
 });

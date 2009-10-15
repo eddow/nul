@@ -46,7 +46,7 @@ nul.data = Class.create({
 	 * {string} Index in this context
 	 * URL path, object ID, ...
 	 */
-	index: null,	//Abstract
+	index: null	//Abstract
 });
 
 nul.data.query = function(obj) {
@@ -68,5 +68,5 @@ nul.data.querier = Class.create(nul.browser.bijectif, {
 	transform: function(xpr) {
 		if('possible'== xpr.expression)
 			this.klgs.shift();
-	},
+	}
 });

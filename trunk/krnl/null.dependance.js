@@ -105,6 +105,5 @@ nul.dependance = Class.create({
 			rv.push(krf + '[' + rld.join(', ') + ']');
 		}
 		return rv.join(' ');
-	},
-	
+	}
 });

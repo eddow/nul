@@ -79,7 +79,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	built: function($super) {
 		if(!this.first.distribuable()) return $super();
 		return nul.obj.pair.list(this.second, this.first.distribute());
-	},
+	}
 });
 
 nul.obj.pair.list = function(flw, elms) {

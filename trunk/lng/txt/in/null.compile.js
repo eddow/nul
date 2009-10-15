@@ -46,7 +46,7 @@ nul.compiled = {
 	},
 	hardcode: function(val) {
 		return { value: val, understand: nul.understanding.hardcode };
-	},
+	}
 };
 
 //l => left built ((a . b) . c)
@@ -67,7 +67,7 @@ nul.operators = [
 	['+','m'], ['-','l'],
 	['-','p'], ['#','p'],
 	['*','m'], ['/','l'], ['%','l'],
-	['$','p'], [':','l'],
+	['$','p'], [':','l']
 ];
 
 nul.compiler = function(txt)

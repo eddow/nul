@@ -37,5 +37,5 @@ nul.obj.node = Class.create(nul.obj.defined, {
 //////////////// nul.expression implementation
 
 	expression: 'node',
-	components: ['attributes','content'],
+	components: ['attributes','content']
 });

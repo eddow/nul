@@ -519,7 +519,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	},
  	isFixed: function() {
  		return (!this.eqCls.length && !this.nbrLocals() && !this.ior3.length && !this.veto.length);
- 	},
+ 	}
 });
 
 nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
@@ -536,7 +536,7 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 		if('ior3'== xpr.expression && this.srcKlg.name  == xpr.klgRef )
 			return new nul.obj.ior3(this.dstKlgRef, xpr.ndx+this.deltaIor3ndx, xpr.values);
 		return nul.browser.bijectif.unchanged;
-	},
+	}
 });
 
 /**
@@ -602,7 +602,7 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
  		if('undefined'== typeof ndx) ndx = this.locals.length;
 		this.locals[ndx] = name;
  		return new nul.obj.local(this.name, ndx, name)
- 	},
+ 	}
  	
 }); else merge(nul.xpr.knowledge.prototype, {
 	/**
@@ -641,7 +641,7 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
  	newLocal: function(name, ndx) {
  		if('undefined'== typeof ndx) ndx = this.locals++;
  		return new nul.obj.local(this.name, ndx)
- 	},
+ 	}
  	
  });
 
@@ -653,7 +653,7 @@ nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.creat
 	wrap: function(value) { return nul.xpr.failure; },
 	components: [],
 	minXst: function() { return 0; },
-	maxXst: function() { return 0; },
+	maxXst: function() { return 0; }
 }))();
 
 nul.xpr.knowledge.always = new (Class.create(nul.expression, {
@@ -666,7 +666,7 @@ nul.xpr.knowledge.always = new (Class.create(nul.expression, {
 	ior3: [],
 	isFixed: function() { return true; },
 	minXst: function() { return 1; },
-	maxXst: function() { return 1; },
+	maxXst: function() { return 1; }
 }))();
 
 nul.xpr.knowledge.unification = function(objs) {

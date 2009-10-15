@@ -176,7 +176,7 @@ nul.expression = Class.create({
 			rv.also(comps[c].dependance());
 		return rv;
 	},
-	sum_isList: function() { return true; },
+	sum_isList: function() { return true; }
 });
 
 /**
@@ -211,7 +211,7 @@ nul.xpr = {
 			nul.xpr.is(o, t);
 			o.modify();
 		});
-	},
+	}
 };
 
 /**

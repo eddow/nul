@@ -21,7 +21,7 @@ nul.obj.operation = Class.create(nul.obj.undefined, {
 //////////////// nul.expression implementation
 	
 	expression: 'op',
-	components: ['operands'],
+	components: ['operands']
 });
 
 nul.obj.operation.binary = Class.create(nul.obj.operation, {

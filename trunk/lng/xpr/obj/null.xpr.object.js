@@ -35,7 +35,7 @@ nul.xpr.object = Class.create(nul.expression, {
 	/**
 	 * Abstract defined also by nul.xpr.possible
 	 */
-	valueKnowing: function(klg) { return this; },
+	valueKnowing: function(klg) { return this; }
 });
 
 nul.obj = {
@@ -61,5 +61,5 @@ nul.obj = {
 			nul.obj.is(o, t);
 			o.modify();
 		});
-	},
+	}
 };

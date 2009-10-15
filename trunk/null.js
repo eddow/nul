@@ -18,7 +18,7 @@ nul = {
 			if (nul.loading.head) {
 				nul.loading.head = nul.loading.head[0];
 				var nss = nul.loading.head.getElementsByTagName("SCRIPT");
-				for(var i=0; i<nss.length; ++i) if(nss[i].src) {
+				for(var i=0; i<nss.length; ++i) if(nss[i] && nss[i].src) {
 					var spl = nss[i].src.split('null.js');
 					if(1< spl.length && ''==spl[1]) {
 						nul.loading.path = spl[0];
@@ -81,7 +81,7 @@ nul.loading.files = [
 'web/null.page',
 
 'data/null.data',
-'data/null.data.onPage',
+'data/null.data.onPage'
 ];
 
 nul.loading.addRef = function(tag, props) {
@@ -109,7 +109,7 @@ nul.loading.addNexScriptRef = function() {
 		type: 'text/javascript',
 		src: nul.loading.path+sf+'.js',
 		onreadystatechange: nul.loading.onreadystatechange,
-		onload: nul.loading.addNexScriptRef,
+		onload: nul.loading.addNexScriptRef
 	});
 };
 nul.loading.path = '';

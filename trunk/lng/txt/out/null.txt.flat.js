@@ -103,6 +103,6 @@ nul.txt.flat = merge({
 			var valStr = this.value.toFlat();
 			if(!klgStr) return valStr;
 			return valStr + '; ' + klgStr;
-		},
+		}
 	}
 }, nul.txt);

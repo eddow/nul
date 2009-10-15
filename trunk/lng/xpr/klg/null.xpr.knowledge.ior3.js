@@ -61,5 +61,5 @@ nul.xpr.knowledge.ior3 = Class.create(nul.expression, {
  			return;
  		} 
 		return $super(prnt);
-	},
+	}
 });

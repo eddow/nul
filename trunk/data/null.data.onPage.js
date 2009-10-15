@@ -27,7 +27,7 @@ nul.data.onPage = Class.create(nul.data, {
 	modify: function(src, dst) {
 		
 	},
-	context: 'page',
+	context: 'page'
 });
 
 nul.load.placeHolders = function(doc) {

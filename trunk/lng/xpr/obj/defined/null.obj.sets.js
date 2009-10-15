@@ -24,9 +24,8 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 //////////////// nul.obj.defined implementation
 
 	attributes: {
-		'# ': function() { return nul.obj.litteral.make(pinf); },
-	},
-
+		'# ': function() { return nul.obj.litteral.make(pinf); }
+	}
 });
 
 nul.obj.empty = new (Class.create(nul.obj.hcSet, {
@@ -40,8 +39,8 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, {
 //////////////// nul.obj.defined implementation
 
 	attributes: {
-		'# ': function() { return nul.obj.litteral.make(0); },
-	},
+		'# ': function() { return nul.obj.litteral.make(0); }
+	}
 	
 }))();
 
@@ -54,7 +53,7 @@ nul.obj.number = new (Class.create(nul.obj.hcSet, {
 		if('number'== o.expression) return [o];
 		return $super(o);
 	},
-	expression: '&#x211a;',
+	expression: '&#x211a;'
 }))();
 
 nul.obj.string = new (Class.create(nul.obj.hcSet, {
@@ -62,7 +61,7 @@ nul.obj.string = new (Class.create(nul.obj.hcSet, {
 		if('string'== o.expression) return [o];
 		return $super(o);
 	},
-	expression: 'str',
+	expression: 'str'
 }))();
 
 nul.obj.bool = new (Class.create(nul.obj.hcSet, {
@@ -70,7 +69,7 @@ nul.obj.bool = new (Class.create(nul.obj.hcSet, {
 		if('boolean'== o.expression) return [o];
 		return $super(o);
 	},
-	expression: 'bool',
+	expression: 'bool'
 }))();
 
 nul.obj.range = Class.create(nul.obj.hcSet, {
@@ -121,13 +120,13 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 			if(ninf== this.lower || pinf== this.upper)
 				return nul.obj.litteral.make(pinf);
 			return nul.obj.litteral.make(this.upper-this.lower+1);
-		},
+		}
 	},
 
 //////////////// nul.expression implementation
 
 	expression: 'range',
-	sum_index: function() { return this.indexedSub(this.lower, this.upper); },
+	sum_index: function() { return this.indexedSub(this.lower, this.upper); }
 });
 
 nul.globals.Q = nul.obj.number;

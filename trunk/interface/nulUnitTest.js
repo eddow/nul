@@ -52,7 +52,7 @@ tests = [
 		rslt: '{a[g|0]; (([nbr: &rarr;nbr[g|1]]a[g|0]) &and; (&rarr;nbr[g|1]) &isin; &#x211a;)}'},
 		{xpr: '(cmplx c).pair ; c.real = 5 ; c.img = 3 ; cmplx = {_ ::real(Q r) ::img(Q i) ::pair(i,r)}',
 		rslt: '{(3, 5)}'},
-	].named('Attributes'),
+	].named('Attributes')
 ].named('Unit testing');
 
 function rsltDiv(rslt) {
@@ -61,8 +61,8 @@ function rsltDiv(rslt) {
 		fail:	{chr:'X', clr:'pink'},
 		err:	{chr:'X', clr:'red'},
 		unk:	{chr:'?', clr:'lightblue'},
-		wrk:	{chr:'*', clr:'lightgray'},
-	}
+		wrk:	{chr:'*', clr:'lightgray'}
+	};
 	rslt = rslts[rslt];
 	return '<div style="'+
 		'width: 1em; '+
@@ -74,7 +74,7 @@ function rsltDiv(rslt) {
 
 function drawTests(tests, cs, lvl) {
 	function preCollapsed(c) {
-		var rv = tbody.insertRow(-1);
+		var rv = $(tbody.insertRow(-1));
 		if(0<lvl) {
 			for(var i=0; i<lvl-1; ++i) rv.className = 'collapsed '+rv.className;
 			if(c) rv.addClassName(c);
@@ -92,7 +92,7 @@ function drawTests(tests, cs, lvl) {
 	rw.insertCell(-1).innerHTML = rsltDiv('unk');
 	rw.testGroup = tests;
 	
-	for(var i=0; i<tests.length; ++i)
+	for(var i=0; i<tests.length; ++i) if(tests[i])
 	{
 		var t = tests[i];
 		if(isArray(t)) drawTests(t, cs, 1+lvl);
@@ -109,7 +109,7 @@ function drawTests(tests, cs, lvl) {
 			//Result
 			rw.insertCell(-1).innerHTML = rsltDiv('unk');
 			rw.insertCell(-1).innerHTML = t.rslt;
-			for(var j=0; j<rw.cells.length; ++j) rw.cells[j].rowSpan=2;
+			for(var j=0; j<rw.cells.length; ++j) if(rw.cells[j]) rw.cells[j].rowSpan=2;
 			preCollapsed().insertCell(-1);
 		}
 	}
@@ -194,7 +194,7 @@ function doTests(tn) {
 		err:	3
 	};
 	var tRslt = tRslt[doTest(tn)];
-	for(var i=0; i<tstsBats.length; ++i) if(tstsBats[i].rslt<tRslt) tstsBats[i].rslt = tRslt;  
+	for(var i=0; i<tstsBats.length; ++i) if(tstsBats[i] && tstsBats[i].rslt<tRslt) tstsBats[i].rslt = tRslt;  
 	prgTests(1+tn);
 }
 
