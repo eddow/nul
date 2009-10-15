@@ -49,7 +49,7 @@ nul.browser = Class.create({
  		return nul.execution.benchmark.measure(this.description+' browse', function() { 
  			return brwsr.recursion(xpr);
  		});
- 	},
+ 	}
 });
 
 /**
@@ -99,7 +99,7 @@ nul.browser.cached = Class.create(nul.browser, {
  	browse: function($super, xpr) {
  		try { return $super(xpr); }
  		finally { this.invalidateCache(); }
- 	},
+ 	}
 });
 
 /**
@@ -135,7 +135,7 @@ nul.browser.bijectif = Class.create(nul.browser.cached, {
 		var evl = new nul.browser.bijectif.evolution(xpr);
 		evl.receive($super(evl.value));
 		return evl.value;
-	},
+	}
 });
 
 
@@ -149,7 +149,7 @@ nul.browser.chewer = Class.create(nul.browser.bijectif, {
 		if(nul.browser.bijectif.unchanged== rv) return rv;
 		var nrv = this.recursion(rv);
 		return (nul.browser.bijectif.unchanged== nrv)?rv:nrv;
-	},
+	}
 });
 
 //////////////// Bijectif browser statics
@@ -185,7 +185,7 @@ nul.browser.bijectif.evolution = Class.create({
 		if(nul.browser.bijectif.unchanged== xpr) return;
 		this.changed = this.value = xpr;
 		if(xpr) nul.xpr.use(xpr);
-	},
+	}
 });
 nul.browser.bijectif.firstChange = function(vals, b) {
 	if(b) vals = [vals, b];

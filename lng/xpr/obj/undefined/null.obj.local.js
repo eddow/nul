@@ -21,7 +21,7 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 		this.ndx = ndx;
 		this.dbgName = dbgName;
 		this.alreadyBuilt({
-			index: this.indexedSub(this.klgRef, this.ndx),
+			index: this.indexedSub(this.klgRef, this.ndx)
 		});
 	},
 
@@ -35,5 +35,5 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 	invalidateTexts: function($super, dbgName) {
 		this.dbgName = dbgName;
 		$super();
-	},
+	}
 });

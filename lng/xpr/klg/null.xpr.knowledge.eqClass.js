@@ -251,7 +251,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 			(1== this.equivls.length && isEmpty(this.attribs,['']))))
 				return;
 		return $super(prnt);
-	},
+	}
 });
 
 nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.chewer, {
@@ -288,5 +288,5 @@ nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.chewer, {
 		if(this.prepStack.contains(xpr))
 			return nul.browser.bijectif.unchanged;
 		return xpr;
-	},
+	}
 });

@@ -68,5 +68,5 @@ nul.solve.browser = Class.create(nul.browser.bijectif, {
 			return !this.merger[xpr.ndx]? xpr.values[this.tries[xpr.ndx]] :
 					this.merger[xpr.ndx].browse(xpr.values[this.tries[xpr.ndx]]);
 		return nul.browser.bijectif.unchanged;
-	},
+	}
 });

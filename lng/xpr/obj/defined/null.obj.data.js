@@ -29,5 +29,5 @@ nul.obj.data = Class.create(nul.obj.defined, {
 	},
 
 	expression: 'data',
-	sum_index: function() { return this.indexedSub(this.source.context, this.source.index); },
+	sum_index: function() { return this.indexedSub(this.source.context, this.source.index); }
 });

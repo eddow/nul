@@ -14,7 +14,7 @@ nul.page = {
 	},
 	error: function(msg) {
 		//alert(msg);
-	},
+	}
 };
 
 //new Event.observe(window, 'load', nul.page.load);

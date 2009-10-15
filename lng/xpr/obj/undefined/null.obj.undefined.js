@@ -10,5 +10,5 @@ nul.obj.undefined = Class.create(nul.xpr.object, {
 	summarise: function($super, smr) {
 		$super(smr);
 	},
-	defined: false,
+	defined: false
 });

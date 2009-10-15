@@ -74,7 +74,7 @@ nul.xpr.possible = Class.create(nul.expression, {
 	fix: function($super) {
 		assert(this.knowledge, 'Possible now always has a knowledge');
 		return $super();
-	},
+	}
 });
 
 nul.xpr.failure = new (Class.create(nul.expression, {
@@ -82,7 +82,7 @@ nul.xpr.failure = new (Class.create(nul.expression, {
 	expression: 'possible',
 	components: [],
 	distribuable: function() { return true; },
-	distribute: function() { return []; },
+	distribute: function() { return []; }
 }))();
 
 /**

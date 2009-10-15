@@ -51,5 +51,5 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, {
 		if(nul.debug.assert) assert(this.values.length == this.choices.length,
 			'IOR3 has same values as the correspondant knowledge entry')
 		$super();
-	},
+	}
 });

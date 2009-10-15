@@ -11,7 +11,7 @@ nul.obj.litteral = Class.create(nul.obj.defined, {
 		this.value = val;
 		this.alreadyBuilt();
 		$super();
-	},
+	}
 });
 
 nul.obj.litteral.number = Class.create(nul.obj.litteral, {
@@ -28,19 +28,19 @@ nul.obj.litteral.number = Class.create(nul.obj.litteral, {
 //////////////// nul.expression implementation
 
 	expression: 'number',
-	sum_index: function() { return this.indexedSub(this.value.toString().replace(']','[|]')); },
+	sum_index: function() { return this.indexedSub(this.value.toString().replace(']','[|]')); }
 });
 nul.obj.litteral.string = Class.create(nul.obj.litteral, {
 //////////////// nul.xpr.object implementation
 
 	attributes: {
-		'# ': function() { return nul.obj.litteral.make(this.value.length); },
+		'# ': function() { return nul.obj.litteral.make(this.value.length); }
 	},
 
 //////////////// nul.expression implementation
 
 	expression: 'string',
-	sum_index: function() { return this.indexedSub(this.value.replace(']','[|]')); },
+	sum_index: function() { return this.indexedSub(this.value.replace(']','[|]')); }
 });
 nul.obj.litteral['boolean'] = Class.create(nul.obj.litteral, {
 //////////////// nul.xpr.object implementation
@@ -52,7 +52,7 @@ nul.obj.litteral['boolean'] = Class.create(nul.obj.litteral, {
 //////////////// nul.expression implementation
 
 	expression: 'boolean',
-	sum_index: function() { return this.indexedSub(this.value?'T':'F'); },
+	sum_index: function() { return this.indexedSub(this.value?'T':'F'); }
 });
 
 /**

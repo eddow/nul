@@ -209,7 +209,7 @@ nul.debug = {
 			if(nul.debug.assert) map(objs, function(i, o) { assert(o && o[elm], 'Expected '+elm + 's'); });
 			return objs;
 		}; 
-	},
+	}
 };
 
 if(nul.debug.acts) Function.prototype.describe = nul.debug.described;

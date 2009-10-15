@@ -45,7 +45,7 @@ merge(nul, {
 	{
 		nul.erroneus = false;
 		var comps = nul.compiler(txt+' </').innerXML();
-		for(var i=0; i<comps.length; ++i)
+		for(var i=0; i<comps.length; ++i) if(comps[i])
 			comps[i] = nul.globalsUse().understand(comps[i]);
 		return comps;
 	},
@@ -57,5 +57,5 @@ merge(nul, {
 		var srch = window.location.href.split('?')[1];
 		if(!srch) return;
 		return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
-	},
+	}
 });

@@ -87,5 +87,5 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 			//TODO0 Knowledge can bring this info too
 			return this.point;	//TODO4: another comparison?
 		return $super(prnt);
-	},
+	}
 });
