@@ -6,6 +6,25 @@
  *
  *--------------------------------------------------------------------------*/
 
+nul.data.page = new (Class.create(nul.data.context,{
+	name: 'page',
+	query: function(obj) {
+		var brwsr = new nul.data.pageQuerier();
+		return brwsr.browse(obj);
+	}
+}))();
+
+nul.data.pageQuerier = Class.create(nul.browser.bijectif, {
+	initialize: function($super) {
+		$super();
+	},
+	transform: function(xpr) {
+		if('data'== xpr.expression && nul.data.page== xpr.source.context)
+			return nul.read(outerHTML(xpr.source.element));
+		return nul.browser.bijectif.unchanged;
+	}
+});
+
 /**
  * The data-source provide basic data queries : select, insert, update, delete.
  */
@@ -27,11 +46,12 @@ nul.data.onPage = Class.create(nul.data, {
 	modify: function(src, dst) {
 		
 	},
-	context: 'page'
+	context: nul.data.page,
+	distance: 0
 });
 
 nul.load.placeHolders = function(doc) {
-	var elms = arrg(this.getElementsByTagName('nul:place'));
+	var elms = arrg(this.getElementsByTagName('nul'));
 	var places = [];
 	for(var e in elms) if(cstmNdx(e))
 		places.push(new nul.obj.lambda(

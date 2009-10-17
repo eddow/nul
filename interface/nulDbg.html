@@ -33,7 +33,7 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 	</div>
 	
 	<textarea cols="80" rows="7" id="source"></textarea>
-	<input type="button" onclick="testEvaluation();" value="eval"></input>
+	<input type="button" onclick="test(tread, evd, 'Evaluating...');" value="eval"></input>
 	<div id="evaled"></div>
 	<div id="watch"></div>
 	<div id="info">
@@ -46,7 +46,9 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 		</div>
 		<div>
 			<div class="msTab" name="values">
-				<nul:place id="sandBox"><b t="3">yh</b><i t="4">oo</i></div>
+				<input type="button" onclick="test(tquery, qrd, 'Querying...');" value="Query" disabled="true" id="queryCmd"></input><br />
+				<nul id="sandBox"><b t="3">yh</b><i t="4">oo</i></nul><br />
+				<div id="queried"></div>
 			</div>
 			<div class="msTab" name="runtime">
 				<fieldset><legend>Call stack</legend><table id="callStack"></table></fieldset>

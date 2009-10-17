@@ -11,27 +11,31 @@ nul.load.nulDbg = function()
 	selectNamedTab($('info'),$('infoTS').value);
 	nul.debug.callStack.table = $('callStack');
 	nul.debug.logs.table = $('logs');
-	src = document.getElementById('source');
-	evd = document.getElementById('evaled');
-	wtc = document.getElementById('watch');
+	src = $('source');
+	evd = $('evaled');
+	wtc = $('watch');
+	qrd = $('queried');
 	for(var i in window) knGlobs[i] = true;
 };
 
-function evaluate()
+function tquery() {
+	return nul.data.query($('queryCmd').query).toHtml();
+}
+
+function tread()
 {
-	wtc.innerHTML = '';
-	evd.innerHTML = '';
 	var v = nul.read(src.value);
-	return evd.innerHTML = v.toHtml();
+	$('queryCmd').query = v;
+	return v.toHtml();
 	var cpt = 0;
 	while('pair'== v.expression) {
 		++cpt;
 		v = v.second;
 	}
-	evd.innerHTML = cpt;
+	return cpt;
 }
 
-function testEvaluation()
+function test(cb, dst, prgrsMsg)
 {
 	if(nul.debug) {
 		if($('shwLogging').checked) {
@@ -48,10 +52,15 @@ function testEvaluation()
 	
 	window.setTimeout('nul.debug.applyTables();', 100);
 	
-	try { evaluate(); }
-	catch( err ) {
+	try {
+		wtc.innerHTML = '';
+		dst.innerHTML = prgrsMsg;
+		$('queryCmd').writeAttribute('disabled','true');
+		dst.innerHTML = cb();
+		$('queryCmd').writeAttribute('disabled', null);
+	} catch( err ) {
 		nul.exception.notice(err);
-		evd.innerHTML = err.message;
+		dst.innerHTML = err.message;
 		if(nul.debug.watches && err.callStack) nul.debug.callStack.draw(err.callStack);
 		if(nul.erroneusJS) throw nul.erroneusJS;
 		//Forward JS errors to Firebug

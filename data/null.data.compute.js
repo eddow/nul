@@ -17,4 +17,5 @@ nul.data.compute = Class.create(nul.data, {
 		$super();
 	},
 	context: 'compute',
+	distance: 100
 });

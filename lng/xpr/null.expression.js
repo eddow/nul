@@ -198,6 +198,7 @@ nul.xpr = {
 		}
 	},
 	use: function(x, t) {
+		if(nul.debug.assert) assert(x, 'Unexpected empty expression');
 		if(!nul.xpr.bunch(x)) x = [x];
 		if(nul.debug.assert) map(x, function(i, o) {
 			nul.xpr.is(o, t);
@@ -206,6 +207,7 @@ nul.xpr = {
 	},
 	
 	mod: function(x, t) {
+		if(nul.debug.assert) assert(x, 'Unexpected empty expression');
 		if(!nul.xpr.bunch(x)) x = [x];
 		if(nul.debug.assert) map(x, function(i, o) {
 			nul.xpr.is(o, t);

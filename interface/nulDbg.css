@@ -52,7 +52,7 @@ div.msTab.selected {
 	display: block;
 }
 
-#callStack, #kb {
+#kb {
 	display: inline-table;
 }
 
