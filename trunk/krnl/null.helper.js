@@ -218,3 +218,13 @@ function merge(a, b, cb) {
 
 pinf = Number.POSITIVE_INFINITY;
 ninf = Number.NEGATIVE_INFINITY;
+
+function outerHTML(elm) {
+	if(elm.outerHTML) return elm.outerHTML;
+	var parent = elm.parentNode;
+	var el = document.createElement(parent.tagName);
+	el.appendChild(elm);
+	var shtml = el.innerHTML;
+	parent.appendChild(elm);	//TODO1: le réinsérer au bon endroit
+	return shtml;
+}

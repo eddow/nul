@@ -1,34 +1,21 @@
 (Q => [..]) (a => b)
-
-\/people
-<table>
-	<tr><th>Name></th><th>Father name</th></tr>
-	<(
-		\/p <tr><td><(p.name)></td><td><(p.father)></td></tr>
-		; people p
-	)>
-</table>
-
-; people =
-<ppl>
-<person name="jean" father="luc" />
-<person name="luc" father="andre" />
-<person name="pierre" father="luc" />
-</ppl>
-; brother = { (people x) => (people y) ::father(x.father) != x}
+::: 3 solutions, mais n'en garde que une ou deux: 
+- le cas R in Z est un cas particulier qui est inclus dans les autres solutions
+- si a et b ne sont pas utilisé : chaque élément est doublé.
 
 
+neighbours
+; S = (_ ::number 1,_ ::number 2,_ ::number 3,_ ::number 4,_ ::number 5)
+; inOrder = { \/x {x} => {} [] (a,b,.. o) => ((a,b),.. inOrder(b,.. o)) }
+; neighbours = { (inOrder S) _ [] (a, b); (inOrder S)(b,a) }
+::: Une locale perd son nom !
 
-
-cmplx c ; c.real = 5 ; c.img = 3 ; cmplx = {_ ::real(Q r) ::img(Q i) ::pair(i,r)}
 
 inOrder S
 ; S = houses [1..5]
-; houses = { {} [] (n,.. ns) =>  (_::number n),.. houses ns }
-; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
-
-a; N (a.nbr)
-
+; houses = { {} [] (n,.. ns) =>  ((_::number n),.. houses ns) }
+; inOrder = { \/x {x} => {} [] (a,b,.. o) => ((a,b),.. inOrder(b,.. o)) }
+::: boucle infini ><
 
 todo {
 inOrder [1..]			//inf decomposition
@@ -36,11 +23,12 @@ inOrder [1..]			//inf decomposition
 }
 
 
-; S = (_ ::number 1,_ ::number 2,_ ::number 3,_ ::number 4,_ ::number 5)
 S = houses [1..5]
 ; houses = { {} [] (n,.. ns) =>  (_::number n),.. houses ns }
-; inOrder = { \/x {x} => {} [] ((a,b,.. o) => (a,b),.. inOrder(b,.. o) ) }
-; neighbours = { inOrder S [] (a, b); (inOrder S)(b,a) }
+
+S = (_ ::number 1,_ ::number 2,_ ::number 3,_ ::number 4,_ ::number 5)
+; inOrder = { \/x {x} => {} [] (a,b,.. o) => ((a,b),.. inOrder(b,.. o) ) }
+; neighbours = { (inOrder S) _ [] (a, b); (inOrder S)(b,a) }
 ; S(_ ::number 3 ::drink "milk")
 ; S(_ ::number 1 ::nation "norwegian")
 ; S(_ ::color "red" ::nation "english")
@@ -55,20 +43,3 @@ S = houses [1..5]
 ; neighbours(_ ::smoke "Kools", _ ::animal "horse")
 ; neighbours(_ ::smoke "Chesterfields", _ ::animal "fox")
 ; neighbours(_ ::nation "norwegian", _ ::color "blue")
-
-
-dblAll (1,2)
-; dbl = { x => (x,x) }
-; dblAll =
- { {} => {}
-[] (a,.. as) => (dbl a),.. (dblAll as)
-}
-
-
-frere "françois"
-; fils = ("luc"=>"françois", "rené"=>"luc", "luc"=>"olivier")
-; frere = { fils x => fils x }
-
-frere "françois"
-; pere = ("françois"=>"luc", "luc"=>"rené", "olivier"=>"luc")
-; frere = { a => b; pere a = pere b; {}={a=b} }

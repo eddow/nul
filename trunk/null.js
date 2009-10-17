@@ -66,7 +66,6 @@ nul.loading.files = [
 'lng/xpr/obj/null.xpr.object',
 
 'lng/xpr/obj/defined/null.obj.defined',
-'lng/xpr/obj/defined/null.obj.data',
 'lng/xpr/obj/defined/null.obj.litteral',
 'lng/xpr/obj/defined/null.obj.pair',
 'lng/xpr/obj/defined/null.obj.sets',
@@ -74,6 +73,7 @@ nul.loading.files = [
 'lng/xpr/obj/defined/null.obj.node',
 
 'lng/xpr/obj/undefined/null.obj.undefined',
+'lng/xpr/obj/undefined/null.obj.data',
 'lng/xpr/obj/undefined/null.obj.local',
 'lng/xpr/obj/undefined/null.obj.operation',
 'lng/xpr/obj/undefined/null.obj.ior3',
@@ -81,7 +81,8 @@ nul.loading.files = [
 'web/null.page',
 
 'data/null.data',
-'data/null.data.onPage'
+'data/null.data.onPage',
+'data/null.data.compute'
 ];
 
 nul.loading.addRef = function(tag, props) {

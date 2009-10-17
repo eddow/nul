@@ -38,35 +38,63 @@ nul.data = Class.create({
 	modify: function(src, dst) { throw 'Abstract'; },
 	
 	/**
-	 * {string} Context name
-	 * Server name or such
+	 * {nul.data.context} Context
+	 * Server or such
 	 */
 	context: null,	//Abstract
 	/**
 	 * {string} Index in this context
 	 * URL path, object ID, ...
 	 */
-	index: null	//Abstract
+	index: null,	//Abstract
+	/**
+	 * Number stating how intimate the local script is to the data source.
+	 * 0 = total intimacy, 100 = no intimacy at all
+	 * Query always try to solve by querying the most intimate dataSource
+	 */
+	distance: null	//Abstract
+
 });
+
+nul.data.are = nul.debug.are('context');
+nul.data.is = nul.debug.is('context');
+
+nul.data.context = Class.create({
+	/**
+	 * {string} Context name
+	 * Server name or such
+	 */
+	name: null,	//Abstract
+	
+	toString: function() { return this.name; },
+	
+	/**
+	 * Gets an object image no more dependant from this context
+	 * @param {nul.xpr.object} obj
+	 * @return {nul.xpr.object}
+	 * @throw nul.failure
+	 */
+	query: function(obj) { throw 'Abstract'; }
+});
+
+nul.data.context.are = nul.debug.are('query');
+nul.data.context.is = nul.debug.is('query');
 
 nul.data.query = function(obj) {
 	nul.obj.use(obj);
-	//TODO2
-};
-
-nul.data.querier = Class.create(nul.browser.bijectif, {
-	initialize: function($super) {
-		this.klgs = [];
-	},
-	prepare: function(xpr) {
-		if('possible'== xpr.expression) {
-			var nklg = xpr.knowledge.modifiable();
-			nklg.merge(this.klgs[0]);
-			this.klgs.unshift(nklg);
+	var usg;
+	//TODO0: try to query to compute at least once first - but perhaps each time indeed
+	while(!isEmpty(usg = obj.dependance().usages)) {
+		var chsdCtx;
+		for(var d in usg) if(cstmNdx(d)) {
+			var ctx = nul.dependance.contexts[d];
+			nul.data.context.is(ctx);
+			if(!chsdCtx || ctx.context.distance < chsdCtx.distance)
+				chsdCtx = ctx;
 		}
-	},
-	transform: function(xpr) {
-		if('possible'== xpr.expression)
-			this.klgs.shift();
+		//chsdCtx is fixed as minimum distance
+		nul.data.context.is(chsdCtx);
+		obj = chsdCtx.query(obj);	
 	}
-});
+	return obj;
+};

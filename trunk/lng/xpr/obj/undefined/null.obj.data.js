@@ -9,19 +9,12 @@
 /**
  * Refers to a data-source from nul.data...
  */
-nul.obj.data = Class.create(nul.obj.defined, {
+nul.obj.data = Class.create(nul.obj.undefined, {
 	initialize: function($super, ds) {
 		this.source = ds;
 		this.alreadyBuilt();
 	},
-//////////////// nul.xpr.object implementation
 
-	attributes: {
-		//TODO4: '# '
-	},
-
-	has: function(o) {},	//Dunno, it depends ...
-	
 //////////////// nul.expression implementation
 
 	sum_dependance: function($super) {
