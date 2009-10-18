@@ -1,21 +1,27 @@
-: Dans le browse, quid si "opposition" foire ?
+\/inOrder
+{ (inOrder [1..2]) _ [] (t,v); (inOrder [1..2])(v,t) }
+; inOrder = { \/x {x} => {} [] (a,b,.. o) => ((a,b),.. inOrder(b,.. o)) }
 
-(Q => [..]) (a => b)
-::: 3 solutions, mais n'en garde que une ou deux: 
-- le cas R in Z est un cas particulier qui est inclus dans les autres solutions
-- si a et b ne sont pas utilisé : chaque élément est doublé.
+::: donne des résultats ><
 
+
+f = { x = f x }
+::: Ca devrait donner l'identité, pas le gros truc complexe
 
 neighbours
 ; S = [1..2]
 ; inOrder = { \/x {x} => {} [] (a,b,.. o) => ((a,b),.. inOrder(b,.. o)) }
-; neighbours = { (inOrder S) _ [] (a, b); (inOrder S)(b,a) }
+; neighbours = { (inOrder S) _ [] (t,v); (inOrder S)(v,t) }
 ::: Une locale perd son nom !
 
 
+::: boucle infini ><
 inOrder S
 ; S = houses [1..5]
 ; houses = { {} [] (n,.. ns) =>  ((_::number n),.. houses ns) }
+; inOrder = { \/x {x} => {} [] (a,b,.. o) => ((a,b),.. inOrder(b,.. o)) }
+
+((inOrder S) _) [] ((t,v); (inOrder S)(v,t))
 ; inOrder = { \/x {x} => {} [] (a,b,.. o) => ((a,b),.. inOrder(b,.. o)) }
 ::: boucle infini ><
 

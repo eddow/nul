@@ -226,6 +226,6 @@ function outerHTML(elm) {
 	var el = document.createElement(parent.tagName);
 	el.appendChild(elm);
 	var shtml = el.innerHTML;
-	parent.appendChild(elm);	//TODO1: le réinsérer au bon endroit
+	parent.appendChild(elm);	//TODO 1: le réinsérer au bon endroit
 	return shtml;
 }

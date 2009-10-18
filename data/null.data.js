@@ -83,7 +83,7 @@ nul.data.context.is = nul.debug.is('query');
 nul.data.query = function(obj) {
 	nul.obj.use(obj);
 	var usg;
-	//TODO0: try to query to compute at least once first - but perhaps each time indeed
+	//TODO O: try to query to compute at least once first - but perhaps each time indeed
 	while(!isEmpty(usg = obj.dependance().usages)) {
 		var chsdCtx;
 		for(var d in usg) if(cstmNdx(d)) {

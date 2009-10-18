@@ -89,7 +89,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 	},
 	has: function($super, o) {
 		if(this.lower==this.upper && !o.defined) {
-			//TODO3: return "o=nbr[this.bound]"
+			//TODO 3: return "o=nbr[this.bound]"
 		}
 		if(!o.defined || 'number'!= o.expression) return $super(o);
 		if(!nul.isJsInt(o.value)) return [];
@@ -105,7 +105,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		if('range'== o.expression) return (o.lower==this.lower && o.upper==this.upper);
 		if('pair'!= o.expression) nul.fail(o, ' is not a range nor a pair');
 		if(ninf== this.lower) nul.fail(this, ' has no first');
-		//TODO0: warn if(pinf== this.upper) : queue infinie
+		//TODO O: warn if(pinf== this.upper) : queue infinie
 		klg.unify(nul.obj.litteral.make(this.lower), o.first.value);
 		klg.unify(
 			(this.lower == this.upper) ?

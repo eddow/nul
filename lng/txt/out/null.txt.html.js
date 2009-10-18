@@ -104,7 +104,7 @@ nul.txt.html = merge({
 				html.op(')')};
 		},
 		extension: function() {
-			var attrs = [];	//TODO3: expandable table ?
+			var attrs = [];	//TODO 3: expandable table ?
 			for(var an in this.attr) if(cstmNdx(an, this.attr))
 				attrs.push(html.tr(html.th(an)+html.td(this.attr[an].toHtml())));
 			return {'': html.table(attrs.join(''))};
@@ -185,7 +185,7 @@ nul.txt.html = merge({
 			if(this==nul.xpr.knowledge.never) return {'':html.op('Never')};
 			if(this==nul.xpr.knowledge.always) return {'':html.op('Always')};
 			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
-			/*var dior3 = [], deps = this.	//TODO2: retrieve usage
+			/*var dior3 = [], deps = this.	//TODO 2: retrieve usage
 			for(var i=0; i< this.ior3.length; ++i)
 				if()*/
 			var kior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'))

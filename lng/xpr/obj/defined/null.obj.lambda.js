@@ -30,7 +30,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 
 //////////////// nul.xpr.object implementation
 
-	/*TODO1
+	/*TODO 1
 	has: function($super, o) {
 		if(!o.defined) return $super(o);
 		if('lambda'!= o.expression) {
@@ -46,7 +46,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 	components: ['point', 'image'],
 	placed: function($super, prnt) {
 		/*if(this.point.toString() == this.image.toString())
-			//TODO0 Knowledge can bring this info too
+			//TODO O Knowledge can bring this info too
 			return this.point;	//TODO4: another comparison?*/
 		return $super(prnt);
 	}
