@@ -14,7 +14,7 @@
  * @return array(nul.xpr.possible)
  */
 nul.solve = function(fz) {
-	nul.xpr.is(fz, nul.xpr.possible);
+	nul.xpr.use(fz, nul.xpr.possible);
 	var cases = fz.knowledge.ior3;
 	var ndx = map(cases, function() { return 0; });
 	var rv = [];
@@ -28,10 +28,12 @@ nul.solve = function(fz) {
 					klg = fz.knowledge.modifiable();
 					klg.ior3 = [];
 				}
-				if(cases[i].choices[ndx[i]]) merger[i] = klg.merge(cases[i].choices[ndx[i]]);
+				merger[i] = klg.merge(cases[i].choices[ndx[i]]);
 			}
-			rv.push((new nul.solve.browser(fz.knowledge, ndx, merger))
-				.browse(klg.wrap(fz.value)));
+			var slvr = new nul.solve.browser(fz.knowledge, ndx, merger);
+			slvr = slvr.browse(klg.built()).modifiable().wrap(slvr.browse(fz.value));
+			nul.debug.log('Resolution')('','Possibility', slvr);
+			rv.push(slvr);
 		} catch(err) { nul.failed(err); }
 	    //increment indexes
 		for(incndx=0; incndx<cases.length; ++incndx) {

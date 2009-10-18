@@ -14,7 +14,7 @@ nul.exception = function(type, code, msg, chrct)
 		chrct: chrct };
 	if(!nul.erroneus) nul.erroneus = err;
 	else nul.erroneus.follow = err;
-	nul.debug.log('error')('Error: '+type, msg);
+	nul.debug.log('error')('Error', type, msg);
 	return nul.erroneus;
 };
 

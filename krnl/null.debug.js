@@ -91,6 +91,7 @@ function tableStack(nm, tbl) {
 }
 
 nul.debug = {
+	fails: [],
 	callStack: tableStack('callStack'),
 	logs: tableStack('logs'),
 	logging: false,
@@ -116,7 +117,7 @@ nul.debug = {
 		return v.toFlat?v.toFlat():v.toString();
 	},
 	log: function(tp) {
-		return nul.debug.logging && nul.debug.logging[tp] ? function(v) {
+		return tp && nul.debug.logging && nul.debug.logging[tp] ? function(v) {
 			v = beArrg(arguments);
 			for(var vi = 0; vi<v.length; ++vi) v[vi] = nul.debug.toLogText(v[vi]);
 			v.unshift(nul.debug.logCount());
@@ -160,7 +161,7 @@ nul.debug = {
 			var d, abrt = false, lgd = false, rv;
 			try {
 				d = dscr.apply(this, cargs);
-				nul.debug.log(name)(nul.debug.lcs.collapser(name+' begin'),d);
+				nul.debug.log(name)(nul.debug.lcs.collapser('Begin'), name, d);
 				lgd = true;
 				rv = ftc.apply(this, cargs);
 				return rv;
@@ -168,8 +169,9 @@ nul.debug = {
 			} finally {
 				if(lgd) nul.debug.log(name)(
 					nul.debug.lcs.endCollapser(
-						name+' '+ (abrt?'abort':'end'),
-						name+' '+ (abrt?'failed':'done')),
+						(abrt?'Abort':'End'),
+						(abrt?'Failed':'Done')),
+					name,
 					rv?[rv]:['nothing'], d);
 			}
 		};
@@ -209,7 +211,38 @@ nul.debug = {
 			if(nul.debug.assert) map(objs, function(i, o) { assert(o && o[elm], 'Expected '+elm + 's'); });
 			return objs;
 		}; 
-	}
+	},
+	
+	/**
+	 * Draw a failure info
+	 */
+	fail: function(reason) {
+		reason = beArrg(arguments);
+		if(nul.debug.fails.length) nul.debug.fails[0].push(reason, '|');
+		else nul.debug.log('fail')('', 'Failure', reason);
+	},
+	/**
+	 * Make a bunch of tries. If none succed, report a failure
+	 */
+	trys: function(cb, name, obj, args) {
+		nul.debug.fails.unshift([]);
+		nul.debug.log(name)(nul.debug.lcs.collapser('Begin'), name, args);
+		try {
+			var rv = cb.apply(obj);
+			nul.debug.log(name)(nul.debug.lcs.endCollapser('End','Done'), name, rv, args);
+			nul.debug.fails.shift();
+			return rv;
+		} catch(err) {
+			nul.failed(err);
+			if(nul.debug.assert) assert(nul.debug.fails.length && nul.debug.fails[0].length,'Finally failed if failed once');
+			nul.debug.fails[0].pop();	//Remove the last '|'
+			var le = nul.debug.log(name);
+			if(le) le(nul.debug.lcs.endCollapser('Abort', 'Failed'), name, nul.debug.fails[0]);
+			else nul.debug.log('fail')('', 'Failure', nul.debug.fails[0]);
+			nul.debug.fails.shift();
+			nul.fail(name, args);
+		}
+	},
 };
 
 if(nul.debug.acts) Function.prototype.describe = nul.debug.described;

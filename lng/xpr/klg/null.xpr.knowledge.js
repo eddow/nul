@@ -14,10 +14,10 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		if(!klg || "string"== typeof klg) { 
 	 		//Create new objects each time
 	        this.locals = this.emptyLocals();
-	        this.veto = [];
+	        this.veto = [];	//TODO2: veto becomes a knowledge
 	 		this.eqCls = [];		//Array of equivalence classes.
-	 		this.access = {};		//Access from an obj.ndx to an eq class it's in.
-	 		this.ior3 = [];	//List of unchoosed IOR3
+	 		this.access = {};		//{nul.xpr.object} object => {nul.xpr.knowledge.eqClass} eqClass
+	 		this.ior3 = [];			//List of unchoosed IOR3
 	 		this.name = klg || ++nul.xpr.knowledge.nameSpace;
 		} else {
 			nul.xpr.is(klg, nul.xpr.knowledge);
@@ -29,36 +29,87 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 
 //////////////// privates
 
-	/**
-	 * Modify eqCls and set accesses
-	 */
- 	accede: function(ec, ecNdx) {
-		this.modify(); nul.xpr.use(ec, nul.xpr.knowledge.eqClass);
-
-		if('undefined'== typeof ecNdx) ecNdx = this.eqCls.length;
-		if(ec) ec = ec.placed(this);
-		if(ec) {
-			for(var n in this.access) if(this.access[n] == ecNdx) delete this.access[n];
-	 		this.eqCls[ecNdx] = ec;
-			var eqs = this.eqCls[ecNdx].equivls;
-			for(var unfd in eqs) if(cstmNdx(unfd))
-				this.access[eqs[unfd]] = ecNdx;
+ 	/**
+ 	 * Remove the 'access' data used for knowledge modification.
+ 	 * Debug asserts
+ 	 */
+ 	clearAccess: function() {
+ 		if(!this.access) return;
+		if(nul.debug.assert) {
+			for(var i in this.access) if(cstmNdx(i))
+				assert(this.access[i].summarised && 0<= this.eqClsIndex(this.access[i]),
+		 			'Knowledge access consistence');
+			for(var i in this.eqCls) if(cstmNdx(i))
+				for(var e in this.eqCls[i].equivls) if(cstmNdx(e))
+					assert(this.access[this.eqCls[i].equivls[e]] === this.eqCls[i],
+		 				'Knowledge access consistence');
 		}
-		else this.unaccede(ecNdx);
-		return ec;
+		delete this.access;
  	},
  	
 	/**
-	 * The eqCls of index 'ndx' has been removed : change access
+	 * Modify eqCls and set accesses
 	 */
-	unaccede: function(ecNdx) {
-		try { return this.eqCls[ecNdx]; }
-		finally {
-			this.eqCls.splice(ecNdx, 1);
-			for(var i in this.access)
-				if(this.access[i] > ecNdx) --this.access[i];
-				else if(this.access[i] == ecNdx) delete this.access[i];
+ 	accede: function(ec) {
+		this.modify(); nul.xpr.use(ec, nul.xpr.knowledge.eqClass);
+		if(ec) ec = ec.placed(this);
+		if(ec) {
+	 		this.eqCls.push(ec);
+			for(var unfd in ec.equivls) if(cstmNdx(unfd)) {
+				if(nul.debug.assert) assert(!this.access[ec.equivls[unfd]], 'No double access');
+				this.access[ec.equivls[unfd]] = ec;
+			}
 		}
+		return ec;
+ 	},
+ 	
+ 	/**
+ 	 * Retrieve the presence of ec in this.eqCls
+ 	 * @param {nul.xpr.knowledge.eqClass} ec
+ 	 * @return {number} ec' index or -1 if not found
+ 	 */
+ 	eqClsIndex: function(ec) {
+ 		for(var i=0; i<this.eqCls.length; ++i) if(this.eqCls[i]===ec) return i;
+ 		return -1;
+ 	},
+ 	
+	/**
+	 * Free ec from this.eqCls if it's not free
+	 * @param {nul.xpr.knowledge.eqClass} ec
+	 * @return {nul.xpr.knowledge.eqClass} ec
+	 */
+	freeEC: function(ec) {
+		if(!ec.summarised) return ec;
+		var i = this.eqClsIndex(ec);
+ 		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class')
+		this.eqCls.splice(i, 1);
+ 		var rv = ec.modifiable();
+		for(var i in this.access) if(this.access[i] === ec) this.access[i] = rv;
+ 		return rv;
+ 	},
+
+ 	/**
+	 * The eqCls ec is removed : remove access and remove from classes
+	 * @param {nul.xpr.knowledge.eqClass} ec
+	 * @return {nul.xpr.knowledge.eqClass} ec
+	 */
+	removeEC: function(ec) {
+ 		this.modify(); nul.xpr.use(ec, nul.xpr.knowledge.eqClass);
+		var i = this.eqClsIndex(ec);
+ 		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class')
+		this.eqCls.splice(i, 1);
+		return this.unaccede(ec);
+	},
+	
+ 	/**
+	 * The eqCls ec has been removed : remove access
+	 * @param {nul.xpr.knowledge.eqClass} ec
+	 * @return {nul.xpr.knowledge.eqClass} ec
+	 */
+	unaccede: function(ec) {
+ 		this.modify(); nul.xpr.is(ec, nul.xpr.knowledge.eqClass);
+		for(var i in this.access) if(this.access[i] === ec) delete this.access[i];
+		return ec;
 	},
  	
  	/**
@@ -67,10 +118,10 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @return equivalence class to re-add to the knowledge
  	 */
 	inform: function(obj) {
-		this.modify();
+		this.modify(); nul.obj.use(obj);
 		
-		var ndx = this.access[obj];
-		if('number'== typeof ndx) return this.unaccede(ndx).modifiable();
+		var ec = this.access[obj];
+		if(ec) return this.freeEC(ec);
  		return new nul.xpr.knowledge.eqClass(obj);
 	},
  	
@@ -91,7 +142,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 */
  	pruned: function(value) {
  		this.modify();
- 		var i;
+		this.clearAccess();
  		var vdps = new nul.dependance();
 		
 		vdps.also(value.dependance());
@@ -193,7 +244,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 				}
 			}
 			//If this refer to something defined by its attributes
-			if(true!== extInfl && !isEmpty(ec.attribs,[''])) extInfl = extInfl?true:'attribs:*';
+			if(true!== extInfl && !isEmpty(ec.attribs,'')) extInfl = extInfl?true:'attribs:*';
 			//If this refer to something equaled in absolute
 			if(true!== extInfl && this.eqCls[c].eqvlDefined()) extInfl = extInfl?true:'equivls:0';
 			//If this refer to something beblonging in absolute
@@ -218,7 +269,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * Know that all the arguments are unifiable
  	 * Modifies the knowledge
  	 * @param {nul.xpr.object} and {nul.xpr.knowledge.eqCls}
- 	 * @return {nul.xpr.knowledge.eqCls} unsummarised
+ 	 * @return {nul.xpr.knowledge.eqCls} unsummarised (if in a higher-stack level unification) or summarised
  	 * @throws nul.failure
  	 */
  	unification: function() { 	
@@ -227,24 +278,30 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		var dstEqCls = new nul.xpr.knowledge.eqClass();
  		var alreadyEqd = {}, alreadyBlg = {};
  		var toBelong = [];
- 		var abrtVal = nul.xpr.knowledge.cloneData(this);	//Save datas in case of failure
+ 		var abrtVal = nul.xpr.knowledge.cloneData(this);	//Save datas in case of failure //TODO2: shouldn't save here !
+ 		var ownClass = true;
  		try {
 	 		while(toUnify.length || toBelong.length) {
 	 			while(toUnify.length) {
 		 			var v = toUnify.shift();
-		 			if('undefined'!= typeof this.access[v]) {
+		 			if(this.access[v]) {
 		 				v = this.access[v];
-		 				var ec = this.eqCls[v];
-		 				this.unaccede(v);
-	 					v = ec;
+		 				if(dstEqCls=== v) {}
+		 				else if(!v.summarised) {	//If not summarised, then it's a class built in another unification higher in the stack
+		 					ownClass = false;
+		 					var t=dstEqCls; dstEqCls=v; v=t;
+		 					this.unaccede(v);
+		 				}
+		 				else this.removeEC(v);
 		 			}
-		 			if(!v) {}
+		 			if(dstEqCls=== v) {}
 		 			else if('eqCls'== v.expression) {
 		 				toUnify.pushs(v.equivls);
 						toBelong.pushs(v.belongs);
-						toUnify.pushs(dstEqCls.hasAttr(v.attribs, this));
+						dstEqCls.hasAttr(v.attribs, this);
 		 			} else if(!alreadyEqd[v]) {
-		 				toUnify.pushs(dstEqCls.isEq(v, this));
+		 				this.access[v] = dstEqCls;
+		 				dstEqCls.isEq(v, this);
 		 				alreadyEqd[v] = true;
 		 			}
 		 		}
@@ -265,6 +322,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 								
 								alreadyEqd = {};
 								alreadyBlg = {};
+								this.unaccede(dstEqCls);
 								toUnify.pushs(dstEqCls.equivls);
 								toBelong.pushs(dstEqCls.belongs);
 								dstEqCls.equivls = [];
@@ -289,11 +347,12 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 					}
 		 		}
 	 		}
+	 		if(ownClass) dstEqCls.built();
  		} catch(err) {
  			nul.xpr.knowledge.cloneData(abrtVal, this);
  			throw nul.exception.notice(err);
  		}
-		nul.debug.log('Knowledge')('EqCls '+this.name, dstEqCls.equivls);
+		nul.debug.log('Knowledge')(this.name, 'EqCls', dstEqCls);
 		return dstEqCls;
  	}.describe('Unification', function() {
  		return map(beArrg(arguments), function() { return this.dbgHtml(); }).join(' = ');
@@ -370,13 +429,13 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @throws nul.failure
  	 */
  	belong: function(e, ss) {
+ 		ss = beArrg(arguments, 1);
  		this.modify(); nul.obj.use(e); nul.obj.use(ss);
 		
- 		ss = beArrg(arguments, 1);
  		if(!ss.length) return e;
  		var dstEC = this.inform(e);
  		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(ss[s], this);
- 		return dstEC.taken(this);
+ 		return this.accede(dstEC.built()).equivls[0];
  	},
  	
  	/**
@@ -407,9 +466,9 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	attribute: function(e, anm) {
  		this.use(); nul.obj.use(e);
  		if(e.defined) return e.attribute(anm);
-		var ndx = this.access[obj];
-		if('number'!= typeof ndx) return;
- 		return this.eqCls[ndx].attribs[anm];
+		var ec = this.access[obj];
+		if(!ec) return;
+ 		return ec.attribs[anm];
  	},
  	
 	/**
@@ -430,21 +489,21 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	/**
  	 * Get a pruned possible
  	 * @param {nul.xpr.object} value
-	 * @return nul.xpr.possible or  nul.xpr.object
+	 * @return nul.xpr.possible
  	 */
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
 		var representer = new nul.xpr.knowledge.eqClass.represent(this.eqCls);
-		
+		//TODO2: représenter une eqCls dans les fils. Si le fils est une eqCls, ajouter les attributs de cette eqCls !
 		for(var i=0; i<this.eqCls.length;) {
-			var nec = representer.subBrowse(this.eqCls[i]);
+			var ec = this.eqCls[i];
+			var nec = representer.subBrowse(ec);
 			if(nul.browser.bijectif.unchanged == nec) ++i;
 			else {
-				this.unaccede(i);
-				nec = this.unification(nec).built();
-				if(nec) this.accede(nec);
+				this.removeEC(ec);
+				this.unify(nec);	//nec is not valid anymore!
 				representer = new nul.xpr.knowledge.eqClass.represent(this.eqCls);
-				nul.debug.log('Represent')('Representation', this);
+				nul.debug.log('Represent')('', 'Representation', this);
 				i = 0;
 			}
 		}
@@ -495,8 +554,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		nul.xpr.knowledge.cloneData(this, rv);
 		rv.eqCls = [];
 		rv.access = {};
-		for(var i=0; i<this.eqCls.length; ++i)
-			rv.accede(this.eqCls[i], i);
+		for(var i in this.eqCls) if(cstmNdx(i)) rv.accede(this.eqCls[i]);
 		return rv;
 	},
 	
@@ -512,7 +570,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	},
 	
  	built: function($super) {
-		delete this.access;
+		this.clearAccess();
 		//if(0== this.mult) return nul.xpr.knowledge.never;
  		if(this.isFixed()) return nul.xpr.knowledge.always; 
  		return $super();
@@ -541,12 +599,14 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
 
 /**
  * Private use !
- * Cone thedata from a knowledge (or a save object) to another knowledge (or a save object)
+ * Cone the data from a knowledge (or a save object) to another knowledge (or a save object)
  */
 nul.xpr.knowledge.cloneData = function(src, dst) {
 	if(!dst) dst = {};
-	dst.eqCls = clone1(src.eqCls);
-	dst.access = clone1(src.access);
+	if(src.access) {
+		dst.access = {};
+		for(var i in this.eqCls) if(cstmNdx(i)) rv.accede(this.eqCls[i]);
+	} else dst.eqCls = clone1(src.eqCls);
 	dst.ior3 = clone1(src.ior3);
 	dst.locals = clone1(src.locals);
 	dst.veto = clone1(src.veto);
@@ -648,7 +708,7 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
 nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.create(nul.expression, {
 	initialize: function() { this.alreadyBuilt(); },
 	expression: 'klg',
-	name: 'Failure',
+	name: 'Never',
 	modifiable: function() { return this; },
 	wrap: function(value) { return nul.xpr.failure; },
 	components: [],

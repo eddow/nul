@@ -39,6 +39,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		if(d.otherThan(klg)) rv += 1;
 		if(!isEmpty(d.usage(klg).local)) rv += 2;
 		if(!isEmpty(d.usage(klg).ior3)) rv += 4;
+		if(v.anonymous) rv += 0.5;
 		return rv;
 	},
 
@@ -47,11 +48,14 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	/**
 	 * Build and get a representative value for this class.
 	 */
-	taken: function(knowledge) {
+	taken: function(klg) {
 		try { return this.equivls[0]; }
 		finally {
-			var rec = this.built();
-			if(rec) knowledge.accede(rec);
+			if(this.summarised) {
+				var rec = this.placed(klg);
+				if(rec) klg.eqCls.push(rec)
+				else klg.unaccede(this);
+			}
 		}
 	},
 
@@ -63,34 +67,37 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 * @return array(nul.xpr.object) Array of objects to equal to this eqCls afterward
 	 * @throws nul.failure
 	 */
-	isEq: function(o, klg) {
+	isEq: function(o, klg) {		//TODO2: ne retourne plus de array(toUnify) : new unfctn system
  		this.modify(); nul.obj.use(o);
 		var rv = [];
 		//Add an object to the equivalence class
 		nul.obj.use(o);
 		if(o.defined) {
-			if(this.eqvlDefined())
-				try {
-					nul.xpr.mod(klg, nul.xpr.knowledge);
-					var unf;
-					try {
-						unf = this.equivls[0].unified(o, klg);
-					} catch(err) {
-						nul.failed(err);
-						unf = o.unified(this.equivls[0], klg);
-					}
-					if(unf && true!== unf) this.equivls[0] = unf;
-				} catch(err) {
-					nul.failed(err);
-					if('lambda'== this.equivls[0].expression) {
-						var t = o; o = this.equivls[0]; this.equivls[0] = t;
-					}
-					if('lambda'== o.expression) rv.pushs([o.point, o.image]);
-					else throw err;
-				}
+			if(this.eqvlDefined()) nul.trys(function() {
+						nul.xpr.mod(klg, nul.xpr.knowledge);
+						var unf;
+						try {
+							unf = this.equivls[0].unified(o, klg);
+						} catch(err) {
+							if(this.equivls[0].expression == o.expression) throw err;
+							nul.failed(err);
+							unf = o.unified(this.equivls[0], klg);
+						}
+						if(unf && true!== unf) {
+							if(nul.debug.assert) {
+								assert(klg.access[this.equivls[0]] == this, 'Access consistence');
+								assert(klg.access[o] == this, 'Access consistence');
+							}
+							delete klg.access[o];
+							delete klg.access[this.equivls[0]];
+							klg.access[unf] = this;
+							this.equivls[0] = unf;
+						}
+					return this.equivls[0];
+				}, 'Equivalence', this, [this.equivls[0], o]);
 			else {
 				this.equivls.unshift(o);
-				rv.pushs(this.hasAttr(this.attribs, klg));
+				this.hasAttr(this.attribs, klg);
 			}
 		} else {
 			var p = 0;
@@ -119,7 +126,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 					nul.failed(err);
 					ntr = s.intersect(this.belongs[0], klg);
 				}
-				if(ntr && true!== ntr) this.belongs[0] = unf;
+				if(ntr && true!== ntr) this.belongs[0] = ntr;
  			} else this.belongs.unshift(s);
  		} else this.belongs.push(s);
 	},
@@ -131,24 +138,18 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 * @throws nul.failure
 	 */
 	hasAttr: function(attrs, klg) {
-		var rv = [];
-		if(this.equivls[0] && 'lambda'== this.equivls[0].expression && !isEmpty(attrs,[''])) {
-			var o = this.equivls.shift();
-			rv = [o.point, o.image];
-		}
-		if(!rv.length && this.eqvlDefined()) {
+		if(this.eqvlDefined()) {
 			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
 			this.attribs = nul.xpr.beBunch();
-		} else if(this.attribs !== attrs)
-			this.attribs = merge(this.attribs, attrs, function(a,b) {
-				return a&&b?klg.unify(a,b):a||b;
+		} else if(this.attribs !== attrs)	//TODO3: gardien nécessaire?
+			merge(this.attribs, attrs, function(a,b) {
+				return (a&&b)?klg.unify(a,b):(a||b);
 			});
-		return rv;
 	},
 	
 	/**
 	 * The object appears only in this equivalence class.
-	 * Retrive an equivalence class that doesn't bother with useless knowledge
+	 * Retrieve an equivalence class that doesn't bother with useless knowledge
 	 * @param {nul.xpr.object} o
 	 * @return nul.xpr.knowledge.eqClass or null
 	 * TODO3: this function is useless
@@ -157,7 +158,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		var unused = function(eqc, tbl, str) {
 			for(var e=0; e<tbl.length; ++e)
 				if(tbl[e].toString() == str) {
-					nul.debug.log('Knowledge')('Forget', tbl[e]);
+					nul.debug.log('Knowledge')('', 'Forget', tbl[e]);
 					tbl.splice(e, 1);
 					return eqc;
 				}
@@ -204,6 +205,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 */
 	pruned: function(klg, lcls) {
 		var remover = function() {
+			if(this.defined) return this;
 			var deps = this.dependance();
 			if(isEmpty(deps.usages)) return this;
 			//TODO2: otherThan : only in locals or in ior3 too ?
@@ -243,12 +245,12 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	placed: function($super, prnt) {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);
-		if(!this.equivls.length && isEmpty(this.attribs,['']) && 1== this.belongs.length && this.blngDefined()) {
+		if(!this.equivls.length && isEmpty(this.attribs,'') && 1== this.belongs.length && this.blngDefined()) {
 			if('&phi;'== this.belongs[0].expression) nul.fail("&phi; is empty");
 			return;
 		}
 		if(!this.belongs.length && (!this.equivls.length || 
-			(1== this.equivls.length && isEmpty(this.attribs,['']))))
+			(1== this.equivls.length && isEmpty(this.attribs,''))))
 				return;
 		return $super(prnt);
 	}

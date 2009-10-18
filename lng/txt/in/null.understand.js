@@ -30,7 +30,7 @@ nul.understanding = {
 			case '%':
 				return nul.obj.operation.binary(this.operator, ops);
 			//TODO3: > < >= <=
-			case '=>': return new nul.obj.lambda(ops[0], ops[1]);
+			case '=>': return nul.obj.lambda.make(ops[0], ops[1], ub.klg);
 			case ',': return nul.obj.pair.list(ops.follow, ops);
 			case '=': return ub.klg.unify(ops);
 			case '!=': ub.klg.oppose(nul.xpr.knowledge.unification(ops));
@@ -39,7 +39,7 @@ nul.understanding = {
 			case '?': return ops[1];
 			case ':': 
 				var rv = ub.createFreedom(nul.understanding.rvName, false);
-				ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
+				ub.klg.hesitate(ops[0].having(nul.obj.lambda.make(rv, ops[1], ub.klg)));
 				return rv;
 			default:
 				throw nul.internalException('Unknown operator: "'+operator+'"');
@@ -76,11 +76,6 @@ nul.understanding = {
 	application: function(ub) {
 		//return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
 		return nul.expression.application(this.item.understand(ub), this.applied.understand(ub), ub.klg);
-		var rv = ub.createFreedom(nul.understanding.rvName, false);
-		ub.klg.hesitate(this.item.understand(ub).having(
-			new nul.obj.lambda(
-				this.applied.understand(ub), rv)));
-		return rv;
 	},
 	set: function(ub) {
  		if(!this.content) return nul.obj.empty;
@@ -142,7 +137,8 @@ nul.understanding.base = Class.create({
 		return this.klg.wrap(cnt.understand(this));
 	},
 	attributed: function(obj, anm) {
-		//TODO3: essayer de pas créer deux variables si (a.b + a.b)
+		//TODO3? essayer de ne pas créer deux variables si (a.b + a.b)
+		// a.b = a.b ?? non ! mais pas utile deux variables anyway! 
 		if(obj.defined) return obj.attribute(anm);
 		var rv = this.createFreedom('&rarr;'+anm, false);
 		this.klg.attributed(obj, anm, rv);

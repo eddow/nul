@@ -110,6 +110,7 @@ function escapeHTML(str) {
 
 //Is <o> an empty association ? (beside the values contained in array <b>) 
 function isEmpty(o, b) {
+	b = beArrg(arguments, 1);
 	for(var i in o) if(!b || !b.contains(reTyped(i))) return false;
 	return true;
 }

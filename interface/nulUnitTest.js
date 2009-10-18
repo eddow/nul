@@ -33,7 +33,7 @@ tests = [
 		{xpr: 'dec 4; dec= {5 => 4 [] 4 => 3 [] 3 => 2 [] 2 => 1}',
 		rslt: '{3}'},
 		{xpr: 'S = (_,_); S 5',
-		rslt: '{(5 &rArr; &crarr;[g|3], _[g|2]) &#9633; (_[g|1], 5 &rArr; &crarr;[g|3])}'},
+		rslt: '{(5, _[g|2]) &#9633; (5 &rArr; &crarr;[g|3], _[g|2]) &#9633; (_[g|1], 5) &#9633; (_[g|1], 5 &rArr; &crarr;[g|3])}'},
 		{xpr: '<{ nul.obj.litteral.make(34) }>',
 		rslt: '{34}'},
 	].named('Simples'),
@@ -113,7 +113,7 @@ function drawTests(tests, cs, lvl) {
 			preCollapsed().insertCell(-1);
 		}
 	}
-	cs.endCollapser('','');
+	cs.endCollapser('','').toString();
 	preCollapsed('uncollapsing')
 }
 

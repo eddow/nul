@@ -23,6 +23,7 @@ nul = {
 					if(1< spl.length && ''==spl[1]) {
 						nul.loading.path = spl[0];
 						nul.loading.nsn = nss[i];
+						if(nss[i].attributes.nocache) nul.loading.suffix = '?'+(new Date()).getTime();
 						break;
 					}
 				}
@@ -85,6 +86,8 @@ nul.loading.files = [
 'data/null.data.compute'
 ];
 
+nul.loading.suffix = '';
+
 nul.loading.addRef = function(tag, props) {
 	var elm = document.createElement(tag);
 	for(l in props) if(!{}[l]) elm[l] = props[l];
@@ -108,7 +111,7 @@ nul.loading.addNexScriptRef = function() {
 	var sf = nul.loading.files.shift();
 	nul.loading.addRef('script', {
 		type: 'text/javascript',
-		src: nul.loading.path+sf+'.js',
+		src: nul.loading.path+sf+'.js' + nul.loading.suffix,
 		onreadystatechange: nul.loading.onreadystatechange,
 		onload: nul.loading.addNexScriptRef
 	});

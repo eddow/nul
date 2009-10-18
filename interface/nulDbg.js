@@ -42,6 +42,7 @@ function test(cb, dst, prgrsMsg)
 			nul.debug.logging = {error: true, fail: true};
 			nul.debug.logging.Resolution = $('shwLoggingResolution').checked;
 			nul.debug.logging.Unification = $('shwLoggingUnification').checked;
+			nul.debug.logging.Equivalence = $('shwLoggingEquivalence').checked;
 			nul.debug.logging.Wrapping = $('shwLoggingWrapping').checked;
 			nul.debug.logging.Knowledge = $('shwLoggingKnowledge').checked;
 			nul.debug.logging.Represent = $('shwLoggingRepresent').checked;

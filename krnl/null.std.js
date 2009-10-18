@@ -8,13 +8,21 @@
 
 merge(nul, {
 	failure: 'failure',
+	fails: [],
 	/**
 	 * Throw a failure
 	 * @param reason items to shape a sentence
 	 */
 	fail: function(reason) {
-		nul.debug.log('fail')('Failure', beArrg(arguments));
+		nul.debug.fail(beArrg(arguments));
 		throw nul.failure;
+	},
+	/**
+	 * Make several try/catch; accept some failures (debug purpose)
+	 */
+	trys: function(cb, name, obj, args) {
+		if(!nul.debug || !nul.debug.logging) return cb.apply(obj);
+		return nul.debug.trys(cb, name, obj, beArrg(arguments, 3));
 	},
 	/**
 	 * Catch only failure.

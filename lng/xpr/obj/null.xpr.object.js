@@ -20,7 +20,8 @@ nul.xpr.object = Class.create(nul.expression, {
 		if(rv) return rv;
 		var klg = new nul.xpr.knowledge();
 		klg.belong(o, this);
-		return [klg.wrap(o)];
+		rv = [klg.wrap(o)];
+		return rv;
 	},
 	
 	/**
