@@ -183,8 +183,9 @@ nul.expression = Class.create({
  * set itm ==> rv; set(itm=>rv)
  */
 nul.expression.application = function(set, itm, klg) {
+	var hst = [];
 	var rv = klg.newLocal(nul.understanding.rvName);
-	klg.hesitate(set.having(new nul.obj.lambda(itm, rv)));
+	klg.hesitate(set.having(nul.obj.lambda.make(itm, rv, klg)));
 	return rv;
 };
 

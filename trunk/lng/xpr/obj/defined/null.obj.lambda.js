@@ -16,45 +16,6 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 		this.image = image;
 		this.alreadyBuilt();
 	},
-	
-//////////////// public
-
-	/**
-	 * Specify this belongs to a set (not a function).
-	 * Build a possible value where point=image in 's'
-	 * @param {nul.xpr.object} s
-	 * @return nul.xpr.possible
-	 */
-	isInSet: function(s) {
-		var klg = new nul.xpr.knowledge();
-		return klg.wrap(klg.hesitate(s.having(klg.unify(this.point, this.image))));
-	},
-
-	/**
-	 * Specify this belongs to a set (not a function).
-	 * Build a possible value where point=image in 's'
-	 * @param {nul.xpr.object} p Domain / Lambda set (optional)
-	 * @param {nul.xpr.object} i Image set
-	 * @return nul.xpr.possible
-	 */
-	isInFct: function(p, i) {
-		var l;
-		if(i) l = new nul.obj.lambda(p, i);
-		else {
-			l = p;
-			p = l.point;
-			i = l.image;
-		}
-		var klg = new nul.xpr.knowledge();
-		var kSep = new nul.xpr.knowledge();	//a=>b in A=>B iif a in A and b in B
-		var vSep = kSep.wrap(
-				new nul.obj.lambda(
-						kSep.hesitate(p.having(this.point)),
-						kSep.hesitate(i.having(this.image)) )
-				);
-		var vMut = this.isInSet(l);	//a=>b in A=>B iif (a=b) in A=>B
-		return klg.wrap(klg.hesitate(vSep, vMut));
-	},
 
 //////////////// nul.obj.defined implementation
 
@@ -69,6 +30,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 
 //////////////// nul.xpr.object implementation
 
+	/*TODO1
 	has: function($super, o) {
 		if(!o.defined) return $super(o);
 		if('lambda'!= o.expression) {
@@ -76,16 +38,33 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 			return klg.wrap(klg.hesitate(this.point.having(klg.hesitate(this.image.having(o)))));
 		}
 		return o.isInFct(this);
-	},
+	},*/
 		
 //////////////// nul.expression implementation
 
 	expression: 'lambda',
 	components: ['point', 'image'],
 	placed: function($super, prnt) {
-		if(this.point.toString() == this.image.toString())
+		/*if(this.point.toString() == this.image.toString())
 			//TODO0 Knowledge can bring this info too
-			return this.point;	//TODO4: another comparison?
+			return this.point;	//TODO4: another comparison?*/
 		return $super(prnt);
 	}
 });
+
+nul.obj.lambda.make = function(p, i, klg) {
+	var eqKlg = new nul.xpr.knowledge();
+	var eqV, lmbd = new nul.obj.lambda(p, i);
+	try { eqV = eqKlg.unify(p, i); }
+	catch(err) {
+		nul.failed(err);	//No way to unify
+		return lmbd;
+	}
+	eqV = eqKlg.wrap(eqV);
+	eqKlg = eqV.knowledge;
+	if('Always'== eqKlg.name) return eqV.value;
+	var dfKlg = new nul.xpr.knowledge(), dfV;
+	try { dfV = dfKlg.oppose(eqKlg).wrap(lmbd); }
+	catch(err) { nul.failed(err); assert(false, 'eqKlg is not "Always"'); }
+	return klg.hesitate(eqV, dfV);
+};

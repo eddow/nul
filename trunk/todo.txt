@@ -1,3 +1,5 @@
+: Dans le browse, quid si "opposition" foire ?
+
 (Q => [..]) (a => b)
 ::: 3 solutions, mais n'en garde que une ou deux: 
 - le cas R in Z est un cas particulier qui est inclus dans les autres solutions
@@ -5,7 +7,7 @@
 
 
 neighbours
-; S = (_ ::number 1,_ ::number 2,_ ::number 3,_ ::number 4,_ ::number 5)
+; S = [1..2]
 ; inOrder = { \/x {x} => {} [] (a,b,.. o) => ((a,b),.. inOrder(b,.. o)) }
 ; neighbours = { (inOrder S) _ [] (a, b); (inOrder S)(b,a) }
 ::: Une locale perd son nom !

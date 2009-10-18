@@ -18,6 +18,7 @@ nul.txt.flat = merge({
 		pair: function() { return nul.txt.flat.dispatchPair(this, this); },
 		
 		local: function() {
+			if(nul.debug.assert) assert(this.dbgName, 'Local has name if debug enabled'); 
 			return (this.dbgName||'') + '[' + this.klgRef + '|' + this.ndx + ']';
 		},
 		attribute: function() {
@@ -44,7 +45,10 @@ nul.txt.flat = merge({
 			return this.value?'true':'false';
 		},
 		range: function() {
-			var rv = '&#x2124;[';
+			var ltr = 0> this.lower ?
+					'&#x2124;':	//ℤ
+					'&#x2115;';	//ℕ			
+			var rv = ltr+'[';
 			if(ninf!= this.lower) rv += this.lower;
 			rv += '..';
 			if(pinf!= this.upper) rv += this.upper;

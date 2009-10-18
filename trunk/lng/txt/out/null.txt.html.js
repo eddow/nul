@@ -85,6 +85,7 @@ nul.txt.html = merge({
 		pair: function() { return nul.txt.html.dispatchPair(this, this); },
 		
 		local: function() {
+			if(nul.debug.assert) assert(this.dbgName, 'Local has name if debug enabled'); 
 			return {
 				'': this.dbgName? (
 	                	this.dbgName+

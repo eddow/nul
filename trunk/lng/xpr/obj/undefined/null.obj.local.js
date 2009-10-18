@@ -17,9 +17,13 @@
  */
 nul.obj.local = Class.create(nul.obj.undefined, {
 	initialize: function(klgRef, ndx, dbgName) {
+		if(nul.debug.assert) assert(dbgName, 'Local has name if debug enabled'); 
 		this.klgRef = klgRef;
 		this.ndx = ndx;
 		this.dbgName = dbgName;
+		if(dbgName && ('_'== dbgName || 
+				('&'== dbgName.substr(0,1) && '&rarr;'!= dbgName.substr(0,6))))
+			this.anonymous = true;
 		this.alreadyBuilt({
 			index: this.indexedSub(this.klgRef, this.ndx)
 		});
@@ -33,6 +37,7 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 	
 	expression: 'local',
 	invalidateTexts: function($super, dbgName) {
+		if(nul.debug.assert) assert(dbgName, 'Local has name if debug enabled'); 
 		this.dbgName = dbgName;
 		$super();
 	}

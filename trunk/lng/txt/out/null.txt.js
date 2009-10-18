@@ -47,25 +47,39 @@ nul.txt = {
 			toPair: [],
 			lineCount: lcFct || function() { return this.table.rows.length-('up'==this.uc?0:1); },
 			collapser: function(html) {
-				this.toPair.push(this.lineCount());
-				return '<span class="collapser start"><a class="collapser" ' +
-					'onclick="nul.txt.collapse(this, '+this.lineCount()+');">&darr;</a></span>'+
-					'<span class="uncollapser start"><a class="collapser" ' +
-					'onclick="nul.txt.uncollapse(this, '+this.lineCount()+');">+</a></span>'+
-					html;
+				return {
+					toPair: this.toPair,
+					lineCount: this.lineCount(),
+					toString: function() {
+						this.toPair.push(this.lineCount);
+						return ''+
+							'<span class="collapser start"><a class="collapser" ' +
+							'onclick="nul.txt.collapse(this, '+this.lineCount+');">&darr;</a></span>'+
+							'<span class="uncollapser start"><a class="collapser" ' +
+							'onclick="nul.txt.uncollapse(this, '+this.lineCount+');">+</a></span>'+
+							html;
+					}
+				}
 			},
 			endCollapser: function(opnd, clsd) {
-				var plc = this.toPair.pop();
 				if('undefined'== typeof clsd) clsd = opnd;
-				if('undefined'!= typeof this.collapsing[plc]) return '';	//Collaper was not drawn
-				this.collapsing[plc] = this.lineCount();
-				return '<span class="collapser end">' +
-					'<a class="collapser" ' +
-					'onclick="nul.txt.collapse(this, '+plc+');">&uarr;</a>' + opnd +
-					'</span><span class="uncollapser end">' +
-					'<a class="collapser" ' +
-					'onclick="nul.txt.uncollapse(this, '+plc+');">+</a>' + clsd +
-					'</span>';
+				return {
+					toPair: this.toPair,
+					lineCount: this.lineCount(),
+					collapsing: this.collapsing,
+					toString: function() {
+						var plc = this.toPair.pop();
+						if(nul.debug.assert) assert('undefined'== typeof this.collapsing[plc], 'Debug collapsers correspondance')
+						this.collapsing[plc] = this.lineCount;
+						return '<span class="collapser end">' +
+							'<a class="collapser" ' +
+							'onclick="nul.txt.collapse(this, '+plc+');">&uarr;</a>' + opnd +
+							'</span><span class="uncollapser end">' +
+							'<a class="collapser" ' +
+							'onclick="nul.txt.uncollapse(this, '+plc+');">+</a>' + clsd +
+							'</span>';
+					}
+				};
 			},
 			//'collapsed' class name is added once for each collapsement : this is not a bug if it appears
 			// several time on an item
