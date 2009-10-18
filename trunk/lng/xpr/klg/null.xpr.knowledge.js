@@ -14,7 +14,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		if(!klg || "string"== typeof klg) { 
 	 		//Create new objects each time
 	        this.locals = this.emptyLocals();
-	        this.veto = [];	//TODO2: veto becomes a knowledge
+	        this.veto = [];	//TODO 2: veto becomes a knowledge
 	 		this.eqCls = [];		//Array of equivalence classes.
 	 		this.access = {};		//{nul.xpr.object} object => {nul.xpr.knowledge.eqClass} eqClass
 	 		this.ior3 = [];			//List of unchoosed IOR3
@@ -24,7 +24,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 			nul.xpr.knowledge.cloneData(klg, this);
 	 		this.name = 'c';
 		}
- 		//this.mult = 1;	//TODO0: 'mult' optimisation
+ 		//this.mult = 1;	//TODO O: 'mult' optimisation
  	},
 
 //////////////// privates
@@ -157,7 +157,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		} 
  		
  		var deps = this.usage(value);
- 		/*TODO0: 'mult' optimisation
+ 		/*TODO O: 'mult' optimisation
 		//Remove unrefered ior3 tautologies, affect the 'mult' property 
  		for(i=0; i<this.ior3.length; ++i) if(!deps.ior3[i]) {
  			var nior3 = this.ior3[i].modifiable();
@@ -181,7 +181,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * Gets the dependance of an hypothetic possible while this knowledge is not summarised.
  	 */
  	usage: function(value) {
- 		//TODO0: use summary if possible.
+ 		//TODO O: use summary if possible.
 		var rv = new nul.dependance();
 		var comps = value?[value]:[];
 		comps.pushs(this.eqCls, this.ior3);
@@ -224,7 +224,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 						rv.push(ndx);
 			return rv;
 		};
-		//TODO1: need opposition
+		//TODO 1: need opposition
 		var lclInfl = {};	//nx => {ndx: [0, 1, 2]}
 		//	0: no need
 		//	1: define content
@@ -278,7 +278,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		var dstEqCls = new nul.xpr.knowledge.eqClass();
  		var alreadyEqd = {}, alreadyBlg = {};
  		var toBelong = [];
- 		var abrtVal = nul.xpr.knowledge.cloneData(this);	//Save datas in case of failure //TODO2: shouldn't save here !
+ 		var abrtVal = nul.xpr.knowledge.cloneData(this);	//Save datas in case of failure //TODO 2: shouldn't save here !
  		var ownClass = true;
  		try {
 	 		while(toUnify.length || toBelong.length) {
@@ -313,11 +313,11 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 					if(chx) {
 						switch(chx.length) {
 						case 0:
-							nul.fail('Unification failed');
+							nul.fail('Belonging', unf, '&in;', s);
 						case 1:
 							if('possible'== chx[0].expression) {
 								toUnify.push(this.merge(chx[0].knowledge, chx[0].value));
-								//TODO0: Reset unification, to do it knowing the newly brought knowledge
+								//TODO O: Reset unification, to do it knowing the newly brought knowledge
 								//useful ??!?
 								
 								alreadyEqd = {};
@@ -394,6 +394,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	merge: function(klg, val) {
  		if(nul.xpr.knowledge.never== klg) nul.fail('Merging failure');
  		if(nul.xpr.knowledge.always== klg) return val;
+ 		//if(nul.debug.assert) assert(!klg.ior3.length, 'Merge only uniques')
  		
  		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
 
@@ -494,7 +495,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
 		var representer = new nul.xpr.knowledge.eqClass.represent(this.eqCls);
-		//TODO2: représenter une eqCls dans les fils. Si le fils est une eqCls, ajouter les attributs de cette eqCls !
+		//TODO 2: représenter une eqCls dans les fils. Si le fils est une eqCls, ajouter les attributs de cette eqCls !
 		for(var i=0; i<this.eqCls.length;) {
 			var ec = this.eqCls[i];
 			var nec = representer.subBrowse(ec);
@@ -508,7 +509,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 			}
 		}
 
-//TODO0: represent sur ior3s : useful or post-resolution ?
+		//TODO O: represent sur ior3s : useful or we let it post-resolution ?
 		value = representer.browse(value);
 		
 		var opposition = this.veto;
@@ -631,7 +632,7 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
 	useLocalNames: function(keep) {
 		for(var i=0; i<this.locals.length; ++i)
 			if(!keep[i]) this.locals[i] = null;
-			else for(var l = 0; l<keep[i].length; ++l)		//TODO0: useful ? locals should have correct dbgName now
+			else for(var l = 0; l<keep[i].length; ++l)		//TODO O: useful ? locals should have correct dbgName now
 				keep[i][l].invalidateTexts(this.locals[i]);
 	},
 

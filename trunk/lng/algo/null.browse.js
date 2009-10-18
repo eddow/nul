@@ -143,7 +143,7 @@ nul.browser.bijectif = Class.create(nul.browser.cached, {
  * Gives one other expression or the same expression - chew until the result is unchanged
  */
 nul.browser.chewer = Class.create(nul.browser.bijectif, {
-	//TODO0: another condition than to try to re-browse and to see if changed?
+	//TODO O: another condition than to try to re-browse and to see if changed?
 	makeRV: function($super, xpr, bwsd) {
 		var rv = $super(xpr, bwsd);
 		if(nul.browser.bijectif.unchanged== rv) return rv;

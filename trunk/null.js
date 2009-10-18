@@ -86,6 +86,8 @@ nul.loading.files = [
 'data/null.data.compute'
 ];
 
+nul.loading.total = nul.loading.files.length;
+
 nul.loading.suffix = '';
 
 nul.loading.addRef = function(tag, props) {
@@ -104,11 +106,14 @@ nul.loading.onreadystatechange = function() {
 
 nul.loading.addNexScriptRef = function() {
 	if(!nul.loading.files.length) {
+		window.status = nul.loading.files.length + '/' + nul.loading.total + ' : Starting script';
 		delete nul.loading;
 		nul.page.load();
+		window.status = window.defaultStatus;
 		return;
 	}
 	var sf = nul.loading.files.shift();
+	window.status = nul.loading.files.length + '/' + nul.loading.total + ' : ' + sf;
 	nul.loading.addRef('script', {
 		type: 'text/javascript',
 		src: nul.loading.path+sf+'.js' + nul.loading.suffix,

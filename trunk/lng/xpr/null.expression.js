@@ -122,7 +122,7 @@ nul.expression = Class.create({
 		return f;
 	},
 	invalidateTexts: function() {
-		//TODO3: invalidate parent texts ?
+		//TODO 3: invalidate parent texts ?
 		delete this.summarised.flatTxt;
 		delete this.summarised.htmlTxt;
 	},
@@ -158,7 +158,7 @@ nul.expression = Class.create({
 		return this.indexedSub(cs);
 	},
 	indexedSub: function(items) {
-		//TODO3: assert no infinite recursion
+		//TODO 3: assert no infinite recursion
 		nul.xpr.is(this);
 	 	items = beArrg(arguments);
 	 	var rv = [];

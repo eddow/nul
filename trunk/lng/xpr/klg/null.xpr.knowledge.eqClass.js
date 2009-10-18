@@ -64,35 +64,36 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	/**
 	 * Add an object in the equivlence.
 	 * @param {nul.xpr.object} o object to add
-	 * @return array(nul.xpr.object) Array of objects to equal to this eqCls afterward
+	 * @return nothing
 	 * @throws nul.failure
 	 */
-	isEq: function(o, klg) {		//TODO2: ne retourne plus de array(toUnify) : new unfctn system
+	isEq: function(o, klg) {
  		this.modify(); nul.obj.use(o);
-		var rv = [];
 		//Add an object to the equivalence class
 		nul.obj.use(o);
 		if(o.defined) {
-			if(this.eqvlDefined()) nul.trys(function() {
-						nul.xpr.mod(klg, nul.xpr.knowledge);
-						var unf;
-						try {
-							unf = this.equivls[0].unified(o, klg);
-						} catch(err) {
-							if(this.equivls[0].expression == o.expression) throw err;
-							nul.failed(err);
-							unf = o.unified(this.equivls[0], klg);
+			if(this.eqvlDefined())
+				nul.trys(function() {
+					nul.xpr.mod(klg, nul.xpr.knowledge);
+					var unf;
+					try {
+						unf = this.equivls[0].unified(o, klg);
+					} catch(err) {
+						if(this.equivls[0].expression == o.expression) throw err;
+						nul.failed(err);
+						unf = o.unified(this.equivls[0], klg);
+					}
+					if(unf && true!== unf) {
+						if(nul.debug.assert) {
+							assert(klg.access[this.equivls[0]] == this, 'Access consistence');
+							assert(klg.access[o] == this, 'Access consistence');
 						}
-						if(unf && true!== unf) {
-							if(nul.debug.assert) {
-								assert(klg.access[this.equivls[0]] == this, 'Access consistence');
-								assert(klg.access[o] == this, 'Access consistence');
-							}
-							delete klg.access[o];
-							delete klg.access[this.equivls[0]];
-							klg.access[unf] = this;
-							this.equivls[0] = unf;
-						}
+						//TODO O: still let 'o' and 'this.equivls[0]' so they are replaced straight in representation ?
+						delete klg.access[o];
+						delete klg.access[this.equivls[0]];
+						klg.access[unf] = this;
+						this.equivls[0] = unf;
+					}
 					return this.equivls[0];
 				}, 'Equivalence', this, [this.equivls[0], o]);
 			else {
@@ -105,7 +106,6 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 			for(p=0; p<this.equivls.length; ++p) if(ordr<this.orderEqs(this.equivls[p], klg)) break;
 			this.equivls.splice(p,0,o);
 		}
-		return rv;
 	},
 
 	/**
@@ -141,7 +141,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		if(this.eqvlDefined()) {
 			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
 			this.attribs = nul.xpr.beBunch();
-		} else if(this.attribs !== attrs)	//TODO3: gardien nécessaire?
+		} else if(this.attribs !== attrs)	//TODO 3: gardien nécessaire?
 			merge(this.attribs, attrs, function(a,b) {
 				return (a&&b)?klg.unify(a,b):(a||b);
 			});
@@ -152,7 +152,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	 * Retrieve an equivalence class that doesn't bother with useless knowledge
 	 * @param {nul.xpr.object} o
 	 * @return nul.xpr.knowledge.eqClass or null
-	 * TODO3: this function is useless
+	 * TODO 3: this function is useless
 	 */
 	unused: function(o) {
 		var unused = function(eqc, tbl, str) {
@@ -208,14 +208,14 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 			if(this.defined) return this;
 			var deps = this.dependance();
 			if(isEmpty(deps.usages)) return this;
-			//TODO2: otherThan : only in locals or in ior3 too ?
+			//TODO 2: otherThan : only in locals or in ior3 too ?
 			if(deps.otherThan(klg)) return this;	//If depends on another knowledge, keep
 			deps = deps.usage(klg);
 			for(var l in deps.local) if(lcls[l]) return this;	//If depends on a needed local, keep
 		};
 		var nVals = maf(this.equivls, remover);
 		var nBlgs = maf(this.belongs, remover);
-		//TODO3: FA: do we forget attributes ?
+		//TODO 3: FA: do we forget attributes ?
 		//FA var nAtts = maf(this.attribs, remover);
 		if(nVals.length == this.equivls.length && nBlgs.length == this.belongs.length
 			/*FA && nAtts.length == this.attribs.length*/) return this;

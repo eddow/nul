@@ -29,7 +29,7 @@ nul.understanding = {
 			case '/':
 			case '%':
 				return nul.obj.operation.binary(this.operator, ops);
-			//TODO3: > < >= <=
+			//TODO 3: > < >= <=
 			case '=>': return nul.obj.lambda.make(ops[0], ops[1], ub.klg);
 			case ',': return nul.obj.pair.list(ops.follow, ops);
 			case '=': return ub.klg.unify(ops);
@@ -94,7 +94,7 @@ nul.understanding = {
 		var attrs = {};
 		for(var an in this.attributes) if(cstmNdx(an))
 			attrs[an] = this.attributes[an].understand(ub);
-		//TODO2: content
+		//TODO 2: content
 		return new nul.obj.node(
 			this.node,
 			map(this.attributes, function() {
@@ -137,7 +137,7 @@ nul.understanding.base = Class.create({
 		return this.klg.wrap(cnt.understand(this));
 	},
 	attributed: function(obj, anm) {
-		//TODO3? essayer de ne pas créer deux variables si (a.b + a.b)
+		//TODO 3? essayer de ne pas créer deux variables si (a.b + a.b)
 		// a.b = a.b ?? non ! mais pas utile deux variables anyway! 
 		if(obj.defined) return obj.attribute(anm);
 		var rv = this.createFreedom('&rarr;'+anm, false);

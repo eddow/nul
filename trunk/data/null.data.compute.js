@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO2: R-O (query), CML (insert), R/W (modify), XC (delete) data sources 
+//TODO 2: R-O (query), CML (insert), R/W (modify), XC (delete) data sources 
 /**
  * The data-source provide basic data queries : select, insert, update, delete.
  */

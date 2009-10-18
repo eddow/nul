@@ -7,29 +7,29 @@
  *--------------------------------------------------------------------------*/
 
 /**
- * TODO0: a real resolution engine ! :)
+ * TODO O: a real resolution engine ! :)
  * Interface function of Solver.
  * Gets a distributed list of fuzzies that don't contains ior3 anymore
  * @param {nul.xpr.possible} fz
  * @return array(nul.xpr.possible)
  */
 nul.solve = function(fz) {
+	var onceKior3 = new nul.xpr.knowledge.ior3([nul.xpr.knowledge.always]);
+		
 	nul.xpr.use(fz, nul.xpr.possible);
 	var cases = fz.knowledge.ior3;
 	var ndx = map(cases, function() { return 0; });
 	var rv = [];
 	var incndx = 0;
 	while(incndx < cases.length) {
-		var klg = nul.xpr.knowledge.always;
+		var klg = fz.knowledge.modifiable();
 		try {
 			var merger = [];
 			for(var i=0; i<ndx.length; ++i) {
-				if(nul.xpr.knowledge.always== klg) {
-					klg = fz.knowledge.modifiable();
-					klg.ior3 = [];
-				}
+				klg.ior3[i] = onceKior3;
 				merger[i] = klg.merge(cases[i].choices[ndx[i]]);
 			}
+			if(klg.ior3.length == ndx.length) klg.ior3 = [];	//No imported ior3 from kior3s by merges
 			var slvr = new nul.solve.browser(fz.knowledge, ndx, merger);
 			slvr = slvr.browse(klg.built()).modifiable().wrap(slvr.browse(fz.value));
 			nul.debug.log('Resolution')('','Possibility', slvr);
@@ -66,7 +66,8 @@ nul.solve.browser = Class.create(nul.browser.bijectif, {
 		$super('Resolution');
 	},
 	transform: function(xpr) {
-		if('ior3'== xpr.expression && this.klg.name == xpr.klgRef)
+		if('ior3'== xpr.expression && this.klg.name == xpr.klgRef	///Xpr is a ior of this knowledge 
+				&& xpr.ndx<this.tries.length)	//Xpr is a tested one, not a newly imported one
 			return !this.merger[xpr.ndx]? xpr.values[this.tries[xpr.ndx]] :
 					this.merger[xpr.ndx].browse(xpr.values[this.tries[xpr.ndx]]);
 		return nul.browser.bijectif.unchanged;

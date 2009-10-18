@@ -56,7 +56,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 	has: function($super, o) {
 		this.use(); nul.obj.use(o);
 		
-		//TODO3: summarise a tree of fixed values (=> ram db)
+		//TODO 3: summarise a tree of fixed values (=> ram db)
 		//make a table fct also
 		var rv = [];
 		try {
