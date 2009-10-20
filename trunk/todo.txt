@@ -1,3 +1,14 @@
+i (1,2) ; i = { \/x {x} => {} [] (a,b) => ( i{b} ) }
+
+:::cas "s s" set auto-inclusive : s is protected while representing ... so what happen ?
+
+(set s) x ==> s x
+set
+={ {}
+[]  (a,.. s) => ( set s [] (a,.. set s) )
+}
+:::faire!
+
 \/inOrder
 { (inOrder [1..2]) _ [] (t,v); (inOrder [1..2])(v,t) }
 ; inOrder = { \/x {x} => {} [] (a,b,.. o) => ((a,b),.. inOrder(b,.. o)) }

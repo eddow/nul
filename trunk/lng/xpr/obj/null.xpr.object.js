@@ -16,27 +16,69 @@ nul.xpr.object = Class.create(nul.expression, {
 	 * @return array(nul.xpr.object or nul.xpr.possible)
 	 */
 	having: function(o) {
-		var rv = this.has(o);
-		if(rv) return rv;
 		var klg = new nul.xpr.knowledge();
 		klg.belong(o, this);
-		rv = [klg.wrap(o)];
-		return rv;
+		return [klg.wrap(o)];
 	},
-	
-	/**
-	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
-	 * Or nothing if nothing can be simplified
-	 * @param {nul.xpr.object} o
-	 * @param {nul.xpr.knowledge} klg
-	 * @return array(nul.xpr.object or nul.xpr.possible)
-	 */
-	has: function(o) {},
 	
 	/**
 	 * Abstract defined also by nul.xpr.possible
 	 */
-	valueKnowing: function(klg) { return this; }
+	valueKnowing: function(klg) { return this; },
+	
+////////////////	Generic summary providers
+	
+	sum_dependance: function($super) {
+		var rv = $super();
+		if(this.selfRef) {
+			if(nul.debug.assert) assert(
+					rv.usages[nul.obj.local.self.name] &&
+					rv.usages[nul.obj.local.self.name].local[this.selfRef],
+					'Self-reference consistence.');
+			delete rv.usages[nul.obj.local.self.name].local[this.selfRef];
+			if(!rv.usages[nul.obj.local.self.name].local.length)
+				delete rv.usages[nul.obj.local.self.name];
+		}
+		return rv;
+	},
+////////////////	Internals
+
+	/**
+	* Change self sub-representations. Either to change the self-context index or to modify it by another known value
+	* @param {any} newSelf
+	* If newSelf is a {nul.xpr.object}, it will replace the self-references
+	* If not, it will be considered as a new self index
+	*/
+	reself: function(newSelf) {
+		if(!this.selfRef) return this;
+		var rv = new nul.xpr.object.reself(this.selfRef, newSelf).browse(this);
+		if(nul.debug.assert) assert(this.expression == rv.expression, 'Reselfing doesnt modify the definition');
+		return rv;
+	}
+});
+
+/**
+ * Change the self-referant locals in an object definition
+ */
+nul.xpr.object.reself = Class.create(nul.browser.bijectif, {
+	initialize: function($super, selfRef, trgt) {
+		this.selfRef = selfRef;
+		if(!trgt.object) this.newRef = trgt;
+		this.trgt = trgt.object?trgt:nul.obj.local.self(trgt);
+		$super('SelfRef');
+	},
+	build: function($super, xpr) {
+		if(xpr.selfRef == this.selfRef) {
+			if(this.newRef) xpr.selfRef = this.newRef;
+			else delete xpr.selfRef;
+		}
+		return $super(xpr);
+	},
+	transform: function(xpr) {
+		if('local'== xpr.expression && nul.obj.local.self.name == xpr.klgRef && xpr.ndx == this.selfRef)
+			return this.trgt;
+		return nul.browser.bijectif.unchanged;
+	}
 });
 
 nul.obj = {

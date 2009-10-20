@@ -21,7 +21,7 @@ nul.obj.litteral.number = Class.create(nul.obj.litteral, {
 		
 	},
 
-	has: function(o) {
+	subHas: function(o) {
 		nul.fail(o, ' doesnt contains anything');
 	},
 	

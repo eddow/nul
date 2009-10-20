@@ -102,7 +102,7 @@ span.failure {
 	vertical-align: text-bottom;
 }
 
-a.shortStr, a.index, a.locals, a.dependances, a.flags, a.reference {
+a.shortStr, a.index, a.locals, a.dependances, a.reference {
 	display: table-cell;
 	font-size: 4px;
 	cursor: none;

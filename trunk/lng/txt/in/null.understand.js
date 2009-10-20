@@ -119,9 +119,12 @@ nul.understanding = {
 nul.understanding.base = Class.create({
 	initialize: function(prntUb, klgName) {
 		this.prntUb = prntUb;
+		this.parms = {};		
 		this.klg = new nul.xpr.knowledge(klgName);
 	},
 	resolve: function(identifier) {
+		if('undefined'!= typeof this.parms[identifier])
+			return this.parms[identifier];
 		if(this.prntUb) return this.prntUb.resolve(identifier);
 		throw nul.understanding.unresolvable;
 	},
@@ -131,7 +134,13 @@ nul.understanding.base = Class.create({
 	 * If value is specified explicitely as 'false', a local is created and the name is not remembered
 	 */
 	createFreedom: function(name, value) {
-		return this.prntUb.createFreedom(name, value);
+		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
+		var uniqueName = true;
+		if(false===value) uniqueName = false;
+		if(!value) value = this.klg.newLocal(name);
+		if('_'== name) uniqueName = false;
+		if(uniqueName) this.parms[name] = value;
+		return value;
 	},
 	understand: function(cnt) {
 		return this.klg.wrap(cnt.understand(this));
@@ -149,22 +158,7 @@ nul.understanding.base = Class.create({
 nul.understanding.base.set = Class.create(nul.understanding.base, {
 	initialize: function($super, prntUb, selfName, klgName) {
 		$super(prntUb, klgName);
-		this.parms = {};
 		if(selfName) this.parms[selfName] = this.klg.local(selfName, nul.slf);
-	},
-	resolve: function($super, identifier) {
-		if('undefined'!= typeof this.parms[identifier])
-			return this.parms[identifier];
-		return $super(identifier);
-	},
-	createFreedom: function(name, value) {
-		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
-		var uniqueName = true;
-		if(false===value) uniqueName = false;
-		if(!value) value = this.klg.newLocal(name);
-		if('_'== name) uniqueName = false;
-		if(uniqueName) this.parms[name] = value;
-		return value;
 	},
 	understand: function(cnt) {
 		try {

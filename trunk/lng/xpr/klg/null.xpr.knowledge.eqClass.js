@@ -93,7 +93,12 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 						delete klg.access[this.equivls[0]];
 						klg.access[unf] = this;
 						this.equivls[0] = unf;
-					}
+						/*this.equivls.splice(1, 0, o);
+						if(!klg.access[unf]) {
+							klg.access[unf] = this;
+							this.equivls.unshift(unf);
+						}*/
+					} //else this.equivls.splice(1, 0, o);
 					return this.equivls[0];
 				}, 'Equivalence', this, [this.equivls[0], o]);
 			else {
@@ -256,7 +261,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	}
 });
 
-nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.chewer, {
+nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
 	initialize: function($super, ec) {
 		this.tbl = {};
 		for(var c in ec) if(cstmNdx(c)) {
@@ -268,27 +273,55 @@ nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.chewer, {
 		$super('Representation');
 		this.prepStack = [];
 	},
+	represent: function(ec, val) {
+		nul.xpr.use(ec, nul.xpr.knowledge.eqClass);
+		this.invalidateCache();
+		if(!val) val = ec.equivls[0];
+		for(var e=0; e<ec.equivls.length; ++e)
+			if(val.toString()!=ec.equivls[e].toString())
+				this.tbl[ec.equivls[e]] = val;
+			else if(this.tbl[ec.equivls[e]]) delete this.tbl[ec.equivls[e]];
+	},
 	subBrowse: function(xpr) {
 		nul.xpr.use(xpr, nul.xpr.knowledge.eqClass);
-		this.protect = [];
-		for(var i=0; i<xpr.equivls.length; ++i) this.protect[xpr.equivls[i]] = xpr.equivls[i];
-		try { return this.recursion(xpr); }
-		finally {
-			for(var i in this.protect) this.uncache(this.protect[i]);
-			delete this.protect;
-		}
+        this.protect = [];
+        for(var i=0; i<xpr.equivls.length; ++i) this.protect[xpr.equivls[i]] = xpr.equivls[i];
+        try { return this.recursion(xpr); }
+        finally {
+            for(var i in this.protect) this.uncache(this.protect[i]);
+            delete this.protect;
+        }
+    },
+	cachable: function(xpr) {
+		return !this.tbl[xpr];
 	},
-	prepare: function($super, xpr) {
-		this.prepStack.push(xpr);
+	changeable: function(xpr) {
+		return this.tbl[xpr] && (!this.protect || !this.protect[xpr] || 2<this.prepStack.length);
+	},
+	enter: function($super, xpr) {
+		this.prepStack.unshift(xpr);
+		if(this.changeable(xpr)) return false;
 		return $super();
 	},
+	build: function($super, xpr) {
+		if(xpr.setSelfRef) {
+			xpr.selfRef = xpr.setSelfRef;
+			delete xpr.setSelfRef;
+			delete this.prepStack[0].setSelfRef;
+		}
+		return $super(xpr);
+	},
 	transform: function(xpr) {
-		this.prepStack.pop();
-		if((this.protect && this.protect[xpr]) || !this.tbl[xpr]) return nul.browser.bijectif.unchanged;
-		do xpr = this.tbl[xpr]; while(this.tbl[xpr]);
+		var p = this.prepStack.shift();
+		var evl = new nul.browser.bijectif.evolution(xpr);
+		if(this.changeable(evl.value)) do evl.receive(this.tbl[evl.value]); while(this.tbl[evl.value]);
 		//If I'm replacing a value by an expression that contains this value, just don't
-		if(this.prepStack.contains(xpr))
-			return nul.browser.bijectif.unchanged;
-		return xpr;
+		var n = this.prepStack.indexOf(evl.value);
+		if(-1< n) {
+			evl.receive(nul.obj.local.self(evl.value.selfRef || evl.value.setSelfRef));
+			this.prepStack[n].setSelfRef = evl.value.ndx;
+		}
+		nul.debug.log('Represent')('', 'Representation', evl.changed, p);
+		return evl.changed;
 	}
 });

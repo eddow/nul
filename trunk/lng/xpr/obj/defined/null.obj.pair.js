@@ -34,7 +34,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 //////////////// nul.obj.defined implementation
 
-	unified: function(o, klg) {
+	subUnified: function(o, klg) {
 		if('&phi;'== o.expression) {
 			klg.oppose(this.first.knowledge);
 			return klg.unify(this.second, o);
@@ -45,15 +45,16 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 				klg.unify(this.first.value, o.first.value),
 				klg.unify(this.second, o.second))).built();
 		//TODO4: unifier les possibles
+		nul.fail(o, ' not unifiable pair');
 	},
 	
 //////////////// nul.xpr.object implementation
 
 	attributes: {
-		
+		//TODO3: length, &, *, head, tail, ...
 	},
 
-	has: function($super, o) {
+	subHas: function(o) {
 		this.use(); nul.obj.use(o);
 		
 		//TODO 3: summarise a tree of fixed values (=> ram db)

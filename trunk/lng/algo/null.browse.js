@@ -10,6 +10,12 @@ nul.browser = Class.create({
 	initialize: function(desc) {
 		this.description = desc;
 	},
+	
+	/**
+	 * Called before to browse an expression
+	 * @return {bool} Weither to browse sub-expressions or not
+	 */
+	enter: function(xpr) { return true; },
 	/**
 	 * Called after sub-element browsing
 	 * @param {association} bwsd An assocation of the components browsed mapping the result of the browsing
@@ -26,7 +32,7 @@ nul.browser = Class.create({
 			nul.xpr.use(xpr);
 			
 			var bwsd = {};
-			for(var comp in xpr.components) if(cstmNdx(comp)) {
+			if(this.enter(xpr)) for(var comp in xpr.components) if(cstmNdx(comp)) {
 				comp = xpr.components[comp];
 				if(nul.xpr.bunch(xpr[comp])) {
 					var brwsr = this;
@@ -61,6 +67,11 @@ nul.browser.cached = Class.create(nul.browser, {
 		this.cachedExpressions = [];
 		$super(desc);
 	},
+	
+	/**
+	 * Determine weither to use cache for an expression.
+	 */
+	cachable: function(xpr) { return true; },
 	/**
 	 * Remove the cache info from an object
 	 */
@@ -77,17 +88,12 @@ nul.browser.cached = Class.create(nul.browser, {
 		
 	},
 	/**
-	 * Called before to browse an expression
-	 * @return nothing
-	 */
-	prepare: function(xpr) {},
-	/**
 	 * Recursion function over an expression
 	 */
 	recursion: function($super, xpr) {
 		if(!xpr) return nul.browser.bijectif.unchanged;
+		if(!this.cachable(xpr)) return $super(xpr);
 		if(!xpr[this.name]) {
-			this.prepare(xpr);
 			xpr[this.name] = $super(xpr);
 			this.cachedExpressions.push(xpr);
 		}
@@ -113,10 +119,14 @@ nul.browser.bijectif = Class.create(nul.browser.cached, {
 	transform: function(xpr) { throw 'abstract'; },
 	recursion: function($super, xpr) {
 		var evl = new nul.browser.bijectif.evolution(xpr);
-		//evl.receive(this.prepare(evl.value));
 		evl.receive($super(evl.value));
 		return evl.changed;
  	},
+ 	/**
+ 	 * Called when an expression was modified
+ 	 * SHOULD return an expression (no 'unchanged')
+ 	 */
+ 	build: function(xpr) { return xpr.chew(); },
 	/**
 	 * Transform this expression that already had bee browsed.
 	 * @return Either a new object or 'null' if nothing changed
@@ -124,7 +134,7 @@ nul.browser.bijectif = Class.create(nul.browser.cached, {
 	makeRV: function(xpr, bwsd) {
 		var evl = new nul.browser.bijectif.evolution(xpr);
 		var mod = nul.browser.bijectif.merge(evl.value, bwsd);
-		if(mod) evl.receive(mod.chew());	//Here are built modifiabled expressions
+		if(mod) evl.receive(this.build(mod));	//Here are built modifiabled expressions
 		evl.receive(this.transform(evl.value));
 		return evl.changed;
 	},
@@ -135,20 +145,6 @@ nul.browser.bijectif = Class.create(nul.browser.cached, {
 		var evl = new nul.browser.bijectif.evolution(xpr);
 		evl.receive($super(evl.value));
 		return evl.value;
-	}
-});
-
-
-/**
- * Gives one other expression or the same expression - chew until the result is unchanged
- */
-nul.browser.chewer = Class.create(nul.browser.bijectif, {
-	//TODO O: another condition than to try to re-browse and to see if changed?
-	makeRV: function($super, xpr, bwsd) {
-		var rv = $super(xpr, bwsd);
-		if(nul.browser.bijectif.unchanged== rv) return rv;
-		var nrv = this.recursion(rv);
-		return (nul.browser.bijectif.unchanged== nrv)?rv:nrv;
 	}
 });
 
@@ -175,7 +171,7 @@ nul.browser.bijectif.merge = function(xpr, bwsd) {
 	return mod;
 };
 
-nul.browser.bijectif.unchanged = 'bijectif.unchanged';
+nul.browser.bijectif.unchanged = 'Just the same';
 nul.browser.bijectif.evolution = Class.create({
 	initialize: function(xpr) {
 		this.value = xpr;

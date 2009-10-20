@@ -21,7 +21,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 
 	attribute: function(an) { nul.fail('Lambdas have no attributes'); },
 	
-	unified: function(o, klg) {
+	subUnified: function(o, klg) {	//TODO1: if index == index, don't fuss with subs !
 		if('lambda'!= o.expression) nul.fail(o, ' not a lambda');
 		return new nul.obj.lambda(
 			klg.unify(this.point, o.point),
@@ -30,15 +30,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 
 //////////////// nul.xpr.object implementation
 
-	/*TODO 1
-	has: function($super, o) {
-		if(!o.defined) return $super(o);
-		if('lambda'!= o.expression) {
-			var klg = new nul.xpr.knowledge();
-			return klg.wrap(klg.hesitate(this.point.having(klg.hesitate(this.image.having(o)))));
-		}
-		return o.isInFct(this);
-	},*/
+	subHas: function() { nul.fail('Lambdas contains nothing'); },
 		
 //////////////// nul.expression implementation
 

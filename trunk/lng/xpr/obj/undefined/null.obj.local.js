@@ -42,3 +42,18 @@ nul.obj.local = Class.create(nul.obj.undefined, {
 		$super();
 	}
 });
+//TODO 3: Surligner le self-ref content dans l'html
+//TODO 2: self-locals redéfinie au stepUp
+/**
+ * Create a local that specify 'myself' for the given expression
+ * @param {nul.expression} xpr
+ * @return {nul.obj.local}
+ */
+nul.obj.local.self = function(ndx) {
+	return new nul.obj.local(
+			nul.obj.local.self.name,
+			ndx || ++nul.obj.local.self.nameSpace,
+			'&uArr;')
+};
+
+nul.obj.local.self.name = '&crarr;';
