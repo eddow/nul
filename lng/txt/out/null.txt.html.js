@@ -62,6 +62,7 @@ nul.txt.html = merge({
 		var tiles = {};
 		tiles.shortStr = xpr.toFlat();
 		tiles.index = xpr.toString();
+		if(xpr.selfRef) tiles.reference = xpr.selfRef;
 		merge(tiles, txt);
 		delete tiles[''];
 		var spos = 0;

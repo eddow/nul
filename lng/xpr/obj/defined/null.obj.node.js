@@ -16,7 +16,7 @@ nul.obj.node = Class.create(nul.obj.defined, {
 	},
 //////////////// nul.obj.defined implementation
 
-	unified: function(o, klg) {
+	subUnified: function(o, klg) {
 		if('node'!= o.expression) nul.fail(o, ' not a node');
 		var nattrs = merge(this.attributes, o.attributes, function(a, b, i) {
 			if(!a || !b) nul.fail('Attribute not common : '+i);
@@ -30,8 +30,8 @@ nul.obj.node = Class.create(nul.obj.defined, {
 
 //////////////// nul.xpr.object implementation
 
-	has: function($super, o) {
-		return this.content.has(o);
+	subHas: function(o) {
+		if(this.content) return this.content.having(o);
 	},
 
 //////////////// nul.expression implementation

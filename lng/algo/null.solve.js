@@ -8,6 +8,7 @@
 
 /**
  * TODO O: a real resolution engine ! :)
+ * TODO 3: BIG optimisation : solve first sons, then the root
  * Interface function of Solver.
  * Gets a distributed list of fuzzies that don't contains ior3 anymore
  * @param {nul.xpr.possible} fz

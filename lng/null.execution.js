@@ -13,6 +13,7 @@ nul.execution = {
 		//namespaces
 		nul.xpr.knowledge.nameSpace = 0;
 		nul.browser.cached.nameSpace = 0;
+		nul.obj.local.self.nameSpace = 0;
 		
 		nul.debug.reset();
 		nul.execution.benchmark.reset();
