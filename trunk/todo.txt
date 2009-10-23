@@ -1,4 +1,6 @@
-i (1,2) ; i = { \/x {x} => {} [] (a,b) => ( i{b} ) }
+next = { \/x {x} => {}
+[] (a, b,..o) => ((a=>b),.. next(b,.. o))
+}
 
 :::cas "s s" set auto-inclusive : s is protected while representing ... so what happen ?
 

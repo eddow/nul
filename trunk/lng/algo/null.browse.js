@@ -15,7 +15,7 @@ nul.browser = Class.create({
 	 * Called before to browse an expression
 	 * @return {bool} Weither to browse sub-expressions or not
 	 */
-	enter: function(xpr) { return true; },
+	enter: function(xpr) { return xpr; },
 	/**
 	 * Called after sub-element browsing
 	 * @param {association} bwsd An assocation of the components browsed mapping the result of the browsing
@@ -32,13 +32,14 @@ nul.browser = Class.create({
 			nul.xpr.use(xpr);
 			
 			var bwsd = {};
-			if(this.enter(xpr)) for(var comp in xpr.components) if(cstmNdx(comp)) {
-				comp = xpr.components[comp];
-				if(nul.xpr.bunch(xpr[comp])) {
+			var sbx = this.enter(xpr);
+			if(sbx) for(var comp in sbx.components) if(cstmNdx(comp)) {
+				comp = sbx.components[comp];
+				if(nul.xpr.bunch(sbx[comp])) {
 					var brwsr = this;
-					bwsd[comp] = map(xpr[comp], function(i, o) { return brwsr.recursion(o); });
+					bwsd[comp] = map(sbx[comp], function(i, o) { return brwsr.recursion(o); });
 				} else
-					bwsd[comp] = this.recursion(xpr[comp], comp);
+					bwsd[comp] = this.recursion(sbx[comp], comp);
 			}
 			return this.makeRV(xpr, bwsd);
 		} catch(err) {

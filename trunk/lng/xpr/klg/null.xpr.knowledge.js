@@ -458,6 +458,32 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		return ec.attribs[anm];
  	},
  	
+ 	/**
+ 	 * Simplifies oneself knowing the attribute table
+ 	 * @param {{xpr: definition}} dTbl
+ 	 * @return {array(string)} The list of used attributions : xpr indexes
+ 	 */
+ 	definition: function(dTbl) {
+		this.modify();
+		var rv = [];
+		dTbl = clone1(dTbl);
+		var used;
+		
+		do {
+			used = false;
+			for(var v in this.access) {
+				if(dTbl[v]) {
+					this.access[v].definition(dTbl[v], this)
+					rv.push(v);
+					delete dTbl[v];
+					used = true;
+					break;
+				}
+			}
+		} while(used);
+		return rv;
+ 	},
+ 	
 	/**
 	 * Brings a knowledge in opposition
 	 */

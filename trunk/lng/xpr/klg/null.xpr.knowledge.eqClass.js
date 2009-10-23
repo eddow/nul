@@ -148,6 +148,21 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 	
 	/**
+	 * Gets the information that defines the values : the attributes and the defined belong
+	 * @param {definition object}
+	 * @param {nul.xpr.knowledge} Used only hen a definition with attributes is given
+	 * @returns nothing or a definition object
+	 */
+	definition: function(def, klg) {
+		def = def || {};
+		if(def.belong) this.isIn(belong);
+		if(this.blngDefined()) def.belong = this.belongs[0];
+		if(def.attrib) this.hasAttr(def.attrib, klg);
+		if(!isEmpty(this.attribs, '')) def.attrib = this.attribs;
+		return def;
+	},	
+	
+	/**
 	 * The object appears only in this equivalence class.
 	 * Retrieve an equivalence class that doesn't bother with useless knowledge
 	 * @param {nul.xpr.object} o
@@ -259,23 +274,19 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
 	initialize: function($super, ec) {
 		this.tbl = {};
+		this.defTbl = {};
 		for(var c in ec) if(cstmNdx(c)) {
 			this.invalidateCache();
 			nul.xpr.use(ec[c], nul.xpr.knowledge.eqClass);
 			for(var e=1; e<ec[c].equivls.length; ++e)
 				this.tbl[ec[c].equivls[e]] = ec[c].equivls[0];
+			var def = ec[c].definition();
+			if(!isEmpty(def))
+				for(var e=0; e<ec[c].equivls.length; ++e)
+					this.defTbl[ec[c].equivls[e]] = def;
 		}
 		$super('Representation');
 		this.prepStack = [];
-	},
-	represent: function(ec, val) {
-		nul.xpr.use(ec, nul.xpr.knowledge.eqClass);
-		this.invalidateCache();
-		if(!val) val = ec.equivls[0];
-		for(var e=0; e<ec.equivls.length; ++e)
-			if(val.toString()!=ec.equivls[e].toString())
-				this.tbl[ec.equivls[e]] = val;
-			else if(this.tbl[ec.equivls[e]]) delete this.tbl[ec.equivls[e]];
 	},
 	subBrowse: function(xpr) {
 		nul.xpr.use(xpr, nul.xpr.knowledge.eqClass);
@@ -296,7 +307,8 @@ nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
 	enter: function($super, xpr) {
 		this.prepStack.unshift(xpr);
 		if(this.changeable(xpr)) return false;
-		return $super();
+
+		return $super(xpr);
 	},
 	build: function($super, xpr) {
 		if(xpr.setSelfRef) {
@@ -316,7 +328,14 @@ nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
 			evl.receive(nul.obj.local.self(evl.value.selfRef || evl.value.setSelfRef));
 			this.prepStack[n].setSelfRef = evl.value.ndx;
 		}
-		nul.debug.log('Represent')('', 'Representation', evl.changed, p);
+
+		if('klg'== evl.value.expression) {
+			var mdk = evl.value.modifiable();
+			if(mdk.definition(this.defTbl).length)
+				evl.receive(mdk.built());
+		}
+		
+		nul.debug.log('Represent')('', 'Representation', evl.changed, xpr);
 		return evl.changed;
 	}
 });
