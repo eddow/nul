@@ -88,7 +88,7 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 				default:
 					var klg = new nul.xpr.knowledge();
 					var srcLcl = klg.newLocal('&uArr;');
-					klg.unify(srLcl, this);
+					klg.unify(srcLcl, this);
 					var sRef = this.selfRef;
 					dp = map(dp, function() { return this.beself(srcLcl, sRef); });
 					return [klg.wrap(klg.hesitate(dp))];

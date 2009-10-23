@@ -49,11 +49,11 @@ nul.obj.local = Class.create(nul.obj.undefined, {
  * @param {nul.expression} xpr
  * @return {nul.obj.local}
  */
-nul.obj.local.self = function(ndx) {
+nul.obj.local.self = function(ndx, dbgName) {
 	return new nul.obj.local(
 			nul.obj.local.self.ref,
 			ndx || ++nul.obj.local.self.nameSpace,
-			'&uArr;')
+			dbgName || '&uArr;')
 };
 
 nul.obj.local.self.ref = '&crarr;';

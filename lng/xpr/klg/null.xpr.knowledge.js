@@ -269,7 +269,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		var dstEqCls = new nul.xpr.knowledge.eqClass();
  		var alreadyBlg = {};	//TODO 3: make a 'belong' this.access ?
  		var toBelong = [];
- 		var abrtVal = nul.xpr.knowledge.cloneData(this);	//Save datas in case of failure //TODO 2: shouldn't save here !
+ 		//var abrtVal = nul.xpr.knowledge.cloneData(this);	//Save datas in case of failure //TODO 2: shouldn't save here ! Really ? and if half-unification works ... ?
  		var ownClass = true;
  		try {
 	 		while(toUnify.length || toBelong.length) {
@@ -336,7 +336,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 	 		}
 	 		if(ownClass) dstEqCls.built();
  		} catch(err) {
- 			nul.xpr.knowledge.cloneData(abrtVal, this);
+ 			//nul.xpr.knowledge.cloneData(abrtVal, this);
  			throw nul.exception.notice(err);
  		}
 		return dstEqCls;
@@ -489,9 +489,11 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 			if(nul.browser.bijectif.unchanged == nec) ++i;
 			else {
 				this.removeEC(ec)
-				nec = this.unification(nec);
-				representer.represent(ec, nec.taken(this));
-				representer.represent(nec);
+				nec = this.unify(nec);
+				
+				//this.unification has effect on other equivalence classes that have to change in the representer
+				representer = new nul.xpr.knowledge.eqClass.represent(this.eqCls);
+				
 				nul.debug.log('Represent')('', 'Knowledge', this);
 				i = 0;
 			}
