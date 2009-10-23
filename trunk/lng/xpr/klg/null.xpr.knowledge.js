@@ -463,20 +463,25 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  	 * @param {{xpr: definition}} dTbl
  	 * @return {array(string)} The list of used attributions : xpr indexes
  	 */
- 	definition: function(dTbl) {
+ 	define: function(dTbl) {
 		this.modify();
 		var rv = [];
 		dTbl = clone1(dTbl);
 		var used;
-		
+		//TODO 1: peut-être que rien ne change, même si used=true (le eqCms.definition peut laisser le klg telquel) : remettre used=false !!!
+		//cf. h = { {} => {} [] (n,.. ns) => ((_::number n),.. h[ns]) }
 		do {
 			used = false;
 			for(var v in this.access) {
 				if(dTbl[v]) {
-					this.access[v].definition(dTbl[v], this)
-					rv.push(v);
+					var nec = this.access[v].modifiable();
+					if(nec.define(dTbl[v], this)) {
+						this.removeEC(this.access[v]);
+						this.accede(nec.built());
+						rv.push(v);
+						used = true;
+					}
 					delete dTbl[v];
-					used = true;
 					break;
 				}
 			}

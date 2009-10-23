@@ -99,7 +99,7 @@ nul.debug = {
 	assert: nul.urlOption('debug'),
 	perf: !nul.urlOption('noperf'),
 	acts: nul.urlOption('actLog'),
-	lcLimit: 5000,
+	lcLimit: 500,
 	logCount: function() {
 		if(0< nul.debug.lcLimit && nul.debug.lcNextLimit< nul.debug.lc) {
 			nul.debug.warnRecursion();
@@ -229,7 +229,7 @@ nul.debug = {
 		nul.debug.log(name)(nul.debug.lcs.collapser('Begin'), name, args);
 		try {
 			var rv = cb.apply(obj);
-			nul.debug.log(name)(nul.debug.lcs.endCollapser('End','Done'), name, rv, args);
+			nul.debug.log(name)(nul.debug.lcs.endCollapser('End','Done'), name, rv || 'nothing', args);
 			nul.debug.fails.shift();
 			return rv;
 		} catch(err) {

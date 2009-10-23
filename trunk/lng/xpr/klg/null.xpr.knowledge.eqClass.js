@@ -134,34 +134,25 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	/**
 	 * Specify attributes
 	 * @param {{string: nul.xpr.object}} attrs 
-	 * @return array(nul.xpr.object) Array of objects to equal to this eqCls afterward
+	 * @return {boolean} Weither the call was useless
 	 * @throws nul.failure
 	 */
 	hasAttr: function(attrs, klg) {
+		this.modify();
+		var useless = true;
 		if(this.eqvlDefined()) {
 			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
 			this.attribs = nul.xpr.beBunch();
-		} else if(this.attribs !== attrs)	//TODO 3: gardien nécessaire?
+			useless = false;
+		} else if(this.attribs !== attrs)	//TODO 3: gardien est-il nécessaire?
 			merge(this.attribs, attrs, function(a,b) {
+				if((a?a.toString():'')==(b?b.toString():'')) return a;
+				useless = false;
 				return (a&&b)?klg.unify(a,b):(a||b);
 			});
+		return useless;
 	},
-	
-	/**
-	 * Gets the information that defines the values : the attributes and the defined belong
-	 * @param {definition object}
-	 * @param {nul.xpr.knowledge} Used only hen a definition with attributes is given
-	 * @returns nothing or a definition object
-	 */
-	definition: function(def, klg) {
-		def = def || {};
-		if(def.belong) this.isIn(belong);
-		if(this.blngDefined()) def.belong = this.belongs[0];
-		if(def.attrib) this.hasAttr(def.attrib, klg);
-		if(!isEmpty(this.attribs, '')) def.attrib = this.attribs;
-		return def;
-	},	
-	
+
 	/**
 	 * The object appears only in this equivalence class.
 	 * Retrieve an equivalence class that doesn't bother with useless knowledge
@@ -243,6 +234,32 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	
 	eqvlDefined: function() { return this.equivls.length && this.equivls[0].defined; },
 	blngDefined: function() { return this.belongs.length && this.belongs[0].defined; },
+
+////////////////	Definition management
+	
+	/**
+	 * Gets the information that defines the values : the attributes and the defined belong
+	 * @returns nothing or a definition object
+	 */
+	definition: function() {
+		var def = {};
+		//if(this.blngDefined()) def.belong = this.belongs[0];
+		if(!isEmpty(this.attribs, '')) def.attrib = this.attribs;
+		return def;
+	},	
+	
+	/**
+	 * Sets the information that defines the values : the attributes and the defined belong
+	 * @param {definition object}
+	 * @param {nul.xpr.knowledge} Used only hen a definition with attributes is given
+	 * @returns {boolean} Weither something changed
+	 */
+	define: function(def, klg) {
+		var rv = false;
+		//if(def.belong) this.isIn(def.belong);
+		if(def.attrib) rv |= !this.hasAttr(def.attrib, klg);
+		return rv;
+	},	
 	
 //////////////// nul.expression implementation
 	
@@ -331,11 +348,11 @@ nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
 
 		if('klg'== evl.value.expression) {
 			var mdk = evl.value.modifiable();
-			if(mdk.definition(this.defTbl).length)
+			if(mdk.define(this.defTbl).length)
 				evl.receive(mdk.built());
 		}
 		
-		nul.debug.log('Represent')('', 'Representation', evl.changed, xpr);
+		if(evl.hasChanged) nul.debug.log('Represent')('', 'Representation', evl.changed, xpr, p);
 		return evl.changed;
 	}
 });

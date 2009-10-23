@@ -177,9 +177,11 @@ nul.browser.bijectif.evolution = Class.create({
 	initialize: function(xpr) {
 		this.value = xpr;
 		this.changed = nul.browser.bijectif.unchanged;
+		this.hasChanged = false;
 	},
 	receive: function(xpr) {
 		if(nul.browser.bijectif.unchanged== xpr) return;
+		this.hasChanged = true;
 		this.changed = this.value = xpr;
 		if(xpr) nul.xpr.use(xpr);
 	}

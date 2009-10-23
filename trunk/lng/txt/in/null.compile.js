@@ -23,9 +23,6 @@ nul.compiled = {
 	taking: function(item, token) {
 		return { item: item, token: token, understand: nul.understanding.taking };
 	},
-	range: function(lwr, upr) {
-		return { lower: lwr, upper: upr, understand: nul.understanding.range };
-	},
 	atom: function(token, decl) {
 		return { type: token.type, value: token.value, declared: decl, understand: nul.understanding.atom };
 	},
@@ -67,7 +64,7 @@ nul.operators = [
 	['+','m'], ['-','l'],
 	['-','p'], ['#','p'],
 	['*','m'], ['/','l'], ['%','l'],
-	['$','p'], [':','l']
+	['..','l']
 ];
 
 nul.compiler = function(txt)
@@ -133,8 +130,8 @@ nul.compiler = function(txt)
 			{
 				var tst;
 				if(this.tknzr.take('.')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
-				/*else if(this.tknzr.take('['))
-					rv = nul.compiled.taking(rv, this.tknzr.expect(']', this.expression()));*/ 				
+				else if('[]'!= this.tknzr.token.value && this.tknzr.take('['))
+					rv = nul.compiled.taking(rv, this.tknzr.rawExpect(']', this.expression())); 				
 				else if(tst = this.item('lax')) rv = nul.compiled.application(rv, tst);
 				else if(this.tknzr.take('::')) {
 					var anm = this.tknzr.rawTake('(') ?
@@ -142,6 +139,7 @@ nul.compiler = function(txt)
 							this.alphanum();
 					rv = nul.compiled.composed(rv, anm, this.item());					
 				}
+				
 				else return rv;
 			} while(true);
 		},
@@ -188,15 +186,6 @@ nul.compiler = function(txt)
 				}
 				//Parenthesis
 				if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
-				//Ranges
-                if('[]'!= this.tknzr.token.value && this.tknzr.rawTake('[')) {
-                    var lwr, upr;
-                    if(!this.tknzr.rawTake('..'))
-						lwr = this.tknzr.rawExpect('..',this.number());
-                    if(!this.tknzr.take(']'))
-                    	upr = this.tknzr.expect(']',this.number());
-                    return nul.compiled.range(lwr, upr);
-                }
 				if(!lax) {
 					if(this.tknzr.take('<')) return this.xml();
 					for(var p= 0; p<nul.operators.length; ++p) {

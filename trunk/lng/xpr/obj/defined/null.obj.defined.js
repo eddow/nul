@@ -77,8 +77,6 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 		if(this.subHas) {
 			if(!this.selfRef) return this.subHas(o);
 			return nul.trys(function() {
-				var arg = o;
-				
 				var psbl = this.subHas(o);
 				var dp = [];
 				while(psbl.length) dp.pushs(psbl.pop().distribute());
@@ -86,6 +84,7 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 				case 0: nul.fail('No convenient recursive base-case');
 				case 1: return dp[0].beself(this).distribute();	//TODO O: see which equivls[0] appears in (&in; &uArr;) to determine recursive argument
 				default:
+					return;
 					var klg = new nul.xpr.knowledge();
 					var srcLcl = klg.newLocal('&uArr;');
 					klg.unify(srcLcl, this);
