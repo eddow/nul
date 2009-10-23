@@ -40,13 +40,9 @@ function test(cb, dst, prgrsMsg)
 	if(nul.debug) {
 		if($('shwLogging').checked) {
 			nul.debug.logging = {error: true, fail: true};
-			nul.debug.logging.Resolution = $('shwLoggingResolution').checked;
-			nul.debug.logging.Unification = $('shwLoggingUnification').checked;
-			nul.debug.logging.Equivalence = $('shwLoggingEquivalence').checked;
-			nul.debug.logging.Wrapping = $('shwLoggingWrapping').checked;
-			nul.debug.logging.Knowledge = $('shwLoggingKnowledge').checked;
-			nul.debug.logging.Represent = $('shwLoggingRepresent').checked;
-			nul.debug.logging.Prune = $('shwLoggingPrune').checked;
+			var els = $A(document.getElementsByName('shwLogging'));
+			for(var e in els) if(cstmNdx(e))
+				nul.debug.logging[els[e].value] = els[e].checked;
 		} else nul.debug.logging = false;
 	}
 	nul.execution.reset();

@@ -74,6 +74,16 @@ nul.xpr.possible = Class.create(nul.expression, {
 	fix: function($super) {
 		assert(this.knowledge, 'Possible now always has a knowledge');
 		return $super();
+	},
+
+////////////////	Internals
+
+	/**
+	* Change self references to the given self-refered object
+	* @param {any} slf The object that is a self-reference
+	*/
+	beself: function(slf, selfRef) {
+		return new nul.xpr.object.reself(selfRef || slf.selfRef, slf).browse(this);
 	}
 });
 

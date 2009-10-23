@@ -51,9 +51,9 @@ nul.obj.local = Class.create(nul.obj.undefined, {
  */
 nul.obj.local.self = function(ndx) {
 	return new nul.obj.local(
-			nul.obj.local.self.name,
+			nul.obj.local.self.ref,
 			ndx || ++nul.obj.local.self.nameSpace,
 			'&uArr;')
 };
 
-nul.obj.local.self.name = '&crarr;';
+nul.obj.local.self.ref = '&crarr;';

@@ -76,13 +76,24 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 	has: function(o) {
 		if(this.subHas) {
 			if(!this.selfRef) return this.subHas(o);
-			var klg = new nul.xpr.knowledge();
-			var srLcl = klg.newLocal('&uArr;');
-			var psbl = this.reself(srLcl).subHas(o);
-			if(psbl) {
-				klg.unify(srLcl, this);
-				return [klg.wrap(klg.hesitate(psbl))];
-			}
+			return nul.trys(function() {
+				var arg = o;
+				
+				var psbl = this.subHas(o);
+				var dp = [];
+				while(psbl.length) dp.pushs(psbl.pop().distribute());
+				switch(dp.length) {
+				case 0: nul.fail('No convenient recursive base-case');
+				case 1: return dp[0].beself(this).distribute();	//TODO O: see which equivls[0] appears in (&in; &uArr;) to determine recursive argument
+				default:
+					var klg = new nul.xpr.knowledge();
+					var srcLcl = klg.newLocal('&uArr;');
+					klg.unify(srLcl, this);
+					var sRef = this.selfRef;
+					dp = map(dp, function() { return this.beself(srcLcl, sRef); });
+					return [klg.wrap(klg.hesitate(dp))];
+				}
+			}, 'Recursion', this, [o, this]);
 		}
 	},
 	

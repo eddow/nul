@@ -93,12 +93,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 						delete klg.access[this.equivls[0]];
 						klg.access[unf] = this;
 						this.equivls[0] = unf;
-						/*this.equivls.splice(1, 0, o);
-						if(!klg.access[unf]) {
-							klg.access[unf] = this;
-							this.equivls.unshift(unf);
-						}*/
-					} //else this.equivls.splice(1, 0, o);
+					}
 					return this.equivls[0];
 				}, 'Equivalence', this, [this.equivls[0], o]);
 			else {
