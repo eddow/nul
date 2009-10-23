@@ -128,5 +128,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 });
 
 nul.globals.Q = nul.obj.number;
+nul.globals.Z = new nul.obj.range();
+nul.globals.N = new nul.obj.range(0);
 nul.globals.str = nul.obj.string;
 nul.globals.bool = nul.obj.bool;

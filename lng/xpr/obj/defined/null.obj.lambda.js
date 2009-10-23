@@ -45,6 +45,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 });
 
 nul.obj.lambda.make = function(p, i, klg) {
+	return new nul.obj.lambda(p, i);
 	var eqKlg = new nul.xpr.knowledge();
 	var eqV, lmbd = new nul.obj.lambda(p, i);
 	try { eqV = eqKlg.unify(p, i); }

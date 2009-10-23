@@ -37,6 +37,10 @@ nul.understanding = {
 				return ops[0];
 			case ';': return ops[0];
 			case '?': return ops[1];
+			case '..':
+				if('number'!= ops[0].expression) throw nul.semanticException('RNG', 'Range can only be defined with immediates');
+				if('number'!= ops[1].expression) throw nul.semanticException('RNG', 'Range can only be defined with immediates');
+				return new nul.obj.range(ops[0].value, ops[1].value);
 			case ':': 
 				var rv = ub.createFreedom(nul.understanding.rvName, false);
 				ub.klg.hesitate(ops[0].having(nul.obj.lambda.make(rv, ops[1], ub.klg)));
@@ -74,15 +78,14 @@ nul.understanding = {
 		return nul.obj.litteral.make(value);
 	},
 	application: function(ub) {
-		//return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
-		return nul.expression.application(this.item.understand(ub), this.applied.understand(ub), ub.klg);
+		return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
+	},
+	taking: function(ub) {
+		return nul.expression.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
 	},
 	set: function(ub) {
  		if(!this.content) return nul.obj.empty;
 		return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
-	},
-	range: function(ub) {
-		return new nul.obj.range(this.lower, this.upper);
 	},
 	definition: function(ub) {
 		if('_'== this.decl) throw nul.semanticException('JKD', 'Cannot declare joker !')

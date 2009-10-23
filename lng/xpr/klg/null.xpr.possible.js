@@ -35,8 +35,14 @@ nul.xpr.possible = Class.create(nul.expression, {
 	 * @return {nul.xpr.possible}
 	 */
 	unified: function(o) {
-		var klg = this.knowledge.modifiable();
-		return klg.wrap(klg.unify(this.value, o));
+		//var klg = this.knowledge.modifiable();
+		var klg = new nul.xpr.knowledge();
+		//Merge because we need to create a new context reference in case of half-recursion
+		var rv = klg.wrap(klg.unify(klg.merge(this.knowledge, this.value), o));
+		if(nul.debug.assert)
+			assert(!rv.dependance().usages[klg.name],
+				'Out of knowledge, no more deps');
+		return rv;
 	},
 	
 	/**
