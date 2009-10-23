@@ -267,7 +267,7 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		var toUnify = beArrg(arguments);
  		this.modify(); nul.xpr.use(toUnify);
  		var dstEqCls = new nul.xpr.knowledge.eqClass();
- 		var alreadyEqd = {}, alreadyBlg = {};
+ 		var alreadyBlg = {};	//TODO 3: make a 'belong' this.access ?
  		var toBelong = [];
  		var abrtVal = nul.xpr.knowledge.cloneData(this);	//Save datas in case of failure //TODO 2: shouldn't save here !
  		var ownClass = true;
@@ -290,16 +290,14 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		 				toUnify.pushs(v.equivls);
 						toBelong.pushs(v.belongs);
 						dstEqCls.hasAttr(v.attribs, this);
-		 			} else if(!alreadyEqd[v]) {		//TODO2: alreadyEqd shouldn't be used anymore
+		 			} else {
 		 				this.access[v] = dstEqCls;
 		 				dstEqCls.isEq(v, this);
-		 				alreadyEqd[v] = true;
 		 			}
 		 		}
 		 		if(toBelong.length) {
 		 			var unf = dstEqCls.equivls[0];
 		 			var s = toBelong.shift();
-		 			//if(nul.debug.assert) assert(unf, 'Has some value when time to belong');
 					var chx = (unf&&s.defined)?s.has(unf):false;
 					if(chx) {
 						switch(chx.length) {
@@ -311,7 +309,6 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 								//TODO O: Reset unification, to do it knowing the newly brought knowledge
 								//useful ??!?
 								
-								alreadyEqd = {};
 								alreadyBlg = {};
 								this.unaccede(dstEqCls);
 								toUnify.pushs(dstEqCls.equivls);
@@ -321,11 +318,11 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 							} else toUnify.push(chx[0]);
 							break;
 						default:
-							var vals = [];
 							var klgs = [];
 							map(chx, function() {
 								var p = nul.xpr.possible.cast(this);
 								var klg = p.knowledge.modifiable();
+                                klg.unify(p.value, unf);
 								klgs.push(klg.built());
 							});
 					 		this.ior3.push(new nul.xpr.knowledge.ior3(klgs));
