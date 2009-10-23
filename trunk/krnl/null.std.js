@@ -31,7 +31,6 @@ merge(nul, {
 		if(nul.failure!= err) throw nul.exception.notice(err);
 	},
 	globals: {},
-	slf: '&crarr;',
 	
     isJsInt: function(n) {
     	return n== Math.floor(n);

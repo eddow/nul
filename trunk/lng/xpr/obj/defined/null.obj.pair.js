@@ -87,6 +87,9 @@ nul.obj.pair.list = function(flw, elms) {
 	elms = beArrg(arguments, 1);
 	nul.xpr.use(elms);
 	var rv = flw?flw:nul.obj.empty;
-	while(elms.length) rv = (new nul.obj.pair(elms.pop(), rv)).built();
+	while(elms.length) {
+		var elm = elms.pop();
+		rv = (new nul.obj.pair(elm, rv)).built();
+	}
 	return rv;
 };

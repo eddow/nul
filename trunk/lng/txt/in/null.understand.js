@@ -158,14 +158,17 @@ nul.understanding.base = Class.create({
 nul.understanding.base.set = Class.create(nul.understanding.base, {
 	initialize: function($super, prntUb, selfName, klgName) {
 		$super(prntUb, klgName);
-		if(selfName) this.parms[selfName] = this.klg.local(selfName, nul.slf);
+		if(selfName) this.setSelfRef = (this.parms[selfName] = nul.obj.local.self(null, selfName)).ndx;
 	},
 	understand: function(cnt) {
+		var rv;
 		try {
-			return nul.obj.pair.list(null, this.klg.wrap(cnt.understand(this)));
+			rv = nul.obj.pair.list(null, this.klg.wrap(cnt.understand(this)));
 		} catch(err) {
 			nul.failed(err);
 			return nul.obj.empty;
 		}
+		if(this.setSelfRef) rv.selfRef = this.setSelfRef;
+		return rv;
 	}
 });
