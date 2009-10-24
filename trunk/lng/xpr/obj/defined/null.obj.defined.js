@@ -6,9 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.defined = Class.create(nul.xpr.object, {
-	summarise: function($super, smr) {
-		$super(smr);
+nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
+	/**
+	 * Defined object : are defined its composition, its attributes, ...
+	 * @extends nul.xpr.object
+	 * @constructs
+	 */
+	initialize: function($super) {
+		$super();
 	},
 	defined : true,
 	
@@ -16,7 +21,7 @@ nul.obj.defined = Class.create(nul.xpr.object, {
 
 	/**
 	 * Unify two defined objects
-	 * @return nul.obj.defined
+	 * @return {nul.obj.defined}
 	 * @throws nul.failure
 	 */
 	unified: function(o, klg) {

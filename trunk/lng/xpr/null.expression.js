@@ -12,14 +12,26 @@
 nul.summary = function(itm) {
 	return function() { return this.summary(itm); };
 };
- 
-nul.expression = Class.create({
+//TODO 1: change the docs "defined in" to have a relative path.
+nul.expression = Class.create(/** @lends nul.expression# */{
+	/**
+	 * Expression
+	 * @constructs
+	 * @param {String} tp Type of expression
+	 */
  	initialize: function(tp) {
+		/**
+		 * @type String
+		 */
  		if(tp) this.expression = tp;
  	},
+ 	/**
+ 	 * Defined empty by default. Must be overriden.
+ 	 * @type String[]
+ 	 */
 	components: [],
 	
-//////////////// Assertion functionment
+//////////////// Assertions
 
 	/**
 	 * Assert this expression is modifiable
@@ -38,6 +50,7 @@ nul.expression = Class.create({
 
 	/**
 	 * Retrieve a computed value about this expression
+	 * @param {String} itm Summary item to retrieve
 	 */
 	summary: function(itm) {
 		if(!this.summarised) return this['sum_'+itm].apply(this);
@@ -48,9 +61,10 @@ nul.expression = Class.create({
 		}
 		return this.summarised[itm];
 	},
+	
 	/**
 	 * Stop the modifications brought to this expression. Now, we compute some values about
-	 * @param {association} smr The given summary
+	 * @param {Association} smr The given summary
 	 */
 	summarise: function(smr) {
 		this.modify();
@@ -116,11 +130,21 @@ nul.expression = Class.create({
 	
 //////////////// Public
 
+	/**
+	 * Gets a string to represent this for debug.
+	 * Either HTML, either flat if it would be too big.
+	 * @return {String}
+	 */
 	dbgHtml: function() {
 		var f = this.toFlat();
 		if(100>f.length) return this.toHtml();
 		return f;
 	},
+	
+	/**
+	 * Change the summarised texts.
+	 * Can be changed even for a built expression (doesn't change the meaning, just the debug drawing)
+	 */
 	invalidateTexts: function() {
 		//TODO 3: invalidate parent texts ?
 		delete this.summarised.flatTxt;
@@ -129,10 +153,35 @@ nul.expression = Class.create({
 
 //////////////// Summary users
 
+	/**
+	 * Summary: The key string-index of this expression
+	 * @function
+	 * @type string
+	 */
 	toString: nul.summary('index'),
+	/**
+	 * Summary: The HTML representation
+	 * @function
+	 * @type string
+	 */
 	toHtml: nul.summary('htmlTxt'),			//The HTML representation of an expression
+	/**
+	 * Summary: The flat-text representation
+	 * @function
+	 * @type string
+	 */
 	toFlat: nul.summary('flatTxt'),			//The flat-text representation of an expression
-	isList: nul.summary('isList'),			//Weither this expression is a list
+	/**
+	 * Summary: Weither this expression is a list
+	 * @function
+	 * @type boolean
+	 */
+	isList: nul.summary('isList'),
+	/**
+	 * Summary: The dependances of this expression.
+	 * @function
+	 * @type nul.dependance
+	 */
 	dependance: nul.summary('dependance'),	//nul.dependance
 
 //////////////// Generic summary providers
@@ -157,6 +206,7 @@ nul.expression = Class.create({
 			cs.push(this[this.components[c]]);
 		return this.indexedSub(cs);
 	},
+
 	indexedSub: function(items) {
 		//TODO 3: assert no infinite recursion
 		nul.xpr.is(this);
@@ -176,20 +226,11 @@ nul.expression = Class.create({
 			rv.also(comps[c].dependance());
 		return rv;
 	},
-	sum_isList: function() { return true; },
+	sum_isList: function() { return true; }
 	
 });
 
-/**
- * set itm ==> rv; set(itm=>rv)
- */
-nul.expression.application = function(set, itm, klg) {
-	var hst = [];
-	var rv = klg.newLocal(nul.understanding.rvName);
-	klg.hesitate(set.having(nul.obj.lambda.make(itm, rv, klg)));
-	return rv;
-};
-
+/** @namespace Expression helper */
 nul.xpr = {
 	are: nul.debug.are('expression'),
 	is: function(x, t) {
@@ -220,21 +261,22 @@ nul.xpr = {
 
 /**
  * X is either an expression either a [components] bunch of expression
- * @return weither x is a bunch of expressions
+ * @return {Boolean} Weither x is a bunch of expressions
  */
 nul.xpr.bunch = function(x) {
 	return isArray(x) || 'xprBunch'== x[''];
 };
 /**
  * Mark an object as an expression bunch
- * @param {association} x
- * @return x that has been modified
+ * @param {Association} x
+ * @return {Association} x that has been modified
  */
 nul.xpr.beBunch = function(x) {
 	if(!x) x = {};
 	x[''] = 'xprBunch';
 	return x;
 };
+
 nul.xpr.indexedBunch = function(b) {
 	if(!nul.xpr.bunch(b)) return b.toString();
 	var rv = [];
@@ -242,3 +284,15 @@ nul.xpr.indexedBunch = function(b) {
 		rv.push(e+':'+b[e].toString());
 	return rv.join('/');
 };
+
+/**
+ * Retrieve an expression (and modifies the knowledge) to represent a value-taking
+ * @returns {nul.expression} rv; set(itm=>rv)
+ */
+nul.xpr.application = function(set, itm, klg) {
+	var hst = [];
+	var rv = klg.newLocal(nul.understanding.rvName);
+	klg.hesitate(set.having(new nul.obj.lambda(itm, rv)));
+	return rv;
+};
+

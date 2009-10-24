@@ -7,9 +7,11 @@
  *--------------------------------------------------------------------------*/
 
 /**
- * This file just load the needed files. 
+ * @fileoverview
+ * This file just load the needed script files. 
  */
 
+/**@namespace*/
 nul = {
 	load: {},
 	loading : function() {

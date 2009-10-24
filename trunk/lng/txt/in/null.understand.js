@@ -6,6 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
+/**@namespace*/
 nul.understanding = {
 	rvName : '&crarr;',
 	objName: 'obj',
@@ -30,7 +31,7 @@ nul.understanding = {
 			case '%':
 				return nul.obj.operation.binary(this.operator, ops);
 			//TODO 3: > < >= <=
-			case '=>': return nul.obj.lambda.make(ops[0], ops[1], ub.klg);
+			case '=>': return new nul.obj.lambda(ops[0], ops[1]);
 			case ',': return nul.obj.pair.list(ops.follow, ops);
 			case '=': return ub.klg.unify(ops);
 			case '!=': ub.klg.oppose(nul.xpr.knowledge.unification(ops));
@@ -43,7 +44,7 @@ nul.understanding = {
 				return new nul.obj.range(ops[0].value, ops[1].value);
 			case ':': 
 				var rv = ub.createFreedom(nul.understanding.rvName, false);
-				ub.klg.hesitate(ops[0].having(nul.obj.lambda.make(rv, ops[1], ub.klg)));
+				ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
 				return rv;
 			default:
 				throw nul.internalException('Unknown operator: "'+operator+'"');
@@ -81,7 +82,7 @@ nul.understanding = {
 		return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
 	},
 	taking: function(ub) {
-		return nul.expression.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
+		return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
 	},
 	set: function(ub) {
  		if(!this.content) return nul.obj.empty;

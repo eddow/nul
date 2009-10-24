@@ -6,14 +6,19 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.browser = Class.create({
+nul.browser = Class.create(/** @lends nul.browser# */{
+	/**
+	 * Generic expression browsing
+	 * @constructs
+	 * @param {String} desc Text description (used mainly for benchmarking)
+	 */
 	initialize: function(desc) {
 		this.description = desc;
 	},
-	
+
 	/**
 	 * Called before to browse an expression
-	 * @return {bool} Weither to browse sub-expressions or not
+	 * @return {boolean} Weither to browse sub-expressions or not
 	 */
 	enter: function(xpr) { return xpr; },
 	/**
@@ -59,10 +64,13 @@ nul.browser = Class.create({
  	}
 });
 
-/**
- * A browser that cache returns value in the expression JS object
- */
-nul.browser.cached = Class.create(nul.browser, {
+nul.browser.cached = Class.create(nul.browser, /** @lends nul.browser.cached# */{
+	/**
+	 * A browser that cache returns value in the expression JS object
+	 * @constructs
+	 * @extends nul.browser
+	 * @param {String} desc Text description (used mainly for benchmarking)
+	 */
 	initialize: function($super, desc) {
 		this.name = 'browseCache' + ++nul.browser.cached.nameSpace;
 		this.cachedExpressions = [];
@@ -110,9 +118,10 @@ nul.browser.cached = Class.create(nul.browser, {
 });
 
 /**
- * Gives one other expression or the same expression
+ *  @class A browser that gives one other expression or the same expression
+ * @extends nul.browser.cached
  */
-nul.browser.bijectif = Class.create(nul.browser.cached, {
+nul.browser.bijectif = Class.create(nul.browser.cached, /** @lends nul.browser.bijectif# */{
 	/**
 	 * Transform an expression without recursion.
 	 * @return nul.expression or nul.browser.bijectif.unchanged
@@ -151,6 +160,12 @@ nul.browser.bijectif = Class.create(nul.browser.cached, {
 
 //////////////// Bijectif browser statics
 
+/**
+ * Helper to merge an expression and browsing results
+ * @function
+ * @param {nul.expression} xpr The expression to merge
+ * @param {Association(nul.expression)} bwsd The browsed components results
+ */
 nul.browser.bijectif.merge = function(xpr, bwsd) {
 	var mod;
 	for(var c in bwsd) {
@@ -172,13 +187,39 @@ nul.browser.bijectif.merge = function(xpr, bwsd) {
 	return mod;
 };
 
+/**
+ * Value meaning the browse returned the same expression
+ * @constant
+ */
 nul.browser.bijectif.unchanged = 'Just the same';
-nul.browser.bijectif.evolution = Class.create({
+
+nul.browser.bijectif.evolution = Class.create( /** @lends nul.browser.bijectif.evolution# */{
+	/**
+	 * An evolution object, where an expression is changed step by step
+	 * @constructs
+	 * @param {nul.expression} xpr The first step of the evolution
+	 */
 	initialize: function(xpr) {
+		/**
+		 * The value as an expression
+		 * @type nul.expression
+		 */
 		this.value = xpr;
+		/**
+		 * The value as a changement
+		 * @type nul.expression|nul.browser.bijectif.unchanged
+		 */
 		this.changed = nul.browser.bijectif.unchanged;
+		/**
+		 * Weither the value changed
+		 * @type Boolean
+		 */
 		this.hasChanged = false;
 	},
+	/**
+	 * Describe the next step of this evolution
+	 * @param {nul.expression} xpr The next value this evolution steps through
+	 */
 	receive: function(xpr) {
 		if(nul.browser.bijectif.unchanged== xpr) return;
 		this.hasChanged = true;

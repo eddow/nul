@@ -21,6 +21,7 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 	
 //////////////// nul.obj.defined implementation
 
+	/** @constant */
 	attributes: {
 		'# ': function() { return nul.obj.litteral.make(pinf); }
 	}

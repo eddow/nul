@@ -6,6 +6,9 @@
  *
  *--------------------------------------------------------------------------*/
  
+/**
+ * @class
+ */
 nul.txt = {
 	toText: function(xpr) {
 		if(!this.beginDraw(xpr)) return this.recurStr;
@@ -40,7 +43,7 @@ nul.txt = {
 		else this.drawing.pop();
 	},
 	clpsSstm : function(table, uc, lcFct) {
-		return table ? table.clpsSstm = {
+		if(table) return table.clpsSstm = { 
 			table: table,
 			uc: uc,
 			collapsing: {},
@@ -97,7 +100,8 @@ nul.txt = {
 				this.table.rows[r].removeClassName('uncollapsing');
 				if('up'==this.uc && 0<lc) this.table.rows[lc-1].removeClassName('unsubcollapsing');
 			}			
-		} : {
+		};
+		return {
 			collapser: function(html) {},
 			endCollapser: function(opnd, clsd) {}
 		};

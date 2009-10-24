@@ -1,3 +1,10 @@
+(tuple[Q,str]) ("non", "oui")
+; tuple
+={	{} => {}
+[]	(T,.. Ts) => ( T _,.. tuple[Ts] )
+}
+::: too much accepted
+
 
 :::cas "s s" set auto-inclusive : s is protected while representing ... so what happen ?
 
@@ -32,7 +39,7 @@ S = houses [1..5]
 ; S(_ ::smoke "Lucky Strike" ::drink "orange juice")
 ; S(_ ::smoke "Old Gold" ::animal "snails")
 ; S(_ ::color "yellow" ::smoke "Kools")
-; (inOrder S)(_ ::color "green", _ ::color "ivory")
+; sigma[S][_ ::color "green"] = (_ ::color "ivory")
 ; neighbours(_ ::smoke "Kools", _ ::animal "horse")
 ; neighbours(_ ::smoke "Chesterfields", _ ::animal "fox")
 ; neighbours(_ ::nation "norwegian", _ ::color "blue")
