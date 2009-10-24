@@ -14,6 +14,7 @@ The braces a way to transform a fuzzy epression into a "set containing all the v
 {{{ 2 [] 3 }}} means *either* two, *either* three.
 
 {{{ { 2 [] 3 } }}} means *the* set containing two *and* three.
+_*The* set containing *all the values* that are either two, either three_
 
 == Note ==
 
