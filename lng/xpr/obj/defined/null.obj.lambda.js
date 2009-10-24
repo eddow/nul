@@ -6,8 +6,12 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.lambda = Class.create(nul.obj.defined, {
+nul.obj.lambda = Class.create(nul.obj.defined, /** @lends nul.obj.lambda# */{
 	/**
+	 * Represents the application of a point to an image.
+	 * @example point &rArr; image
+	 * @constructs
+	 * @extends nul.obj.defined
 	 * @param {nul.xpr.object} point
 	 * @param {nul.xpr.object} image
 	 */
@@ -19,45 +23,36 @@ nul.obj.lambda = Class.create(nul.obj.defined, {
 
 //////////////// nul.obj.defined implementation
 
-	attribute: function(an) { nul.fail('Lambdas have no attributes'); },
+	/**
+	 * Lambdas have no attributes
+	 * @throws nul.failure
+	 */
+	attribute: function() { nul.fail('Lambdas have no attributes'); },
 	
-	subUnified: function(o, klg) {	//TODO1: if index == index, don't fuss with subs !
+	/**
+	 * Unify component by component
+	 * @param {nul.obj.defined} o The other object to unify to
+	 * @param {nul.xpr.knowledge} klg
+	 * @returns {nul.obj.lambda} The lambda of unified components
+	 * @throws nul.failure
+	 */
+	subUnified: function(o, klg) {
 		if('lambda'!= o.expression) nul.fail(o, ' not a lambda');
 		return new nul.obj.lambda(
 			klg.unify(this.point, o.point),
 			klg.unify(this.image, o.image));
 	},
 
-//////////////// nul.xpr.object implementation
-
+	/**
+	 * Lambdas contain nothing
+	 * @throws nul.failure
+	 */
 	subHas: function() { nul.fail('Lambdas contains nothing'); },
 		
 //////////////// nul.expression implementation
 
+	/** @constant */
 	expression: 'lambda',
-	components: ['point', 'image'],
-	placed: function($super, prnt) {
-		/*if(this.point.toString() == this.image.toString())
-			//TODO O Knowledge can bring this info too
-			return this.point;	//TODO4: another comparison?*/
-		return $super(prnt);
-	}
+	/** @constant */
+	components: ['point', 'image']
 });
-
-nul.obj.lambda.make = function(p, i, klg) {
-	return new nul.obj.lambda(p, i);
-	var eqKlg = new nul.xpr.knowledge();
-	var eqV, lmbd = new nul.obj.lambda(p, i);
-	try { eqV = eqKlg.unify(p, i); }
-	catch(err) {
-		nul.failed(err);	//No way to unify
-		return lmbd;
-	}
-	eqV = eqKlg.wrap(eqV);
-	eqKlg = eqV.knowledge;
-	if('Always'== eqKlg.name) return eqV.value;
-	var dfKlg = new nul.xpr.knowledge(), dfV;
-	try { dfV = dfKlg.oppose(eqKlg).wrap(lmbd); }
-	catch(err) { nul.failed(err); assert(false, 'eqKlg is not "Always"'); }
-	return klg.hesitate(eqV, dfV);
-};

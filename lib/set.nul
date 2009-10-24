@@ -19,7 +19,8 @@ sigma
 [] (a,b,.. o) => ((a=>b),.. set.sigma[b,.. o] )
 }
 
-id
-={ x; x != (p => _!=p) }
+id = { x!= (_ => _) }
+
+fct = { (D => I) => set.sub[{ (D _) => (I _) }] }
 
 />

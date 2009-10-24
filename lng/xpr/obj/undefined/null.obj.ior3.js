@@ -6,14 +6,31 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * Defined an object that can be several one, on a choice
- */
-nul.obj.ior3 = Class.create(nul.obj.undefined, {
+nul.obj.ior3 = Class.create(nul.obj.undefined, /** @lends nul.obj.ior3# */{
+	/**
+	 * Define an object that have several several values, on a choice
+	 * @constructs
+	 * @extends nul.obj.undefined
+	 * @param {String} klgRef The knowledge this local applies to
+	 * @param {String} ndx The index of this choice in the knowledge choice-space
+	 * @param {nul.xpr.object[]} items The possible values this one can take
+	 */
 	initialize: function(klgRef, ndx, items) {
 		nul.obj.use(items);
+		/**
+		 * The knowledge this local applies to
+		 * @type String
+		 */
 		this.klgRef = klgRef;
+		/**
+		 * The possible values this one can take
+		 * @type nul.xpr.object[]
+		 */
 		this.values = items;
+		/**
+		 * The index of this choice in the knowledge choice-space
+		 * @type String
+		 */
 		this.ndx = ndx;
 		this.alreadyBuilt();
 	},
@@ -35,17 +52,25 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, {
 	
 //////////////// nul.expression summaries
 
+	/** Specific index computation for ior3 */
 	sum_index: function() {
 		return this.indexedSub(this.klgRef, this.ndx, this.values);
 	},
+	/** Specific dependance computation for ior3 */
 	sum_dependance: function($super) {
 		return $super().ior3dep(this);
 	},
 	
 //////////////// nul.expression implementation
 	
+	/** @constant */
 	expression: 'ior3',
+	/** @constant */
 	components: ['values'],
+	/**
+	 * Change the string debug-names used.
+	 * @param {String} dbgName A string to draw as the name of this variable for debug info
+	 */
 	invalidateTexts: function($super, chxs) {
 		this.choices = chxs;
 		if(nul.debug.assert) assert(this.values.length == this.choices.length,

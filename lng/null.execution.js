@@ -5,7 +5,8 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
+
+/**@namespace*/
 nul.execution = {
 	reset: function()
 	{
@@ -18,6 +19,7 @@ nul.execution = {
 		nul.debug.reset();
 		nul.execution.benchmark.reset();
 	},
+	/**@namespace*/
 	benchmark: {
 		stack: [],
 		computed: {},
@@ -67,8 +69,12 @@ nul.execution = {
 };
 
 if(nul.urlOption('noperf'))
-	Function.prototype.perform = function(name) { return this; };
+	/** @ignore */ Function.prototype.perform = function(name) { return this; };
 else
+	/**
+	 * Notifies the performances of this function
+	 * @param {String} name Benchmark name to use.
+	 */
 	Function.prototype.perform = function(name) {
 		var ftc = this;
 		return function() {

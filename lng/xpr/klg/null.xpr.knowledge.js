@@ -687,44 +687,16 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
  	}
  	
 }); else merge(nul.xpr.knowledge.prototype, {
-	/**
-	 * Use the ior3 choices to textualise ior3 references.
-	 */
 	useIor3Choices: function() {},
-	
-	/**
-	 * Remove the names of the unused locals
-	 */
-	useLocalNames: function(keep) {},
-
-	/**
-	 * An empty set of managed locals
-	 */
+	useLocalNames: function() {},
 	emptyLocals: function() { return 0; },
-	
-	/**
-	 * This knowledge now manage this new knowledge locals too
-	 */
 	concatLocals: function(klg) { this.locals += klg.locals; },
-	
-	/**
-	 * Unallocate the last local
-	 */
 	freeLastLocal: function() { --this.locals; },
-	
-	/**
-	 * Get the number of locals this knowledge manage
-	 */
 	nbrLocals: function() { return this.locals; },
-	
-	/**
-	 * Register a new local
-	 */
  	newLocal: function(name, ndx) {
  		if('undefined'== typeof ndx) ndx = this.locals++;
  		return new nul.obj.local(this.name, ndx)
  	}
- 	
  });
 
 nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.create(nul.expression, {

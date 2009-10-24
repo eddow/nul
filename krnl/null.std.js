@@ -6,8 +6,22 @@
  *
  *--------------------------------------------------------------------------*/
 
-merge(nul, {
+/**
+ * @name nul
+ * @namespace
+ */
+
+merge(nul, 
+/** @lends nul */
+{
+	/**
+	 * Failure object that is thrown and caught
+	 * @constant
+	 */
 	failure: 'failure',
+	/**
+	 * Failures that happened while these trys
+	 */
 	fails: [],
 	/**
 	 * Throw a failure
@@ -51,7 +65,7 @@ merge(nul, {
 	html: function(txt)
 	{
 		nul.erroneus = false;
-		var comps = nul.compiler(txt+' </').innerXML();
+		var comps = (new nul.compiler(txt+' </')).innerXML();
 		for(var i=0; i<comps.length; ++i) if(comps[i])
 			comps[i] = nul.globalsUse().understand(comps[i]);
 		return comps;

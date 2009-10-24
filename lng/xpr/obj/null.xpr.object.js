@@ -6,7 +6,15 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.object = Class.create(nul.expression, {
+nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
+	/**
+	 * Object
+	 * @extends nul.expression
+	 * @constructs
+	 */
+	initialize: function($super) {
+		$super();
+	},
 	object: true,
 
 	/**
@@ -28,6 +36,7 @@ nul.xpr.object = Class.create(nul.expression, {
 	
 ////////////////	Generic summary providers
 	
+	/** @private */
 	sum_dependance: function($super) {
 		var rv = $super();
 		if(this.selfRef) {
@@ -59,16 +68,24 @@ nul.xpr.object = Class.create(nul.expression, {
 	}
 });
 
-/**
- * Change the self-referant locals in an object definition
- */
-nul.xpr.object.reself = Class.create(nul.browser.bijectif, {
+nul.xpr.object.reself = Class.create(nul.browser.bijectif, /** @lends nul.xpr.object.reself# */{
+	/**
+	 * A browser to change the self-referant locals in an object definition
+	 * @constructs
+	 * @extends nul.browser.bijectif
+	 * @param {String} selfRef The self-reference to replace
+	 * @param {nul.xpr.object|String} trgt The replacement value. If a string, will be a self-reference local.
+	 */
 	initialize: function($super, selfRef, trgt) {
 		this.selfRef = selfRef;
 		if(!trgt.object) this.newRef = trgt;
 		this.trgt = trgt.object?trgt:nul.obj.local.self(trgt);
 		$super('SelfRef');
 	},
+	/**
+	 * Removes or change the self-reference of this expression if it was self-refered
+	 * @param {nul.expression} xpr
+	 */
 	build: function($super, xpr) {
 		if(xpr.selfRef == this.selfRef) {
 			if(this.newRef) xpr.selfRef = this.newRef;
@@ -76,6 +93,10 @@ nul.xpr.object.reself = Class.create(nul.browser.bijectif, {
 		}
 		return $super(xpr);
 	},
+	/**
+	 * Gets a replacement value if xpr is a concerned self-reference
+	 * @param {nul.expression} xpr
+	 */
 	transform: function(xpr) {
 		if('local'== xpr.expression && nul.obj.local.self.ref == xpr.klgRef && xpr.ndx == this.selfRef)
 			return this.trgt;
@@ -83,6 +104,7 @@ nul.xpr.object.reself = Class.create(nul.browser.bijectif, {
 	}
 });
 
+/** @namespace Objects helper */
 nul.obj = {
 	are: nul.debug.are('object'),
 	is: function(x, t) {

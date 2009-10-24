@@ -6,94 +6,97 @@
  *
  *--------------------------------------------------------------------------*/
  
-function tableStack(nm, tbl) {
-	return {
-		nm: nm,
-		table: tbl,
-		buffer: document.createElement('tbody'),
-		getRowValue: function(tr) {
-			var rv = [];
-			for(var i=0; i<tr.cells.length; ++i) rv.push(tr.cells[i].innerHTML);
-			return rv;
-		},
-		setRowValue: function(tr, rv) {
-			this.dirty = true;
-			tr.innerHTML = '';
-			for(var i=0; i<rv.length; ++i ) {
-				var cl = tr.insertCell(-1);
-				cl.setAttribute('class',this.nm + ' c' + i);
-				cl.innerHTML = rv[i];
-			}
-			return $(tr);
-		},
-		value: function() {
-			var rv = [];
-			for(var i=this.buffer.rows.length-1; i>=0; --i)
-				rv.push(this.getRowValue(this.buffer.rows[i]));
-			return rv;
-		},
-		length: function() {
-			return this.buffer.rows.length;
-		},
-		clear: function() {
-			this.dirty = true;
-			while(this.buffer.rows.length) this.pop();
-			this.apply();		
-		},
-		draw: function(cs) {
-			this.dirty = true;
-			this.clear();
-			for(var i=0; i<cs.length; ++i) this.push(cs[i]);
-			this.apply();
-		},
-		push: function(v) {
-			this.dirty = true;
-			return this.setRowValue(this.buffer.insertRow(0), beArrg(arguments))
-		},
-		log: function(v) {
-			this.dirty = true;
-			return this.setRowValue(this.buffer.insertRow(-1), beArrg(arguments))
-		},
-		unlog: function() {
-			this.dirty = true;
-			var p = this.buffer.rows.length-1;
-			var rv = this.getRowValue(this.buffer.rows[p]);
-			this.buffer.deleteRow(p);
-			return rv;
-		},
-		pop: function() {
-			this.dirty = true;
-			var rv = this.getRowValue(this.buffer.rows[0]);
-			this.buffer.deleteRow(0);
-			return rv;
-		},
-		item: function(ndx) {
-			if(!ndx) ndx = 0;
-			return {
-				ts: this,
-				tr: this.buffer.rows[ndx],
-				set: function(rv) {
-					this.ts.dirty = true;
-					this.ts.setRowValue(this.tr, beArrg(arguments));
-				},
-				get: function() {
-					return this.ts.getRowValue(this.tr);
-				}
-			};
-		},
-		apply: function() {
-			if(this.dirty && this.table) {
-				this.dirty = false;
-				this.table.innerHTML = this.buffer.innerHTML;
-			}
+tableStack = Class.create( {
+	init: function(nm, tbl) {
+		this.nm = nm;
+		this.table = tbl;
+	},
+	buffer: document.createElement('tbody'),
+	getRowValue: function(tr) {
+		var rv = [];
+		for(var i=0; i<tr.cells.length; ++i) rv.push(tr.cells[i].innerHTML);
+		return rv;
+	},
+	setRowValue: function(tr, rv) {
+		this.dirty = true;
+		tr.innerHTML = '';
+		for(var i=0; i<rv.length; ++i ) {
+			var cl = tr.insertCell(-1);
+			cl.setAttribute('class',this.nm + ' c' + i);
+			cl.innerHTML = rv[i];
 		}
-	};
-}
+		return $(tr);
+	},
+	value: function() {
+		var rv = [];
+		for(var i=this.buffer.rows.length-1; i>=0; --i)
+			rv.push(this.getRowValue(this.buffer.rows[i]));
+		return rv;
+	},
+	length: function() {
+		return this.buffer.rows.length;
+	},
+	clear: function() {
+		this.dirty = true;
+		while(this.buffer.rows.length) this.pop();
+		this.apply();		
+	},
+	draw: function(cs) {
+		this.dirty = true;
+		this.clear();
+		for(var i=0; i<cs.length; ++i) this.push(cs[i]);
+		this.apply();
+	},
+	push: function(v) {
+		this.dirty = true;
+		return this.setRowValue(this.buffer.insertRow(0), beArrg(arguments))
+	},
+	log: function(v) {
+		this.dirty = true;
+		return this.setRowValue(this.buffer.insertRow(-1), beArrg(arguments))
+	},
+	unlog: function() {
+		this.dirty = true;
+		var p = this.buffer.rows.length-1;
+		var rv = this.getRowValue(this.buffer.rows[p]);
+		this.buffer.deleteRow(p);
+		return rv;
+	},
+	pop: function() {
+		this.dirty = true;
+		var rv = this.getRowValue(this.buffer.rows[0]);
+		this.buffer.deleteRow(0);
+		return rv;
+	},
+	item: function(ndx) {
+		if(!ndx) ndx = 0;
+		return {
+			ts: this,
+			tr: this.buffer.rows[ndx],
+			set: function(rv) {
+				this.ts.dirty = true;
+				this.ts.setRowValue(this.tr, beArrg(arguments));
+			},
+			get: function() {
+				return this.ts.getRowValue(this.tr);
+			}
+		};
+	},
+	apply: function() {
+		if(this.dirty && this.table) {
+			this.dirty = false;
+			this.table.innerHTML = this.buffer.innerHTML;
+		}
+	}
+});
 
+/**
+ * @namespace Debugging tools
+ */
 nul.debug = {
 	fails: [],
-	callStack: tableStack('callStack'),
-	logs: tableStack('logs'),
+	callStack: new tableStack('callStack'),
+	logs: new tableStack('logs'),
 	logging: false,
 	watches: false,
 	assert: nul.urlOption('debug'),
@@ -102,7 +105,7 @@ nul.debug = {
 	lcLimit: 500,
 	logCount: function() {
 		if(0< nul.debug.lcLimit && nul.debug.lcNextLimit< nul.debug.lc) {
-			nul.debug.warnRecursion();
+			//nul.debug.warnRecursion();
 			nul.debug.lcNextLimit += nul.debug.lcLimit;
 		}
 		return nul.debug.lc++;

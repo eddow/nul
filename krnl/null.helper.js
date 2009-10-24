@@ -18,7 +18,7 @@ function isArray(itm) {
 
 var cloneStack = [];
 /**
- * Duplicate <myObj> and its components
+ * Duplicate myObj and its components
  */
 function clone(myObj) {
 	if(null== myObj || typeof(myObj) != 'object' || myObj.ownerDocument) return myObj;
@@ -29,7 +29,7 @@ function clone(myObj) {
 }
 
 /**
- * Duplicate <myObj> ut components are just references
+ * Duplicate myObj where components are just references
  */
 function clone1(myObj) {
 	if(null== myObj || typeof(myObj) != 'object') return myObj;
@@ -108,36 +108,54 @@ function escapeHTML(str) {
    return div.innerHTML;
 };
 
-//Is <o> an empty association ? (beside the values contained in array <b>) 
+/**
+ * Is o an empty association ? (beside the values contained in array b)
+ * @param {association} o
+ * @param {param array} b
+ * @return
+ */ 
 function isEmpty(o, b) {
 	b = beArrg(arguments, 1);
 	for(var i in o) if(!b || !b.contains(reTyped(i))) return false;
 	return true;
 }
 
-//If a string is '5', get it as the number 5
+/**
+ * If a string is '5', get it as the number 5
+ * @param {string or number} v
+ */
 function reTyped(v) {
 	if('string'!= typeof v) return v;
 	if((new RegExp('^(\\d+)$', 'g')).exec(v)) return parseInt(v);
 	return v;
 }
 
-//The array of keys of association <ass>
+/**
+ * The array of keys of association ass
+ * @param {association} ass
+ * @return {array(string)}
+ */
 function keys(ass) {
 	var rv = [];
 	for(var i in ass) if(cstmNdx(i, ass)) rv.push(i);
 	return rv;
 }
 
-//The array of values of association <ass>
+/**
+ * The array of values of association ass
+ * @param {Association} ass
+ * @return {Array}
+ */
 function vals(ass) {
 	var rv = [];
 	for(var i in ass) if(cstmNdx(i, ass)) rv.push(ass[i]);
 	return rv;
 }
 
-//If elements of <t> are tables, they become part of <t>
-// [ 1, [2, [3, 4]], 5 ] ==> [ 1, 2, 3, 4, 5 ]
+/**
+ * If elements of t are tables, they become part of t
+ * @example [ 1, [2, [3, 4]], 5 ] ==> [ 1, 2, 3, 4, 5 ]
+ */
 function oneFlatTable(t) {
 	var rv = [];
 	for(var i=0; i<t.length; ++i)

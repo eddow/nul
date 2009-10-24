@@ -6,9 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.undefined = Class.create(nul.xpr.object, {
-	summarise: function($super, smr) {
-		$super(smr);
+nul.obj.undefined = Class.create(nul.xpr.object, /** @lends nul.obj.undefined# */{
+	/**
+	 * Undefined object
+	 * @extends nul.xpr.object
+	 * @constructs
+	 */
+	initialize: function($super) {
+		$super();
 	},
 	defined: false
 });

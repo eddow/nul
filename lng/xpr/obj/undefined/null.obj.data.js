@@ -7,6 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 /**
+ * @class
  * Refers to a data-source from nul.data...
  */
 nul.obj.data = Class.create(nul.obj.undefined, {

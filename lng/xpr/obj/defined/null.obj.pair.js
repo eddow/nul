@@ -6,19 +6,28 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.pair = Class.create(nul.obj.defined, {
+nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 	/**
-	 * @param {nul.xpr.possible} first
-	 * @param {nul.xpr.object} second
+	 * @extends nul.obj.defined
+	 * @constructs
+	 * @param {nul.xpr.possible} first List head
+	 * @param {nul.xpr.object} second List tail
 	 */
 	initialize: function(first, second) {
 		nul.xpr.use(first); nul.obj.use(second);
+		/** @type nul.xpr.possible */
 		this.first = nul.xpr.possible.cast(first);
+		/** @type nul.xpr.object */
 		this.second = second;
 	},
 	
 //////////////// Summary
 	
+	/**
+	 * Summary: Specific pair summary to retrieve the list corresponding to the trailing pair values.
+	 * @function
+	 * @returns {nul.xpr.possible[]}
+	 */
 	listed: nul.summary('listed'),
 
 	sum_listed: function() {
@@ -34,6 +43,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 
 //////////////// nul.obj.defined implementation
 
+	//TODO C
 	subUnified: function(o, klg) {
 		if('&phi;'== o.expression) {
 			klg.oppose(this.first.knowledge);
@@ -48,12 +58,7 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		nul.fail(o, ' not unifiable pair');
 	},
 	
-//////////////// nul.xpr.object implementation
-
-	attributes: {
-		//TODO3: length, &, *, head, tail, ...
-	},
-
+	//TODO C
 	subHas: function(o) {
 		this.use(); nul.obj.use(o);
 		
@@ -65,19 +70,36 @@ nul.obj.pair = Class.create(nul.obj.defined, {
 		return rv.pushs(this.second.having(o));
 	},
 
+//////////////// nul.xpr.object implementation
+
+	/** @constant */
+	attributes: {
+		//TODO3: length, &, *, head, tail, ...
+	},
+
 //////////////// nul.expression implementation
 
+	/** @constant */
 	expression: 'pair',
+	/** @constant */
 	components: ['first', 'second'],
 	sum_isList: function() {
 		return this.first.knowledge.isFixed() && this.second.isList();
 	},
+	/** Build this set so that it is a following of pairs which values are most simplified as possible */
 	built: function($super) {
 		if(!this.first.distribuable()) return $super();
 		return nul.obj.pair.list(this.second, this.first.distribute());
 	}
 });
 
+/**
+ * Helper to create triling pairs from a list
+ * @param {nul.xpr.object|null} flw Trail of this list. Will be the empty set if not specified
+ * @param {nul.xpr.possible[]} elms The elements that will be the 'first' of each pairs.
+ * @returns {nul.obj.pair} The built pair
+ * @throws nul.failure
+ */
 nul.obj.pair.list = function(flw, elms) {
 	elms = beArrg(arguments, 1);
 	nul.xpr.use(elms);
