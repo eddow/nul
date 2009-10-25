@@ -6,6 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO D
+
 /**@namespace*/
 nul.compiled = {
 	//Compiled just have pure data: operators, operands, stuffs, ...

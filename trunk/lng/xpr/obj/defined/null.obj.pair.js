@@ -65,7 +65,7 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 		//TODO 3: summarise a tree of fixed values (=> ram db)
 		//make a table fct also
 		var rv = [];
-		try { rv.push(this.first.unified(o)); }
+		try { rv.push(this.first.extract(o)); }
 		catch(err) { nul.failed(err); }
 		return rv.pushs(this.second.having(o));
 	},

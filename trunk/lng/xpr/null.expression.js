@@ -12,7 +12,7 @@
 nul.summary = function(itm) {
 	return function() { return this.summary(itm); };
 };
-//TODO 1: change the docs "defined in" to have a relative path.
+
 nul.expression = Class.create(/** @lends nul.expression# */{
 	/**
 	 * Expression

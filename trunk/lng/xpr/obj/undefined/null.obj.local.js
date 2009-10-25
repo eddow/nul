@@ -59,7 +59,6 @@ nul.obj.local = Class.create(nul.obj.undefined, /** @lends nul.obj.local# */{
 	}
 });
 //TODO 3: Surligner le self-ref content dans l'html
-//TODO 2: self-locals redéfinie au stepUp
 /**
  * Helper to create a local that specify 'myself' for the given expression
  * @param {String} ndx

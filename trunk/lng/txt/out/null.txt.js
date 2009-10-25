@@ -6,7 +6,10 @@
  *
  *--------------------------------------------------------------------------*/
  
+//TODO D
+
 /**
+ * Text output kernel
  * @class
  */
 nul.txt = {
@@ -43,7 +46,10 @@ nul.txt = {
 		else this.drawing.pop();
 	},
 	clpsSstm : function(table, uc, lcFct) {
-		if(table) return table.clpsSstm = { 
+		/**
+		 * @name clpsSstm
+		 */
+		if(table) return table.clpsSstm = /** @lends clpsSstm */{ 
 			table: table,
 			uc: uc,
 			collapsing: {},

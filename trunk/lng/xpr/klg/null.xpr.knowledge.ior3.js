@@ -6,9 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * A set of possible values, bound to a knowledge hesitations
- */
+//TODO D
+
 nul.xpr.knowledge.ior3 = Class.create(nul.expression, {
 	initialize: function(choices) {
 		this.choices = choices;

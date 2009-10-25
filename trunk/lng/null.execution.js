@@ -6,6 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO D
+
 /**@namespace*/
 nul.execution = {
 	reset: function()
@@ -40,7 +42,7 @@ nul.execution = {
 			return d.getTime(); 
 		},
 		enter: function(nm) {
-			if(0<this.stack.length) this.cstop(this.stack[0]);
+			if(this.stack.length) this.cstop(this.stack[0]);
 			this.stack.unshift(nm);
 			this.cstart(nm);
 		},
@@ -48,7 +50,7 @@ nul.execution = {
 			if(nul.debug.assert) assert(nm == this.stack[0], 'benchmark stack coherence');
 			this.cstop(this.stack[0]);
 			this.stack.shift();
-			if(0<this.stack.length) this.cstart(this.stack[0]);			
+			if(this.stack.length) this.cstart(this.stack[0]);			
 		},
 		reset: function() {
 			this.computed = {};

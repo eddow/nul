@@ -6,6 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
  
+//TODO D
+
 nul.exception = function(type, code, msg, chrct)
 {
 	var err = { nul: true, type: type, message: msg,

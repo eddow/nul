@@ -6,10 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * A piece of knowledge:
- * A set of objects known equivalents and a set of items they are known to belong to. 
- */
+//TODO D
+
 nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	initialize: function(obj, attr) {
  		if(obj && 'eqCls'== obj.expression) {
@@ -189,7 +187,8 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		var rv = already || {};
 		var eqc = this;
 		var destSelect = function(cn, ndx) {
-			return excl!= cn+':'+ndx && excl!= cn+':*' && (!only || only==cn+':'+ndx || only==cn+':*')
+			return excl!= cn+':'+ndx && excl!= cn+':*' &&
+				(!only || only==cn+':'+ndx || only==cn+':*' || ('undefined'== typeof ndx && cn==only.substr(0, cn.length)));
 		};
 		var subInfluence = function(cn, infl) {
 			if(destSelect(cn))
