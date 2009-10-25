@@ -40,6 +40,10 @@ tests = [
 		rslt: '{"p"}'},
 		{xpr: 'i[1..3] _ ; i = { \\/x {x} => {} [] (a,b,.. o) => ((a,b),.. i[b,.. o] ) }',
 		rslt: '((1, 2), (2, 3))'},
+		{xpr: 'tp={ {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
+		rslt: '{&phi; &rArr; &phi; &#9633; (T[1|0],.. Ts[1|1]) &rArr; (_[1|2],.. &crarr;[1|3]); ((_[1|2]) &isin; T[1|0] &and; (Ts[1|1] &rArr; &crarr;[1|3]) &isin; &uArr;[&crarr;|1])}'},
+		{xpr: 'tp[Q,str] ; tp={ {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
+		rslt: '{(_[g|4], _[g|8]); ((_[g|4]) &isin; &#x211a; &and; (_[g|8]) &isin; str)}'}
 	].named('Complexs'),
 	[
 		{xpr: '( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")',
