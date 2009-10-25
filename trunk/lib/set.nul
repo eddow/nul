@@ -5,7 +5,7 @@ set = <library
 */
 tuple
 ={	{} => { {} }
-[]	(T,.. Ts) => ( T _,.. set.tuple[Ts] _ )
+[]	(T,.. Ts) => { T _,.. set.tuple[Ts] _ }
 }
 
 sub
