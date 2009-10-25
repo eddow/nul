@@ -6,10 +6,13 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * A list of conditions and fuzziness reduction.
- */
-nul.xpr.knowledge = Class.create(nul.expression, {
+//TODO D
+
+nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# */{
+	/**
+	 * @extends nul.expression
+	 * @constructs
+	 */
 	initialize: function(klg) {
 		if(!klg || "string"== typeof klg) { 
 	 		//Create new objects each time
@@ -244,7 +247,6 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 			if(extInfl) //If this refer to something defined in another context
 				toNeed.pushs(influence(ec.influence(this, extInfl), lcls));
 			if(true!== extInfl) for(var e in elms) if(cstmNdx(e)) {
-				//var usg = elms[e].dependance().usage(this).local;
 				//For each usage of this element, influence each other usage of the eqclass
 				for(var srcNdx in elms[e].dependance().usage(this).local)
 					lclInfl[srcNdx] = ec.influence(this, e, extInfl, lclInfl[srcNdx]);
@@ -468,8 +470,6 @@ nul.xpr.knowledge = Class.create(nul.expression, {
 		var rv = [];
 		dTbl = clone1(dTbl);
 		var used;
-		//TODO 1: peut-être que rien ne change, même si used=true (le eqCms.definition peut laisser le klg telquel) : remettre used=false !!!
-		//cf. h = { {} => {} [] (n,.. ns) => ((_::number n),.. h[ns]) }
 		do {
 			used = false;
 			for(var v in this.access) {
@@ -513,7 +513,6 @@ nul.xpr.knowledge = Class.create(nul.expression, {
  		this.modify(); nul.obj.use(value);
 		var representer = new nul.xpr.knowledge.eqClass.represent(this.eqCls);
 		nul.debug.log('Represent')('', 'Knowledge', this);
-		//TODO 2: représenter une eqCls dans les fils. Si le fils est une eqCls, ajouter les attributs de cette eqCls !
 		for(var i=0; i<this.eqCls.length;) {
 			var ec = this.eqCls[i];
 			var nec = representer.subBrowse(ec);

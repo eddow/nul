@@ -6,10 +6,13 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * A possible value; refering a value and a condition
- */
-nul.xpr.possible = Class.create(nul.expression, {
+//TODO D
+
+nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
+	/**
+	 * @extends nul.expression
+	 * @constructs
+	 */
 	initialize: function(value, knowledge) {
 		if(!knowledge) knowledge = nul.xpr.knowledge.always;
 		nul.obj.use(value); nul.xpr.use(knowledge, nul.xpr.knowledge);
@@ -34,7 +37,7 @@ nul.xpr.possible = Class.create(nul.expression, {
 	 * @param {nul.xpr.object} o
 	 * @return {nul.xpr.possible}
 	 */
-	unified: function(o) {
+	extract: function(o) {
 		//var klg = this.knowledge.modifiable();
 		var klg = new nul.xpr.knowledge();
 		//Merge because we need to create a new context reference in case of half-recursion
@@ -43,7 +46,9 @@ nul.xpr.possible = Class.create(nul.expression, {
 			assert(!rv.dependance().usages[klg.name],
 				'Out of knowledge, no more deps');
 		return rv;
-	},
+	}.describe('Extraction', function(o) {
+		return [o, this];
+	}),
 	
 	/**
 	 * Determine wether the resolution engine can change anything

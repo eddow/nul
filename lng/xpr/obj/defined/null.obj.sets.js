@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//TODO D
 
 nul.obj.hcSet = Class.create(nul.obj.defined, {
 	initialize: function() {

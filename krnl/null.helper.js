@@ -6,6 +6,9 @@
  *
  *--------------------------------------------------------------------------*/
  
+//TODO D
+
+
 /**
  * Gets weither this object is an array [] and not an object {}
  */

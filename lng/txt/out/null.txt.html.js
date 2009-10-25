@@ -6,7 +6,12 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**@namespace*/
+//TODO D
+
+/**
+ * HTML expression building helper 
+ * @namespace
+ */
 html = {
 	tagged: function(tag, attrs, cnt) {
 		var rv = '<'+tag;

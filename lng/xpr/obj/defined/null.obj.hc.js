@@ -5,7 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-
+//TODO D
 /**
  * Compute a hard-coded result.
  * @param {nul.xpr.possible}

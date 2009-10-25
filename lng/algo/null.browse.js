@@ -118,7 +118,7 @@ nul.browser.cached = Class.create(nul.browser, /** @lends nul.browser.cached# */
 });
 
 /**
- *  @class A browser that gives one other expression or the same expression
+ * @class A browser that gives one other expression or the same expression
  * @extends nul.browser.cached
  */
 nul.browser.bijectif = Class.create(nul.browser.cached, /** @lends nul.browser.bijectif# */{
@@ -195,7 +195,7 @@ nul.browser.bijectif.unchanged = 'Just the same';
 
 nul.browser.bijectif.evolution = Class.create( /** @lends nul.browser.bijectif.evolution# */{
 	/**
-	 * An evolution object, where an expression is changed step by step
+	 * @class An evolution object, where an expression is changed step by step
 	 * @constructs
 	 * @param {nul.expression} xpr The first step of the evolution
 	 */
