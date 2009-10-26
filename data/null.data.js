@@ -72,7 +72,7 @@ nul.data.context = Class.create({
 	 * Gets an object image no more dependant from this context
 	 * @param {nul.xpr.object} obj
 	 * @return {nul.xpr.object}
-	 * @throw nul.failure
+	 * @throws {nul.failure}
 	 */
 	query: function(obj) { throw 'Abstract'; }
 });

@@ -47,7 +47,7 @@ nul.tokenizer = Class.create({
 	},
 	/**
 	 * Compare and return next token
-	 * @param {array(string)} accepted A list of accepted token type
+	 * @param {String[]} accepted A list of accepted token type
 	 * @return next token if accepted or null
 	 */
 	peek: function(accepted)
@@ -65,7 +65,7 @@ nul.tokenizer = Class.create({
 	},
 	/**
 	 * Gets next token and advance if accepted.
-	 * @param {array(string)} accepted A list of accepted token type
+	 * @param {String[]} accepted A list of accepted token type
 	 * @return next token if accepted or null
 	 */
 	pop: function(accepted)
@@ -77,7 +77,7 @@ nul.tokenizer = Class.create({
 	},
 	/**
 	 * Gets next token and advance if accepted.
-	 * @param {string} value The only accepted token value
+	 * @param {String} value The only accepted token value
 	 * @return true if token was token, false if nothing changed
 	 */
 	take: function(value)
@@ -88,10 +88,10 @@ nul.tokenizer = Class.create({
 	},
 	/**
 	 * Take next token, asserts its value
-	 * @param {string} value The expected value of the next token
+	 * @param {String} value The expected value of the next token
 	 * @param {any} rv The return value of this function
 	 * @return the parameter 'rv'
-	 * @throws nul.synthaxException if the token is not the one expected.
+	 * @throws {nul.synthaxException} if the token is not the one expected.
 	 */
 	expect: function(value, rv)
 	{
@@ -101,7 +101,7 @@ nul.tokenizer = Class.create({
 	},
 	/**
 	 * Gets next characters and advance if accepted.
-	 * @param {string} value The characters expected to de found
+	 * @param {String} value The characters expected to de found
 	 * @return true if the characters were found
 	 */
 	rawTake: function(value)
@@ -114,10 +114,10 @@ nul.tokenizer = Class.create({
 	},
 	/**
 	 * Take some characters, asserts their value
-	 * @param {string} value The expected string to find
+	 * @param {String} value The expected string to find
 	 * @param {any} rv The return value of this function
 	 * @return the parameter 'rv'
-	 * @throws nul.synthaxException if the characters were not found exactly
+	 * @throws {nul.synthaxException} if the characters were not found exactly
 	 */
 	rawExpect: function(value, rv)
 	{
@@ -127,7 +127,7 @@ nul.tokenizer = Class.create({
 	},
 	/**
 	 * Get a string until some character
-	 * @param {string} seeked The bound for seeking
+	 * @param {String} seeked The bound for seeking
 	 * @return the string until the bound.
 	 */
 	fly: function(seeked)

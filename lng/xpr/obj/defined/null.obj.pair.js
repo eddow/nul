@@ -8,6 +8,7 @@
 
 nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 	/**
+	 * Pair used to build lists : a head and a tail.
 	 * @extends nul.obj.defined
 	 * @constructs
 	 * @param {nul.xpr.possible} first List head
@@ -98,7 +99,7 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
  * @param {nul.xpr.object|null} flw Trail of this list. Will be the empty set if not specified
  * @param {nul.xpr.possible[]} elms The elements that will be the 'first' of each pairs.
  * @returns {nul.obj.pair} The built pair
- * @throws nul.failure
+ * @throws {nul.failure}
  */
 nul.obj.pair.list = function(flw, elms) {
 	elms = beArrg(arguments, 1);

@@ -5,9 +5,13 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//TODO D
 
-nul.obj.hcSet = Class.create(nul.obj.defined, {
+nul.obj.hcSet = Class.create(nul.obj.defined, /** @lends nul.obj.hcSet */{
+	/**
+	 * A set hard-coded in javascript
+	 * @extends nul.obj.defined
+	 * @constructs
+	 */
 	initialize: function() {
 		this.alreadyBuilt();
 	},
@@ -28,23 +32,35 @@ nul.obj.hcSet = Class.create(nul.obj.defined, {
 	}
 });
 
-nul.obj.empty = new (Class.create(nul.obj.hcSet, {
+/**
+ * Empty set : &phi;
+ * @class Singleton
+ * @extends nul.obj.hcSet
+ */
+nul.obj.empty = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.empty# */{
 	intersect: function(o) {
 		nul.fail('No intersection with ', this);
 	},
 	subHas: function() { return []; },
 	
+	/** @constant */
 	expression: '&phi;',
 	
 //////////////// nul.obj.defined implementation
 
+	/** @constant */
 	attributes: {
 		'# ': function() { return nul.obj.litteral.make(0); }
 	}
 	
 }))();
 
-nul.obj.number = new (Class.create(nul.obj.hcSet, {
+/**
+ * Set of number litterals
+ * @class Singleton
+ * @extends nul.obj.hcSet
+ */
+nul.obj.number = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.number# */{
 	intersect: function($super, o, klg) {
 		if('range'== o.expression) return o;
 		return $super(o, klg);
@@ -53,10 +69,16 @@ nul.obj.number = new (Class.create(nul.obj.hcSet, {
 		if('number'== o.expression) return [o];
 		return $super(o);
 	},
+	/** @constant */
 	expression: '&#x211a;'
 }))();
 
-nul.obj.string = new (Class.create(nul.obj.hcSet, {
+/**
+ * Set of string litterals
+ * @class Singleton
+ * @extends nul.obj.hcSet
+ */
+nul.obj.string = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.string# */{
 	subHas: function($super, o) {
 		if('string'== o.expression) return [o];
 		return $super(o);
@@ -64,15 +86,33 @@ nul.obj.string = new (Class.create(nul.obj.hcSet, {
 	expression: 'str'
 }))();
 
-nul.obj.bool = new (Class.create(nul.obj.hcSet, {
+/**
+ * Set of boolean litterals
+ * @class Singleton
+ * @extends nul.obj.hcSet
+ */
+nul.obj.bool = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.bool# */{
 	subHas: function($super, o) {
 		if('boolean'== o.expression) return [o];
 		return $super(o);
 	},
+	/** @constant */
 	expression: 'bool'
 }))();
 
-nul.obj.range = Class.create(nul.obj.hcSet, {
+nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
+	/**
+	 * A range of integer numbers
+	 * @extends nul.obj.hcSet
+	 * @constructs
+	 * @param {Number} lwr Lower bound of the set (or nothing for no bound)
+	 * @param {Number} upr Upper bound of the set (or nothing for no bound)
+	 */
+	initialize: function($super, lwr, upr) {
+		this.lower = lwr?parseInt(lwr):ninf;
+		this.upper = upr?parseInt(upr):pinf;
+		$super();
+	},
 	intersect: function($super, o, klg) {
 		if('range'== o.expression) {
 			var lwr = this.lower<o.lower?o.lower:this.lower;
@@ -81,11 +121,6 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 			return new nul.obj.range(lwr, upr);
 		}
 		return $super(o, klg);
-	},
-	initialize: function($super, lwr, upr) {
-		this.lower = lwr?parseInt(lwr):ninf;
-		this.upper = upr?parseInt(upr):pinf;
-		$super();
 	},
 	subHas: function($super, o) {
 		if(this.lower==this.upper && !o.defined) {
@@ -115,6 +150,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 		return this;
 	},
 
+	/** @constant */
 	attributes: {
 		'# ': function() {
 			if(ninf== this.lower || pinf== this.upper)
@@ -125,6 +161,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, {
 
 //////////////// nul.expression implementation
 
+	/** @constant */
 	expression: 'range',
 	sum_index: function() { return this.indexedSub(this.lower, this.upper); }
 });

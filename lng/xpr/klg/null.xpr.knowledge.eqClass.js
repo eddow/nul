@@ -6,9 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
-nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
+nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.knowledge.eqClass# */{
+	/**
+	 * Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes 
+	 * @extends nul.expression
+	 * @constructs
+	 * @param {nul.xpr.object} obj An object the class is initialised zith
+	 * @param {Attributes} attr The attributes the object is known zith
+	 */
 	initialize: function(obj, attr) {
  		if(obj && 'eqCls'== obj.expression) {
 			this.equivls = clone1(obj.equivls);	//Equal values
@@ -45,6 +50,8 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 
 	/**
 	 * Build and get a representative value for this class.
+	 * @param {nul.xpr.knowledge} kpr
+	 * @return {nul.xpr.object}
 	 */
 	taken: function(klg) {
 		try { return this.equivls[0]; }
@@ -62,8 +69,9 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	/**
 	 * Add an object in the equivlence.
 	 * @param {nul.xpr.object} o object to add
+	 * @param {nul.xpr.knowledge} klg
 	 * @return nothing
-	 * @throws nul.failure
+	 * @throws {nul.failure}
 	 */
 	isEq: function(o, klg) {
  		this.modify(); nul.obj.use(o);
@@ -109,8 +117,9 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	/**
 	 * Add an object as a belongs.
 	 * @param {nul.xpr.object} o object that belongs the class
-	 * @return array(nul.xpr.object) Array of objects to equal to this eqCls afterward
-	 * @throws nul.failure
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {nul.xpr.object[]} Array of objects to equal to this eqCls afterward
+	 * @throws {nul.failure}
 	 */
 	isIn: function(s, klg) {
  		this.modify(); s.use();
@@ -131,9 +140,10 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	
 	/**
 	 * Specify attributes
-	 * @param {{string: nul.xpr.object}} attrs 
-	 * @return {boolean} Weither the call was useless
-	 * @throws nul.failure
+	 * @param {Attributes} attrs 
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {Boolean} Weither the call was useless
+	 * @throws {nul.failure}
 	 */
 	hasAttr: function(attrs, klg) {
 		this.modify();
@@ -152,34 +162,9 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	},
 
 	/**
-	 * The object appears only in this equivalence class.
-	 * Retrieve an equivalence class that doesn't bother with useless knowledge
-	 * @param {nul.xpr.object} o
-	 * @return nul.xpr.knowledge.eqClass or null
-	 * TODO 3: this function is useless
-	 */
-	unused: function(o) {
-		var unused = function(eqc, tbl, str) {
-			for(var e=0; e<tbl.length; ++e)
-				if(tbl[e].toString() == str) {
-					nul.debug.log('Knowledge')('', 'Forget', tbl[e]);
-					tbl.splice(e, 1);
-					return eqc;
-				}
-		};
-		
-		this.use(); nul.obj.use(o);
-		var oStr = o.toString();
-		var rv = this.modifiable();
-		unused = unused(rv, rv.equivls, oStr) || unused(rv, rv.belongs, oStr);
-		if(unused) return unused.built();
-		return this; 
-	},
-	
-	/**
 	 * Compute the influence of this equivalence class (excluded 'exclElm')
 	 * @param {nul.xpr.knowledge} klg
-	 * @param {string: integer} excl Element to exclude, from the summary.components
+	 * @param {String: integer} excl Element to exclude, from the summary.components
 	 * @param {association(ndx=>infl)} already The influences already computed (modified by side-effect)
 	 * @return {association(ndx=>infl)} Where 'ndx' is a local index and 'infl' 1 or 2 
 	 */
@@ -231,49 +216,36 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 		return rv.built().placed(klg); 
 	},
 	
+	/**
+	 * Is the equivalences defined or is there only undefined objects unified ?
+	 * @return {Boolean}
+	 */
 	eqvlDefined: function() { return this.equivls.length && this.equivls[0].defined; },
+	/**
+	 * Is the belonging sets defined or is there only undefined sets whose the class belongs to ?
+	 * @return {Boolean}
+	 */
 	blngDefined: function() { return this.belongs.length && this.belongs[0].defined; },
 
-////////////////	Definition management
-	
-	/**
-	 * Gets the information that defines the values : the attributes and the defined belong
-	 * @returns nothing or a definition object
-	 */
-	definition: function() {
-		var def = {};
-		//if(this.blngDefined()) def.belong = this.belongs[0];
-		if(!isEmpty(this.attribs, '')) def.attrib = this.attribs;
-		return def;
-	},	
-	
 	/**
 	 * Sets the information that defines the values : the attributes and the defined belong
-	 * @param {definition object}
-	 * @param {nul.xpr.knowledge} Used only hen a definition with attributes is given
-	 * @returns {boolean} Weither something changed
+	 * @param {nul.xpr.knowledge.eqClass} def The class that give some definitions for me
+	 * @param {nul.xpr.knowledge} klg The knowledge of this class
+	 * @returns {Boolean} Weither something changed
 	 */
 	define: function(def, klg) {
 		var rv = false;
-		//if(def.belong) this.isIn(def.belong);
-		if(def.attrib) rv |= !this.hasAttr(def.attrib, klg);
+		if(!isEmpty(def.attribs, '')) rv |= !this.hasAttr(def.attribs, klg);
 		return rv;
 	},	
 	
 //////////////// nul.expression implementation
 	
+	/** @constant */
 	expression: 'eqCls',
+	/** @constant */
 	components: ['equivls', 'belongs', 'attribs'],
-	modifiable: function($super) {
-		var rv = $super();
-		rv.equivls = clone1(rv.equivls);	//Equal values
-		rv.belongs = clone1(rv.belongs);	//Sets the values belong to
-		rv.attribs = nul.xpr.beBunch(clone1(rv.attribs));
-		return rv;		
-	},
-	fix: function($super) {
-		return $super();
-	},
+
 	placed: function($super, prnt) {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);
 		if(!this.equivls.length && isEmpty(this.attribs,'') && 1== this.belongs.length && this.blngDefined()) {

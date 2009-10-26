@@ -195,9 +195,9 @@ nul.debug = {
 	},
 	/**
 	 * Assert this object has a member (use a member which name defines the class)
-	 * @param {string} elm The member to test
+	 * @param {String} elm The member to test
 	 * @return nothing
-	 * @throws assertException
+	 * @throws {assertException}
 	 */
 	is: function(elm) {
 		return function(obj) {
@@ -207,9 +207,9 @@ nul.debug = {
 	},
 	/**
 	 * Assert these objects has a member (use a member which name defines the class)
-	 * @param {string} elm The member to test
+	 * @param {String} elm The member to test
 	 * @return nothing
-	 * @throws assertException
+	 * @throws {assertException}
 	 */
 	are: function(elm) {
 		return function(objs) {

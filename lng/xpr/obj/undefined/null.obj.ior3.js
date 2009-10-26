@@ -39,8 +39,8 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, /** @lends nul.obj.ior3# */{
 
 	/**
 	 * Gather the list of values as 'possible' thanks to the associated the knowledge.
-	 * @param {array(nul.xpr.knowledge)} ctx
-	 * @return array(nul.xpr.possible)
+	 * @param {nul.xpr.knowledge[]} ctx
+	 * @return {nul.xpr.possible[]}
 	 */
 	possibles: function() {
 		if(!this.choices) return this.values;
