@@ -146,6 +146,13 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		//Remove useless equivalence class specifications
 		for(var c=0; c<this.eqCls.length;) {
 			this.eqCls[c] = this.eqCls[c].pruned(this, vdps);
+ 			/*if(this.eqCls[c] && !this.eqCls[c].belongs.length && (!this.eqCls[c].equivls.length || 
+				(1== this.eqCls[c].equivls.length && isEmpty(this.eqCls[c].attribs,''))))
+					this.eqCls[c] = null;
+ 			if(this.eqCls[c] && !this.eqCls[c].equivls.length && isEmpty(this.eqCls[c].attribs,'') && 1== this.eqCls[c].belongs.length && this.eqCls[c].blngDefined()) {
+ 				if('&phi;'== this.eqCls[c].belongs[0].expression) nul.fail("&phi; is empty");
+ 				this.eqCls[c] = null;
+ 			}*/
 			if(!this.eqCls[c]) this.eqCls.splice(c,1);
 			else ++c;
 		} 
@@ -166,6 +173,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		//Remove trailing unrefered locals (not more to preserve indexes)
 		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();
  		this.useLocalNames(deps.local);
+ 		
  		return this;
  	}.describe('Prune', function(value) {
 		return this.name+': ' + value.dbgHtml() + ' ; ' + this.dbgHtml();
@@ -271,7 +279,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		var dstEqCls = new nul.xpr.knowledge.eqClass();
  		var alreadyBlg = {};	//TODO 3: make a 'belong' this.access ?
  		var toBelong = [];
- 		//var abrtVal = nul.xpr.knowledge.cloneData(this);	//Save datas in case of failure //TODO 2: shouldn't save here ! Really ? and if half-unification works ... ?
  		var ownClass = true;
  		try {
 	 		while(toUnify.length || toBelong.length) {
@@ -282,8 +289,10 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		 				if(dstEqCls=== v) {}
 		 				else if(!v.summarised) {	//If not summarised, then it's a class built in another unification higher in the stack
 		 					ownClass = false;
-		 					var t=dstEqCls; dstEqCls=v; v=t;
-		 					this.unaccede(v);
+		 					this.unaccede(dstEqCls);
+		 					dstEqCls.merged = v;
+		 					v = dstEqCls;
+		 					dstEqCls = v.merged;
 		 				}
 		 				else this.removeEC(v);
 		 			}
@@ -304,7 +313,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 					if(chx) {
 						switch(chx.length) {
 						case 0:
-							nul.fail('Belonging', unf, '&in;', s);
+							nul.fail('Belonging', unf, '&isin;', s);
 						case 1:
 							if('possible'== chx[0].expression) {
 								toUnify.push(this.merge(chx[0].knowledge, chx[0].value));
@@ -338,7 +347,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 		}
 	 		if(ownClass) dstEqCls.built();
  		} catch(err) {
- 			//nul.xpr.knowledge.cloneData(abrtVal, this);
  			throw nul.exception.notice(err);
  		}
 		return dstEqCls;
@@ -511,8 +519,9 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 */
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
-		var representer = new nul.xpr.knowledge.eqClass.represent(this.eqCls);
+		var representer = new nul.xpr.knowledge.represent(this.eqCls);
 		nul.debug.log('Represent')('', 'Knowledge', this);
+		value = representer.browse(value);
 		for(var i=0; i<this.eqCls.length;) {
 			var ec = this.eqCls[i];
 			var nec = representer.subBrowse(ec);
@@ -522,15 +531,17 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 				nec = this.unify(nec);
 				
 				//this.unification has effect on other equivalence classes that have to change in the representer
-				representer = new nul.xpr.knowledge.eqClass.represent(this.eqCls);
+				representer = new nul.xpr.knowledge.represent(this.eqCls);
+				//representer.invalidateCache();
 				
 				nul.debug.log('Represent')('', 'Knowledge', this);
+				value = representer.browse(value);
 				i = 0;
 			}
 		}
 
 		//TODO O: represent sur ior3s : useful or we let it post-resolution ?
-		value = representer.browse(value);
+//		value = representer.browse(value);
 		
 		var opposition = this.veto;
 		this.veto = [];
@@ -729,3 +740,72 @@ nul.xpr.knowledge.unification = function(objs) {
 	klg.unify(objs);
 	return klg.built();
 };
+
+nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, {
+	initialize: function($super, ec) {	//TODO 2: use knowledge.access instead of making tables
+		this.tbl = {};
+		this.defTbl = {};
+		for(var c in ec) if(cstmNdx(c)) {
+			this.invalidateCache();
+			nul.xpr.use(ec[c], nul.xpr.knowledge.eqClass);
+			for(var e=1; e<ec[c].equivls.length; ++e)
+				this.tbl[ec[c].equivls[e]] = ec[c].equivls[0];
+			var def = ec[c].definition();
+			if(!isEmpty(def))
+				for(var e=0; e<ec[c].equivls.length; ++e)
+					this.defTbl[ec[c].equivls[e]] = def;
+		}
+		$super('Representation');
+		this.prepStack = [];
+	},
+	subBrowse: function(xpr) {
+		nul.xpr.use(xpr, nul.xpr.knowledge.eqClass);
+        this.protect = [];
+        for(var i=0; i<xpr.equivls.length; ++i) this.protect[xpr.equivls[i]] = xpr.equivls[i];
+        try { return this.recursion(xpr); }
+        finally {
+            for(var i in this.protect) this.uncache(this.protect[i]);
+            delete this.protect;
+        }
+    },
+	cachable: function(xpr) {
+		return !this.tbl[xpr];
+	},
+	changeable: function(xpr) {
+		return this.tbl[xpr] && (!this.protect || !this.protect[xpr] || 2<this.prepStack.length);
+	},
+	enter: function($super, xpr) {
+		this.prepStack.unshift(xpr);
+		if(this.changeable(xpr)) return false;
+
+		return $super(xpr);
+	},
+	build: function($super, xpr) {
+		if(xpr.setSelfRef) {
+			xpr.selfRef = xpr.setSelfRef;
+			delete xpr.setSelfRef;
+			delete this.prepStack[0].setSelfRef;
+		}
+		return $super(xpr);
+	},
+	transform: function(xpr) {
+		var p = this.prepStack.shift();
+		var evl = new nul.browser.bijectif.evolution(xpr);
+		if(this.changeable(evl.value)) do evl.receive(this.tbl[evl.value]); while(this.tbl[evl.value]);
+		//If I'm replacing a value by an expression that contains this value, just don't
+		var n = this.prepStack.indexOf(evl.value);
+		if(-1< n) {
+			evl.receive(nul.obj.local.self(evl.value.selfRef || evl.value.setSelfRef));
+			this.prepStack[n].setSelfRef = evl.value.ndx;
+		}
+
+		if('klg'== evl.value.expression) {
+			var mdk = evl.value.modifiable();
+			if(mdk.define(this.defTbl).length)
+				evl.receive(mdk.built());
+		}
+		
+		if(evl.hasChanged) nul.debug.log('Represent')('', 'Representation', evl.changed, xpr, p);
+		return evl.changed;
+	}
+});

@@ -63,7 +63,8 @@ nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
 	reself: function(newSelf, selfRef) {
 		if(!this.selfRef && !selfRef) return this;
 		var rv = new nul.xpr.object.reself(selfRef || this.selfRef, newSelf).browse(this);
-		if(nul.debug.assert) assert(this.expression == rv.expression, 'Reselfing doesnt modify the definition');
+		if(nul.debug.assert) assert(this.expression == rv.expression || ('pair'== this.expression && '&phi;'== rv.expression),
+				'Reselfing doesnt modify the definition');
 		return rv;
 	}
 });

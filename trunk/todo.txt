@@ -1,17 +1,10 @@
-tp
-={ {} => {}
-[] (T,.. Ts) => ( T _,.. tp[Ts] )
-}
-::: shouldn't develop one !
-
-
 
 (tuple[Q,str])
 ; tuple
 ={	{} => {{}}
 []	(T,.. Ts) => { T _,.. tuple[Ts] _ }
 }
-::: inf. recursion
+::: trop de spéc. de récursion ... bizarre
 
 
 :::cas "s s" set auto-inclusive : s is protected while representing ... so what happen ?
