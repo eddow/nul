@@ -22,7 +22,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
 	 * Unify two defined objects
 	 * @return {nul.obj.defined}
-	 * @throws nul.failure
+	 * @throws {nul.failure}
 	 */
 	unified: function(o, klg) {
 		this.use(); nul.obj.use(o); nul.xpr.mod(klg, nul.xpr.knowledge);
@@ -49,7 +49,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
 	 * Intersect two defined objects
 	 * @return nul.obj.defined
-	 * @throws nul.failure
+	 * @throws {nul.failure}
 	 * TODO 2: refaire le même système qu'avec unified : subIntersect de deux defined
 	 */
 	intersect: function(o, klg) {
@@ -61,7 +61,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	
 	/**
 	 * Retrieve an attribute
-	 * @param {string} an Attribute Name
+	 * @param {String} an Attribute Name
 	 * @return {nul.xpr.object}
 	 * @throws {nul.failure}
 	 */
@@ -76,7 +76,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * Or nothing if nothing can be simplified
 	 * @param {nul.xpr.object} o
 	 * @param {nul.xpr.knowledge} klg
-	 * @return array(nul.xpr.object or nul.xpr.possible)
+	 * @return {nul.xpr.object[] | nul.xpr.possible[]}
 	 */
 	has: function(o) {
 		if(this.subHas) {

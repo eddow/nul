@@ -76,7 +76,10 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 */
 	modifiable: function() {
 		this.use();
-		return maf(this, function(ndx, obj) { if('summarised'!= ndx) return obj; });
+		return maf(this, function(ndx, obj) {
+			if('summarised'!= ndx) 
+				return nul.xpr.bunch(obj)?nul.xpr.beBunch(clone1(obj)):obj;
+		});
 	},
 
 //////////////// Virtuals

@@ -10,13 +10,13 @@
  * Compute a hard-coded result.
  * @param {nul.xpr.possible}
  * @return {nul.xpr.possible} The precised element. Or null if not determinable : the image through the function
- * @throw nul.failure
+ * @throws {nul.failure}
  * @alias queryCallBack
  */
 
 /**
  * Create a hard-coded set.
- * @param {string} ndx Custom index
+ * @param {String} ndx Custom index
  * @param {queryCallBack} cb Call-back
  * @return {nul.xpr.object}  
  */
@@ -28,13 +28,13 @@ nul.obj.set = function(ndx, cb) {
  * Compute a hard-coded result.
  * @param {nul.xpr.possible}
  * @return {nul.xpr.possible} The image point. Or null if not determinable : the image through the function
- * @throw nul.failure
+ * @throws {nul.failure}
  * @alias functionCallBack
  */
 
 /**
  * Create a hard-coded function.
- * @param {string} ndx Custom index
+ * @param {String} ndx Custom index
  * @param {functionCallBack} cb Call-back  
  * @return {nul.xpr.object}  
  */

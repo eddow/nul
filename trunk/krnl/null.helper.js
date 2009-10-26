@@ -125,7 +125,7 @@ function isEmpty(o, b) {
 
 /**
  * If a string is '5', get it as the number 5
- * @param {string or number} v
+ * @param {String or number} v
  */
 function reTyped(v) {
 	if('string'!= typeof v) return v;
@@ -136,7 +136,7 @@ function reTyped(v) {
 /**
  * The array of keys of association ass
  * @param {association} ass
- * @return {array(string)}
+ * @return {String[]}
  */
 function keys(ass) {
 	var rv = [];

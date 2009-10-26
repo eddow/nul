@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - nul.understanding</title>
+		<title>JsDoc Reference - nul.xpr.knowledge.represent</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -290,24 +290,26 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace nul.understanding
+				Class nul.xpr.knowledge.represent
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
+				<br />Extends
+					<a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a>.<br />
 				
 			
 				
 				
 				
-					<br /><i>Defined in: </i> &lt;null/lng\txt\in\null.understand.js&gt;.
+					<br /><i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.knowledge.browse.js&gt;.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.understanding.">
-				<caption>Namespace Summary</caption>
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.xpr.knowledge.represent.">
+				<caption>Class Summary</caption>
 				<thead>
 					<tr>
 						<th scope="col">Constructor Attributes</th>
@@ -319,9 +321,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.understanding.html#constructor">nul.understanding</a></b>
+								<b><a href="../symbols/_nul.xpr.knowledge.represent.html#constructor">nul.xpr.knowledge.represent</a></b>(access, access)
 							</div>
-							<div class="description"></div>
+							<div class="description">Special browser to modifies an expression, replacing any occurrence of an object that appears in an equivalence classby the equivalence class representant</div>
 						</td>
 					</tr>
 				</tbody>
@@ -335,7 +337,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.understanding.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.xpr.knowledge.represent.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -346,110 +348,65 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.application">application</a></b>(ub)
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.represent.html#build">build</a></b>(xpr)
 								</div>
-								<div class="description"></div>
+								<div class="description">If a self-ref was planned, make it in the newly built expression.</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.atom">atom</a></b>(ub)
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.represent.html#cachable">cachable</a></b>(xpr)
 								</div>
-								<div class="description"></div>
+								<div class="description">Only cache if it doesn't appear in the replacement table.</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.composed">composed</a></b>(ub)
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.represent.html#changeable">changeable</a></b>(xpr)
 								</div>
-								<div class="description"></div>
+								<div class="description">Decide if the value can be changed along the replacement table or not.</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.definition">definition</a></b>(ub)
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.represent.html#enter">enter</a></b>(xpr)
 								</div>
-								<div class="description"></div>
+								<div class="description">Only enter if we don't have a replacement value directly in the access table</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.expression">expression</a></b>(ub)
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.represent.html#subBrowse">subBrowse</a></b>(xpr)
 								</div>
-								<div class="description"></div>
+								<div class="description">Used to browse an equivalence class.</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.hardcode">hardcode</a></b>(ub)
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.represent.html#tableTransform">tableTransform</a></b>(xpr)
 								</div>
-								<div class="description"></div>
+								<div class="description">Retrieve, if any, the replacement value for this expression along the replacement table\</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.objectivity">objectivity</a></b>(ub)
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.represent.html#transform">transform</a></b>(xpr)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.postceded">postceded</a></b>(ub)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.preceded">preceded</a></b>(ub)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.set">set</a></b>(ub)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.taking">taking</a></b>(ub)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.understanding.<b><a href="../symbols/_nul.understanding.html#.xml">xml</a></b>(ub)
-								</div>
-								<div class="description"></div>
+								<div class="description">Change an expression into another along the table.</div>
 							</td>
 						</tr>
 					
@@ -457,6 +414,10 @@ ul.inheritsList
 				</table>
 				
 				
+				
+				<dl class="inheritsList">
+				<dt>Methods borrowed from class <a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a>: </dt><dd><a href="../symbols/_nul.browser.bijectif.html#browse">browse</a>, <a href="../symbols/_nul.browser.bijectif.html#makeRV">makeRV</a>, <a href="../symbols/_nul.browser.bijectif.html#recursion">recursion</a></dd><dt>Methods borrowed from class <a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a>: </dt><dd><a href="../symbols/_nul.browser.cached.html#invalidateCache">invalidateCache</a>, <a href="../symbols/_nul.browser.cached.html#uncache">uncache</a></dd>
+				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -466,21 +427,38 @@ ul.inheritsList
 			
 			<div class="details"><a name="constructor"> </a>
 				<div class="sectionTitle">
-					Namespace Detail
+					Class Detail
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.understanding</b>
+						<b>nul.xpr.knowledge.represent</b>(access, access)
 				</div>
 				
 				<div class="description">
-					
+					Special browser to modifies an expression, replacing any occurrence of an object that appears in an equivalence classby the equivalence class representant
 					
 				</div>
 				
 				
 				
 				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{Access}</span>  <b>access</b>
+								
+							</dt>
+								<dd>The access to use to replace values</dd>
+						
+							<dt>
+								 <b>access</b>
+								
+							</dt>
+								<dd></dd>
+						
+						</dl>
 					
 					
 					
@@ -501,15 +479,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name=".application"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="build"> </a>
+					<div class="fixedFont">
 					
 					
-					<span class="light">nul.understanding.</span><b>application</b>(ub)
+					<b>build</b>(xpr)
 					
 					</div>
 					<div class="description">
-						
+						If a self-ref was planned, make it in the newly built expression.
 						
 						
 					</div>
@@ -521,7 +499,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>ub</b>
+									<b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -537,15 +515,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".atom"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="cachable"> </a>
+					<div class="fixedFont">
 					
 					
-					<span class="light">nul.understanding.</span><b>atom</b>(ub)
+					<b>cachable</b>(xpr)
 					
 					</div>
 					<div class="description">
-						
+						Only cache if it doesn't appear in the replacement table.\If it does appear, the replacement can be different from one time to another becauyse of protection.
 						
 						
 					</div>
@@ -557,7 +535,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>ub</b>
+									<b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -573,15 +551,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".composed"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="changeable"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.understanding.</span><b>composed</b>(ub)
+					<span class="light">{Boolean}</span>
+					<b>changeable</b>(xpr)
 					
 					</div>
 					<div class="description">
-						
+						Decide if the value can be changed along the replacement table or not.
 						
 						
 					</div>
@@ -593,7 +571,50 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>ub</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Boolean}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="enter"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>enter</b>(xpr)
+					
+					</div>
+					<div class="description">
+						Only enter if we don't have a replacement value directly in the access table
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -609,15 +630,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".definition"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="subBrowse"> </a>
+					<div class="fixedFont">
 					
 					
-					<span class="light">nul.understanding.</span><b>definition</b>(ub)
+					<b>subBrowse</b>(xpr)
 					
 					</div>
 					<div class="description">
-						
+						Used to browse an equivalence class. As each equivalence class appear in the replacement table, they should be protected not to havetheir whole components replaced by the only representant.
 						
 						
 					</div>
@@ -629,7 +650,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>ub</b>
+									<b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -645,15 +666,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".expression"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="tableTransform"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.understanding.</span><b>expression</b>(ub)
+					<span class="light">{<a href="../symbols/_nul.expression.html">nul.expression</a> | null}</span>
+					<b>tableTransform</b>(xpr)
 					
 					</div>
 					<div class="description">
-						
+						Retrieve, if any, the replacement value for this expression along the replacement table\
 						
 						
 					</div>
@@ -665,7 +686,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>ub</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -676,56 +697,27 @@ ul.inheritsList
 						
 						
 						
-						
-						
-
-					<hr />
-				
-					<a name=".hardcode"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.understanding.</span><b>hardcode</b>(ub)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
 							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
+							<dt class="heading">Returns:</dt>
 							
-								<dt>
-									<b>ub</b>
-									
-								</dt>
-								<dd></dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a> | null}</span> </dd>
 							
 							</dl>
 						
 						
 						
-						
-						
-						
-						
 
 					<hr />
 				
-					<a name=".objectivity"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="transform"> </a>
+					<div class="fixedFont">
 					
 					
-					<span class="light">nul.understanding.</span><b>objectivity</b>(ub)
+					<b>transform</b>(xpr)
 					
 					</div>
 					<div class="description">
-						
+						Change an expression into another along the table. Mark a selfRef to do if needed.
 						
 						
 					</div>
@@ -737,187 +729,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>ub</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".postceded"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.understanding.</span><b>postceded</b>(ub)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>ub</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".preceded"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.understanding.</span><b>preceded</b>(ub)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>ub</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".set"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.understanding.</span><b>set</b>(ub)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>ub</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".taking"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.understanding.</span><b>taking</b>(ub)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>ub</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".xml"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.understanding.</span><b>xml</b>(ub)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>ub</b>
+									<b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -945,7 +757,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Mon Oct 26 2009 23:16:09 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Mon Oct 26 2009 23:16:10 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

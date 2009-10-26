@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - nul.xpr.possible</title>
+		<title>JsDoc Reference - nul.xpr.knowledge.eqClass</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -290,7 +290,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class nul.xpr.possible
+				Class nul.xpr.knowledge.eqClass
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -302,13 +302,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.possible.js&gt;.
+					<br /><i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.knowledge.eqClass.js&gt;.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.xpr.possible.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.xpr.knowledge.eqClass.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -321,9 +321,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.xpr.possible.html#constructor">nul.xpr.possible</a></b>(value, knowledge)
+								<b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#constructor">nul.xpr.knowledge.eqClass</a></b>(obj, attr)
 							</div>
-							<div class="description">A value associated with a knowledge : A value that can be unified to several different defined object, along some conditions.</div>
+							<div class="description">Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes</div>
 						</td>
 					</tr>
 				</tbody>
@@ -334,7 +334,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class nul.xpr.possible.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class nul.xpr.knowledge.eqClass.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -348,7 +348,7 @@ ul.inheritsList
 							<td class="attributes">&lt;constant&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/_nul.xpr.possible.html#components">components</a></b>
+								<b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#components">components</a></b>
 								</div>
 								<div class="description"></div>
 							</td>
@@ -358,27 +358,7 @@ ul.inheritsList
 							<td class="attributes">&lt;constant&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/_nul.xpr.possible.html#expression">expression</a></b>
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/_nul.xpr.possible.html#knowledge">knowledge</a></b>
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								<b><a href="../symbols/_nul.xpr.possible.html#value">value</a></b>
+								<b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#expression">expression</a></b>
 								</div>
 								<div class="description"></div>
 							</td>
@@ -399,7 +379,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.xpr.possible.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.xpr.knowledge.eqClass.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -412,25 +392,79 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.possible.html#beself">beself</a></b>(slf, selfRef)
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#blngDefined">blngDefined</a></b>()
 								</div>
-								<div class="description">Change self references to the given self-refered object</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.xpr.possible.<b><a href="../symbols/_nul.xpr.possible.html#.cast">cast</a></b>(o)
-								</div>
-								<div class="description">Have a possible for sure.</div>
+								<div class="description">Is the belonging sets defined or is there only undefined sets whose the class belongs to ?</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.possible.html#chew">chew</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#define">define</a></b>(def, klg)
+								</div>
+								<div class="description">Sets the information that defines the values : the attributes and the defined belong</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#eqvlDefined">eqvlDefined</a></b>()
+								</div>
+								<div class="description">Is the equivalences defined or is there only undefined objects unified ?</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#hasAttr">hasAttr</a></b>(attrs, klg)
+								</div>
+								<div class="description">Specify attributes</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#influence">influence</a></b>(klg, excl, already, already)
+								</div>
+								<div class="description">Compute the influence of this equivalence class (excluded 'exclElm')</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#isEq">isEq</a></b>(o, klg)
+								</div>
+								<div class="description">Add an object in the equivlence.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#isIn">isIn</a></b>(o, klg)
+								</div>
+								<div class="description">Add an object as a belongs.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#orderEqs">orderEqs</a></b>(v, klg)
+								</div>
+								<div class="description">Order the values to equal.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#placed">placed</a></b>(prnt)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -439,45 +473,19 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.possible.html#distribuable">distribuable</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#pruned">pruned</a></b>(klg, lcls)
 								</div>
-								<div class="description">Determine wether the resolution engine can distribute anything</div>
+								<div class="description">Remove items that are not used in this knowledge
+Not used = depending on nothing else than the useless locals of thisknowledge</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.possible.html#distribute">distribute</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.eqClass.html#taken">taken</a></b>(kpr)
 								</div>
-								<div class="description">Use the resolution engine : make several possibles without ior3</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.possible.html#extract">extract</a></b>(o)
-								</div>
-								<div class="description">Returns a possible, this unified to o.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.possible.html#sum_dependance">sum_dependance</a></b>()
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.possible.html#valueKnowing">valueKnowing</a></b>(klg)
-								</div>
-								<div class="description">'klg' now knows all what this possible knows</div>
+								<div class="description">Build and get a representative value for this class.</div>
 							</td>
 						</tr>
 					
@@ -487,7 +495,7 @@ ul.inheritsList
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/_nul.expression.html">nul.expression</a>: </dt><dd><a href="../symbols/_nul.expression.html#alreadyBuilt">alreadyBuilt</a>, <a href="../symbols/_nul.expression.html#built">built</a>, <a href="../symbols/_nul.expression.html#dbgHtml">dbgHtml</a>, <a href="../symbols/_nul.expression.html#dependance">dependance</a>, <a href="../symbols/_nul.expression.html#fix">fix</a>, <a href="../symbols/_nul.expression.html#indexedSub">indexedSub</a>, <a href="../symbols/_nul.expression.html#invalidateTexts">invalidateTexts</a>, <a href="../symbols/_nul.expression.html#isList">isList</a>, <a href="../symbols/_nul.expression.html#modifiable">modifiable</a>, <a href="../symbols/_nul.expression.html#modify">modify</a>, <a href="../symbols/_nul.expression.html#placed">placed</a>, <a href="../symbols/_nul.expression.html#sum_components">sum_components</a>, <a href="../symbols/_nul.expression.html#sum_flatTxt">sum_flatTxt</a>, <a href="../symbols/_nul.expression.html#sum_htmlTxt">sum_htmlTxt</a>, <a href="../symbols/_nul.expression.html#sum_index">sum_index</a>, <a href="../symbols/_nul.expression.html#sum_isList">sum_isList</a>, <a href="../symbols/_nul.expression.html#summarise">summarise</a>, <a href="../symbols/_nul.expression.html#summary">summary</a>, <a href="../symbols/_nul.expression.html#toFlat">toFlat</a>, <a href="../symbols/_nul.expression.html#toHtml">toHtml</a>, <a href="../symbols/_nul.expression.html#toString">toString</a>, <a href="../symbols/_nul.expression.html#use">use</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/_nul.expression.html">nul.expression</a>: </dt><dd><a href="../symbols/_nul.expression.html#alreadyBuilt">alreadyBuilt</a>, <a href="../symbols/_nul.expression.html#built">built</a>, <a href="../symbols/_nul.expression.html#chew">chew</a>, <a href="../symbols/_nul.expression.html#dbgHtml">dbgHtml</a>, <a href="../symbols/_nul.expression.html#dependance">dependance</a>, <a href="../symbols/_nul.expression.html#fix">fix</a>, <a href="../symbols/_nul.expression.html#indexedSub">indexedSub</a>, <a href="../symbols/_nul.expression.html#invalidateTexts">invalidateTexts</a>, <a href="../symbols/_nul.expression.html#isList">isList</a>, <a href="../symbols/_nul.expression.html#modifiable">modifiable</a>, <a href="../symbols/_nul.expression.html#modify">modify</a>, <a href="../symbols/_nul.expression.html#sum_components">sum_components</a>, <a href="../symbols/_nul.expression.html#sum_dependance">sum_dependance</a>, <a href="../symbols/_nul.expression.html#sum_flatTxt">sum_flatTxt</a>, <a href="../symbols/_nul.expression.html#sum_htmlTxt">sum_htmlTxt</a>, <a href="../symbols/_nul.expression.html#sum_index">sum_index</a>, <a href="../symbols/_nul.expression.html#sum_isList">sum_isList</a>, <a href="../symbols/_nul.expression.html#summarise">summarise</a>, <a href="../symbols/_nul.expression.html#summary">summary</a>, <a href="../symbols/_nul.expression.html#toFlat">toFlat</a>, <a href="../symbols/_nul.expression.html#toHtml">toHtml</a>, <a href="../symbols/_nul.expression.html#toString">toString</a>, <a href="../symbols/_nul.expression.html#use">use</a></dd>
 				</dl>
 				
 			
@@ -502,11 +510,11 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.xpr.possible</b>(value, knowledge)
+						<b>nul.xpr.knowledge.eqClass</b>(obj, attr)
 				</div>
 				
 				<div class="description">
-					A value associated with a knowledge : A value that can be unified to several different defined object, along some conditions.
+					Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes
 					
 				</div>
 				
@@ -518,16 +526,16 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span>  <b>value</b>
+								<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span>  <b>obj</b>
 								
 							</dt>
-								<dd></dd>
+								<dd>An object the class is initialised zith</dd>
 						
 							<dt>
-								<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span>  <b>knowledge</b>
+								<span class="light fixedFont">{Attributes}</span>  <b>attr</b>
 								
 							</dt>
-								<dd></dd>
+								<dd>The attributes the object is known zith</dd>
 						
 						</dl>
 					
@@ -589,50 +597,6 @@ ul.inheritsList
 						
 						
 
-					<hr />
-				
-					<a name="knowledge"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span>
-					<b>knowledge</b>
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="value"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span>
-					<b>value</b>
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
 					
 				
 			
@@ -643,118 +607,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name="beself"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>beself</b>(slf, selfRef)
-					
-					</div>
-					<div class="description">
-						Change self references to the given self-refered object
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{any}</span> <b>slf</b>
-									
-								</dt>
-								<dd>The object that is a self-reference</dd>
-							
-								<dt>
-									<b>selfRef</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".cast"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.xpr.possible.</span><b>cast</b>(o)
-					
-					</div>
-					<div class="description">
-						Have a possible for sure. Made with nul.xpr.knowledge.always if an object is given
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a> | nul.xpr.object}</span> <b>o</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="chew"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>chew</b>()
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="distribuable"> </a>
+					<a name="blngDefined"> </a>
 					<div class="fixedFont">
 					
 					<span class="light">{Boolean}</span>
-					<b>distribuable</b>()
+					<b>blngDefined</b>()
 					
 					</div>
 					<div class="description">
-						Determine wether the resolution engine can distribute anything
+						Is the belonging sets defined or is there only undefined sets whose the class belongs to ?
 						
 						
 					</div>
@@ -778,15 +639,64 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="distribute"> </a>
+					<a name="define"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a>[]}</span>
-					<b>distribute</b>()
+					<span class="light">{Boolean}</span>
+					<b>define</b>(def, klg)
 					
 					</div>
 					<div class="description">
-						Use the resolution engine : make several possibles without ior3
+						Sets the information that defines the values : the attributes and the defined belong
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span> <b>def</b>
+									
+								</dt>
+								<dd>The class that give some definitions for me</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
+									
+								</dt>
+								<dd>The knowledge of this class</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Boolean}</span> Weither something changed</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="eqvlDefined"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Boolean}</span>
+					<b>eqvlDefined</b>()
+					
+					</div>
+					<div class="description">
+						Is the equivalences defined or is there only undefined objects unified ?
 						
 						
 					</div>
@@ -801,7 +711,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a>[]}</span> </dd>
+								<dd><span class="light fixedFont">{Boolean}</span> </dd>
 							
 							</dl>
 						
@@ -810,15 +720,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="extract"> </a>
+					<a name="hasAttr"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a>}</span>
-					<b>extract</b>(o)
+					<span class="light">{Boolean}</span>
+					<b>hasAttr</b>(attrs, klg)
 					
 					</div>
 					<div class="description">
-						Returns a possible, this unified to o.
+						Specify attributes
 						
 						
 					</div>
@@ -830,7 +740,13 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>o</b>
+									<span class="light fixedFont">{Attributes}</span> <b>attrs</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
 									
 								</dt>
 								<dd></dd>
@@ -854,7 +770,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a>}</span> </dd>
+								<dd><span class="light fixedFont">{Boolean}</span> Weither the call was useless</dd>
 							
 							</dl>
 						
@@ -863,45 +779,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="sum_dependance"> </a>
+					<a name="influence"> </a>
 					<div class="fixedFont">
 					
-					
-					<b>sum_dependance</b>()
+					<span class="light">{association(ndx=>infl)}</span>
+					<b>influence</b>(klg, excl, already, already)
 					
 					</div>
 					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="valueKnowing"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>valueKnowing</b>(klg)
-					
-					</div>
-					<div class="description">
-						'klg' now knows all what this possible knows
+						Compute the influence of this equivalence class (excluded 'exclElm')
 						
 						
 					</div>
@@ -916,7 +802,25 @@ ul.inheritsList
 									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
 									
 								</dt>
-								<dd>destination knowledge</dd>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{String: integer}</span> <b>excl</b>
+									
+								</dt>
+								<dd>Element to exclude, from the summary.components</dd>
+							
+								<dt>
+									<span class="light fixedFont">{association(ndx=>infl)}</span> <b>already</b>
+									
+								</dt>
+								<dd>The influences already computed (modified by side-effect)</dd>
+							
+								<dt>
+									<b>already</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -927,7 +831,297 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>nul.xpr.object This modified value (to refer the new knowledge)</dd>
+								<dd><span class="light fixedFont">{association(ndx=>infl)}</span> Where 'ndx' is a local index and 'infl' 1 or 2</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="isEq"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isEq</b>(o, klg)
+					
+					</div>
+					<div class="description">
+						Add an object in the equivlence.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>o</b>
+									
+								</dt>
+								<dd>object to add</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.html#.failure">nul.failure</a>}</span>  <b></b>
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>nothing</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="isIn"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>[]}</span>
+					<b>isIn</b>(o, klg)
+					
+					</div>
+					<div class="description">
+						Add an object as a belongs.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>o</b>
+									
+								</dt>
+								<dd>object that belongs the class</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.html#.failure">nul.failure</a>}</span>  <b></b>
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>[]}</span> Array of objects to equal to this eqCls afterward</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="orderEqs"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>orderEqs</b>(v, klg)
+					
+					</div>
+					<div class="description">
+						Order the values to equal.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>v</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>A big number if not interesting, a small one if a good "replacement value"
+Note: v is undefined</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="placed"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>placed</b>(prnt)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>prnt</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="pruned"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>pruned</b>(klg, lcls)
+					
+					</div>
+					<div class="description">
+						Remove items that are not used in this knowledge
+Not used = depending on nothing else than the useless locals of thisknowledge
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
+									
+								</dt>
+								<dd>Pruned knowledge this class belongs to</dd>
+							
+								<dt>
+									<span class="light fixedFont">{association(ndx: true)}</span> <b>lcls</b>
+									
+								</dt>
+								<dd>List of used locals</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="taken"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span>
+					<b>taken</b>(kpr)
+					
+					</div>
+					<div class="description">
+						Build and get a representative value for this class.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>kpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> </dd>
 							
 							</dl>
 						

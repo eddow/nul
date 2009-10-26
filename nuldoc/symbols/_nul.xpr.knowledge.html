@@ -219,9 +219,15 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.html">nul.obj</a></li>
 	
+	<li><a href="../symbols/_nul.obj.bool.html">nul.obj.bool</a></li>
+	
 	<li><a href="../symbols/_nul.obj.data.html">nul.obj.data</a></li>
 	
 	<li><a href="../symbols/_nul.obj.defined.html">nul.obj.defined</a></li>
+	
+	<li><a href="../symbols/_nul.obj.empty.html">nul.obj.empty</a></li>
+	
+	<li><a href="../symbols/_nul.obj.hcSet.html">nul.obj.hcSet</a></li>
 	
 	<li><a href="../symbols/_nul.obj.ior3.html">nul.obj.ior3</a></li>
 	
@@ -237,7 +243,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.local.html">nul.obj.local</a></li>
 	
+	<li><a href="../symbols/_nul.obj.number.html">nul.obj.number</a></li>
+	
 	<li><a href="../symbols/_nul.obj.pair.html">nul.obj.pair</a></li>
+	
+	<li><a href="../symbols/_nul.obj.range.html">nul.obj.range</a></li>
+	
+	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
 	
 	<li><a href="../symbols/_nul.obj.undefined.html">nul.obj.undefined</a></li>
 	
@@ -249,7 +261,19 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.xpr.html">nul.xpr</a></li>
 	
+	<li><a href="../symbols/_nul.xpr.failure.html">nul.xpr.failure</a></li>
+	
 	<li><a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.always.html">nul.xpr.knowledge.always</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.never.html">nul.xpr.knowledge.never</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.represent.html">nul.xpr.knowledge.represent</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.stepUp.html">nul.xpr.knowledge.stepUp</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a></li>
 	
@@ -299,7 +323,7 @@ ul.inheritsList
 							<div class="fixedFont">
 								<b><a href="../symbols/_nul.xpr.knowledge.html#constructor">nul.xpr.knowledge</a></b>(klg)
 							</div>
-							<div class="description"></div>
+							<div class="description">Represent a bunch of information about locals and absolute values.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -310,10 +334,43 @@ ul.inheritsList
 			
 				
 				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class nul.xpr.knowledge.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;constant&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/_nul.xpr.knowledge.html#components">components</a></b>
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;constant&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/_nul.xpr.knowledge.html#expression">expression</a></b>
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
 				
 				
 				<dl class="inheritsList">
-				<dt>Fields borrowed from class <a href="../symbols/_nul.expression.html">nul.expression</a>: </dt><dd><a href="../symbols/_nul.expression.html#components">components</a></dd>
+				
 				</dl>
 				
 			
@@ -417,6 +474,15 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#concatLocals">concatLocals</a></b>(klg)
+								</div>
+								<div class="description">This knowledge now manage this new knowledge locals too</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#define">define</a></b>(dTbl)
 								</div>
 								<div class="description">Simplifies oneself knowing the attribute table</div>
@@ -426,9 +492,27 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#emptyLocals">emptyLocals</a></b>()
+								</div>
+								<div class="description">An empty set of managed locals</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#freeEC">freeEC</a></b>(ec)
 								</div>
 								<div class="description">Free ec from this.eqCls if it's not free</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#freeLastLocal">freeLastLocal</a></b>()
+								</div>
+								<div class="description">Unallocate the last local</div>
 							</td>
 						</tr>
 					
@@ -483,6 +567,24 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#modifiable">modifiable</a></b>()
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#nbrLocals">nbrLocals</a></b>()
+								</div>
+								<div class="description">Get the number of locals this knowledge manage</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#newLocal">newLocal</a></b>(name, ndx)
+								</div>
+								<div class="description">Register a new local</div>
 							</td>
 						</tr>
 					
@@ -550,21 +652,21 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.xpr.knowledge.<b><a href="../symbols/_nul.xpr.knowledge.html#.unification">unification</a></b>(objs)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#unification">unification</a></b>(and)
 								</div>
 								<div class="description">Know that all the arguments are unifiable
 Modifies the knowledge</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.xpr.knowledge.<b><a href="../symbols/_nul.xpr.knowledge.html#.unification">unification</a></b>(objs)
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -584,6 +686,24 @@ Modifies the knowledge</div>
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#usage">usage</a></b>(value)
 								</div>
 								<div class="description">Gets the dependance of an hypothetic possible while this knowledge is not summarised.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#useIor3Choices">useIor3Choices</a></b>(keep)
+								</div>
+								<div class="description">Use the ior3 choices to textualise ior3 references.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#useLocalNames">useLocalNames</a></b>(keep)
+								</div>
+								<div class="description">Remove the names of the unused locals.</div>
 							</td>
 						</tr>
 					
@@ -621,7 +741,7 @@ Modifies the knowledge</div>
 				</div>
 				
 				<div class="description">
-					
+					Represent a bunch of information about locals and absolute values.
 					
 				</div>
 				
@@ -633,10 +753,10 @@ Modifies the knowledge</div>
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								 <b>klg</b>
+								<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span>  <b>klg</b>
 								
 							</dt>
-								<dd></dd>
+								<dd>[optional] Knowledge to clone</dd>
 						
 						</dl>
 					
@@ -651,6 +771,55 @@ Modifies the knowledge</div>
 			
 
 <!-- ============================== field details ========================== -->		
+			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="components"> </a>
+					<div class="fixedFont">&lt;constant&gt; 
+					
+					
+					<b>components</b>
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="expression"> </a>
+					<div class="fixedFont">&lt;constant&gt; 
+					
+					
+					<b>expression</b>
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
 			
 
 <!-- ============================== method details ========================= -->		
@@ -715,7 +884,7 @@ Modifies the knowledge</div>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{array(nul.xpr.knowledge.eqClass)}</span> <b>eqCls</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>[]}</span> <b>eqCls</b>
 									
 								</dt>
 								<dd></dd>
@@ -729,9 +898,9 @@ Modifies the knowledge</div>
 							<dt class="heading">Throws:</dt>
 							
 								<dt>
-									 <b></b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.html#.failure">nul.failure</a>}</span>  <b></b>
 								</dt>
-								<dd>nul.failure</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -767,7 +936,7 @@ Modifies the knowledge</div>
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>anm</b>
+									<span class="light fixedFont">{String}</span> <b>anm</b>
 									
 								</dt>
 								<dd></dd>
@@ -826,7 +995,7 @@ Modifies the knowledge</div>
 								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{string}</span> <b>anm</b>
+									<span class="light fixedFont">{String}</span> <b>anm</b>
 									
 								</dt>
 								<dd></dd>
@@ -906,9 +1075,9 @@ Modifies the knowledge
 							<dt class="heading">Throws:</dt>
 							
 								<dt>
-									 <b></b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.html#.failure">nul.failure</a>}</span>  <b></b>
 								</dt>
-								<dd>nul.failure</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -1054,10 +1223,46 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 
 					<hr />
 				
+					<a name="concatLocals"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>concatLocals</b>(klg)
+					
+					</div>
+					<div class="description">
+						This knowledge now manage this new knowledge locals too
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>klg</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="define"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{array(string)}</span>
+					<span class="light">{String[]}</span>
 					<b>define</b>(dTbl)
 					
 					</div>
@@ -1074,7 +1279,7 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{{xpr: definition}}</span> <b>dTbl</b>
+									<span class="light fixedFont">{access}</span> <b>dTbl</b>
 									
 								</dt>
 								<dd></dd>
@@ -1088,9 +1293,34 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{array(string)}</span> The list of used attributions : xpr indexes</dd>
+								<dd><span class="light fixedFont">{String[]}</span> The list of used attributions : xpr indexes</dd>
 							
 							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="emptyLocals"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>emptyLocals</b>()
+					
+					</div>
+					<div class="description">
+						An empty set of managed locals
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
 						
 						
 						
@@ -1100,7 +1330,7 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 					<a name="freeEC"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{nul.xpr.knowledge.eqClass}</span>
+					<span class="light">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span>
 					<b>freeEC</b>(ec)
 					
 					</div>
@@ -1117,7 +1347,7 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{nul.xpr.knowledge.eqClass}</span> <b>ec</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span> <b>ec</b>
 									
 								</dt>
 								<dd></dd>
@@ -1131,9 +1361,34 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{nul.xpr.knowledge.eqClass}</span> ec</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span> ec</dd>
 							
 							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="freeLastLocal"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>freeLastLocal</b>()
+					
+					</div>
+					<div class="description">
+						Unallocate the last local
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
 						
 						
 						
@@ -1203,7 +1458,7 @@ Cone the data from a knowledge (or a save object) to another knowledge (or a sav
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{<a href="../symbols/_nul.obj.html">nul.obj</a>}</span> <b>obj</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>obj</b>
 									
 								</dt>
 								<dd>Object whose information is brought</dd>
@@ -1385,6 +1640,73 @@ to determine a value, for this knowledge, regarding the equivalence classes
 
 					<hr />
 				
+					<a name="nbrLocals"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>nbrLocals</b>()
+					
+					</div>
+					<div class="description">
+						Get the number of locals this knowledge manage
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="newLocal"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>newLocal</b>(name, ndx)
+					
+					</div>
+					<div class="description">
+						Register a new local
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>name</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>ndx</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="oppose"> </a>
 					<div class="fixedFont">
 					
@@ -1405,7 +1727,7 @@ to determine a value, for this knowledge, regarding the equivalence classes
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>klg</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
 									
 								</dt>
 								<dd></dd>
@@ -1414,6 +1736,16 @@ to determine a value, for this knowledge, regarding the equivalence classes
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.html#.failure">nul.failure</a>}</span>  <b></b>
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -1460,7 +1792,7 @@ to determine a value, for this knowledge, regarding the equivalence classes
 					<a name="removeEC"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{nul.xpr.knowledge.eqClass}</span>
+					<span class="light">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span>
 					<b>removeEC</b>(ec)
 					
 					</div>
@@ -1477,7 +1809,7 @@ to determine a value, for this knowledge, regarding the equivalence classes
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{nul.xpr.knowledge.eqClass}</span> <b>ec</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span> <b>ec</b>
 									
 								</dt>
 								<dd></dd>
@@ -1491,7 +1823,7 @@ to determine a value, for this knowledge, regarding the equivalence classes
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{nul.xpr.knowledge.eqClass}</span> ec</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span> ec</dd>
 							
 							</dl>
 						
@@ -1578,7 +1910,7 @@ to determine a value, for this knowledge, regarding the equivalence classes
 					<a name="unaccede"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{nul.xpr.knowledge.eqClass}</span>
+					<span class="light">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span>
 					<b>unaccede</b>(ec)
 					
 					</div>
@@ -1595,7 +1927,7 @@ to determine a value, for this knowledge, regarding the equivalence classes
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{nul.xpr.knowledge.eqClass}</span> <b>ec</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span> <b>ec</b>
 									
 								</dt>
 								<dd></dd>
@@ -1609,45 +1941,9 @@ to determine a value, for this knowledge, regarding the equivalence classes
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{nul.xpr.knowledge.eqClass}</span> ec</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span> ec</dd>
 							
 							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name=".unification"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.xpr.knowledge.</span><b>unification</b>(objs)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>objs</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
 						
 						
 						
@@ -1689,9 +1985,9 @@ Modifies the knowledge
 							<dt class="heading">Throws:</dt>
 							
 								<dt>
-									 <b></b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.html#.failure">nul.failure</a>}</span>  <b></b>
 								</dt>
-								<dd>nul.failure</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -1702,6 +1998,42 @@ Modifies the knowledge
 								<dd><span class="light fixedFont">{nul.xpr.knowledge.eqCls}</span> unsummarised (if in a higher-stack level unification) or summarised</dd>
 							
 							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".unification"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.xpr.knowledge.</span><b>unification</b>(objs)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>objs</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
 						
 						
 						
@@ -1749,9 +2081,9 @@ Modifies the knowledge
 							<dt class="heading">Throws:</dt>
 							
 								<dt>
-									 <b></b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.html#.failure">nul.failure</a>}</span>  <b></b>
 								</dt>
-								<dd>nul.failure</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -1804,10 +2136,83 @@ Modifies the knowledge
 
 					<hr />
 				
-					<a name="wrap"> </a>
+					<a name="useIor3Choices"> </a>
 					<div class="fixedFont">
 					
 					
+					<b>useIor3Choices</b>(keep)
+					
+					</div>
+					<div class="description">
+						Use the ior3 choices to textualise ior3 references.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>keep</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="useLocalNames"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>useLocalNames</b>(keep)
+					
+					</div>
+					<div class="description">
+						Remove the names of the unused locals.
+Use the local names to textualise locals references.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>keep</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="wrap"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a>}</span>
 					<b>wrap</b>(value)
 					
 					</div>
@@ -1834,11 +2239,21 @@ Modifies the knowledge
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.html#.failure">nul.failure</a>}</span>  <b></b>
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
 						
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>nul.xpr.possible</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a>}</span> </dd>
 							
 							</dl>
 						
@@ -1859,7 +2274,7 @@ Modifies the knowledge
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sun Oct 25 2009 05:53:41 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Mon Oct 26 2009 23:16:09 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

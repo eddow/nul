@@ -219,9 +219,15 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.html">nul.obj</a></li>
 	
+	<li><a href="../symbols/_nul.obj.bool.html">nul.obj.bool</a></li>
+	
 	<li><a href="../symbols/_nul.obj.data.html">nul.obj.data</a></li>
 	
 	<li><a href="../symbols/_nul.obj.defined.html">nul.obj.defined</a></li>
+	
+	<li><a href="../symbols/_nul.obj.empty.html">nul.obj.empty</a></li>
+	
+	<li><a href="../symbols/_nul.obj.hcSet.html">nul.obj.hcSet</a></li>
 	
 	<li><a href="../symbols/_nul.obj.ior3.html">nul.obj.ior3</a></li>
 	
@@ -237,7 +243,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.local.html">nul.obj.local</a></li>
 	
+	<li><a href="../symbols/_nul.obj.number.html">nul.obj.number</a></li>
+	
 	<li><a href="../symbols/_nul.obj.pair.html">nul.obj.pair</a></li>
+	
+	<li><a href="../symbols/_nul.obj.range.html">nul.obj.range</a></li>
+	
+	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
 	
 	<li><a href="../symbols/_nul.obj.undefined.html">nul.obj.undefined</a></li>
 	
@@ -249,7 +261,19 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.xpr.html">nul.xpr</a></li>
 	
+	<li><a href="../symbols/_nul.xpr.failure.html">nul.xpr.failure</a></li>
+	
 	<li><a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.always.html">nul.xpr.knowledge.always</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.never.html">nul.xpr.knowledge.never</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.represent.html">nul.xpr.knowledge.represent</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.stepUp.html">nul.xpr.knowledge.stepUp</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a></li>
 	
@@ -392,15 +416,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#concatLocals">concatLocals</a></b>(klg)
-								</div>
-								<div class="description">This knowledge now manage this new knowledge locals too</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#cstmNdx">cstmNdx</a></b>(ndx, ass)
 								</div>
 								<div class="description">Gets weither <ndx> is a custom index of <ass>Returns false for all the default properties of the arrays.</div>
@@ -419,27 +434,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#emptyLocals">emptyLocals</a></b>()
-								</div>
-								<div class="description">An empty set of managed locals</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#escapeHTML">escapeHTML</a></b>(str)
 								</div>
 								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#freeLastLocal">freeLastLocal</a></b>()
-								</div>
-								<div class="description">Unallocate the last local</div>
 							</td>
 						</tr>
 					
@@ -509,24 +506,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#nbrLocals">nbrLocals</a></b>()
-								</div>
-								<div class="description">Get the number of locals this knowledge manage</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#newLocal">newLocal</a></b>(name, ndx)
-								</div>
-								<div class="description">Register a new local</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#nw">nw</a></b>(v)
 								</div>
 								<div class="description"></div>
@@ -566,24 +545,6 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#trys">trys</a></b>(itm, fct)
 								</div>
 								<div class="description">Returns the first of <itm> for which the function <fct> returned a value evaluated to true</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#useIor3Choices">useIor3Choices</a></b>(keep)
-								</div>
-								<div class="description">Use the ior3 choices to textualise ior3 references.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#useLocalNames">useLocalNames</a></b>(keep)
-								</div>
-								<div class="description">Remove the names of the unused locals.</div>
 							</td>
 						</tr>
 					
@@ -950,45 +911,6 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="concatLocals"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>concatLocals</b>(klg)
-					
-					</div>
-					<div class="description">
-						This knowledge now manage this new knowledge locals too
-						
-							<br />
-							<i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.knowledge.js&gt;.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>klg</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="cstmNdx"> </a>
 					<div class="fixedFont">
 					
@@ -1062,34 +984,6 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="emptyLocals"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>emptyLocals</b>()
-					
-					</div>
-					<div class="description">
-						An empty set of managed locals
-						
-							<br />
-							<i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.knowledge.js&gt;.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="escapeHTML"> </a>
 					<div class="fixedFont">
 					
@@ -1119,34 +1013,6 @@ ul.inheritsList
 								<dd></dd>
 							
 							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="freeLastLocal"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>freeLastLocal</b>()
-					
-					</div>
-					<div class="description">
-						Unallocate the last local
-						
-							<br />
-							<i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.knowledge.js&gt;.
-						
-						
-					</div>
-					
-					
-					
 						
 						
 						
@@ -1251,7 +1117,7 @@ ul.inheritsList
 					<a name="keys"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{array(string)}</span>
+					<span class="light">{String[]}</span>
 					<b>keys</b>(ass)
 					
 					</div>
@@ -1285,7 +1151,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{array(string)}</span> </dd>
+								<dd><span class="light fixedFont">{String[]}</span> </dd>
 							
 							</dl>
 						
@@ -1486,79 +1352,6 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="nbrLocals"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>nbrLocals</b>()
-					
-					</div>
-					<div class="description">
-						Get the number of locals this knowledge manage
-						
-							<br />
-							<i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.knowledge.js&gt;.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="newLocal"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>newLocal</b>(name, ndx)
-					
-					</div>
-					<div class="description">
-						Register a new local
-						
-							<br />
-							<i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.knowledge.js&gt;.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>name</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>ndx</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="nw"> </a>
 					<div class="fixedFont">
 					
@@ -1703,7 +1496,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{string or number}</span> <b>v</b>
+									<span class="light fixedFont">{String or number}</span> <b>v</b>
 									
 								</dt>
 								<dd></dd>
@@ -1749,85 +1542,6 @@ ul.inheritsList
 							
 								<dt>
 									<b>fct</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="useIor3Choices"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>useIor3Choices</b>(keep)
-					
-					</div>
-					<div class="description">
-						Use the ior3 choices to textualise ior3 references.
-						
-							<br />
-							<i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.knowledge.js&gt;.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>keep</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="useLocalNames"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>useLocalNames</b>(keep)
-					
-					</div>
-					<div class="description">
-						Remove the names of the unused locals.
-Use the local names to textualise locals references.
-						
-							<br />
-							<i>Defined in: </i> &lt;null/lng\xpr\klg\null.xpr.knowledge.js&gt;.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>keep</b>
 									
 								</dt>
 								<dd></dd>
@@ -1901,7 +1615,7 @@ Use the local names to textualise locals references.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sun Oct 25 2009 05:53:40 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Mon Oct 26 2009 23:16:09 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

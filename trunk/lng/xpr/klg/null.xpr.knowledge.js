@@ -6,12 +6,12 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
 nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# */{
 	/**
+	 * Represent a bunch of information about locals and absolute values.
 	 * @extends nul.expression
 	 * @constructs
+	 * @param {nul.xpr.knowledge} klg [optional] Knowledge to clone
 	 */
 	initialize: function(klg) {
 		if(!klg || "string"== typeof klg) { 
@@ -108,7 +108,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	
  	/**
  	 * Begin modification of an equivalence class
- 	 * @param {nul.obj} obj Object whose information is brought
+ 	 * @param {nul.xpr.object} obj Object whose information is brought
  	 * @return equivalence class to re-add to the knowledge
  	 */
 	inform: function(obj) {
@@ -121,8 +121,8 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	
  	/**
  	 * Add the given equivalence classes in this knowledge
- 	 * @param {array(nul.xpr.knowledge.eqClass)} eqCls
- 	 * @throws nul.failure
+ 	 * @param {nul.xpr.knowledge.eqClass[]} eqCls
+ 	 * @throws {nul.failure}
  	 */
  	addEqCls: function(eqCls) {
  		nul.xpr.use(eqCls, nul.xpr.knowledge.eqCls);
@@ -271,7 +271,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * Modifies the knowledge
  	 * @param {nul.xpr.object} and {nul.xpr.knowledge.eqCls}
  	 * @return {nul.xpr.knowledge.eqCls} unsummarised (if in a higher-stack level unification) or summarised
- 	 * @throws nul.failure
+ 	 * @throws {nul.failure}
  	 */
  	unification: function() { 	
  		var toUnify = beArrg(arguments);
@@ -394,7 +394,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		
  		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
 
- 		var brwsr = new nul.xpr.knowledge.stepUp(klg, this.name, this.ior3.length, this.nbrLocals());
+ 		var brwsr = new nul.xpr.knowledge.stepUp(klg, this);
 		
  		this.concatLocals(klg);
 
@@ -413,7 +413,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * Modifies the knowledge
  	 * @param {nul.xpr.object} and {nul.xpr.knowledge.eqCls}
  	 * @return nul.xpr.object The replacement value for all the given values
- 	 * @throws nul.failure
+ 	 * @throws {nul.failure}
  	 */
  	unify: function(a, b) {
  		return this.unification(beArrg(arguments)).taken(this);
@@ -423,7 +423,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * Know that 'e' is in the sets 'ss'.
  	 * Modifies the knowledge
  	 * @return The replacement value for 'e' or nothing if inclusion failed.
- 	 * @throws nul.failure
+ 	 * @throws {nul.failure}
  	 */
  	belong: function(e, ss) {
  		ss = beArrg(arguments, 1);
@@ -438,7 +438,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	/**
  	 * States that 'e.anm = vl'
  	 * @param {nul.xpr.object} e
- 	 * @param {string} anm
+ 	 * @param {String} anm
  	 * @param {nul.xpr.object} vl
  	 * @return {nul.xpr.object}
  	 * @throws {nul.failure}
@@ -456,7 +456,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	/**
  	 * Retrieve the attribute 'anm' stated for 'e'
  	 * @param {nul.xpr.object} e
- 	 * @param {string} anm
+ 	 * @param {String} anm
  	 * @return {nul.xpr.object} Or null if not specified
  	 * @throws {nul.failure}
  	 */
@@ -470,26 +470,26 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	
  	/**
  	 * Simplifies oneself knowing the attribute table
- 	 * @param {{xpr: definition}} dTbl
- 	 * @return {array(string)} The list of used attributions : xpr indexes
+ 	 * @param {access} dTbl
+ 	 * @return {String[]} The list of used attributions : xpr indexes
  	 */
- 	define: function(dTbl) {
+ 	define: function(acsTbl) {
 		this.modify();
 		var rv = [];
-		dTbl = clone1(dTbl);
+		acsTbl = clone1(acsTbl);
 		var used;
 		do {
 			used = false;
 			for(var v in this.access) {
-				if(dTbl[v]) {
+				if(acsTbl[v]) {
 					var nec = this.access[v].modifiable();
-					if(nec.define(dTbl[v], this)) {
+					if(nec.define(acsTbl[v], this)) {
 						this.removeEC(this.access[v]);
 						this.accede(nec.built());
 						rv.push(v);
 						used = true;
 					}
-					delete dTbl[v];
+					delete acsTbl[v];
 					break;
 				}
 			}
@@ -499,6 +499,8 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	
 	/**
 	 * Brings a knowledge in opposition
+	 * @param {nul.xpr.knowledge} klg
+	 * @throws {nul.failure}
 	 */
 	oppose: function(klg) {
 		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
@@ -515,33 +517,32 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	/**
  	 * Get a pruned possible
  	 * @param {nul.xpr.object} value
-	 * @return nul.xpr.possible
+	 * @return {nul.xpr.possible}
+	 * @throws {nul.failure}
  	 */
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
-		var representer = new nul.xpr.knowledge.represent(this.eqCls);
+		var representer = new nul.xpr.knowledge.represent(this.access);
 		nul.debug.log('Represent')('', 'Knowledge', this);
-		value = representer.browse(value);
 		for(var i=0; i<this.eqCls.length;) {
 			var ec = this.eqCls[i];
 			var nec = representer.subBrowse(ec);
 			if(nul.browser.bijectif.unchanged == nec) ++i;
 			else {
+				value = representer.browse(value);
 				this.removeEC(ec)
 				nec = this.unify(nec);
 				
 				//this.unification has effect on other equivalence classes that have to change in the representer
-				representer = new nul.xpr.knowledge.represent(this.eqCls);
-				//representer.invalidateCache();
+				representer.invalidateCache();
 				
 				nul.debug.log('Represent')('', 'Knowledge', this);
-				value = representer.browse(value);
 				i = 0;
 			}
 		}
 
 		//TODO O: represent sur ior3s : useful or we let it post-resolution ?
-//		value = representer.browse(value);
+		value = representer.browse(value);
 		
 		var opposition = this.veto;
 		this.veto = [];
@@ -579,7 +580,9 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	
 //////////////// nul.expression implementation
 	
+	/** @constant */
 	expression: 'klg',
+	/** @constant */
 	components: ['eqCls','ior3','veto'],
 	modifiable: function($super) {
 		var rv = $super();
@@ -612,32 +615,15 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	}
 });
 
-nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, {
-	initialize: function($super, srcKlg, dstKlgRef, deltaIor3ndx, deltaLclNdx) {
-		this.srcKlg = srcKlg;
-		this.dstKlgRef = dstKlgRef;
-		this.deltaIor3ndx = deltaIor3ndx || 0;
-		this.deltaLclNdx = deltaLclNdx || 0;
-		$super('StepUp');
-	},
-	transform: function(xpr) {
-		if('local'== xpr.expression && this.srcKlg.name == xpr.klgRef )
-			return new nul.obj.local(this.dstKlgRef, xpr.ndx+this.deltaLclNdx, xpr.dbgName);
-		if('ior3'== xpr.expression && this.srcKlg.name  == xpr.klgRef )
-			return new nul.obj.ior3(this.dstKlgRef, xpr.ndx+this.deltaIor3ndx, xpr.values);
-		return nul.browser.bijectif.unchanged;
-	}
-});
-
 /**
  * Private use !
  * Cone the data from a knowledge (or a save object) to another knowledge (or a save object)
  */
 nul.xpr.knowledge.cloneData = function(src, dst) {
 	if(!dst) dst = {};
-	if(src.access) {
+	if(dst.accede) {
 		dst.access = {};
-		for(var i in this.eqCls) if(cstmNdx(i)) rv.accede(this.eqCls[i]);
+		for(var i in this.eqCls) if(cstmNdx(i)) dst.accede(this.eqCls[i]);
 	} else dst.eqCls = clone1(src.eqCls);
 	dst.ior3 = clone1(src.ior3);
 	dst.locals = clone1(src.locals);
@@ -645,7 +631,7 @@ nul.xpr.knowledge.cloneData = function(src, dst) {
 	return dst;	
 };
 
-if(nul.debug) merge(nul.xpr.knowledge.prototype, {
+if(nul.debug) merge(nul.xpr.knowledge.prototype, /** @lends nul.xpr.knowledge# */{
 
 	/**
 	 * Use the ior3 choices to textualise ior3 references.
@@ -709,7 +695,13 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, {
  	}
  });
 
-nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.create(nul.expression, {
+nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.create(nul.expression, /** @lends nul.xpr.knowledge.never# */{
+	/**
+	 * Special knowledge meaning something that is never verified
+	 * @extends nul.xpr.knowledge
+	 * @constructs
+	 * @class Singleton
+	 */
 	initialize: function() { this.alreadyBuilt(); },
 	expression: 'klg',
 	name: 'Never',
@@ -720,7 +712,13 @@ nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.creat
 	maxXst: function() { return 0; }
 }))();
 
-nul.xpr.knowledge.always = new (Class.create(nul.expression, {
+nul.xpr.knowledge.always = new (Class.create(nul.expression, /** @lends nul.xpr.knowledge.always# */{
+	/**
+	 * Special knowledge meaning something that is always verified
+	 * @extends nul.xpr.knowledge
+	 * @constructs
+	 * @class Singleton
+	 */
 	initialize: function() { this.alreadyBuilt(); },
 	expression: 'klg',
 	name: 'Always',
@@ -740,72 +738,3 @@ nul.xpr.knowledge.unification = function(objs) {
 	klg.unify(objs);
 	return klg.built();
 };
-
-nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, {
-	initialize: function($super, ec) {	//TODO 2: use knowledge.access instead of making tables
-		this.tbl = {};
-		this.defTbl = {};
-		for(var c in ec) if(cstmNdx(c)) {
-			this.invalidateCache();
-			nul.xpr.use(ec[c], nul.xpr.knowledge.eqClass);
-			for(var e=1; e<ec[c].equivls.length; ++e)
-				this.tbl[ec[c].equivls[e]] = ec[c].equivls[0];
-			var def = ec[c].definition();
-			if(!isEmpty(def))
-				for(var e=0; e<ec[c].equivls.length; ++e)
-					this.defTbl[ec[c].equivls[e]] = def;
-		}
-		$super('Representation');
-		this.prepStack = [];
-	},
-	subBrowse: function(xpr) {
-		nul.xpr.use(xpr, nul.xpr.knowledge.eqClass);
-        this.protect = [];
-        for(var i=0; i<xpr.equivls.length; ++i) this.protect[xpr.equivls[i]] = xpr.equivls[i];
-        try { return this.recursion(xpr); }
-        finally {
-            for(var i in this.protect) this.uncache(this.protect[i]);
-            delete this.protect;
-        }
-    },
-	cachable: function(xpr) {
-		return !this.tbl[xpr];
-	},
-	changeable: function(xpr) {
-		return this.tbl[xpr] && (!this.protect || !this.protect[xpr] || 2<this.prepStack.length);
-	},
-	enter: function($super, xpr) {
-		this.prepStack.unshift(xpr);
-		if(this.changeable(xpr)) return false;
-
-		return $super(xpr);
-	},
-	build: function($super, xpr) {
-		if(xpr.setSelfRef) {
-			xpr.selfRef = xpr.setSelfRef;
-			delete xpr.setSelfRef;
-			delete this.prepStack[0].setSelfRef;
-		}
-		return $super(xpr);
-	},
-	transform: function(xpr) {
-		var p = this.prepStack.shift();
-		var evl = new nul.browser.bijectif.evolution(xpr);
-		if(this.changeable(evl.value)) do evl.receive(this.tbl[evl.value]); while(this.tbl[evl.value]);
-		//If I'm replacing a value by an expression that contains this value, just don't
-		var n = this.prepStack.indexOf(evl.value);
-		if(-1< n) {
-			evl.receive(nul.obj.local.self(evl.value.selfRef || evl.value.setSelfRef));
-			this.prepStack[n].setSelfRef = evl.value.ndx;
-		}
-
-		if('klg'== evl.value.expression) {
-			var mdk = evl.value.modifiable();
-			if(mdk.define(this.defTbl).length)
-				evl.receive(mdk.built());
-		}
-		
-		if(evl.hasChanged) nul.debug.log('Represent')('', 'Representation', evl.changed, xpr, p);
-		return evl.changed;
-	}
-});

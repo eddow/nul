@@ -6,17 +6,20 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
 nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	/**
+	 * A value associated with a knowledge : A value that can be unified to several different defined object, along some conditions.
 	 * @extends nul.expression
 	 * @constructs
+	 * @param {nul.xpr.object} value
+	 * @param {nul.xpr.knowledge} knowledge
 	 */
 	initialize: function(value, knowledge) {
 		if(!knowledge) knowledge = nul.xpr.knowledge.always;
 		nul.obj.use(value); nul.xpr.use(knowledge, nul.xpr.knowledge);
+		/** @type nul.xpr.object */
 		this.value = value;
+		/** @type nul.xpr.knowledge */
 		this.knowledge = knowledge;
 		this.alreadyBuilt();
 	},
@@ -36,6 +39,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	 * Returns a possible, this unified to o.
 	 * @param {nul.xpr.object} o
 	 * @return {nul.xpr.possible}
+	 * @throws {nul.failure}
 	 */
 	extract: function(o) {
 		//var klg = this.knowledge.modifiable();
@@ -51,16 +55,16 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	}),
 	
 	/**
-	 * Determine wether the resolution engine can change anything
-	 * @return {bool}
+	 * Determine wether the resolution engine can distribute anything
+	 * @return {Boolean}
 	 */
 	distribuable: function() {
 		return !!this.knowledge.ior3.length;
 	},
 	
 	/**
-	 * Use the resolution engine : make severa possibles without ior3
-	 * @return {array(nul.xpr.possible)}
+	 * Use the resolution engine : make several possibles without ior3
+	 * @return {nul.xpr.possible[]}
 	 */
 	distribute: function() {
 		if(this.knowledge.ior3.length) return nul.solve(this);
@@ -77,14 +81,12 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 
 //////////////// nul.expression implementation
 	
+	/** @constant */
 	expression: 'possible',
+	/** @constant */
 	components: ['value','knowledge'],
 	chew: function() {
 		return this.knowledge.modifiable().wrap(this.value);
-	},	
-	fix: function($super) {
-		assert(this.knowledge, 'Possible now always has a knowledge');
-		return $super();
 	},
 
 ////////////////	Internals
@@ -98,9 +100,17 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	}
 });
 
-nul.xpr.failure = new (Class.create(nul.expression, {
+nul.xpr.failure = new (Class.create(nul.expression, /** @lends nul.xpr.failure# */{
+	/**
+	 * Specific possible that never give any value.
+	 * @extends nul.xpr.possible
+	 * @constructs
+	 * @class Singleton
+	 */
 	initialize: function() { this.alreadyBuilt(); },
+	/** @constant */
 	expression: 'possible',
+	/** @constant */
 	components: [],
 	distribuable: function() { return true; },
 	distribute: function() { return []; }
@@ -108,7 +118,7 @@ nul.xpr.failure = new (Class.create(nul.expression, {
 
 /**
  * Have a possible for sure. Made with nul.xpr.knowledge.always if an object is given
- * @param {nul.xpr.possible or nul.xpr.object} o
+ * @param {nul.xpr.possible | nul.xpr.object} o
  */
 nul.xpr.possible.cast = function(o) {
 	if('possible'== o.expression) return o;
