@@ -280,6 +280,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 			if('&phi;'== this.belongs[0].expression) nul.fail("&phi; is empty");
 			return;
 		}
+		//TODO 4: this goes in knowledge prune (cf comment in prune) : pruned called on wrap and generla built (for opposition, ior3, ...)
 		if(!this.belongs.length && (!this.equivls.length || 
 			(1== this.equivls.length && isEmpty(this.attribs,''))))
 				return;
@@ -287,71 +288,3 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, {
 	}
 });
 
-nul.xpr.knowledge.eqClass.represent = Class.create(nul.browser.bijectif, {
-	initialize: function($super, ec) {
-		this.tbl = {};
-		this.defTbl = {};
-		for(var c in ec) if(cstmNdx(c)) {
-			this.invalidateCache();
-			nul.xpr.use(ec[c], nul.xpr.knowledge.eqClass);
-			for(var e=1; e<ec[c].equivls.length; ++e)
-				this.tbl[ec[c].equivls[e]] = ec[c].equivls[0];
-			var def = ec[c].definition();
-			if(!isEmpty(def))
-				for(var e=0; e<ec[c].equivls.length; ++e)
-					this.defTbl[ec[c].equivls[e]] = def;
-		}
-		$super('Representation');
-		this.prepStack = [];
-	},
-	subBrowse: function(xpr) {
-		nul.xpr.use(xpr, nul.xpr.knowledge.eqClass);
-        this.protect = [];
-        for(var i=0; i<xpr.equivls.length; ++i) this.protect[xpr.equivls[i]] = xpr.equivls[i];
-        try { return this.recursion(xpr); }
-        finally {
-            for(var i in this.protect) this.uncache(this.protect[i]);
-            delete this.protect;
-        }
-    },
-	cachable: function(xpr) {
-		return !this.tbl[xpr];
-	},
-	changeable: function(xpr) {
-		return this.tbl[xpr] && (!this.protect || !this.protect[xpr] || 2<this.prepStack.length);
-	},
-	enter: function($super, xpr) {
-		this.prepStack.unshift(xpr);
-		if(this.changeable(xpr)) return false;
-
-		return $super(xpr);
-	},
-	build: function($super, xpr) {
-		if(xpr.setSelfRef) {
-			xpr.selfRef = xpr.setSelfRef;
-			delete xpr.setSelfRef;
-			delete this.prepStack[0].setSelfRef;
-		}
-		return $super(xpr);
-	},
-	transform: function(xpr) {
-		var p = this.prepStack.shift();
-		var evl = new nul.browser.bijectif.evolution(xpr);
-		if(this.changeable(evl.value)) do evl.receive(this.tbl[evl.value]); while(this.tbl[evl.value]);
-		//If I'm replacing a value by an expression that contains this value, just don't
-		var n = this.prepStack.indexOf(evl.value);
-		if(-1< n) {
-			evl.receive(nul.obj.local.self(evl.value.selfRef || evl.value.setSelfRef));
-			this.prepStack[n].setSelfRef = evl.value.ndx;
-		}
-
-		if('klg'== evl.value.expression) {
-			var mdk = evl.value.modifiable();
-			if(mdk.define(this.defTbl).length)
-				evl.receive(mdk.built());
-		}
-		
-		if(evl.hasChanged) nul.debug.log('Represent')('', 'Representation', evl.changed, xpr, p);
-		return evl.changed;
-	}
-});
