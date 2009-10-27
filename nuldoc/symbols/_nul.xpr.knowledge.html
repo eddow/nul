@@ -321,7 +321,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.xpr.knowledge.html#constructor">nul.xpr.knowledge</a></b>(klg)
+								<b><a href="../symbols/_nul.xpr.knowledge.html#constructor">nul.xpr.knowledge</a></b>(klgName)
 							</div>
 							<div class="description">Represent a bunch of information about locals and absolute values.</div>
 						</td>
@@ -345,6 +345,16 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/_nul.xpr.knowledge.html#access">access</a></b>
+								</div>
+								<div class="description">List of all the object this knowledge knows (their index is the key) about and the equivalence class they belong to</div>
+							</td>
+						</tr>
+					
+						<tr>
 							<td class="attributes">&lt;constant&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
@@ -355,12 +365,62 @@ ul.inheritsList
 						</tr>
 					
 						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/_nul.xpr.knowledge.html#eqCls">eqCls</a></b>
+								</div>
+								<div class="description">List of equivalence classes this knowledge assert</div>
+							</td>
+						</tr>
+					
+						<tr>
 							<td class="attributes">&lt;constant&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
 								<b><a href="../symbols/_nul.xpr.knowledge.html#expression">expression</a></b>
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/_nul.xpr.knowledge.html#ior3">ior3</a></b>
+								</div>
+								<div class="description">List of all the ior3s that still have to be choosen</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/_nul.xpr.knowledge.html#locals">locals</a></b>
+								</div>
+								<div class="description">Describe the used localspace</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/_nul.xpr.knowledge.html#name">name</a></b>
+								</div>
+								<div class="description">Unique name given to the knowledge</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/_nul.xpr.knowledge.html#veto">veto</a></b>
+								</div>
+								<div class="description">List of all the knowledge that oppose to this knowledge satisfaction</div>
 							</td>
 						</tr>
 					
@@ -737,7 +797,7 @@ Modifies the knowledge</div>
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.xpr.knowledge</b>(klg)
+						<b>nul.xpr.knowledge</b>(klgName)
 				</div>
 				
 				<div class="description">
@@ -753,10 +813,10 @@ Modifies the knowledge</div>
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span>  <b>klg</b>
+								<span class="light fixedFont">{String}</span>  <b>klgName</b>
 								
 							</dt>
-								<dd>[optional] Knowledge to clone</dd>
+								<dd>[optional] Knowledge name</dd>
 						
 						</dl>
 					
@@ -775,6 +835,28 @@ Modifies the knowledge</div>
 				<div class="sectionTitle">
 					Field Detail
 				</div>
+				
+					<a name="access"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Access}</span>
+					<b>access</b>
+					
+					</div>
+					<div class="description">
+						List of all the object this knowledge knows (their index is the key) about and the equivalence class they belong to
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
 				
 					<a name="components"> </a>
 					<div class="fixedFont">&lt;constant&gt; 
@@ -798,6 +880,28 @@ Modifies the knowledge</div>
 
 					<hr />
 				
+					<a name="eqCls"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>[]}</span>
+					<b>eqCls</b>
+					
+					</div>
+					<div class="description">
+						List of equivalence classes this knowledge assert
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="expression"> </a>
 					<div class="fixedFont">&lt;constant&gt; 
 					
@@ -807,6 +911,94 @@ Modifies the knowledge</div>
 					</div>
 					<div class="description">
 						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="ior3"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{nul.xpr.knowledge.ior3[]}</span>
+					<b>ior3</b>
+					
+					</div>
+					<div class="description">
+						List of all the ior3s that still have to be choosen
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="locals"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{String[]}</span>
+					<b>locals</b>
+					
+					</div>
+					<div class="description">
+						Describe the used localspace
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="name"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{String}</span>
+					<b>name</b>
+					
+					</div>
+					<div class="description">
+						Unique name given to the knowledge
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="veto"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>[]}</span>
+					<b>veto</b>
+					
+					</div>
+					<div class="description">
+						List of all the knowledge that oppose to this knowledge satisfaction
 						
 						
 					</div>
@@ -1953,7 +2145,7 @@ to determine a value, for this knowledge, regarding the equivalence classes
 					<a name="unification"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{nul.xpr.knowledge.eqCls}</span>
+					<span class="light">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span>
 					<b>unification</b>(and)
 					
 					</div>
@@ -1974,7 +2166,7 @@ Modifies the knowledge
 									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>and</b>
 									
 								</dt>
-								<dd>{nul.xpr.knowledge.eqCls}</dd>
+								<dd>{nul.xpr.knowledge.eqClass}</dd>
 							
 							</dl>
 						
@@ -1995,7 +2187,7 @@ Modifies the knowledge
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{nul.xpr.knowledge.eqCls}</span> unsummarised (if in a higher-stack level unification) or summarised</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a>}</span> unsummarised (if in a higher-stack level unification) or summarised</dd>
 							
 							</dl>
 						
@@ -2064,7 +2256,7 @@ Modifies the knowledge
 									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>and</b>
 									
 								</dt>
-								<dd>{nul.xpr.knowledge.eqCls}</dd>
+								<dd>{nul.xpr.knowledge.eqClass}</dd>
 							
 								<dt>
 									<b>b</b>
@@ -2274,7 +2466,7 @@ Use the local names to textualise locals references.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Mon Oct 26 2009 23:16:09 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Oct 27 2009 13:58:54 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

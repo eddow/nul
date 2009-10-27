@@ -40,9 +40,9 @@ function test(cb, dst, prgrsMsg)
 	if(nul.debug) {
 		if($('shwLogging').checked) {
 			nul.debug.logging = {error: true, fail: true};
-			var els = $A(document.getElementsByName('shwLogging'));
-			for(var e in els) if(cstmNdx(e))
-				nul.debug.logging[els[e].value] = els[e].checked;
+			var opts = $('loggingChk').options;
+			for(var o in opts) if(cstmNdx(o))
+				nul.debug.logging[opts[o].value] = opts[o].selected;
 		} else nul.debug.logging = false;
 	}
 	nul.execution.reset();

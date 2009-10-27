@@ -4,7 +4,7 @@
 ={	{} => {{}}
 []	(T,.. Ts) => { T _,.. tuple[Ts] _ }
 }
-::: trop de spéc. de récursion ... bizarre
+:::if('klg'== xpr.expression) this.enterKlg(xpr);	TODO 1: ca DOIT etre sur chaque knowledge
 
 
 :::cas "s s" set auto-inclusive : s is protected while representing ... so what happen ?

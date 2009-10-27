@@ -321,7 +321,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.xpr.knowledge.stepUp.html#constructor">nul.xpr.knowledge.stepUp</a></b>(srcKlg, dstKlgRef, dstKlg)
+								<b><a href="../symbols/_nul.xpr.knowledge.stepUp.html#constructor">nul.xpr.knowledge.stepUp</a></b>(srcKlgRef, dstKlg, dstKlg)
 							</div>
 							<div class="description"></div>
 						</td>
@@ -350,6 +350,42 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.stepUp.html#build">build</a></b>(xpr)
+								</div>
+								<div class="description">If a self-ref was planned, make it in the newly built expression.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.stepUp.html#enter">enter</a></b>(xpr)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.stepUp.html#enterKlg">enterKlg</a></b>(klg)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.stepUp.html#forceBuild">forceBuild</a></b>(xpr)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.stepUp.html#transform">transform</a></b>(xpr)
 								</div>
 								<div class="description">Changes locals and ior3 to refer the new context</div>
@@ -362,7 +398,7 @@ ul.inheritsList
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a>: </dt><dd><a href="../symbols/_nul.browser.bijectif.html#browse">browse</a>, <a href="../symbols/_nul.browser.bijectif.html#build">build</a>, <a href="../symbols/_nul.browser.bijectif.html#makeRV">makeRV</a>, <a href="../symbols/_nul.browser.bijectif.html#recursion">recursion</a></dd><dt>Methods borrowed from class <a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a>: </dt><dd><a href="../symbols/_nul.browser.cached.html#cachable">cachable</a>, <a href="../symbols/_nul.browser.cached.html#invalidateCache">invalidateCache</a>, <a href="../symbols/_nul.browser.cached.html#uncache">uncache</a></dd><dt>Methods borrowed from class <a href="../symbols/_nul.browser.html">nul.browser</a>: </dt><dd><a href="../symbols/_nul.browser.html#enter">enter</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a>: </dt><dd><a href="../symbols/_nul.browser.bijectif.html#browse">browse</a>, <a href="../symbols/_nul.browser.bijectif.html#leave">leave</a>, <a href="../symbols/_nul.browser.bijectif.html#makeRV">makeRV</a>, <a href="../symbols/_nul.browser.bijectif.html#recursion">recursion</a></dd><dt>Methods borrowed from class <a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a>: </dt><dd><a href="../symbols/_nul.browser.cached.html#cachable">cachable</a>, <a href="../symbols/_nul.browser.cached.html#invalidateCache">invalidateCache</a>, <a href="../symbols/_nul.browser.cached.html#uncache">uncache</a></dd>
 				</dl>
 				
 			
@@ -377,7 +413,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.xpr.knowledge.stepUp</b>(srcKlg, dstKlgRef, dstKlg)
+						<b>nul.xpr.knowledge.stepUp</b>(srcKlgRef, dstKlg, dstKlg)
 				</div>
 				
 				<div class="description">
@@ -393,13 +429,13 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span>  <b>srcKlg</b>
+								<span class="light fixedFont">{String}</span>  <b>srcKlgRef</b>
 								
 							</dt>
-								<dd>The knowledge whose space the expression is taken of</dd>
+								<dd>The knowledge name whose space the expression is taken of</dd>
 						
 							<dt>
-								<span class="light fixedFont">{String}</span>  <b>dstKlgRef</b>
+								<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span>  <b>dstKlg</b>
 								
 							</dt>
 								<dd>The knowledge whose space the expression is taken to</dd>
@@ -430,6 +466,150 @@ ul.inheritsList
 				<div class="sectionTitle">
 					Method Detail
 				</div>
+				
+					<a name="build"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>build</b>(xpr)
+					
+					</div>
+					<div class="description">
+						If a self-ref was planned, make it in the newly built expression.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="enter"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>enter</b>(xpr)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="enterKlg"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>enterKlg</b>(klg)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>klg</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="forceBuild"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>forceBuild</b>(xpr)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
 				
 					<a name="transform"> </a>
 					<div class="fixedFont">
@@ -479,7 +659,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Mon Oct 26 2009 23:16:10 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Oct 27 2009 13:58:55 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

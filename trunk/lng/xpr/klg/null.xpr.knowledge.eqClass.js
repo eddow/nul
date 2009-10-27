@@ -118,7 +118,6 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 	 * Add an object as a belongs.
 	 * @param {nul.xpr.object} o object that belongs the class
 	 * @param {nul.xpr.knowledge} klg
-	 * @return {nul.xpr.object[]} Array of objects to equal to this eqCls afterward
 	 * @throws {nul.failure}
 	 */
 	isIn: function(s, klg) {

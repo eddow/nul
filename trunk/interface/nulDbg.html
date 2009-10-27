@@ -21,17 +21,18 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 			<input id="shwLogging" type="checkbox" onclick="shwLoggingClk();" checked="checked"/>
 			Logging
 		</legend>
-		<div id="loggingChk">
-		<input name="shwLogging" value="Resolution" type="checkbox" />Resolution<br />
-		<input name="shwLogging" value="Unification" type="checkbox" />Unification<br />
-		<input name="shwLogging" value="Equivalence" type="checkbox" />Equivalence<br />
-		<input name="shwLogging" value="Wrapping" type="checkbox" />Wrapping<br />
-		<input name="shwLogging" value="Knowledge" type="checkbox" />Knowledge<br />
-		<input name="shwLogging" value="Represent" type="checkbox" />Representations<br />
-		<input name="shwLogging" value="Prune" type="checkbox" />Prune<br />
-		<input name="shwLogging" value="Recursion" type="checkbox" />Recursion<br />
-		<input name="shwLogging" value="Extraction" type="checkbox" />Extraction<br />
-		</div>
+		<select id="loggingChk" multiple="multiple">
+		<option>None</option>
+		<option value="Resolution">Resolution</option>
+		<option value="Unification">Unification</option>
+		<option value="Equivalence">Equivalence</option>
+		<option value="Wrapping">Wrapping</option>
+		<option value="Knowledge">Knowledge</option>
+		<option value="Represent">Representations</option>
+		<option value="Prune">Prune</option>
+		<option value="Recursion">Recursion</option>
+		<option value="Extraction">Extraction</option>
+		</select>
 		</fieldset>
 	</div>
 	

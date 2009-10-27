@@ -10,24 +10,54 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.xpr
 	/**
 	 * @extends nul.browser.bijectif
 	 * @constructs
-	 * @param {nul.xpr.knowledge} srcKlg The knowledge whose space the expression is taken of
-	 * @param {String} dstKlgRef The knowledge whose space the expression is taken to
+	 * @param {String} srcKlgRef The knowledge name whose space the expression is taken of
+	 * @param {nul.xpr.knowledge} dstKlg The knowledge whose space the expression is taken to
 	 */
-	initialize: function($super, srcKlg, dstKlg) {
-		this.srcKlg = srcKlg;
-		this.dstKlgRef = dstKlg.name;
-		this.deltaIor3ndx = dstKlg.ior3.length;
-		this.deltaLclNdx = dstKlg.nbrLocals();
+	initialize: function($super, srcKlgRef, dstKlg) {
+		this.table = {};
+		this.table[srcKlgRef] = {
+			klgRef: dstKlg.name,
+			deltaIor3ndx: dstKlg.ior3.length,
+			deltaLclNdx: dstKlg.nbrLocals(),
+			prime: true
+		};
 		$super('StepUp');
 	},
+	enterKlg: function(klg) {
+		if(klg && !klg.special && !this.table[klg.name]) {
+			nul.debug.log('Knowledge')(klg.name,'Enter', klg)
+			this.table[klg.name] = { klgRef: ++nul.xpr.knowledge.nameSpace };
+			for(var v in this.veto) if(cstmNdx(v)) this.enterKlg(this.veto[v]);
+			for(var i in this.ior3) if(cstmNdx(i))
+				for(var c in this.ior3[i].choices) if(cstmNdx(c))
+					this.enterKlg(this.ior3[i].choices[c]);
+		}
+	},
+	enter: function($super, xpr) {
+		if('possible'== xpr.expression) this.enterKlg(xpr.knowledge);
+		if('klg'== xpr.expression) this.enterKlg(xpr);
+		return $super(xpr);
+	},
+ 	forceBuild: function(xpr) { return 'klg'== xpr.expression && !xpr.special; },
+	/**
+	 * If a self-ref was planned, make it in the newly built expression.
+	 */
+	build: function($super, xpr) {
+		if('klg'== xpr.expression && !xpr.special) {
+			if(nul.debug.assert) assert(this.table[xpr.name], 'Only leave entered knowledge');
+			xpr.name = this.table[xpr.name].klgRef;
+		}
+		return $super(xpr);
+	},	
 	/**
 	 * Changes locals and ior3 to refer the new context
 	 */
 	transform: function(xpr) {
-		if('local'== xpr.expression && this.srcKlg.name == xpr.klgRef )
-			return new nul.obj.local(this.dstKlgRef, xpr.ndx+this.deltaLclNdx, xpr.dbgName);
-		if('ior3'== xpr.expression && this.srcKlg.name  == xpr.klgRef )
-			return new nul.obj.ior3(this.dstKlgRef, xpr.ndx+this.deltaIor3ndx, xpr.values);
+		var dst;
+		if(dst = this.table[xpr.klgRef]) switch(xpr.expression) {
+		case 'local': return new nul.obj.local(dst.klgRef, xpr.ndx+(dst.deltaLclNdx||0), xpr.dbgName);
+		case 'ior3': return new nul.obj.ior3(dst.klgRef, xpr.ndx+(dst.deltaIor3ndx||0), xpr.values);
+		}
 		return nul.browser.bijectif.unchanged;
 	}
 });
@@ -91,6 +121,7 @@ nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, /** @lends nul.
 
 		return $super(xpr);
 	},
+ 	//forceBuild: function(xpr) { return xpr.setSelfRef || 'klg'== xpr.expression; },
 	/**
 	 * If a self-ref was planned, make it in the newly built expression.
 	 */

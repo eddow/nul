@@ -137,6 +137,18 @@ nul.browser.bijectif = Class.create(nul.browser.cached, /** @lends nul.browser.b
  	 * SHOULD return an expression (no 'unchanged')
  	 */
  	build: function(xpr) { return xpr.chew(); },
+ 	/**
+ 	 * Determine weither this expression should be modifialbe() and chew() even if elements didn't change
+ 	 * @param {nul.xpr.expression} xpr
+ 	 * @return {Boolean}
+ 	 */
+ 	forceBuild: function(xpr) { return false; },
+ 	/**
+ 	 * Called when an expression was not modified
+ 	 * @param {nul.xpr.expression} xpr
+ 	 * @return {nul.xpr.expression | nul.browser.bijectif.unchanged}
+ 	 */
+ 	leave: function(xpr) { return nul.browser.bijectif.unchanged; },
 	/**
 	 * Transform this expression that already had bee browsed.
 	 * @return Either a new object or 'null' if nothing changed
@@ -144,7 +156,9 @@ nul.browser.bijectif = Class.create(nul.browser.cached, /** @lends nul.browser.b
 	makeRV: function(xpr, bwsd) {
 		var evl = new nul.browser.bijectif.evolution(xpr);
 		var mod = nul.browser.bijectif.merge(evl.value, bwsd);
+		if(!mod && this.forceBuild(evl.value)) mod = evl.value.modifiable();
 		if(mod) evl.receive(this.build(mod));	//Here are built modifiabled expressions
+		else evl.receive(this.leave(evl.value));
 		evl.receive(this.transform(evl.value));
 		return evl.changed;
 	},
