@@ -11,22 +11,39 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 * Represent a bunch of information about locals and absolute values.
 	 * @extends nul.expression
 	 * @constructs
-	 * @param {nul.xpr.knowledge} klg [optional] Knowledge to clone
+	 * @param {String} klgName [optional] Knowledge name
 	 */
-	initialize: function(klg) {
-		if(!klg || "string"== typeof klg) { 
-	 		//Create new objects each time
-	        this.locals = this.emptyLocals();
-	        this.veto = [];	//TODO 2: veto becomes a knowledge
-	 		this.eqCls = [];		//Array of equivalence classes.
-	 		this.access = {};		//{nul.xpr.object} object => {nul.xpr.knowledge.eqClass} eqClass
-	 		this.ior3 = [];			//List of unchoosed IOR3
-	 		this.name = klg || ++nul.xpr.knowledge.nameSpace;
-		} else {
-			nul.xpr.is(klg, nul.xpr.knowledge);
-			nul.xpr.knowledge.cloneData(klg, this);
-	 		this.name = 'c';
-		}
+	initialize: function(klgName) {
+ 		/**
+ 		 * Describe the used localspace
+ 		 * @type String[]
+ 		 */
+        this.locals = this.emptyLocals();
+ 		/**
+ 		 * List of all the knowledge that oppose to this knowledge satisfaction
+ 		 * @type nul.xpr.knowledge[]
+ 		 */
+        this.veto = [];
+ 		/**
+ 		 * List of equivalence classes this knowledge assert
+ 		 * @type nul.xpr.knowledge.eqClass[]
+ 		 */
+ 		this.eqCls = [];		//Array of equivalence classes.
+ 		/**
+ 		 * List of all the object this knowledge knows (their index is the key) about and the equivalence class they belong to
+ 		 * @type Access
+ 		 */
+ 		this.access = {};		//{nul.xpr.object} object => {nul.xpr.knowledge.eqClass} eqClass
+ 		/**
+ 		 * List of all the ior3s that still have to be choosen
+ 		 * @type nul.xpr.knowledge.ior3[]
+ 		 */
+ 		this.ior3 = [];			//List of unchoosed IOR3
+ 		/**
+ 		 * Unique name given to the knowledge
+ 		 * @type String
+ 		 */
+ 		this.name = klgName || ++nul.xpr.knowledge.nameSpace;
  		//this.mult = 1;	//TODO O: 'mult' optimisation
  	},
 
@@ -125,7 +142,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @throws {nul.failure}
  	 */
  	addEqCls: function(eqCls) {
- 		nul.xpr.use(eqCls, nul.xpr.knowledge.eqCls);
+ 		nul.xpr.use(eqCls, nul.xpr.knowledge.eqClass);
  		for(var ec in eqCls) if(cstmNdx(ec) && eqCls[ec]) this.unify(eqCls[ec]);
  	},
  	
@@ -226,7 +243,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 						rv.push(ndx);
 			return rv;
 		};
-		//TODO 1: need opposition
+		//TODO 1: need opposition?
 		var lclInfl = {};	//nx => {ndx: [0, 1, 2]}
 		//	0: no need
 		//	1: define content
@@ -269,8 +286,8 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
   	/**
  	 * Know that all the arguments are unifiable
  	 * Modifies the knowledge
- 	 * @param {nul.xpr.object} and {nul.xpr.knowledge.eqCls}
- 	 * @return {nul.xpr.knowledge.eqCls} unsummarised (if in a higher-stack level unification) or summarised
+ 	 * @param {nul.xpr.object} and {nul.xpr.knowledge.eqClass}
+ 	 * @return {nul.xpr.knowledge.eqClass} unsummarised (if in a higher-stack level unification) or summarised
  	 * @throws {nul.failure}
  	 */
  	unification: function() { 	
@@ -394,7 +411,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		
  		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
 
- 		var brwsr = new nul.xpr.knowledge.stepUp(klg, this);
+ 		var brwsr = new nul.xpr.knowledge.stepUp(klg.name, this);
 		
  		this.concatLocals(klg);
 
@@ -411,7 +428,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	/**
  	 * Know that all the arguments are unifiable
  	 * Modifies the knowledge
- 	 * @param {nul.xpr.object} and {nul.xpr.knowledge.eqCls}
+ 	 * @param {nul.xpr.object} and {nul.xpr.knowledge.eqClass}
  	 * @return nul.xpr.object The replacement value for all the given values
  	 * @throws {nul.failure}
  	 */
@@ -705,6 +722,7 @@ nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.creat
 	initialize: function() { this.alreadyBuilt(); },
 	expression: 'klg',
 	name: 'Never',
+	special: true,
 	modifiable: function() { return this; },
 	wrap: function(value) { return nul.xpr.failure; },
 	components: [],
@@ -722,6 +740,7 @@ nul.xpr.knowledge.always = new (Class.create(nul.expression, /** @lends nul.xpr.
 	initialize: function() { this.alreadyBuilt(); },
 	expression: 'klg',
 	name: 'Always',
+	special: true,
 	modifiable: function() { return new nul.xpr.knowledge(); },
 	wrap: function(value) { return new nul.xpr.possible.cast(value); },
 	components: [],

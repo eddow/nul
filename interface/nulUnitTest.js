@@ -43,7 +43,9 @@ tests = [
 		{xpr: 'tp={ {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
 		rslt: '{{&phi; &rArr; &phi; &#9633; (T[1|0],.. Ts[1|1]) &rArr; (_[1|2],.. &crarr;[1|3]); ((_[1|2]) &isin; T[1|0] &and; (Ts[1|1] &rArr; &crarr;[1|3]) &isin; &uArr;[&crarr;|1])}}'},
 		{xpr: 'tp[Q,str] ; tp={ {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
-		rslt: '{(_[g|4], _[g|8]); ((_[g|4]) &isin; &#x211a; &and; (_[g|8]) &isin; str)}'}
+		rslt: '{(_[g|4], _[g|8]); ((_[g|4]) &isin; &#x211a; &and; (_[g|8]) &isin; str)}'},
+		{xpr:'t[Q,str] ; t ={ {} => {{}} [] (T,.. Ts) => { T _,.. t[Ts] _ } }',
+		rslt:'{{(_[19|0], _[19|3]); ((_[19|0]) &isin; &#x211a; &and; (_[19|3]) &isin; str)}}'}
 	].named('Complexs'),
 	[
 		{xpr: '( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")',
@@ -51,7 +53,7 @@ tests = [
 		{xpr: 'a; Q (a.nbr)',
 		rslt: '{a[g|0]; (([nbr: &rarr;nbr[g|1]]a[g|0]) &and; (&rarr;nbr[g|1]) &isin; &#x211a;)}'},
 		{xpr: '(cmplx c).pair ; c.real = 5 ; c.img = 3 ; cmplx = {_ ::real(Q r) ::img(Q i) ::pair(i,r)}',
-		rslt: '{(3, 5)}'},
+		rslt: '{(3, 5)}'}
 	].named('Attributes')
 ].named('Unit testing');
 
