@@ -351,7 +351,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 							map(chx, function() {
 								var p = nul.xpr.possible.cast(this);
 								var klg = p.knowledge.modifiable();
-                                klg.unify(p.value, unf);
 								klgs.push(klg.built());
 							});
 					 		this.ior3.push(new nul.xpr.knowledge.ior3(klgs));
@@ -376,7 +375,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 
  	/**
  	 * Gets a value out of these choices
- 	 * @param {array} choices of nul.xpr.possible
+ 	 * @param {nul.xpr.possible[]} choices of nul.xpr.possible
  	 * @return nul.xpr.object
  	 */
  	hesitate: function(choices) {
@@ -540,10 +539,11 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 */
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
-		var representer = new nul.xpr.knowledge.represent(this.access);
-		nul.debug.log('Represent')('', 'Knowledge', this);
+		var representer = new nul.xpr.knowledge.represent(this);
+		nul.debug.log('Represent')(this.name, 'Knowledge', this);
 		for(var i=0; i<this.eqCls.length;) {
 			var ec = this.eqCls[i];
+			var dlc = nul.debug.lc;
 			var nec = representer.subBrowse(ec);
 			if(nul.browser.bijectif.unchanged == nec) ++i;
 			else {
@@ -554,7 +554,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 				//this.unification has effect on other equivalence classes that have to change in the representer
 				representer.invalidateCache();
 				
-				nul.debug.log('Represent')('', 'Knowledge', this);
+				nul.debug.log('Represent')(this.name, 'Knowledge', this);
 				i = 0;
 			}
 		}

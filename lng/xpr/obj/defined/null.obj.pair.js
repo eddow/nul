@@ -55,7 +55,7 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 			return (new nul.obj.pair(
 				klg.unify(this.first.value, o.first.value),
 				klg.unify(this.second, o.second))).built();
-		//TODO4: unifier les possibles
+		nul.debug.log('error')('Warning', 'pair', 'Pair fuzzy comparison not yet implemented');
 		nul.fail(o, ' not unifiable pair');
 	},
 	

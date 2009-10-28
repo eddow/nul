@@ -137,7 +137,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 */
 	dbgHtml: function() {
 		var f = this.toFlat();
-		if(100>f.length) return this.toHtml();
+		if(300>f.length) return this.toHtml();
 		return f;
 	},
 	
@@ -257,6 +257,7 @@ nul.xpr = {
 nul.xpr.application = function(set, itm, klg) {
 	var hst = [];
 	var rv = klg.newLocal(nul.understanding.rvName);
+	//TODO O: no value return
 	klg.hesitate(set.having(new nul.obj.lambda(itm, rv)));
 	return rv;
 };
