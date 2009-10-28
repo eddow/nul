@@ -107,27 +107,8 @@ nul.xpr.object.reself = Class.create(nul.browser.bijectif, /** @lends nul.xpr.ob
 
 /** @namespace Objects helper */
 nul.obj = {
-	are: nul.debug.are('object'),
-	is: function(x, t) {
-		nul.debug.is('object')(x);
-		if(t) {
-			t = t.prototype.expression;
-			(function() { return x.expression == t; }.asserted('Expected "'+t+'" object'));
-		}
-	},
-	use: function(x, t) {
-		if(!nul.xpr.bunch(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) {
-			nul.obj.is(o, t);
-			o.use();
-		});
-	},
-	
-	mod: function(x, t) {
-		if(!nul.xpr.bunch(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) {
-			nul.obj.is(o, t);
-			o.modify();
-		});
-	}
+	are: function(x, t) { return nul.xpr.are(x,t||'nul.xpr.object'); },
+	is: function(x, t) { return nul.xpr.is(x,t||'nul.xpr.object'); },
+	use: function(x, t) { return nul.xpr.use(x,t||'nul.xpr.object'); },
+	mod: function(x, t) { return nul.xpr.mod(x,t||'nul.xpr.object'); }
 };

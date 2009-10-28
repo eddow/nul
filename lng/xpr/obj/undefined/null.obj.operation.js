@@ -19,7 +19,6 @@ nul.obj.operation = Class.create(nul.obj.undefined, /** @lends nul.obj.operation
 	 * @param {nul.xpr.object[]} ops The operands
 	 */
 	initialize: function(operator, ops) {
-		nul.obj.use(ops);
 		this.operator = operator;
 		this.operands = ops;
 		this.alreadyBuilt();
@@ -30,7 +29,7 @@ nul.obj.operation = Class.create(nul.obj.undefined, /** @lends nul.obj.operation
 	/** @constant */
 	expression: 'operation',
 	/** @constant */
-	components: ['operands']
+	components: {'operands': {type: 'nul.xpr.object', bunch: true}}
 });
 
 nul.obj.operation.binary = Class.create(nul.obj.operation, {

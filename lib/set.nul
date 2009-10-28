@@ -1,26 +1,26 @@
-set = <library
+set
 
 /* 'set.tuple[A, B, C]' takes tuples for whose items are respectively from set A, B and C
  set.tuple[Q, str] (5, "ok") 
 */
-tuple
-={	{} => { {} }
+::tuple
+ {	{} => { {} }
 []	(T,.. Ts) => { T _,.. set.tuple[Ts] _ }
 }
 
-sub
-={ {} => {}
+::sub
+ { {} => {}
 [] (a,.. r) => (a,.. set.sub r)
 [] (_,.. r) => set.sub r 
 }
 
-sigma
-={ \/x {x} => {}
+::sigma
+ { \/x {x} => {}
 [] (a,b,.. o) => ((a=>b),.. set.sigma[b,.. o] )
 }
 
-id = { x!= (_ => _) }
+::id { x!= (_ => _) }
 
-fct = { (D => I) => set.sub[{ (D _) => (I _) }] }
+::fct { (D => I) => set.sub[{ (D _) => (I _) }] }
 
 />

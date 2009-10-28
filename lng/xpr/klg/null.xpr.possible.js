@@ -16,7 +16,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	 */
 	initialize: function(value, knowledge) {
 		if(!knowledge) knowledge = nul.xpr.knowledge.always;
-		nul.obj.use(value); nul.xpr.use(knowledge, nul.xpr.knowledge);
+		nul.obj.use(value); nul.xpr.use(knowledge, 'nul.xpr.knowledge');
 		/** @type nul.xpr.object */
 		this.value = value;
 		/** @type nul.xpr.knowledge */
@@ -84,7 +84,10 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	/** @constant */
 	expression: 'possible',
 	/** @constant */
-	components: ['value','knowledge'],
+	components: {
+		'value': {type: 'nul.xpr.object', bunch: false},
+		'knowledge': {type: 'nul.xpr.knowledge', bunch: false}
+	},
 	chew: function() {
 		return this.knowledge.modifiable().wrap(this.value);
 	},
@@ -100,7 +103,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	}
 });
 
-nul.xpr.failure = new (Class.create(nul.expression, /** @lends nul.xpr.failure# */{
+nul.xpr.failure = new (Class.create(nul.xpr.possible, /** @lends nul.xpr.failure# */{
 	/**
 	 * Specific possible that never give any value.
 	 * @extends nul.xpr.possible
@@ -111,7 +114,7 @@ nul.xpr.failure = new (Class.create(nul.expression, /** @lends nul.xpr.failure# 
 	/** @constant */
 	expression: 'possible',
 	/** @constant */
-	components: [],
+	components: {},
 	distribuable: function() { return true; },
 	distribute: function() { return []; }
 }))();

@@ -111,7 +111,7 @@ nul.compiler = Class.create({
 		return rv;
 	},
 	expression: function(oprtrLvl) {
-		if('undefined'== typeof oprtrLvl) oprtrLvl = 0; 
+		if(Object.isUndefined(oprtrLvl)) oprtrLvl = 0; 
 		if(nul.operators.length <= oprtrLvl) return this.applied();
 		var oprtr = nul.operators[oprtrLvl];
 		var firstOp = this.expression(1+oprtrLvl);

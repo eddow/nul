@@ -71,7 +71,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 * Modify eqCls and set accesses
 	 */
  	accede: function(ec) {
-		this.modify(); nul.xpr.use(ec, nul.xpr.knowledge.eqClass);
+		this.modify(); nul.xpr.use(ec, 'nul.xpr.knowledge.eqClass');
 		if(ec) ec = ec.placed(this);
 		if(ec) {
 	 		this.eqCls.push(ec);
@@ -104,7 +104,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 * @return {nul.xpr.knowledge.eqClass} ec
 	 */
 	removeEC: function(ec) {
- 		this.modify(); nul.xpr.use(ec, nul.xpr.knowledge.eqClass);
+ 		this.modify(); nul.xpr.use(ec, 'nul.xpr.knowledge.eqClass');
 		var i = this.eqCls.indexOf(ec);
  		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class')
 		this.eqCls.splice(i, 1);
@@ -142,8 +142,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @throws {nul.failure}
  	 */
  	addEqCls: function(eqCls) {
- 		nul.xpr.use(eqCls, nul.xpr.knowledge.eqClass);
- 		for(var ec in eqCls) if(cstmNdx(ec) && eqCls[ec]) this.unify(eqCls[ec]);
+ 		for(var ec in eqCls) if(cstmNdx(ec)) this.unify(nul.xpr.use(eqCls[ec], 'nul.xpr.knowledge.eqClass'));
  	},
  	
  	/**
@@ -158,6 +157,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		
 		vdps.also(value.dependance());
 		for(var i in this.ior3) if(cstmNdx(i) && this.ior3[i]) vdps.also(this.ior3[i].dependance());
+		for(var i in this.veto) if(cstmNdx(i) && this.veto[i]) vdps.also(this.veto[i].dependance());
 		vdps = this.localNeed(vdps.usage(this).local);
 
 		//Remove useless equivalence class specifications
@@ -218,7 +218,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 */
 	localNeed: function(lcls) {
 		lcls = map(lcls,function() { return 3; });
-		var toNeed = keys(lcls);
+		var toNeed = Object.keys(lcls);
 		///1: calculate influences
 		var max = function(a,b) { return !a?b:!b?a:a>b?a:b; };
 		/**
@@ -243,25 +243,25 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 						rv.push(ndx);
 			return rv;
 		};
-		//TODO 1: need opposition?
 		var lclInfl = {};	//nx => {ndx: [0, 1, 2]}
 		//	0: no need
 		//	1: define content
 		//	2: define equivalence
 		for(var c=0; c<this.eqCls.length; ++c) {
 			var ec = this.eqCls[c];
-			var elms = ec.summary('components');
+			var elms = [];
+			elms.pushs(ec.equivls);
+			elms.pushs(ec.belongs);
 			var extInfl = false;
 			
 			//Compute influence from other knowledge.
 			// If influence from several elements, influence the whole class
 			// If influence from only one element, influence the class without that element 
-			for(var e in elms) if(cstmNdx(e)) {
-				if(elms[e].dependance().otherThan(this)) {
+			for(var e in elms) if(cstmNdx(e) &&
+				('local'!= elms[e].expression || this.name!= elms[e].klgRef)) {
 					extInfl = extInfl?true:e;
 					if(true=== extInfl) break;
 				}
-			}
 			//If this refer to something defined by its attributes
 			if(true!== extInfl && !isEmpty(ec.attribs,'')) extInfl = extInfl?true:'attribs:*';
 			//If this refer to something equaled in absolute
@@ -292,7 +292,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 */
  	unification: function() { 	
  		var toUnify = beArrg(arguments);
- 		this.modify(); nul.xpr.use(toUnify);
+ 		this.modify();
  		var dstEqCls = new nul.xpr.knowledge.eqClass();
  		var alreadyBlg = {};	//TODO 3: make a 'belong' this.access ?
  		var toBelong = [];
@@ -301,6 +301,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 		while(toUnify.length || toBelong.length) {
 	 			while(toUnify.length) {
 		 			var v = toUnify.shift();
+		 			nul.xpr.use(v);
 		 			if(this.access[v]) {
 		 				v = this.access[v];
 		 				if(dstEqCls=== v) {}
@@ -409,7 +410,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		if(nul.xpr.knowledge.always== klg) return val;
  		//if(nul.debug.assert) assert(!klg.ior3.length, 'Merge only uniques')
  		
- 		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
+ 		this.modify(); nul.xpr.use(klg, 'nul.xpr.knowledge');
 
  		var brwsr = new nul.xpr.knowledge.stepUp(klg.name, this);
 		
@@ -444,11 +445,11 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 */
  	belong: function(e, ss) {
  		ss = beArrg(arguments, 1);
- 		this.modify(); nul.obj.use(e); nul.obj.use(ss);
+ 		this.modify(); nul.obj.use(e);
 		
  		if(!ss.length) return e;
  		var dstEC = this.inform(e);
- 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(ss[s], this);
+ 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(nul.obj.use(ss[s]), this);
  		return this.accede(dstEC.built()).equivls[0];
  	},
  	
@@ -520,7 +521,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 * @throws {nul.failure}
 	 */
 	oppose: function(klg) {
-		this.modify(); nul.xpr.use(klg, nul.xpr.knowledge);
+		this.modify(); nul.xpr.use(klg, 'nul.xpr.knowledge');
 		if(klg.veto && klg.veto.length) {
 			klg = klg.modifiable();
 			while(klg.veto.length) this.merge(klg.veto.pop());
@@ -592,7 +593,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	},
 
 	sum_index: function() {
-		return this.indexedSub(this.name, this.eqCls, this.ior3);
+		return this.indexedSub(this.name);
 	},
 	
 //////////////// nul.expression implementation
@@ -600,7 +601,11 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	/** @constant */
 	expression: 'klg',
 	/** @constant */
-	components: ['eqCls','ior3','veto'],
+	components: {
+		'eqCls': {type: 'nul.xpr.knowledge.eqClass', bunch: true},
+		'ior3': {type: 'nul.xpr.knowledge.ior3', bunch: true},
+		'veto': {type: 'nul.xpr.knowledge', bunch: true}
+	},
 	modifiable: function($super) {
 		var rv = $super();
 		nul.xpr.knowledge.cloneData(this, rv);
@@ -624,7 +629,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	built: function($super) {
 		this.clearAccess();
 		//if(0== this.mult) return nul.xpr.knowledge.never;
- 		if(this.isFixed()) return nul.xpr.knowledge.always; 
+ 		if(this.isFixed() && nul.xpr.knowledge.always) return nul.xpr.knowledge.always; 
  		return $super();
  	},
  	isFixed: function() {
@@ -694,7 +699,7 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, /** @lends nul.xpr.knowledge# *
 	 * Register a new local
 	 */
  	newLocal: function(name, ndx) {
- 		if('undefined'== typeof ndx) ndx = this.locals.length;
+ 		if(Object.isUndefined(ndx)) ndx = this.locals.length;
 		this.locals[ndx] = name;
  		return new nul.obj.local(this.name, ndx, name)
  	}
@@ -707,52 +712,56 @@ if(nul.debug) merge(nul.xpr.knowledge.prototype, /** @lends nul.xpr.knowledge# *
 	freeLastLocal: function() { --this.locals; },
 	nbrLocals: function() { return this.locals; },
  	newLocal: function(name, ndx) {
- 		if('undefined'== typeof ndx) ndx = this.locals++;
+ 		if(Object.isUndefined(ndx)) ndx = this.locals++;
  		return new nul.obj.local(this.name, ndx)
  	}
- });
+});
 
-nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new (Class.create(nul.expression, /** @lends nul.xpr.knowledge.never# */{
+nul.xpr.knowledge.special = Class.create(nul.xpr.knowledge, /** @lends nul.xpr.knowledge.special# */{
+	special: true,
 	/**
-	 * Special knowledge meaning something that is never verified
+	 * Special knowledge
 	 * @extends nul.xpr.knowledge
 	 * @constructs
-	 * @class Singleton
+	 * @param {hash} comps Components
 	 */
-	initialize: function() { this.alreadyBuilt(); },
+	initialize: function(comps) {
+		merge(this, comps);
+		this.alreadyBuilt();
+	},
 	expression: 'klg',
+	
+	components: {},
+	ior3: [],
+	eqCls: [],
+	veto: [],
+	isFixed: function() { return 1== this.on; },
+	minXst: function() { return this.on; },
+	maxXst: function() { return this.on; }
+});
+
+/**
+ * Special knowledge meaning something that is never verified
+ */
+nul.xpr.knowledge.never = nul.xpr.knowledge.prototype.failure = new nul.xpr.knowledge.special({
 	name: 'Never',
-	special: true,
-	modifiable: function() { return this; },
+	modifiable: function() { nul.fail('No fewer than never'); },
 	wrap: function(value) { return nul.xpr.failure; },
-	components: [],
-	minXst: function() { return 0; },
-	maxXst: function() { return 0; }
-}))();
+	on: 0
+});
 
-nul.xpr.knowledge.always = new (Class.create(nul.expression, /** @lends nul.xpr.knowledge.always# */{
-	/**
-	 * Special knowledge meaning something that is always verified
-	 * @extends nul.xpr.knowledge
-	 * @constructs
-	 * @class Singleton
-	 */
-	initialize: function() { this.alreadyBuilt(); },
-	expression: 'klg',
+/**
+ * Special knowledge meaning something that is always verified
+ */
+nul.xpr.knowledge.always = new nul.xpr.knowledge.special({
 	name: 'Always',
-	special: true,
 	modifiable: function() { return new nul.xpr.knowledge(); },
 	wrap: function(value) { return new nul.xpr.possible.cast(value); },
-	components: [],
-	ior3: [],
-	isFixed: function() { return true; },
-	minXst: function() { return 1; },
-	maxXst: function() { return 1; }
-}))();
+	on: 1
+});
 
 nul.xpr.knowledge.unification = function(objs) {
 	objs = beArrg(arguments);
-	nul.obj.use(objs);
 	var klg = new nul.xpr.knowledge();
 	klg.unify(objs);
 	return klg.built();

@@ -56,5 +56,8 @@ nul.obj.lambda = Class.create(nul.obj.defined, /** @lends nul.obj.lambda# */{
 	/** @constant */
 	expression: 'lambda',
 	/** @constant */
-	components: ['point', 'image']
+	components: {
+		'point': {type: 'nul.xpr.object', bunch: false},
+		'image': {type: 'nul.xpr.object', bunch: false}
+	}
 });

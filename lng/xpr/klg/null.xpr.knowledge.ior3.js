@@ -60,9 +60,9 @@ nul.xpr.knowledge.ior3 = Class.create(nul.expression, /** @lends nul.xpr.knowled
 	/** @constant */
 	expression: 'kior3',
 	/** @constant */
-	components: ['choices'],
+	components: {'choices': {type: 'nul.xpr.knowledge', bunch: true}},
 	placed: function($super, prnt) {
-		nul.xpr.mod(prnt, nul.xpr.knowledge);
+		nul.xpr.mod(prnt, 'nul.xpr.knowledge');
  		if(!this.choices.length) {	//TODO O: 'mult' optimisation
  			prnt.mult *= this.mult;
  			return;

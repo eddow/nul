@@ -1,3 +1,5 @@
+si eqCls contient ior3 qui depend d'une locale, ne considerera pas qu'un elem de l'ior3 peut etre absolu (par ex)
+
 \/sigma \/S
 { (a, b); ((a=sigma[S][b]) [] (b=sigma[S][a])) } = oiuoiu
 ; S = houses [1..5]
