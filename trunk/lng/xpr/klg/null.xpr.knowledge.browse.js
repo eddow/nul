@@ -15,6 +15,7 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.xpr
 	 */
 	initialize: function($super, srcKlgRef, dstKlg) {
 		this.table = {};
+		this.forbid = {};
 		this.table[srcKlgRef] = {
 			klgRef: dstKlg.name,
 			deltaIor3ndx: dstKlg.ior3.length,
@@ -25,7 +26,7 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.xpr
 	},
 	enterKlg: function(klg) {
 		if(klg && !klg.special && !this.table[klg.name]) {
-			nul.debug.log('Knowledge')(klg.name,'Enter', klg)
+			if(nul.debug.assert) assert(!this.forbid[klg.name], 'Knowledge already used before entering');
 			this.table[klg.name] = { klgRef: ++nul.xpr.knowledge.nameSpace };
 			for(var v in this.veto) if(cstmNdx(v)) this.enterKlg(this.veto[v]);
 			for(var i in this.ior3) if(cstmNdx(i))
@@ -57,7 +58,8 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.xpr
 		if(dst = this.table[xpr.klgRef]) switch(xpr.expression) {
 		case 'local': return new nul.obj.local(dst.klgRef, xpr.ndx+(dst.deltaLclNdx||0), xpr.dbgName);
 		case 'ior3': return new nul.obj.ior3(dst.klgRef, xpr.ndx+(dst.deltaIor3ndx||0), xpr.values);
-		}
+		} else if(['local','ior3'].contains(xpr.expression))
+			this.forbid[xpr.klgRef] = true;
 		return nul.browser.bijectif.unchanged;
 	}
 });

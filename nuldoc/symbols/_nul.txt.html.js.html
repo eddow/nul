@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - nul.tokenizer</title>
+		<title>JsDoc Reference - nul.txt.html.js</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -306,23 +306,23 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace nul.tokenizer
+				Namespace nul.txt.html.js
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
 			
+				Tiles managing events
 				
 				
-				
-					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/in/null.tokenizer.js">lng/txt/in/null.tokenizer.js</a>.
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/out/null.txt.html.js">lng/txt/out/null.txt.html.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.tokenizer.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.txt.html.js.">
 				<caption>Namespace Summary</caption>
 				<thead>
 					<tr>
@@ -335,7 +335,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.tokenizer.html#constructor">nul.tokenizer</a></b>
+								<b><a href="../symbols/_nul.txt.html.js.html#constructor">nul.txt.html.js</a></b>
 							</div>
 							<div class="description"></div>
 						</td>
@@ -349,14 +349,16 @@ ul.inheritsList
 
 <!-- ============================== methods summary ======================== -->
 			
+<!-- ============================== events summary ======================== -->
+			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.tokenizer.">
-					<caption>Method Summary</caption>
+				<table class="summaryTable" cellspacing="0" summary="A summary of the events documented in the class nul.txt.html.js.">
+					<caption>Event Summary</caption>
 					<thead>
 						<tr>
-							<th scope="col">Method Attributes</th>
-							<th scope="col">Method Name and Description</th>
+							<th scope="col">Event Attributes</th>
+							<th scope="col">Event Name and Description</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -364,9 +366,18 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.isAB">isAB</a></b>(v, alphabet)
+								<div class="fixedFont">nul.txt.html.js.<b><a href="../symbols/_nul.txt.html.js.html#event:.enter">enter</a></b>(elm, knd)
 								</div>
-								<div class="description"></div>
+								<div class="description">Event occuring when the mouse enters a tile</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.txt.html.js.<b><a href="../symbols/_nul.txt.html.js.html#event:.leave">leave</a></b>(elm, knd)
+								</div>
+								<div class="description">Event occuring when the mouse leaves a tile</div>
 							</td>
 						</tr>
 					
@@ -375,8 +386,6 @@ ul.inheritsList
 				
 				
 				
-			
-<!-- ============================== events summary ======================== -->
 			
 
 <!-- ============================== constructor details ==================== -->		
@@ -387,7 +396,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.tokenizer</b>
+						<b>nul.txt.html.js</b>
 				</div>
 				
 				<div class="description">
@@ -414,19 +423,22 @@ ul.inheritsList
 
 <!-- ============================== method details ========================= -->		
 			
+			
+<!-- ============================== event details ========================= -->		
+			
 				<div class="sectionTitle">
-					Method Detail
+					Event Detail
 				</div>
 				
-					<a name=".isAB"> </a>
+					<a name="event:.enter"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.tokenizer.</span><b>isAB</b>(v, alphabet)
+					<span class="light">nul.txt.html.js.</span><b>enter</b>(elm, knd)
 					
 					</div>
 					<div class="description">
-						
+						Event occuring when the mouse enters a tile
 						
 						
 					</div>
@@ -438,16 +450,58 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>v</b>
+									<span class="light fixedFont">{HTMLElement}</span> <b>elm</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The element (expression span) this event applies to</dd>
 							
 								<dt>
-									<b>alphabet</b>
+									<span class="light fixedFont">{String}</span> <b>knd</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The kind of tile the mouse interract with</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="event:.leave"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.txt.html.js.</span><b>leave</b>(elm, knd)
+					
+					</div>
+					<div class="description">
+						Event occuring when the mouse leaves a tile
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{HTMLElement}</span> <b>elm</b>
+									
+								</dt>
+								<dd>The element (expression span) this event applies to</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>knd</b>
+									
+								</dt>
+								<dd>The kind of tile the mouse interract with</dd>
 							
 							</dl>
 						
@@ -460,9 +514,6 @@ ul.inheritsList
 
 					
 				
-			
-			
-<!-- ============================== event details ========================= -->		
 			
 			
 			<hr />

@@ -6,13 +6,15 @@
  *
  *--------------------------------------------------------------------------*/
  
-//TODO D
-
 /**
  * Text output kernel
- * @class
+ * @class Singleton
  */
 nul.txt = {
+	/**
+	 * Main function, making a string out of an expression
+	 * @param {nul.expression} xpr
+	 */
 	toText: function(xpr) {
 		if(!this.beginDraw(xpr)) return this.recurStr;
 		var ctx = this.enterContext(xpr);
@@ -27,34 +29,81 @@ nul.txt = {
 			this.endDraw(xpr);
 		}
 	},
-	dispatchPair: function(xpr, obj) {
+	/**
+	 * Pairs can have several writing depending on their constitution : singleton { 1 }, list (1, 2, 3) or set { 1 [] 2 [] 3 }.
+	 * This function call one of the three sub-function.
+	 * @param {nul.expression} xpr
+	 */
+	dispatchPair: function(xpr) {
 		var lstd = xpr.listed();
 		if(xpr.isList()) {
 			if(1== lstd.length && !lstd.follow)
-				return this.draw.singleton.apply(obj, []);
-			return this.draw.list.apply(obj, [lstd]);
+				return this.draw.singleton.apply(xpr, []);
+			return this.draw.list.apply(xpr, [lstd]);
 		} 
-		return this.draw.set.apply(obj, [lstd]);
+		return this.draw.set.apply(xpr, [lstd]);
 	},
+	/**
+	 * Called when an expression is about to be drawn
+	 * @param {nul.expression} xpr
+	 */
 	beginDraw: function(xpr) {
 		if(this.drawing.contains(xpr)) return false;
 		this.drawing.push(xpr);
 		return true;
 	},
+	/**
+	 * Called for each expression that have been drawn
+	 * @param {nul.expression} xpr
+	 */
 	endDraw: function(xpr) {
 		if(nul.debug.assert) assert(xpr==this.drawing.pop(), 'Drawing consistency');
 		else this.drawing.pop();
 	},
+	/**
+	 * Create a collapse system out of an HTML table.
+	 * @param {HTMLTable} table The table element that will collapse rows.
+	 * @param {'up' | 'dn'} uc Determine which collapser row (the beginner-up or the ender-dn) is kept visible when the rows are collapsed
+	 * @param {function() {Number}} lcFct The function giving the index of the row (the table row number is used if no fct is specified)
+	 * @return {nul.clpsSstm} 
+	 */
 	clpsSstm : function(table, uc, lcFct) {
 		/**
-		 * @name clpsSstm
+		 * @class
+		 * @name nul.clpsSstm
 		 */
-		if(table) return table.clpsSstm = /** @lends clpsSstm */{ 
+		if(table) return table.clpsSstm = /** @lends nul.clpsSstm# */{ 
+			/**
+			 * The element table this collapser applies to
+			 * @type HTMLTable
+			 */
 			table: table,
+			/**
+			 * Determine which collapser row (the beginner-up or the ender-dn) is kept visible when the rows are collapsed
+			 * @type {'up' | 'dn'}
+			 */
 			uc: uc,
+			/**
+			 * Remember the collapser-end row number for each collapser-begin row number
+			 * @type {Number : Number}
+			 */
 			collapsing: {},
+			/**
+			 * List of collapser row numbers that have been opened (toPair[0] is the first opened collapser row number)
+			 * @type Number[]
+			 */
 			toPair: [],
+			/**
+			 * Determine which is the row count of this table (for when the row counting is not the effective one - like in logging where the logCount is used instead) 
+			 * @function
+			 * @return {Number}
+			 */
 			lineCount: lcFct || function() { return this.table.rows.length-('up'==this.uc?0:1); },
+			/**
+			 * Create a HTML collapser start that draw a given information
+			 * @param {HTML} html The collapser text
+			 * @return {HTML}
+			 */
 			collapser: function(html) {
 				return {
 					toPair: this.toPair,
@@ -70,6 +119,12 @@ nul.txt = {
 					}
 				}
 			},
+			/**
+			 * Create a HTML collapser end that draw a given information
+			 * @param {HTML} opnd The collapser text when the collapser is opened
+			 * @param {HTML} clsd The collapser text when the collapser is collapsed
+			 * @return {HTML}
+			 */
 			endCollapser: function(opnd, clsd) {
 				if('undefined'== typeof clsd) clsd = opnd;
 				return {
@@ -90,8 +145,11 @@ nul.txt = {
 					}
 				};
 			},
-			//'collapsed' class name is added once for each collapsement : this is not a bug if it appears
-			// several time on an item
+			/**
+			 * Collapse an item of the collapsers table. Answers to a click on the 'collapse' command.
+			 * @param {Number} lc The table item to collapse (its collapser begin or its collapser end index)
+			 * @event
+			 */
 			collapse: function(lc) {
 				assert(this.collapsing[lc] && 'topair'!= this.collapsing[lc], 'Collapsing pairs coherence.');
 				for(var r=lc; r<this.collapsing[lc]; ++r)
@@ -99,6 +157,11 @@ nul.txt = {
 				this.table.rows[r].addClassName('uncollapsing');
 				if('up'==this.uc && 0<lc) this.table.rows[lc-1].addClassName('unsubcollapsing');
 			},
+			/**
+			 * Uncollapse an item of the collapsers table. Answers to a click on the 'uncollapse' command.
+			 * @param {Number} lc The table item to collapse (its collapser begin or its collapser end index)
+			 * @event
+			 */
 			uncollapse: function(lc) {
 				assert(this.collapsing[lc] && 'topair'!= this.collapsing[lc], 'Collapsing pairs coherence.');
 				for(var r=lc; r<this.collapsing[lc]; ++r)
@@ -112,13 +175,23 @@ nul.txt = {
 			endCollapser: function(opnd, clsd) {}
 		};
 	},
-	//'collapsed' class name is added once for each collapsement : this is not a bug if it appears
-	// several time on an item
+	/**
+	 * Event managing the 'collapse' command.
+	 * @param {HTMLTable} tbl The collapsing table or one of its son
+	 * @param {Number} lc The table item to collapse (its collapser begin or its collapser end index)
+	 * @event
+	 */
 	collapse: function(tbl, lc) {
 		while(tbl && !tbl.clpsSstm) tbl = tbl.parentNode;
 		assert(tbl,'No orphan collapsers');
 		return tbl.clpsSstm.collapse(lc);
 	},
+	/**
+	 * Event managing the 'uncollapse' command.
+	 * @param {HTMLTable} tbl The collapsing table or one of its son
+	 * @param {Number} lc The table item to collapse (its collapser begin or its collapser end index)
+	 * @event
+	 */
 	uncollapse: function(tbl, lc) {
 		while(tbl && !tbl.clpsSstm) tbl = tbl.parentNode;
 		assert(tbl,'No orphan collapsers');

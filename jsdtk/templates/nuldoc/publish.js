@@ -11,7 +11,9 @@ function publish(symbolSet) {
 	// is source output is suppressed, just display the links to the source file
 	if (JSDOC.opt.s && defined(Link) && Link.prototype._makeSrcLink) {
 		Link.prototype._makeSrcLink = function(srcFilePath) {
-			return "&lt;"+srcFilePath+"&gt;";
+			srcFilePath = srcFilePath.substr(5).replace(/\\/g,'\/');	//remove the 'null/'
+			return '<a href="http://code.google.com/p/nul/source/browse/trunk/'+srcFilePath+'">'+srcFilePath+'</a>';
+			return "&lt;"+srcFilePath+"&gt;";	//qwerty
 		}
 	}
 	

@@ -6,11 +6,9 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
 /**
  * HTML expression building helper 
- * @namespace
+ * @class Singleton
  */
 html = {
 	tagged: function(tag, attrs, cnt) {
@@ -57,12 +55,28 @@ html = {
 	}
 };
 
-nul.txt.html = merge({
+/**
+ * Expression HTML description building helper 
+ * @class Singleton
+ */
+nul.txt.html = merge(/** @lends nul.txt.html */{
 	drawing: [],
+	/**
+	 * Shortcut to make a table of string out of a table of expressions
+	 * @param {nul.expression[]} ass
+	 * @return {HTML[]}
+	 */
 	all: function(ass) {
 		return maf(ass, function() { return this.toHtml(); });
 	},
+	/** @constant */
 	recurStr: '[recur]',
+	/**
+	 * Called for each drawn expression to wrap it in common spans and add the tiles (for dependance, ...)
+	 * @param {HTML} txt The text specific to this expression
+	 * @param {nul.expression} xpr
+	 * @return {HTML}
+	 */
 	wrap: function(txt, xpr) {
 		var tileSquares = '', tilePopups = '';
 		var tiles = {};
@@ -88,9 +102,18 @@ nul.txt.html = merge({
 				html.span(xpr.expression, txt['']));
 	},
 	outp: function(xpr) { return xpr; },
+	/** @namespace */
 	draw: {
-		pair: function() { return nul.txt.html.dispatchPair(this, this); },
+		/**
+		 * @methodOf nul.obj.pair#
+		 * @return {HTML}
+		 */
+		pair: function() { return nul.txt.html.dispatchPair(this); },
 		
+		/**
+		 * @methodOf nul.obj.local#
+		 * @return {HTML}
+		 */
 		local: function() {
 			if(nul.debug.assert) assert(this.dbgName, 'Local has name if debug enabled'); 
 			return {
@@ -101,32 +124,44 @@ nul.txt.html = merge({
                 	) : this.ndx+html.span('desc', html.span('sub',this.klgRef))
                 };
 		},
-		attribute: function() {
-			return {'': this.ofObject.toHtml() + html.op('&rarr;' + this.attributeName)};
-		},
+
+		/**
+		 * @methodOf nul.obj.operation#
+		 * @return {HTML}
+		 */
 		operation: function() {
 			return {'': html.op('(') +
 				nul.txt.html.all(this.operands)
 					.join(html.op(this.operator)) +
 				html.op(')')};
 		},
-		extension: function() {
-			var attrs = [];	//TODO 3: expandable table ?
-			for(var an in this.attr) if(cstmNdx(an, this.attr))
-				attrs.push(html.tr(html.th(an)+html.td(this.attr[an].toHtml())));
-			return {'': html.table(attrs.join(''))};
-		},
+		/**
+		 * @methodOf nul.obj.litteral.number#
+		 * @return {HTML}
+		 */
 		number: function() {
 			if(pinf==this.value) return {'': '+&infin;'};
 			if(ninf==this.value) return {'': '-&infin;'};
 			return {'': ''+this.value};
 		},
+		/**
+		 * @methodOf nul.obj.litteral.string#
+		 * @return {HTML}
+		 */
 		string: function() {
 			return {'': '"'+this.value+'"'};
 		},
+		/**
+		 * @methodOf nul.obj.litteral.boolean#
+		 * @return {HTML}
+		 */
 		'boolean': function() {
 			return {'': this.value?'true':'false'};
 		},
+		/**
+		 * @methodOf nul.obj.range#
+		 * @return {HTML}
+		 */
 		range: function() {
 			var ltr = 0> this.lower ?
 				'&#x2124;':	//ℤ
@@ -139,6 +174,10 @@ nul.txt.html = merge({
 				html.span('sup',(pinf==this.upper)?'&infin;':this.upper)+
                 html.span('sub',(ninf==this.lower)?'&infin;':this.lower))};
 		},
+		/**
+		 * @methodOf nul.obj.data#
+		 * @return {HTML}
+		 */
 		data: function() {
 			return {
 				'': html.span('op','&Dagger;') +
@@ -146,20 +185,42 @@ nul.txt.html = merge({
 	                	html.span('sub',this.source.context))
                 };
 		},
+		/**
+		 * @methodOf nul.expression#
+		 * @return {HTML}
+		 */
 		other: function() {
 			return {'': this.expression};
 		},
 		
+		/**
+		 * @methodOf nul.obj.lambda#
+		 * @return {HTML}
+		 */
 		lambda: function() {
 			return {'': this.point.toHtml() + html.op('&rArr;') + this.image.toHtml()};
 		},
+		/**
+		 * @methodOf nul.obj.pair#
+		 * @return {HTML}
+		 */
 		singleton: function() {
 			return {'': html.op('{') + this.first.toHtml() + html.op('}')};
 		},
+		/**
+		 * @methodOf nul.obj.pair#
+		 * @param {nul.xpr.possible[]} flat List of the possibles that this pair represent.
+		 * @return {HTML}
+		 */
 		list: function(flat) {
 			return {'': html.op('(') + nul.txt.html.all(flat).join(html.op(',')) +
 				(flat.follow?(html.op(',.. ')+flat.follow.toHtml()):'')+ html.op(')')};
 		},
+		/**
+		 * @methodOf nul.obj.pair#
+		 * @param {nul.xpr.possible[]} flat List of the possibles that this pair represent.
+		 * @return {HTML}
+		 */
 		set: function(flat) {
 			return {
 				'': html.span('big op','{') +
@@ -168,12 +229,20 @@ nul.txt.html = merge({
 					(flat.follow?(html.op('&cup;')+flat.follow.toHtml()):'')
 			};
 		},
+		/**
+		 * @methodOf nul.obj.ior3#
+		 * @return {HTML}
+		 */
 		ior3: function() {
 			return {'': html.op('(') +
 				nul.txt.html.all(this.possibles()).join(html.op('&#9633;')) +
 				html.op(')')};
 		},
 		
+		/**
+		 * @methodOf nul.xpr.knowledge.eqClass#
+		 * @return {HTML}
+		 */
 		eqCls: function() {
 			var attrs = [];
 			for(var an in this.attribs) if(cstmNdx(an))
@@ -188,6 +257,10 @@ nul.txt.html = merge({
 					(html.op('&isin;') + nul.txt.html.all(this.belongs).join(html.op(','))):
 					'')};
 		},
+		/**
+		 * @methodOf nul.xpr.knowledge#
+		 * @return {HTML}
+		 */
 		klg: function() {
 			if(this==nul.xpr.knowledge.never) return {'':html.op('Never')};
 			if(this==nul.xpr.knowledge.always) return {'':html.op('Always')};
@@ -206,13 +279,20 @@ nul.txt.html = merge({
 				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):'')
 			};
 		},
+		/**
+		 * @methodOf nul.xpr.knowledge.ior3#
+		 * @return {HTML}
+		 */
 		kior3: function() {
 			return {
 				'': html.op('(')+nul.txt.html.all(maf(this.choices)).join(html.op('&or;'))+html.op(')')
 			};
 		},
 		
-		
+		/**
+		 * @methodOf nul.xpr.possible#
+		 * @return {HTML}
+		 */
 		possible: function() {
 			if(this===nul.xpr.failure) return { '': html.op('Failure') };
 			if(this.knowledge===nul.xpr.knowledge.always) return { '': this.value.toHtml() };
@@ -225,7 +305,14 @@ nul.txt.html = merge({
 		}
 	},
 	
+	/** @namespace Tiles managing events*/
 	js: {
+		/**
+		 * Event occuring when the mouse enters a tile
+		 * @event
+		 * @param {HTMLElement} elm The element (expression span) this event applies to
+		 * @param {String} knd The kind of tile the mouse interract with
+		 */
 		enter: function(elm, knd) {
 			if(this.entered && elm == this.entered[0] && knd == this.entered[1]) return;
 			if(this.entered) this.leave();
@@ -237,6 +324,12 @@ nul.txt.html = merge({
 			elm.getElementsBySelector('span div.'+knd).each(Element.hide);
 			//this.keepTimeOut = window.setTimeout('nul.txt.js.leave();',100);
 		},
+		/**
+		 * Event occuring when the mouse leaves a tile
+		 * @event
+		 * @param {HTMLElement} elm The element (expression span) this event applies to
+		 * @param {String} knd The kind of tile the mouse interract with
+		 */
 		leave: function(elm, knd) {
 			if(!this.entered) return;
 			elm = this.entered[0];

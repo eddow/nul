@@ -207,6 +207,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a></li>
 	
+	<li><a href="../symbols/_nul.clpsSstm.html">nul.clpsSstm</a></li>
+	
 	<li><a href="../symbols/_nul.compiled.html">nul.compiled</a></li>
 	
 	<li><a href="../symbols/_nul.debug.html">nul.debug</a></li>
@@ -245,6 +247,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.number.html">nul.obj.number</a></li>
 	
+	<li><a href="../symbols/_nul.obj.operation.html">nul.obj.operation</a></li>
+	
 	<li><a href="../symbols/_nul.obj.pair.html">nul.obj.pair</a></li>
 	
 	<li><a href="../symbols/_nul.obj.range.html">nul.obj.range</a></li>
@@ -257,6 +261,16 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.txt.html">nul.txt</a></li>
 	
+	<li><a href="../symbols/_nul.txt.flat.html">nul.txt.flat</a></li>
+	
+	<li><a href="../symbols/_nul.txt.flat.draw.html">nul.txt.flat.draw</a></li>
+	
+	<li><a href="../symbols/_nul.txt.html.html">nul.txt.html</a></li>
+	
+	<li><a href="../symbols/_nul.txt.html.draw.html">nul.txt.html.draw</a></li>
+	
+	<li><a href="../symbols/_nul.txt.html.js.html">nul.txt.html.js</a></li>
+	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.html">nul.xpr</a></li>
@@ -268,6 +282,8 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.xpr.knowledge.always.html">nul.xpr.knowledge.always</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.ior3.html">nul.xpr.knowledge.ior3</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.knowledge.never.html">nul.xpr.knowledge.never</a></li>
 	
@@ -297,10 +313,10 @@ ul.inheritsList
 			<p class="description">
 				
 			
+				Singleton
 				
 				
-				
-					<br /><i>Defined in: </i> &lt;null/lng\txt\out\null.txt.js&gt;.
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/out/null.txt.js">lng/txt/out/null.txt.js</a>.
 				
 			</p>
 
@@ -350,7 +366,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#.beginDraw">beginDraw</a></b>(xpr)
 								</div>
-								<div class="description"></div>
+								<div class="description">Called when an expression is about to be drawn</div>
 							</td>
 						</tr>
 					
@@ -359,25 +375,16 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#.clpsSstm">clpsSstm</a></b>(table, uc, lcFct)
 								</div>
-								<div class="description"></div>
+								<div class="description">Create a collapse system out of an HTML table.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#.collapse">collapse</a></b>(tbl, lc)
+								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#.dispatchPair">dispatchPair</a></b>(xpr)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#.dispatchPair">dispatchPair</a></b>(xpr, obj)
-								</div>
-								<div class="description"></div>
+								<div class="description">Pairs can have several writing depending on their constitution : singleton { 1 }, list (1, 2, 3) or set { 1 [] 2 [] 3 }.</div>
 							</td>
 						</tr>
 					
@@ -386,7 +393,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#.endDraw">endDraw</a></b>(xpr)
 								</div>
-								<div class="description"></div>
+								<div class="description">Called for each expression that have been drawn</div>
 							</td>
 						</tr>
 					
@@ -413,16 +420,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#.toText">toText</a></b>(xpr)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#.uncollapse">uncollapse</a></b>(tbl, lc)
-								</div>
-								<div class="description"></div>
+								<div class="description">Main function, making a string out of an expression</div>
 							</td>
 						</tr>
 					
@@ -433,6 +431,42 @@ ul.inheritsList
 				
 			
 <!-- ============================== events summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the events documented in the class nul.txt.">
+					<caption>Event Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Event Attributes</th>
+							<th scope="col">Event Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#event:.collapse">collapse</a></b>(tbl, lc)
+								</div>
+								<div class="description">Event managing the 'collapse' command.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.txt.<b><a href="../symbols/_nul.txt.html#event:.uncollapse">uncollapse</a></b>(tbl, lc)
+								</div>
+								<div class="description">Event managing the 'uncollapse' command.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
 			
 
 <!-- ============================== constructor details ==================== -->		
@@ -482,7 +516,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Called when an expression is about to be drawn
 						
 						
 					</div>
@@ -494,7 +528,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>xpr</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -513,60 +547,12 @@ ul.inheritsList
 					<a name=".clpsSstm"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
+					<span class="light">{<a href="../symbols/_nul.clpsSstm.html">nul.clpsSstm</a>}</span>
 					<span class="light">nul.txt.</span><b>clpsSstm</b>(table, uc, lcFct)
 					
 					</div>
 					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>table</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>uc</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>lcFct</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".collapse"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.txt.</span><b>collapse</b>(tbl, lc)
-					
-					</div>
-					<div class="description">
-						
+						Create a collapse system out of an HTML table.
 						
 						
 					</div>
@@ -578,22 +564,35 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>tbl</b>
+									<span class="light fixedFont">{HTMLTable}</span> <b>table</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>The table element that will collapse rows.</dd>
 							
 								<dt>
-									<b>lc</b>
+									<span class="light fixedFont">{'up' | 'dn'}</span> <b>uc</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Determine which collapser row (the beginner-up or the ender-dn) is kept visible when the rows are collapsed</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function() {Number}}</span> <b>lcFct</b>
+									
+								</dt>
+								<dd>The function giving the index of the row (the table row number is used if no fct is specified)</dd>
 							
 							</dl>
 						
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.clpsSstm.html">nul.clpsSstm</a>}</span> </dd>
+							
+							</dl>
 						
 						
 						
@@ -604,11 +603,11 @@ ul.inheritsList
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.txt.</span><b>dispatchPair</b>(xpr, obj)
+					<span class="light">nul.txt.</span><b>dispatchPair</b>(xpr)
 					
 					</div>
 					<div class="description">
-						
+						Pairs can have several writing depending on their constitution : singleton { 1 }, list (1, 2, 3) or set { 1 [] 2 [] 3 }.This function call one of the three sub-function.
 						
 						
 					</div>
@@ -620,13 +619,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>xpr</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>obj</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -650,7 +643,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Called for each expression that have been drawn
 						
 						
 					</div>
@@ -662,7 +655,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>xpr</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -758,43 +751,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>xpr</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".uncollapse"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.txt.</span><b>uncollapse</b>(tbl, lc)
-					
-					</div>
-					<div class="description">
-						
+						Main function, making a string out of an expression
 						
 						
 					</div>
@@ -806,13 +763,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>tbl</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>lc</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -832,6 +783,95 @@ ul.inheritsList
 			
 <!-- ============================== event details ========================= -->		
 			
+				<div class="sectionTitle">
+					Event Detail
+				</div>
+				
+					<a name="event:.collapse"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.txt.</span><b>collapse</b>(tbl, lc)
+					
+					</div>
+					<div class="description">
+						Event managing the 'collapse' command.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{HTMLTable}</span> <b>tbl</b>
+									
+								</dt>
+								<dd>The collapsing table or one of its son</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>lc</b>
+									
+								</dt>
+								<dd>The table item to collapse (its collapser begin or its collapser end index)</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="event:.uncollapse"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.txt.</span><b>uncollapse</b>(tbl, lc)
+					
+					</div>
+					<div class="description">
+						Event managing the 'uncollapse' command.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{HTMLTable}</span> <b>tbl</b>
+									
+								</dt>
+								<dd>The collapsing table or one of its son</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>lc</b>
+									
+								</dt>
+								<dd>The table item to collapse (its collapser begin or its collapser end index)</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
 			
 			<hr />
 		</div>
@@ -840,7 +880,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Oct 27 2009 13:58:54 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Wed Oct 28 2009 12:43:51 GMT+0200 (EET)
 		</div>
 	</body>
 </html>
