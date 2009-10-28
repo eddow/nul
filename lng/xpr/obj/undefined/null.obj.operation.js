@@ -10,7 +10,14 @@
 //TODO4: ((a - b) - c) =?> (a - (b + c)) 
 //TODO4: (a - (b - c)) =?> ((a + c) - b) !!!/0 
 
-nul.obj.operation = Class.create(nul.obj.undefined, {
+nul.obj.operation = Class.create(nul.obj.undefined, /** @lends nul.obj.operation# */{
+	/**
+	 * Define an operator applied to several objects
+	 * @constructs
+	 * @extends nul.obj.undefined
+	 * @param {String} operator The operator binding
+	 * @param {nul.xpr.object[]} ops The operands
+	 */
 	initialize: function(operator, ops) {
 		nul.obj.use(ops);
 		this.operator = operator;
@@ -20,7 +27,9 @@ nul.obj.operation = Class.create(nul.obj.undefined, {
 	
 //////////////// nul.expression implementation
 	
+	/** @constant */
 	expression: 'operation',
+	/** @constant */
 	components: ['operands']
 });
 

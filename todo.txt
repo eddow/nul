@@ -1,29 +1,24 @@
-
-(tuple[Q,str])
-; tuple
-={	{} => {{}}
-[]	(T,.. Ts) => { T _,.. tuple[Ts] _ }
-}
-:::if('klg'== xpr.expression) this.enterKlg(xpr);	TODO 1: ca DOIT etre sur chaque knowledge
-
+\/sigma \/S
+{ (a, b); ((a=sigma[S][b]) [] (b=sigma[S][a])) } = oiuoiu
+; S = houses [1..5]
+; houses = { {} => {} [] (n,.. ns) => ((_::number n),.. houses[ns]) }
+; sigma ={ \/x {x} => {} [] (a,b,.. o) => ((a=>b),.. sigma[b,.. o] ) }
+::: virer le oiuoiu pour que ca marche ........
 
 :::cas "s s" set auto-inclusive : s is protected while representing ... so what happen ?
 
-(set s) x ==> s x
-set
+x 1
+; set[1..3] x
+; set
 ={ {}
-[]  (a,.. s) => ( set s [] (a,.. set s) )
+[] \/a \/s (a,.. s) => ( set[s] [] (a,.. set[s]) )
 }
-:::faire!
+:::faire! (developper)
 
 
-
-f = { x = f x }
-::: Ca devrait donner l'identité, pas le gros truc complexe
 
 todo {
-inOrder [1..]			//inf decomposition
-\/a { _ ::attr a } a	//attribute self-ref 
+sigma[1..]			//inf decomposition
 }
 
 S = houses [1..5]

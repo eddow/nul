@@ -8,7 +8,13 @@
 
 //TODO D
 
-nul.xpr.knowledge.ior3 = Class.create(nul.expression, {
+nul.xpr.knowledge.ior3 = Class.create(nul.expression, /** @lends nul.xpr.knowledge.ior3# */{
+	/**
+	 * Represent a list of possible knowledges 
+	 * @extends nul.expression
+	 * @constructs
+	 * @param {nul.xpr.knowledge[]} choices The possible cases
+	 */
 	initialize: function(choices) {
 		this.choices = choices;
 		//this.mult = 0;	//TODO O: 'mult' optimisation
@@ -51,7 +57,9 @@ nul.xpr.knowledge.ior3 = Class.create(nul.expression, {
 
 //////////////// nul.expression implementation
 
+	/** @constant */
 	expression: 'kior3',
+	/** @constant */
 	components: ['choices'],
 	placed: function($super, prnt) {
 		nul.xpr.mod(prnt, nul.xpr.knowledge);

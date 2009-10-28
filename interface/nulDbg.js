@@ -41,7 +41,7 @@ function test(cb, dst, prgrsMsg)
 		if($('shwLogging').checked) {
 			nul.debug.logging = {error: true, fail: true};
 			var opts = $('loggingChk').options;
-			for(var o in opts) if(cstmNdx(o))
+			for(var o=0; o< opts.length; ++o)
 				nul.debug.logging[opts[o].value] = opts[o].selected;
 		} else nul.debug.logging = false;
 	}
