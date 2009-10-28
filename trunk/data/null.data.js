@@ -56,9 +56,6 @@ nul.data = Class.create({
 
 });
 
-nul.data.are = nul.debug.are('context');
-nul.data.is = nul.debug.is('context');
-
 nul.data.context = Class.create({
 	/**
 	 * {string} Context name
@@ -76,9 +73,6 @@ nul.data.context = Class.create({
 	 */
 	query: function(obj) { throw 'Abstract'; }
 });
-
-nul.data.context.are = nul.debug.are('query');
-nul.data.context.is = nul.debug.is('query');
 
 nul.data.query = function(obj) {
 	nul.obj.use(obj);

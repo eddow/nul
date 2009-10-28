@@ -1,8 +1,4 @@
-cmplx = <library><( _
+cmplx = {_
 ::rl(Q r)
 ::img(Q i)
-::(+)
- { cmplx c => cmplx(_ ::rl(r+c.rl) ::img(i+c.img))
-[] Q n => cmplx(_ ::rl(r+n) ::img(i))
- }
-)></library>
+}

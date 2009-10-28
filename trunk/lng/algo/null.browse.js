@@ -38,14 +38,12 @@ nul.browser = Class.create(/** @lends nul.browser# */{
 			
 			var bwsd = {};
 			var sbx = this.enter(xpr);
-			if(sbx) for(var comp in sbx.components) if(cstmNdx(comp)) {
-				comp = sbx.components[comp];
-				if(nul.xpr.bunch(sbx[comp])) {
+			if(sbx) for(var comp in sbx.components)
+				if(sbx.components[comp].bunch) {
 					var brwsr = this;
 					bwsd[comp] = map(sbx[comp], function(i, o) { return brwsr.recursion(o); });
 				} else
 					bwsd[comp] = this.recursion(sbx[comp], comp);
-			}
 			return this.makeRV(xpr, bwsd);
 		} catch(err) {
 			nul.failed(err);
@@ -184,13 +182,11 @@ nul.browser.bijectif.merge = function(xpr, bwsd) {
 	var mod;
 	for(var c in bwsd) {
 		var nwItm = bwsd[c];
-		if(nul.xpr.bunch(xpr[c])) {
-			nwItm[''] = nul.browser.bijectif.unchanged;
+		if(xpr.components[c].bunch) {
 			//bwsd[c] contient des null-s et des valeurs
 			if(nul.browser.bijectif.unchanged != nul.browser.bijectif.firstChange(nwItm)) {
 				//If at least one non-null return value,
 				nwItm = merge(nwItm, xpr[c], nul.browser.bijectif.firstChange);
-				nwItm[''] = xpr[c][''];	//Peculiar case of 'xprBunch'
 			} else nwItm = nul.browser.bijectif.unchanged;
 		}
 		if(nul.browser.bijectif.unchanged!= nwItm) {

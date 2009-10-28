@@ -29,7 +29,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
  	 * Defined empty by default. Must be overriden.
  	 * @type String[]
  	 */
-	components: [],
+	components: {},
 	
 //////////////// Assertions
 
@@ -55,7 +55,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	summary: function(itm) {
 		if(!this.summarised) return this['sum_'+itm].apply(this);
 		//this.use();
-		if('undefined'== typeof this.summarised[itm]) {
+		if(Object.isUndefined(this.summarised[itm])) {
 			assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
 			this.summarised[itm] = this['sum_'+itm].apply(this);
 		}
@@ -76,9 +76,10 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 */
 	modifiable: function() {
 		this.use();
+		var comps = this.components;
 		return maf(this, function(ndx, obj) {
 			if('summarised'!= ndx) 
-				return nul.xpr.bunch(obj)?nul.xpr.beBunch(clone1(obj)):obj;
+				return (comps[ndx] && comps[ndx].bunch)?clone1(obj):obj;
 		});
 	},
 
@@ -96,15 +97,11 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 */
 	built: function(smr) {
 		this.modify();
-		for(var comp in this.components) if(cstmNdx(comp)) {
-			var cname = this.components[comp];
-			if(nul.debug.assert) assert('attribs'!= cname || nul.xpr.bunch(this[cname]),
-				'Attributes ARE bunch');
-			if(nul.xpr.bunch(this[cname])) {
-				for(var ci in this[cname]) if(cstmNdx(ci))
-					this[cname][ci] = this[cname][ci].placed(this);
-			} else this[cname] = this[cname].placed(this);
-		}
+		for(var comp in this.components)
+			if(this.components[comp].bunch) {
+				for(var ci in this[comp]) if(cstmNdx(ci))
+					this[comp][ci] = this[comp][ci].placed(this);
+			} else this[comp] = this[comp].placed(this);
 		this.summarise(smr);
 		return this.fix();
 	},
@@ -191,33 +188,33 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 
 	sum_components: function() {
 		var rv = {};
-		for(var comp in this.components) if(cstmNdx(comp)) {
-			var cname = this.components[comp];
-			if(nul.xpr.bunch(this[cname])) {
-				for(var ci in this[cname]) if(cstmNdx(ci))
-					rv[cname+':'+ci] = this[cname][ci];
-			} else {
-				rv[cname] = this[cname];
-			}
-		}
+		for(var comp in this.components)
+			if(this.components[comp].bunch) {
+				for(var ci in this[comp]) if(cstmNdx(ci))
+					rv[comp+':'+ci] = this[comp][ci];
+			} else rv[comp] = this[comp];
 		return rv;
 	},
 	
 	sum_index: function() {
 		var cs = [];
-		for(var c in this.components) if(cstmNdx(c))
-			cs.push(this[this.components[c]]);
-		return this.indexedSub(cs);
+		for(var c in this.components) cs.push(this[c]);
+		return this.indexedSub();
 	},
 
 	indexedSub: function(items) {
 		//TODO 3: assert no infinite recursion
 		nul.xpr.is(this);
-	 	items = beArrg(arguments);
+	 	items = beArrg(arguments).join(',');
 	 	var rv = [];
-	 	if(items) for(var e in items) if(cstmNdx(e))
-	 		rv.push(nul.xpr.indexedBunch(items[e]));
-	 	return '['+this.expression + (rv.length?(':' + rv.join('|')):'') +']';
+	 	for(var c in this.components)
+	 		if(this.components[c].bunch) {
+	 			for(var e in this[c]) if(cstmNdx(e, this[c]))
+	 				rv.push(c+'.'+e+':'+this[c][e].toString())
+	 		} else rv.push(c+':'+this[c].toString());
+	 	if(items) rv.unshift(items);
+	 	rv.unshift(this.expression);
+	 	return '['+ rv.join('|') +']';
 	},
 
 	sum_htmlTxt: function() { return nul.txt.html.toText(this); },
@@ -235,57 +232,22 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 
 /** @namespace Expression helper */
 nul.xpr = {
-	are: nul.debug.are('expression'),
+	are: function(x, t) {
+		nul.debug.are(t||'nul.expression')(x);
+		return x;
+	},
 	is: function(x, t) {
-		nul.debug.is('expression')(x);
-		if(t) {
-			t = t.prototype.expression;
-			(function() { return x.expression == t; }.asserted('Expected "'+t+'" expression'));
-		}
+		nul.debug.is(t||'nul.expression')(x);
+		return x;
 	},
 	use: function(x, t) {
-		if(nul.debug.assert) assert(x, 'Unexpected empty expression');
-		if(!nul.xpr.bunch(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) {
-			nul.xpr.is(o, t);
-			o.use();
-		});
+		nul.debug.is(t||'nul.expression', 'summarised', function(o) { return !!o.summarised; })(x);
+		return x;
 	},
-	
 	mod: function(x, t) {
-		if(nul.debug.assert) assert(x, 'Unexpected empty expression');
-		if(!nul.xpr.bunch(x)) x = [x];
-		if(nul.debug.assert) map(x, function(i, o) {
-			nul.xpr.is(o, t);
-			o.modify();
-		});
+		nul.debug.is(t||'nul.expression', 'modifiable', function(o) { return !o.summarised; })(x);
+		return x;
 	}
-};
-
-/**
- * X is either an expression either a [components] bunch of expression
- * @return {Boolean} Weither x is a bunch of expressions
- */
-nul.xpr.bunch = function(x) {
-	return isArray(x) || 'xprBunch'== x[''];
-};
-/**
- * Mark an object as an expression bunch
- * @param {Association} x
- * @return {Association} x that has been modified
- */
-nul.xpr.beBunch = function(x) {
-	if(!x) x = {};
-	x[''] = 'xprBunch';
-	return x;
-};
-
-nul.xpr.indexedBunch = function(b) {
-	if(!nul.xpr.bunch(b)) return b.toString();
-	var rv = [];
-	for(var e in b) if(cstmNdx(e))
-		rv.push(e+':'+b[e].toString());
-	return rv.join('/');
 };
 
 /**

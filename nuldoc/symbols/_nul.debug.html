@@ -279,15 +279,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a></li>
 	
-	<li><a href="../symbols/_nul.xpr.knowledge.always.html">nul.xpr.knowledge.always</a></li>
-	
 	<li><a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.knowledge.ior3.html">nul.xpr.knowledge.ior3</a></li>
 	
-	<li><a href="../symbols/_nul.xpr.knowledge.never.html">nul.xpr.knowledge.never</a></li>
-	
 	<li><a href="../symbols/_nul.xpr.knowledge.represent.html">nul.xpr.knowledge.represent</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.special.html">nul.xpr.knowledge.special</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.knowledge.stepUp.html">nul.xpr.knowledge.stepUp</a></li>
 	
@@ -373,7 +371,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.are">are</a></b>(elm)
+								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.are">are</a></b>(cls, nm, cb)
 								</div>
 								<div class="description">Assert these objects has a member (use a member which name defines the class)</div>
 							</td>
@@ -427,16 +425,25 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.is">is</a></b>(elm)
+								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.implement">implement</a></b>(obj, cls)
 								</div>
-								<div class="description">Assert this object has a member (use a member which name defines the class)</div>
+								<div class="description">Determines weither an object implements a class</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.log">log</a></b>(tp)
+								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.is">is</a></b>(cls, nm, cb)
+								</div>
+								<div class="description">Assert this object implements a class</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.log">log</a></b>(tp, endC)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -573,7 +580,7 @@ ul.inheritsList
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.debug.</span><b>are</b>(elm)
+					<span class="light">nul.debug.</span><b>are</b>(cls, nm, cb)
 					
 					</div>
 					<div class="description">
@@ -589,10 +596,22 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>elm</b>
+									<span class="light fixedFont">{Class}</span> <b>cls</b>
 									
 								</dt>
-								<dd>The member to test</dd>
+								<dd>The expected class</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>nm</b>
+									
+								</dt>
+								<dd>[optional] The description of what is expected</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function(obj) {Boolean}}</span> <b>cb</b>
+									
+								</dt>
+								<dd>[optional] Cqll bqck to try on the tested objects</dd>
 							
 							</dl>
 						
@@ -814,15 +833,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".is"> </a>
+					<a name=".implement"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.debug.</span><b>is</b>(elm)
+					<span class="light">nul.debug.</span><b>implement</b>(obj, cls)
 					
 					</div>
 					<div class="description">
-						Assert this object has a member (use a member which name defines the class)
+						Determines weither an object implements a class
 						
 						
 					</div>
@@ -834,10 +853,64 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>elm</b>
+									<b>obj</b>
 									
 								</dt>
-								<dd>The member to test</dd>
+								<dd></dd>
+							
+								<dt>
+									<b>cls</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".is"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.debug.</span><b>is</b>(cls, nm, cb)
+					
+					</div>
+					<div class="description">
+						Assert this object implements a class
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Class}</span> <b>cls</b>
+									
+								</dt>
+								<dd>The expected class</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>nm</b>
+									
+								</dt>
+								<dd>[optional] The description of what is expected</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function(obj) {Boolean}}</span> <b>cb</b>
+									
+								</dt>
+								<dd>[optional] Cqll bqck to try on the tested objects</dd>
 							
 							</dl>
 						
@@ -871,7 +944,7 @@ ul.inheritsList
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.debug.</span><b>log</b>(tp)
+					<span class="light">nul.debug.</span><b>log</b>(tp, endC)
 					
 					</div>
 					<div class="description">
@@ -888,6 +961,12 @@ ul.inheritsList
 							
 								<dt>
 									<b>tp</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>endC</b>
 									
 								</dt>
 								<dd></dd>
@@ -1127,7 +1206,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Wed Oct 28 2009 12:43:50 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Wed Oct 28 2009 22:58:57 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

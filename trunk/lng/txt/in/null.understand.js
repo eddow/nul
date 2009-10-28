@@ -129,7 +129,7 @@ nul.understanding.base = Class.create({
 		this.klg = new nul.xpr.knowledge(klgName);
 	},
 	resolve: function(identifier) {
-		if('undefined'!= typeof this.parms[identifier])
+		if(!Object.isUndefined(this.parms[identifier]))
 			return this.parms[identifier];
 		if(this.prntUb) return this.prntUb.resolve(identifier);
 		throw nul.understanding.unresolvable;

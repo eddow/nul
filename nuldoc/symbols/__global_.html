@@ -279,15 +279,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a></li>
 	
-	<li><a href="../symbols/_nul.xpr.knowledge.always.html">nul.xpr.knowledge.always</a></li>
-	
 	<li><a href="../symbols/_nul.xpr.knowledge.eqClass.html">nul.xpr.knowledge.eqClass</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.knowledge.ior3.html">nul.xpr.knowledge.ior3</a></li>
 	
-	<li><a href="../symbols/_nul.xpr.knowledge.never.html">nul.xpr.knowledge.never</a></li>
-	
 	<li><a href="../symbols/_nul.xpr.knowledge.represent.html">nul.xpr.knowledge.represent</a></li>
+	
+	<li><a href="../symbols/_nul.xpr.knowledge.special.html">nul.xpr.knowledge.special</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.knowledge.stepUp.html">nul.xpr.knowledge.stepUp</a></li>
 	
@@ -377,18 +375,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#clone">clone</a></b>(myObj)
-								</div>
-								<div class="description">Duplicate myObj and its components</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#clone1">clone1</a></b>(myObj)
 								</div>
-								<div class="description">Duplicate myObj where components are just references</div>
+								<div class="description">Duplicate myObj where components are just references : shallow clone</div>
 							</td>
 						</tr>
 					
@@ -443,15 +432,6 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#isEmpty">isEmpty</a></b>(o, b)
 								</div>
 								<div class="description">Is o an empty association ? (beside the values contained in array b)</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#keys">keys</a></b>(ass)
-								</div>
-								<div class="description">The array of keys of association ass</div>
 							</td>
 						</tr>
 					
@@ -533,15 +513,6 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#trys">trys</a></b>(itm, fct)
 								</div>
 								<div class="description">Returns the first of <itm> for which the function <fct> returned a value evaluated to true</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#vals">vals</a></b>(ass)
-								</div>
-								<div class="description">The array of values of association ass</div>
 							</td>
 						</tr>
 					
@@ -746,45 +717,6 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="clone"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>clone</b>(myObj)
-					
-					</div>
-					<div class="description">
-						Duplicate myObj and its components
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>myObj</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="clone1"> </a>
 					<div class="fixedFont">
 					
@@ -793,7 +725,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Duplicate myObj where components are just references
+						Duplicate myObj where components are just references : shallow clone
 						
 							<br />
 							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
@@ -1064,52 +996,6 @@ ul.inheritsList
 							<dt class="heading">Returns:</dt>
 							
 								<dd></dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="keys"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{String[]}</span>
-					<b>keys</b>(ass)
-					
-					</div>
-					<div class="description">
-						The array of keys of association ass
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{association}</span> <b>ass</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{String[]}</span> </dd>
 							
 							</dl>
 						
@@ -1513,52 +1399,6 @@ ul.inheritsList
 						
 						
 
-					<hr />
-				
-					<a name="vals"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/_Array.html">Array</a>}</span>
-					<b>vals</b>(ass)
-					
-					</div>
-					<div class="description">
-						The array of values of association ass
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{Association}</span> <b>ass</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/_Array.html">Array</a>}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
 					
 				
 			
@@ -1573,7 +1413,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Wed Oct 28 2009 12:43:50 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Wed Oct 28 2009 22:58:57 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

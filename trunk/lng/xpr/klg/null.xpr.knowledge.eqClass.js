@@ -22,7 +22,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
  		} else {
 			this.equivls = obj?[obj]:[];
 			this.belongs = [];
-			this.attribs = nul.xpr.beBunch(attr);
+			this.attribs = attr || {};
 		}
 	},
 
@@ -39,7 +39,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		if(v.defined) return -1;
 		var d = v.dependance();
 		var rv = 0;
-		if(d.otherThan(klg)) rv += 1;
+		if('local'!= this.expression || klg.name!= this.klgRef) rv += 1;
 		if(!isEmpty(d.usage(klg).local)) rv += 2;
 		if(!isEmpty(d.usage(klg).ior3)) rv += 4;
 		if(v.anonymous) rv += 0.5;
@@ -80,7 +80,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		if(o.defined) {
 			if(this.eqvlDefined())
 				nul.trys(function() {
-					nul.xpr.mod(klg, nul.xpr.knowledge);
+					nul.xpr.mod(klg, 'nul.xpr.knowledge');
 					var unf;
 					try {
 						unf = this.equivls[0].unified(o, klg);
@@ -124,7 +124,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
  		this.modify(); s.use();
  		if(s.defined) {
  			if(this.blngDefined()) {
-				nul.xpr.mod(klg, nul.xpr.knowledge);
+				nul.xpr.mod(klg, 'nul.xpr.knowledge');
 				var ntr;
 				try {
 					ntr = this.belongs[0].intersect(s, klg);
@@ -149,7 +149,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		var useless = true;
 		if(this.eqvlDefined()) {
 			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
-			this.attribs = nul.xpr.beBunch();
+			this.attribs = {};
 			useless = false;
 		} else if(this.attribs !== attrs)	//TODO 3: gardien est-il nécessaire?
 			merge(this.attribs, attrs, function(a,b) {
@@ -172,7 +172,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		var eqc = this;
 		var destSelect = function(cn, ndx) {
 			return excl!= cn+':'+ndx && excl!= cn+':*' &&
-				(!only || only==cn+':'+ndx || only==cn+':*' || ('undefined'== typeof ndx && cn==only.substr(0, cn.length)));
+				(!only || only==cn+':'+ndx || only==cn+':*' || (Object.isUndefined(ndx) && cn==only.substr(0, cn.length)));
 		};
 		var subInfluence = function(cn, infl) {
 			if(destSelect(cn))
@@ -194,13 +194,10 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 	 */
 	pruned: function(klg, lcls) {
 		var remover = function() {
-			if(this.defined) return this;
-			var deps = this.dependance();
-			if(isEmpty(deps.usages)) return this;
-			//TODO 2: otherThan : only in locals or in ior3 too ?
-			if(deps.otherThan(klg)) return this;	//If depends on another knowledge, keep
-			deps = deps.usage(klg);
-			for(var l in deps.local) if(lcls[l]) return this;	//If depends on a needed local, keep
+			if('local'!= this.expression || 
+					klg.name!= this.klgRef ||
+					lcls[this.ndx])
+				return this;
 		};
 		var nVals = maf(this.equivls, remover);
 		var nBlgs = maf(this.belongs, remover);
@@ -243,10 +240,14 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 	/** @constant */
 	expression: 'eqCls',
 	/** @constant */
-	components: ['equivls', 'belongs', 'attribs'],
+	components: {
+		'equivls' : {type: 'nul.xpr.object', bunch: true},
+		'belongs' : {type: 'nul.xpr.object', bunch: true},
+		'attribs' : {type: 'nul.xpr.object', bunch: true}
+	},
 
 	placed: function($super, prnt) {
-		nul.xpr.mod(prnt, nul.xpr.knowledge);
+		nul.xpr.mod(prnt, 'nul.xpr.knowledge');
 		if(!this.equivls.length && isEmpty(this.attribs,'') && 1== this.belongs.length && this.blngDefined()) {
 			if('&phi;'== this.belongs[0].expression) nul.fail("&phi; is empty");
 			return;

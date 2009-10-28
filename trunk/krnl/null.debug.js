@@ -121,12 +121,15 @@ nul.debug = {
 		if(v.dbgHtml) return v.dbgHtml();
 		return v.toFlat?v.toFlat():v.toString();
 	},
-	log: function(tp) {
+	log: function(tp, endC) {
 		return tp && nul.debug.logging && nul.debug.logging[tp] ? function(v) {
 			v = beArrg(arguments);
 			for(var vi = 0; vi<v.length; ++vi) v[vi] = nul.debug.toLogText(v[vi]);
 			v.unshift(nul.debug.logCount());
-			return nul.debug.logs.log(v).addClassName(tp+' log');
+			var lg = nul.debug.logs.log(v);
+			for(var i=0; i<nul.debug.lcs.toPair.length; ++i) lg.className = 'collapsed '+lg.className;
+			if(endC) lg.addClassName('uncollapsing');
+			return lg.addClassName(tp+' log');
 		} : nul.debug.logCount;
 	},
 	warnRecursion: function(v)
@@ -172,7 +175,7 @@ nul.debug = {
 				return rv;
 			} catch(err) { abrt = true; nul.exception.notice(err); throw err;
 			} finally {
-				if(lgd) nul.debug.log(name)(
+				if(lgd) nul.debug.log(name,'end')(
 					nul.debug.lcs.endCollapser(
 						(abrt?'Abort':'End'),
 						(abrt?'Failed':'Done')),
@@ -193,28 +196,61 @@ nul.debug = {
 			assert(ftc.apply(this), str);
 		};
 	},
+	
 	/**
-	 * Assert this object has a member (use a member which name defines the class)
-	 * @param {String} elm The member to test
+	 * Determines weither an object implements a class
+	 */
+	implement: function(obj, cls) {
+		var c = obj.constructor;
+		while(c && c!= cls) c = c.superclass;
+		return c == cls;
+	},
+	
+	/**
+	 * Assert this object implements a class
+	 * @param {Class} cls The expected class
+	 * @param {String} nm [optional] The description of what is expected
+	 * @param {function(obj) {Boolean}} cb [optional] Cqll bqck to try on the tested objects
 	 * @return nothing
 	 * @throws {assertException}
 	 */
-	is: function(elm) {
+	is: function(cls, nm, cb) {
+		if(Object.isString(cls)) {
+			nm = cls;
+			cls = eval(nm);
+		}
+		cb = cb || nm;
+		if(!Object.isFunction(cb)) cb = null;
 		return function(obj) {
-			if(nul.debug.assert) assert(obj && obj[elm], 'Expected '+elm);
+			if(nul.debug.assert) assert(
+					obj && 
+					nul.debug.implement(obj,cls) &&
+					(!cb || cb(obj)),
+				'Expected '+(nm||'a specific object'));
 			return obj;
 		}; 
 	},
 	/**
 	 * Assert these objects has a member (use a member which name defines the class)
-	 * @param {String} elm The member to test
+	 * @param {Class} cls The expected class
+	 * @param {String} nm [optional] The description of what is expected
+	 * @param {function(obj) {Boolean}} cb [optional] Cqll bqck to try on the tested objects
 	 * @return nothing
 	 * @throws {assertException}
 	 */
-	are: function(elm) {
+	are: function(cls, nm, cb) {
+		if(Object.isString(cls)) {
+			nm = cls;
+			cls = eval(nm);
+		}
+		cb = cb || nm;
+		if(!Object.isFunction(cb)) cb = null;
 		return function(objs) {
-			if(nul.debug.assert) map(objs, function(i, o) { assert(o && o[elm], 'Expected '+elm + 's'); });
-			return objs;
+			if(nul.debug.assert) map(objs, function(i, o) { assert(
+					obj && 
+					nul.debug.implement(obj,cls) &&
+					(!cb || cb(obj)),
+					'Expected '+ (nm||'specific object') + 's'); });
 		}; 
 	},
 	
@@ -234,7 +270,7 @@ nul.debug = {
 		nul.debug.log(name)(nul.debug.lcs.collapser('Begin'), name, args);
 		try {
 			var rv = cb.apply(obj);
-			nul.debug.log(name)(nul.debug.lcs.endCollapser('End','Done'), name, rv || 'nothing', args);
+			nul.debug.log(name, 'end')(nul.debug.lcs.endCollapser('End','Done'), name, rv || 'nothing', args);
 			nul.debug.fails.shift();
 			return rv;
 		} catch(err) {
@@ -243,7 +279,7 @@ nul.debug = {
 			nul.debug.fails[0].pop();	//Remove the last '|'
 			var le = nul.debug.log(name);
 			if(le) le(nul.debug.lcs.endCollapser('Abort', 'Failed'), name, nul.debug.fails[0]);
-			else nul.debug.log('fail')('', 'Failure', nul.debug.fails[0]);
+			else nul.debug.log('fail', 'end')('', 'Failure', nul.debug.fails[0]);
 			nul.debug.fails.shift();
 			nul.fail(name, args);
 		}

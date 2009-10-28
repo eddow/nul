@@ -135,7 +135,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 //////////////// nul.obj.defined implementation
 
 	subUnified: function(o, klg) {
-		this.use(); nul.obj.use(o); nul.xpr.mod(klg, nul.xpr.knowledge);
+		this.use(); nul.obj.use(o); nul.xpr.mod(klg, 'nul.xpr.knowledge');
 		
 		if('range'== o.expression) return (o.lower==this.lower && o.upper==this.upper);
 		if('pair'!= o.expression) nul.fail(o, ' is not a range nor a pair');

@@ -19,20 +19,8 @@ function isArray(itm) {
 		typeof itm.splice === 'function';
 }
 
-var cloneStack = [];
 /**
- * Duplicate myObj and its components
- */
-function clone(myObj) {
-	if(null== myObj || typeof(myObj) != 'object' || myObj.ownerDocument) return myObj;
-	if(nul.debug.assert) assert(!cloneStack.contains(myObj), 'Clone not re-entrant'); 
-	cloneStack.push(myObj);
-	try { return map(myObj, function(i, o) { return clone(o); }); }
-	finally { cloneStack.pop(myObj); }
-}
-
-/**
- * Duplicate myObj where components are just references
+ * Duplicate myObj where components are just references : shallow clone
  */
 function clone1(myObj) {
 	if(null== myObj || typeof(myObj) != 'object') return myObj;
@@ -43,9 +31,8 @@ function clone1(myObj) {
  * Gets weither <ndx> is a custom index of <ass>
  * Returns false for all the default properties of the arrays.
  */
-function cstmNdx(ndx, ass) {
-	return ''!== ndx && 
-		((ass && (!isArray(ass) || ass[ndx]!= [][ndx])) || 'undefined'== typeof [][ndx]);
+function cstmNdx(ndx, ass) {	//TODO 2: avoid the items that are identical to prototype
+	return ((ass && (!isArray(ass) || ass[ndx]!= [][ndx])) || Object.isUndefined([][ndx]));
 }
 /**
  * Internal (helper) use for mapping functions
@@ -96,7 +83,7 @@ function maf(itm, fct) {
 	for(var i in itm) if(cstmNdx(i, itm)) {
 		var ndx = reTyped(i); 
 		var trv = mapCb(fct, i, itm[i]);
-		if('undefined'!= typeof trv && null!== trv) {
+		if(!Object.isUndefined(trv) && null!== trv) {
 			if('number'== typeof ndx) rv.push(trv);
 			else rv[ndx] = trv;
 		}
@@ -134,28 +121,6 @@ function reTyped(v) {
 }
 
 /**
- * The array of keys of association ass
- * @param {association} ass
- * @return {String[]}
- */
-function keys(ass) {
-	var rv = [];
-	for(var i in ass) if(cstmNdx(i, ass)) rv.push(i);
-	return rv;
-}
-
-/**
- * The array of values of association ass
- * @param {Association} ass
- * @return {Array}
- */
-function vals(ass) {
-	var rv = [];
-	for(var i in ass) if(cstmNdx(i, ass)) rv.push(ass[i]);
-	return rv;
-}
-
-/**
  * If elements of t are tables, they become part of t
  * @example [ 1, [2, [3, 4]], 5 ] ==> [ 1, 2, 3, 4, 5 ]
  */
@@ -190,7 +155,7 @@ function beArrg(args, ndx) {
 
 function merge(a, b, cb) {
 	for(var i in b) if(cstmNdx(i, a)) a[i] = cb?cb(a[i],b[i], i):b[i];
-	if(cb) for(var i in a) if('undefined'== typeof b[i]) a[i] = cb(a[i], null, i);
+	if(cb) for(var i in a) if(Object.isUndefined(b[i])) a[i] = cb(a[i], null, i);
 	return a; 
 }
 

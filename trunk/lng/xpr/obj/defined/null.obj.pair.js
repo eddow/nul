@@ -83,7 +83,10 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 	/** @constant */
 	expression: 'pair',
 	/** @constant */
-	components: ['first', 'second'],
+	components: {
+		'first': {type: 'nul.xpr.object', bunch: false},
+		'second': {type: 'nul.xpr.object', bunch: false}
+	},
 	sum_isList: function() {
 		return this.first.knowledge.isFixed() && this.second.isList();
 	},
@@ -103,10 +106,10 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
  */
 nul.obj.pair.list = function(flw, elms) {
 	elms = beArrg(arguments, 1);
-	nul.xpr.use(elms);
 	var rv = flw?flw:nul.obj.empty;
 	while(elms.length) {
 		var elm = elms.pop();
+		nul.xpr.use(elm);
 		rv = (new nul.obj.pair(elm, rv)).built();
 	}
 	return rv;

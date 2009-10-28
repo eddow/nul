@@ -16,7 +16,6 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, /** @lends nul.obj.ior3# */{
 	 * @param {nul.xpr.object[]} items The possible values this one can take
 	 */
 	initialize: function(klgRef, ndx, items) {
-		nul.obj.use(items);
 		/**
 		 * The knowledge this local applies to
 		 * @type String
@@ -54,7 +53,7 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, /** @lends nul.obj.ior3# */{
 
 	/** Specific index computation for ior3 */
 	sum_index: function() {
-		return this.indexedSub(this.klgRef, this.ndx, this.values);
+		return this.indexedSub(this.klgRef, this.ndx);
 	},
 	/** Specific dependance computation for ior3 */
 	sum_dependance: function($super) {
@@ -66,7 +65,7 @@ nul.obj.ior3 = Class.create(nul.obj.undefined, /** @lends nul.obj.ior3# */{
 	/** @constant */
 	expression: 'ior3',
 	/** @constant */
-	components: ['values'],
+	components: {'values': {type: 'nul.xpr.object', bunch: true}},
 	/**
 	 * Change the string debug-names used.
 	 * @param {String} dbgName A string to draw as the name of this variable for debug info
