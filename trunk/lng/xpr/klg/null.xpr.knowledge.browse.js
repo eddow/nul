@@ -72,8 +72,9 @@ nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, /** @lends nul.
 	 * @constructs
 	 * @param {Access} access The access to use to replace values
 	 */
-	initialize: function($super, access) {
-		this.tbl = access;
+	initialize: function($super, klg) {
+		this.tbl = klg.access;
+		this.dbgName = klg.name;
 		$super('Representation');
 		this.prepStack = [];
 	},
@@ -85,8 +86,9 @@ nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, /** @lends nul.
 	 */
 	subBrowse: function(eqc) {
 		nul.xpr.use(eqc, 'nul.xpr.knowledge.eqClass');
-        this.protect = [];
-        for(var i=0; i<eqc.equivls.length; ++i) this.protect[eqc.equivls[i]] = eqc.equivls[i];
+        this.protect = {};
+        for(var i=0; i<eqc.equivls.length; ++i)
+        	this.protect[eqc.equivls[i]] = eqc.equivls[i];
         try { return this.recursion(eqc); }
         finally {
             for(var i in this.protect) this.uncache(this.protect[i]);
@@ -141,6 +143,13 @@ nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, /** @lends nul.
 		return $super(xpr);
 	},
 	/**
+	 * Manage the prepStack in case of failure
+	 */
+	abort: function($super, xpr) {
+		this.prepStack.shift();
+		return $super(xpr);
+	},
+	/**
 	 * Change an expression into another along the table. Mark a selfRef to do if needed.
 	 */
 	transform: function(xpr) {
@@ -154,7 +163,7 @@ nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, /** @lends nul.
 			this.prepStack[n].setSelfRef = evl.value.ndx;
 		}
 
-		if(evl.hasChanged) nul.debug.log('Represent')('', 'Representation', evl.changed, xpr, p);
+		if(evl.hasChanged) nul.debug.log('Represent')(this.dbgName, 'Representation', evl.changed, xpr, p);
 		return evl.changed;
 	}
 });

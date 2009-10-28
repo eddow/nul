@@ -15,13 +15,12 @@ nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
 	initialize: function($super) {
 		$super();
 	},
-	object: true,
 
 	/**
 	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
 	 * @param {nul.xpr.object} o
 	 * @param {nul.xpr.knowledge} klg
-	 * @return {nul.xpr.object or nul.xpr.possible[]}
+	 * @return {nul.xpr.possible[]}
 	 */
 	having: function(o) {
 		var klg = new nul.xpr.knowledge();
@@ -29,6 +28,17 @@ nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
 		return [klg.wrap(o)];
 	},
 	
+	/**
+	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {nul.xpr.knowledge[]}
+	 * /
+	having: function(o) {
+		var klg = new nul.xpr.knowledge();
+		klg.belong(o, this);
+		return [klg.wrap(o)];
+	},*/	
 	/**
 	 * Abstract defined also by nul.xpr.possible
 	 */
@@ -79,8 +89,8 @@ nul.xpr.object.reself = Class.create(nul.browser.bijectif, /** @lends nul.xpr.ob
 	 */
 	initialize: function($super, selfRef, trgt) {
 		this.selfRef = selfRef;
-		if(!trgt.object) this.newRef = trgt;
-		this.trgt = trgt.object?trgt:nul.obj.local.self(trgt);
+		if(!trgt.expression) this.newRef = trgt;
+		this.trgt = trgt.expression?trgt:nul.obj.local.self(trgt);
 		$super('SelfRef');
 	},
 	/**

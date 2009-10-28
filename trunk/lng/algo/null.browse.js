@@ -17,6 +17,12 @@ nul.browser = Class.create(/** @lends nul.browser# */{
 	},
 
 	/**
+	 * Called when the sub-browsing of the expression failed.
+	 * @param {nul.expression} xpr
+	 * @return {nul.expression | null} Some value if the failure should be overriden by a value returned 
+	 */
+	abort: function(xpr) { if(xpr.failure) return xpr.failure; },
+	/**
 	 * Called before to browse an expression
 	 * @return {boolean} Weither to browse sub-expressions or not
 	 */
@@ -47,7 +53,8 @@ nul.browser = Class.create(/** @lends nul.browser# */{
 			return this.makeRV(xpr, bwsd);
 		} catch(err) {
 			nul.failed(err);
-			if(xpr.failure) return xpr.failure;
+			xpr = this.abort(xpr);
+			if(xpr) return xpr;
 			throw err;
 		}
  	},

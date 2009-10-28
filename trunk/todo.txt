@@ -1,12 +1,3 @@
-si eqCls contient ior3 qui depend d'une locale, ne considerera pas qu'un elem de l'ior3 peut etre absolu (par ex)
-
-\/sigma \/S
-{ (a, b); ((a=sigma[S][b]) [] (b=sigma[S][a])) } = oiuoiu
-; S = houses [1..5]
-; houses = { {} => {} [] (n,.. ns) => ((_::number n),.. houses[ns]) }
-; sigma ={ \/x {x} => {} [] (a,b,.. o) => ((a=>b),.. sigma[b,.. o] ) }
-::: virer le oiuoiu pour que ca marche ........
-
 :::cas "s s" set auto-inclusive : s is protected while representing ... so what happen ?
 
 x 1

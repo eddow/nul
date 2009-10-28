@@ -103,7 +103,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	}
 });
 
-nul.xpr.failure = new (Class.create(nul.xpr.possible, /** @lends nul.xpr.failure# */{
+nul.xpr.failure = nul.xpr.possible.prototype.failure = new (Class.create(nul.xpr.possible, /** @lends nul.xpr.failure# */{
 	/**
 	 * Specific possible that never give any value.
 	 * @extends nul.xpr.possible

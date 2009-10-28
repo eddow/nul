@@ -35,7 +35,7 @@ merge(nul,
 	 * Make several try/catch; accept some failures (debug purpose)
 	 */
 	trys: function(cb, name, obj, args) {
-		if(!nul.debug || !nul.debug.logging) return cb.apply(obj);
+		if(!nul.debug || !nul.debug.logging || !nul.debug.acts) return cb.apply(obj);
 		return nul.debug.trys(cb, name, obj, beArrg(arguments, 3));
 	},
 	/**
