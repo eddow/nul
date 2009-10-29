@@ -327,37 +327,18 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		 		if(toBelong.length) {
 		 			var unf = dstEqCls.equivls[0];
 		 			var s = toBelong.shift();
-		 			if(!isEmpty(dstEqCls.attribs)) unf = this.newLocal(nul.understanding.rvName);
+		 			if(!isEmpty(dstEqCls.attribs) && !unf && s.defined) {
+		 				unf = this.newLocal(nul.understanding.rvName);
+						this.access[unf] = dstEqCls;
+		 				dstEqCls.equivls.unshift(unf);
+		 			}
 		 			var attrs = dstEqCls.attribs;
 		 			if('lambda'== unf.expression) attrs = this.attributes(unf.image);
-					var chx = (unf&&s.defined)?s.has(unf, dstEqCls.attribs):false;
+					var chx = (unf&&s.defined)?s.has(unf, attrs):false;
 					if(chx) {
-						switch(chx.length) {
-						case 0:
-							nul.fail('Belonging', unf, '&isin;', s);
-						case 1:
-							if('possible'== chx[0].expression) {
-								toUnify.push(this.merge(chx[0].knowledge, chx[0].value));
-								//TODO O: Reset unification, to do it knowing the newly brought knowledge
-								//useful ??!?
-								
-								alreadyBlg = {};
-								this.unaccede(dstEqCls);
-								toUnify.pushs(dstEqCls.equivls);
-								toBelong.pushs(dstEqCls.belongs);
-								dstEqCls.equivls = [];
-								dstEqCls.belongs = [];
-							} else toUnify.push(chx[0]);
-							break;
-						default:
-							var klgs = [];
-							map(chx, function() {
-								var p = nul.xpr.possible.cast(this);
-								var klg = p.knowledge.modifiable();
-								klgs.push(klg.built());
-							});
-					 		this.ior3.push(new nul.xpr.knowledge.ior3(klgs));
-						}					
+						unf = this.hesitate(chx);
+						delete this.access[dstEqCls.equivls[0]];
+						this.access[dstEqCls.equivls[0] = unf] = dstEqCls;
 					}
 					else if(!alreadyBlg[s]) {
 						alreadyBlg[s] = true;
@@ -464,7 +445,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @throws {nul.failure}
  	 */
  	attributed: function(e, anm, vl) {
- 		this.modify(); nul.obj.use(e); nul.obj.use(vl);
+ 		this.modify(); nul.obj.use(e);
  		var attrs = {};
  		if(vl) attrs[anm] = vl;
  		else attrs = anm;

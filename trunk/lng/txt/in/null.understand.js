@@ -106,9 +106,9 @@ nul.understanding = {
 			map(this.attributes, function() {
 				return this.understand(ub);
 			}),
-			nul.obj.pair.list(null, map(this.content, function() {
+			map(this.content, function() {
 				return this.understand(ub);
-			})));
+			}));
 	},
 
 	composed: function(ub) {

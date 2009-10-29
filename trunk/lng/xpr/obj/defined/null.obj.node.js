@@ -10,8 +10,8 @@
 nul.obj.node = Class.create(nul.obj.defined, {
 	initialize: function($super, tag, attributes, content) {
 		this.tag = tag;
-		this.attributes = attributes;
-		this.content = content;
+		this.attributes = attributes || {};
+		this.content = content || [];
 		this.alreadyBuilt();
 		$super();
 	},
@@ -39,7 +39,7 @@ nul.obj.node = Class.create(nul.obj.defined, {
 
 	expression: 'node',
 	components: {
-		'attributes': {type: 'nul.xpr.object', bunch: false},
+		'attributes': {type: 'nul.xpr.object', bunch: true},
 		'content': {type: 'nul.xpr.object', bunch: true}
 	}
 });
