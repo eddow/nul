@@ -142,7 +142,7 @@ function prgTest(tn) {
 function doTest(tn) {
 	var v, test = tbody.rows[tn].test;
 	try {
-		v = nul.read(test.xpr).toFlat();
+		v = nul.read(test.xpr,'letBM').toFlat();
 	} catch(err) {
 		nul.exception.notice(err);
 		if(nul.erroneusJS) throw nul.erroneusJS;

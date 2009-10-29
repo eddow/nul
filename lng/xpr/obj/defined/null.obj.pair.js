@@ -60,9 +60,9 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 	},
 	
 	//TODO C
-	subHas: function(o) {
+	subHas: function(o, attrs) {
 		this.use(); nul.obj.use(o);
-		
+		//TODO 2: use attrs?
 		//TODO 3: summarise a tree of fixed values (=> ram db)
 		//make a table fct also
 		var rv = [];

@@ -165,7 +165,7 @@ nul.debug = {
 	described: function(name, dscr) {
 		var ftc = this.perform(name);
 		return function() {
-			var cargs = arrg(arguments);
+			var cargs = $A(arguments);
 			var d, abrt = false, lgd = false, rv;
 			try {
 				d = dscr.apply(this, cargs);
@@ -198,15 +198,6 @@ nul.debug = {
 	},
 	
 	/**
-	 * Determines weither an object implements a class
-	 */
-	implement: function(obj, cls) {
-		var c = obj.constructor;
-		while(c && c!= cls) c = c.superclass;
-		return c == cls;
-	},
-	
-	/**
 	 * Assert this object implements a class
 	 * @param {Class} cls The expected class
 	 * @param {String} nm [optional] The description of what is expected
@@ -224,7 +215,7 @@ nul.debug = {
 		return function(obj) {
 			if(nul.debug.assert) assert(
 					obj && 
-					nul.debug.implement(obj,cls) &&
+					cls.is(obj) &&
 					(!cb || cb(obj)),
 				'Expected '+(nm||'a specific object'));
 			return obj;
@@ -248,7 +239,7 @@ nul.debug = {
 		return function(objs) {
 			if(nul.debug.assert) map(objs, function(i, o) { assert(
 					obj && 
-					nul.debug.implement(obj,cls) &&
+					cls.is(obj) &&
 					(!cb || cb(obj)),
 					'Expected '+ (nm||'specific object') + 's'); });
 		}; 

@@ -75,14 +75,15 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
 	 * Or nothing if nothing can be simplified
 	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.object[]} attrs
 	 * @param {nul.xpr.knowledge} klg
 	 * @return {nul.xpr.object[] | nul.xpr.possible[]}
 	 */
-	has: function(o) {
+	has: function(o, attrs) {
 		if(this.subHas) {
-			if(!this.selfRef) return this.subHas(o);
+			if(!this.selfRef) return this.subHas(o, attrs);
 			return nul.trys(function() {
-				var psbl = this.subHas(o);
+				var psbl = this.subHas(o, attrs);
 				var dp = [];
 				while(psbl.length) dp.pushs(psbl.pop().distribute());
 				switch(dp.length) {
@@ -104,6 +105,6 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 ////////////////nul.xpr.object implementation
 
 	having: function($super, o) {
-		return this.has(o) || $super(o);
+		return this.has(o, {}) || $super(o);
 	}
 });

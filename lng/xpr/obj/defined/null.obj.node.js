@@ -8,9 +8,9 @@
 //TODO D
 
 nul.obj.node = Class.create(nul.obj.defined, {
-	initialize: function($super, tag, attrs, content) {
-		this.attributes = attrs;
+	initialize: function($super, tag, attributes, content) {
 		this.tag = tag;
+		this.attributes = attributes;
 		this.content = content;
 		this.alreadyBuilt();
 		$super();
@@ -31,7 +31,7 @@ nul.obj.node = Class.create(nul.obj.defined, {
 
 //////////////// nul.xpr.object implementation
 
-	subHas: function(o) {
+	subHas: function(o, attrs) {
 		if(this.content) return this.content.having(o);
 	},
 
