@@ -85,8 +85,8 @@ nul.loading.files = [
 'web/null.page',
 
 'data/null.data',
-'data/null.data.onPage',
-'data/null.data.compute'
+'data/null.data.dom',
+//'data/null.data.compute'
 ];
 
 nul.loading.total = nul.loading.files.length;

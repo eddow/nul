@@ -6,12 +6,12 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO 2: R-O (query), CML (insert), R/W (modify), XC (delete) data sources 
+nul.data.compute = new nul.data.context('compute', 100);
 /**
  * The data-source provide basic data queries : select, insert, update, delete.
  */
 nul.data.compute = Class.create(nul.data, {
-	initialize: function($super, index, query) {
+	initialize: function($super, index, object) {
 		this.query = query;
 		this.index = index;
 		$super();

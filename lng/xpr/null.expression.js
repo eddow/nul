@@ -136,8 +136,9 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 * @return {String}
 	 */
 	dbgHtml: function() {
+		if(!nul.debug || !nul.debug.logging) return "[?]"
 		var f = this.toFlat();
-		if(300>f.length) return this.toHtml();
+		if(500>f.length) return this.toHtml();
 		return f;
 	},
 	
@@ -255,10 +256,11 @@ nul.xpr = {
  * @returns {nul.expression} rv; set(itm=>rv)
  */
 nul.xpr.application = function(set, itm, klg) {
-	var hst = [];
-	var rv = klg.newLocal(nul.understanding.rvName);
-	//TODO O: no value return
-	klg.hesitate(set.having(new nul.obj.lambda(itm, rv)));
-	return rv;
+	var rv = klg.hesitate(set.having(new nul.obj.lambda(itm, klg.newLocal(nul.understanding.rvName))));
+	switch(rv.expression) {
+	case 'lambda': return rv.image;
+	case 'ior3': //TODO 2
+	default: throw nul.internalException('Unexpected having hesitation expression');
+	}
 };
 
