@@ -10,7 +10,7 @@
 
 /**@namespace*/
 nul.execution = {
-	reset: function()
+	reset: function(letBM)
 	{
 		nul.erroneus = false;
 		//namespaces
@@ -19,7 +19,7 @@ nul.execution = {
 		nul.obj.local.self.nameSpace = 0;
 		
 		nul.debug.reset();
-		nul.execution.benchmark.reset();
+		if(!letBM) nul.execution.benchmark.reset();
 	},
 	/**@namespace*/
 	benchmark: {
@@ -80,7 +80,7 @@ else
 	Function.prototype.perform = function(name) {
 		var ftc = this;
 		return function() {
-			var cargs = arrg(arguments);
+			var cargs = $A(arguments);
 			var obj = this;
 			if('function'== typeof name) name = name.apply(obj, cargs);
 			nul.execution.benchmark.enter(name);

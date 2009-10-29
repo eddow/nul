@@ -327,7 +327,10 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		 		if(toBelong.length) {
 		 			var unf = dstEqCls.equivls[0];
 		 			var s = toBelong.shift();
-					var chx = (unf&&s.defined)?s.has(unf):false;
+		 			if(!isEmpty(dstEqCls.attribs)) unf = this.newLocal(nul.understanding.rvName);
+		 			var attrs = dstEqCls.attribs;
+		 			if('lambda'== unf.expression) attrs = this.attributes(unf.image);
+					var chx = (unf&&s.defined)?s.has(unf, dstEqCls.attribs):false;
 					if(chx) {
 						switch(chx.length) {
 						case 0:
@@ -471,18 +474,17 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	},
 
  	/**
- 	 * Retrieve the attribute 'anm' stated for 'e'
+ 	 * Retrieve the attributes stated for 'e'
  	 * @param {nul.xpr.object} e
- 	 * @param {String} anm
- 	 * @return {nul.xpr.object} Or null if not specified
+ 	 * @return {nul.xpr.object[]}
  	 * @throws {nul.failure}
  	 */
- 	attribute: function(e, anm) {
- 		this.use(); nul.obj.use(e);
- 		if(e.defined) return e.attribute(anm);
-		var ec = this.access[obj];
-		if(!ec) return;
- 		return ec.attribs[anm];
+ 	attributes: function(e) {
+ 		nul.obj.use(e);
+ 		if(e.defined) return e.attribute;	//TODO 2 : cas special du defined : il faut une liste
+		var ec = this.access[e];
+		if(!ec) return {};
+ 		return ec.attribs;
  	},
  	
  	/**

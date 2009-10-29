@@ -38,7 +38,7 @@ function cstmNdx(ndx, ass) {	//TODO 2: avoid the items that are identical to pro
  * Internal (helper) use for mapping functions
  */
 function mapCb(fct, ndx, itm) {
-	return fct?fct.apply( ['object','function'].contains(typeof itm)?itm:null, [reTyped(ndx), itm]):itm;
+	return fct?fct.apply( ['object','function'].include(typeof itm)?itm:null, [reTyped(ndx), itm]):itm;
 }
 
 /**
@@ -106,7 +106,7 @@ function escapeHTML(str) {
  */ 
 function isEmpty(o, b) {
 	b = beArrg(arguments, 1);
-	for(var i in o) if(!b || !b.contains(reTyped(i))) return false;
+	for(var i in o) if(!b || !b.include(i)) return false;
 	return true;
 }
 
@@ -206,12 +206,26 @@ function merge(a, b, cb) {
 pinf = Number.POSITIVE_INFINITY;
 ninf = Number.NEGATIVE_INFINITY;
 
-function outerHTML(elm) {
-	if(elm.outerHTML) return elm.outerHTML;
-	var parent = elm.parentNode;
-	var el = document.createElement(parent.tagName);
-	el.appendChild(elm);
-	var shtml = el.innerHTML;
-	parent.appendChild(elm);	//TODO 1: le réinsérer au bon endroit
-	return shtml;
-}
+////////////////	prototype extension
+
+Element.addMethods(/** @ignore */{
+	asHTML: function() {
+		if(this.outerHTML) return this.outerHTML;
+		var parent = this.parentNode;
+		var posNext = this.nextSibling;
+		var el = document.createElement(parent.tagName);
+		el.appendChild(this);
+		var shtml = el.innerHTML;
+		if(!posNext) parent.appendChild(this);
+		else parent.insertBefore(this, posNext);
+		return shtml;
+	}
+});
+
+/** @ignore */
+Class.Methods.is= function(obj) {
+	if(!obj || 'object'!= typeof obj) return false;
+	var c = obj.constructor;
+	while(c && c!= this) c = c.superclass;
+	return c == this;
+};

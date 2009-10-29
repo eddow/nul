@@ -55,9 +55,9 @@ merge(nul,
 			ub.createFreedom(p, nul.globals[p]);
 		return ub;
 	},
-	read: function(txt)
+	read: function(txt, letBM)
 	{
-		nul.execution.reset();
+		nul.execution.reset(letBM);
 		return nul.execution.benchmark.measure('*reading',function(){
 			return nul.globalsUse().understand(nul.compile(txt));
 		});

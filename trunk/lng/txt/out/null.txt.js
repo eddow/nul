@@ -48,7 +48,7 @@ nul.txt = {
 	 * @param {nul.expression} xpr
 	 */
 	beginDraw: function(xpr) {
-		if(this.drawing.contains(xpr)) return false;
+		if(this.drawing.include(xpr)) return false;
 		this.drawing.push(xpr);
 		return true;
 	},
