@@ -64,7 +64,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		}
 	},
 
-//////////////// public
+//////////////// public equivalence class modification
 
 	/**
 	 * Add an object in the equivlence.
@@ -106,6 +106,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 				this.equivls.unshift(o);
 				this.hasAttr(this.attribs, klg);
 			}
+ 			this.wedding(klg);
 		} else {
 			var p = 0;
 			var ordr = this.orderEqs(o, klg);
@@ -123,17 +124,21 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 	isIn: function(s, klg) {
  		this.modify(); s.use();
  		if(s.defined) {
- 			if(this.blngDefined()) {
-				nul.xpr.mod(klg, 'nul.xpr.knowledge');
-				var ntr;
-				try {
-					ntr = this.belongs[0].intersect(s, klg);
-				} catch(err) {
-					nul.failed(err);
-					ntr = s.intersect(this.belongs[0], klg);
-				}
-				if(ntr && true!== ntr) this.belongs[0] = ntr;
- 			} else this.belongs.unshift(s);
+ 			while(true) {
+ 				var ntr, sn;
+	 			for(sn=0; this.belongs[sn] && this.belongs[sn].defined; ++sn) {
+	 				var ntr = this.intersect(klg, s, this.belongs[sn]);
+	 				if(ntr) break;
+	 			}
+ 				if(ntr) {
+ 					this.belongs.splice(sn,1);
+ 					s = ntr;
+ 				} else {
+ 					this.belongs.unshift(s);
+ 					break;
+ 				}
+ 			}
+ 			this.wedding(klg);
  		} else this.belongs.push(s);
 	},
 	
@@ -151,15 +156,92 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
 			this.attribs = {};
 			useless = false;
-		} else if(this.attribs !== attrs)	//TODO 3: gardien est-il nécessaire?
+		} else if(this.attribs !== attrs) {	//TODO 3: gardien est-il necessaire?
 			merge(this.attribs, attrs, function(a,b) {
 				if((a?a.toString():'')==(b?b.toString():'')) return a;
 				useless = false;
 				return (a&&b)?klg.unify(a,b):(a||b);
 			});
+			if(!useless) this.wedding(klg);
+		}
 		return useless;
 	},
 
+	/**
+	 * Sets the information that defines the values : the attributes and the defined belong
+	 * @param {nul.xpr.knowledge.eqClass} def The class that give some definitions for me
+	 * @param {nul.xpr.knowledge} klg The knowledge of this class
+	 * @returns {Boolean} Weither something changed
+	 */
+	define: function(def, klg) {
+		var rv = false;
+		if(!isEmpty(def.attribs, '')) rv |= !this.hasAttr(def.attribs, klg);
+		if(rv) this.wedding(klg);
+		return rv;
+	},	
+	
+////////////////	private equivalence class modification
+
+	/**
+	 * Try to apply what we know about defined equivalents, defined belongs and attributes
+	 * @param {nul.xpr.knowledge} klg
+	 */
+	wedding: function(klg) {
+		nul.xpr.mod(klg, 'nul.xpr.knowledge');
+		var unf = this.equivls[0];
+		if(!isEmpty(this.attribs) && !unf && this.blngDefined()) {
+			unf = klg.newLocal(nul.understanding.rvName);
+			klg.access[unf] = this;
+			this.equivls.unshift(unf);
+		}
+		for(var sn=0; this.belongs[sn] && this.belongs[sn].defined;) {
+			var attrs = this.attribs;
+			if('lambda'== unf.expression) attrs = klg.attributes(unf.image);
+			var chx = this.belongs[sn].has(unf, attrs);
+			if(chx) {
+				this.belongs.splice(sn,1);
+				unf = klg.hesitate(chx);
+				delete klg.access[this.equivls[0]];
+				klg.access[this.equivls[0] = unf] = this;
+			}
+			else ++sn;
+		}
+	},
+	
+	/**
+	 * Try to see the intersections of these two sets - knowing that these two sets can have different 'oppinions' about it.
+	 * Fails when both intersection fail, gives nothing when both intersection give nothing, else give any of the result the intersection gave.
+	 * @param {nul.xpr.knowledge} klg
+	 * @param {nul.obj.defined} s1
+	 * @param {nul.obj.defined} s2
+	 * @return {nul.obj.defined | null} Nothing if nothing can still be said
+	 * @throws {nul.failure}
+	 */
+	intersect: function(klg, s1, s2) {
+		if(s1==s2) return s1;
+		var rv;
+		var trueDft = function(c,d) { return (true===c)?d:c; }
+		
+		nul.trys(function() {
+			try {
+				rv = s1.intersect(s2, klg);
+				if(rv) return trueDft(rv, s1);					//If (1 & 2) give a result, don't even wonder what (2 & 1) is, just be happy with that
+			} catch(err) {
+				nul.failed(err);								//If (1 & 2) failed, try to give (2 & 1)
+				return trueDft(s2.intersect(s1, klg), s2);		//If (2 & 1) failed too, just fail
+			}
+			//We're here when (1 & 2) returns nothing
+			try {
+				return trueDft(s2.intersect(s1, klg), s2);		//If (2 & 1) give a result, while (1 & 2) had nothing to say, just take that as the answer
+			} catch(err) {
+				nul.failed(err);								//If (2 & 1) failed, we'r not sure, while (1 & 2) didn't fail or give a result
+			}
+			//So we returns nothing
+		}, 'Intersection', this, [s1, s2]);
+	},
+
+////////////////	public prune system
+	
 	/**
 	 * Compute the influence of this equivalence class (excluded 'exclElm')
 	 * @param {nul.xpr.knowledge} klg
@@ -212,6 +294,8 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		return rv.built().placed(klg); 
 	},
 	
+////////////////	public status modification
+	
 	/**
 	 * Is the equivalences defined or is there only undefined objects unified ?
 	 * @return {Boolean}
@@ -223,18 +307,6 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 	 */
 	blngDefined: function() { return this.belongs.length && this.belongs[0].defined; },
 
-	/**
-	 * Sets the information that defines the values : the attributes and the defined belong
-	 * @param {nul.xpr.knowledge.eqClass} def The class that give some definitions for me
-	 * @param {nul.xpr.knowledge} klg The knowledge of this class
-	 * @returns {Boolean} Weither something changed
-	 */
-	define: function(def, klg) {
-		var rv = false;
-		if(!isEmpty(def.attribs, '')) rv |= !this.hasAttr(def.attribs, klg);
-		return rv;
-	},	
-	
 //////////////// nul.expression implementation
 	
 	/** @constant */
@@ -254,9 +326,8 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		}
 		//TODO 4: this goes in knowledge prune (cf comment in prune) : pruned called on wrap and generla built (for opposition, ior3, ...)
 		if(!this.belongs.length && (!this.equivls.length || 
-			(1== this.equivls.length && isEmpty(this.attribs,''))))
+			(1== this.equivls.length && isEmpty(this.attribs))))
 				return;
 		return $super(prnt);
 	}
 });
-

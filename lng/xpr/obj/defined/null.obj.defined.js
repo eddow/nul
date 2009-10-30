@@ -54,9 +54,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 */
 	intersect: function(o, klg) {
 		this.use(); nul.obj.use(o); nul.xpr.mod(klg, 'nul.xpr.knowledge');
-		
-		if(o.toString() != this.toString()) nul.fail(this, ' does not intersect with ', o);
-		return true;
+		if(o == this) return true;
 	},
 	
 	/**
@@ -104,7 +102,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	
 ////////////////nul.xpr.object implementation
 
-	having: function($super, o) {
-		return this.has(o, {}) || $super(o);
+	having: function($super, o, attr) {
+		return this.has(o, attr||{});
 	}
 });

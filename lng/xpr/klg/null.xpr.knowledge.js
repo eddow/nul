@@ -325,25 +325,9 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		 			}
 		 		}
 		 		if(toBelong.length) {
-		 			var unf = dstEqCls.equivls[0];
 		 			var s = toBelong.shift();
-		 			if(!isEmpty(dstEqCls.attribs) && !unf && s.defined) {
-		 				unf = this.newLocal(nul.understanding.rvName);
-						this.access[unf] = dstEqCls;
-		 				dstEqCls.equivls.unshift(unf);
-		 			}
-		 			var attrs = dstEqCls.attribs;
-		 			if('lambda'== unf.expression) attrs = this.attributes(unf.image);
-					var chx = (unf&&s.defined)?s.has(unf, attrs):false;
-					if(chx) {
-						unf = this.hesitate(chx);
-						delete this.access[dstEqCls.equivls[0]];
-						this.access[dstEqCls.equivls[0] = unf] = dstEqCls;
-					}
-					else if(!alreadyBlg[s]) {
-						alreadyBlg[s] = true;
-						dstEqCls.isIn(s, this);
-					}
+					alreadyBlg[s] = true;
+					dstEqCls.isIn(s, this);
 		 		}
 	 		}
 	 		if(ownClass) dstEqCls.built();
@@ -430,10 +414,9 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		ss = beArrg(arguments, 1);
  		this.modify(); nul.obj.use(e);
 		
- 		if(!ss.length) return e;
- 		var dstEC = this.inform(e);
- 		for(var s in ss) if(cstmNdx(s)) dstEC.isIn(nul.obj.use(ss[s]), this);
- 		return this.accede(dstEC.built()).equivls[0];
+ 		var ec = new nul.xpr.knowledge.eqClass(e);
+ 		ec.belongs = ss;
+ 		return this.unify(ec.built());
  	},
  	
  	/**

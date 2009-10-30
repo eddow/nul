@@ -19,9 +19,15 @@ nul.obj.hcSet = Class.create(nul.obj.defined, /** @lends nul.obj.hcSet */{
 	/**
 	 * Consider this set is not a transformation
 	 */
-	subHas: function(o) {
+	subHas: function(o, att, typeAttr) {
 		nul.obj.use(o);
 		if(o.defined) return [];
+		if(!att[''] || 'string'!= att[''].expression || typeAttr != att[''].value) {
+			var klg = new nul.xpr.knowledge();
+			klg.attributed(o, '', new nul.obj.litteral.string(typeAttr));
+			klg.belong(o, this);
+			return [klg.wrap(o)];
+		}
 	},
 	
 //////////////// nul.obj.defined implementation
@@ -65,9 +71,9 @@ nul.obj.number = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.number# */{
 		if('range'== o.expression) return o;
 		return $super(o, klg);
 	},
-	subHas: function($super, o) {
+	subHas: function($super, o, att) {
 		if('number'== o.expression) return [o];
-		return $super(o);
+		return $super(o, att, '#number');
 	},
 	/** @constant */
 	expression: '&#x211a;'
@@ -79,11 +85,11 @@ nul.obj.number = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.number# */{
  * @extends nul.obj.hcSet
  */
 nul.obj.string = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.string# */{
-	subHas: function($super, o) {
+	subHas: function($super, o, att) {
 		if('string'== o.expression) return [o];
-		return $super(o);
+		return $super(o, att, '#text');
 	},
-	expression: 'str'
+	expression: 'text'
 }))();
 
 /**
@@ -92,9 +98,9 @@ nul.obj.string = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.string# */{
  * @extends nul.obj.hcSet
  */
 nul.obj.bool = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.bool# */{
-	subHas: function($super, o) {
+	subHas: function($super, o, att) {
 		if('boolean'== o.expression) return [o];
-		return $super(o);
+		return $super(o, att, '#boolean');
 	},
 	/** @constant */
 	expression: 'bool'
@@ -122,11 +128,11 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 		}
 		return $super(o, klg);
 	},
-	subHas: function($super, o) {
+	subHas: function($super, o, att) {
 		if(this.lower==this.upper && !o.defined) {
 			//TODO 3: return "o=nbr[this.bound]"
 		}
-		if(!o.defined || 'number'!= o.expression) return $super(o);
+		if(!o.defined || 'number'!= o.expression) return $super(o, att, '#number');
 		if(!nul.isJsInt(o.value)) return [];
 		if( o.value < this.lower || o.value > this.upper) return [];
 		return [o];
@@ -169,5 +175,5 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 nul.globals.Q = nul.obj.number;
 nul.globals.Z = new nul.obj.range();
 nul.globals.N = new nul.obj.range(0);
-nul.globals.str = nul.obj.string;
+nul.globals.text = nul.obj.string;
 nul.globals.bool = nul.obj.bool;
