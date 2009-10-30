@@ -32,7 +32,7 @@ nul.obj.node = Class.create(nul.obj.defined, {
 //////////////// nul.xpr.object implementation
 
 	subHas: function(o, attrs) {
-		if(this.content) return this.content.having(o);
+		throw 'not implememted';	//TODO 2: node.has
 	},
 
 //////////////// nul.expression implementation

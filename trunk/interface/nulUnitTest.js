@@ -13,7 +13,7 @@
 //↵  &crarr;
 //⇒  &rArr;
 Array.prototype.named = function(nm) { this.name = nm; return this; };
-
+//TODO 2: unit test for datas
 tests = [
 	[
 		{xpr: '{ a, a } (1, 1)',
@@ -42,10 +42,10 @@ tests = [
 		rslt: '((1, 2), (2, 3))'},
 		{xpr: 'tp={ {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
 		rslt: '{{&phi; &rArr; &phi; &#9633; (T[1|0],.. Ts[1|1]) &rArr; (_[1|2],.. &crarr;[1|3]); ((_[1|2]) &isin; T[1|0] &and; (Ts[1|1] &rArr; &crarr;[1|3]) &isin; &uArr;[&crarr;|1])}}'},
-		{xpr: 'tp[Q,str] ; tp={ {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
-		rslt: '{(_[g|4], _[g|8]); ((_[g|4]) &isin; &#x211a; &and; (_[g|8]) &isin; str)}'},
-		{xpr:'t[Q,str] ; t ={ {} => {{}} [] (T,.. Ts) => { T _,.. t[Ts] _ } }',
-		rslt:'{{(_[19|0], _[19|3]); ((_[19|0]) &isin; &#x211a; &and; (_[19|3]) &isin; str)}}'}
+		{xpr: 'tp[Q,text] ; tp={ {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
+		rslt: '{(_[g|4], _[g|8]); ((_[g|4]) &isin; &#x211a; &and; (_[g|8]) &isin; text)}'},
+		{xpr:'t[Q,text] ; t ={ {} => {{}} [] (T,.. Ts) => { T _,.. t[Ts] _ } }',
+		rslt:'{{(_[20|0], _[20|3]); ((_[20|0]) &isin; &#x211a; &and; (_[20|3]) &isin; text)}}'}
 	].named('Complexs'),
 	[
 		{xpr: '( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")',

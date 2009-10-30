@@ -1,5 +1,5 @@
-document["#sandBox"]
-xml["test.xml"][ <c1 non="nenni" oui="oke" /> ]
+document["#sandBox"](text _)
+xml["test.xml"](text _)
 
 
 x 1

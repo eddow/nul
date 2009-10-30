@@ -29,7 +29,7 @@ nul.obj.litteral.number = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
 //////////////// nul.xpr.object implementation
 
 	/** @constant */
-	attributes: {},
+	attributes: { '':'#number' },
 
 	//TODO 3: {2 Q} ==> ( Q _, Q _ ) 
 	subHas: function(o) {
@@ -53,7 +53,8 @@ nul.obj.litteral.string = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
 
 	/** @constant */
 	attributes: {
-		'# ': function() { return nul.obj.litteral.make(this.value.length); }
+		//'# ': function() { return nul.obj.litteral.make(this.value.length); },
+		'':'#text'
 	},
 
 	/** Strings contain nothing */
@@ -76,7 +77,7 @@ nul.obj.litteral['boolean'] = Class.create(nul.obj.litteral, /** @lends nul.obj.
 //////////////// nul.xpr.object implementation
 
 	/** @constant */
-	attributes: {},
+	attributes: { '':'#boolean' },
 
 	/** Booleans contain nothing */
 	subHas: function() { nul.fail('Booleans contain nothing'); },

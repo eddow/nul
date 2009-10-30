@@ -29,17 +29,6 @@ nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
 	},
 	
 	/**
-	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
-	 * @param {nul.xpr.object} o
-	 * @param {nul.xpr.knowledge} klg
-	 * @return {nul.xpr.knowledge[]}
-	 * /
-	having: function(o) {
-		var klg = new nul.xpr.knowledge();
-		klg.belong(o, this);
-		return [klg.wrap(o)];
-	},*/	
-	/**
 	 * Abstract defined also by nul.xpr.possible
 	 */
 	valueKnowing: function(klg) { return this; },

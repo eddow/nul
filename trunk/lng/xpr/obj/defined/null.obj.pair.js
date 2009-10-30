@@ -68,7 +68,7 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 		var rv = [];
 		try { rv.push(this.first.extract(o)); }
 		catch(err) { nul.failed(err); }
-		return rv.pushs(this.second.having(o));
+		return rv.pushs(this.second.having(o, attrs));
 	},
 
 //////////////// nul.xpr.object implementation
