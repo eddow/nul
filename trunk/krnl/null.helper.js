@@ -269,5 +269,21 @@ Class.Methods.is= function(obj) {
 Element.addMethods(['TABLE', 'tbody'], {
 	nbrRows: function(tbl) {
 		return tbl.rows?tbl.rows.length:0;
+	},
+	clear: function(tbl) {
+		while(tbl.nbrRows()) tbl.deleteRow(0);
+	},
+	completeFrom: function(tbl, src) {
+		for(var r = tbl.nbrRows(); r<src.nbrRows(); ++r) {
+			var drw = tbl.insertRow(-1);
+			var srw = src.rows[r];
+			for(var a=0; srw.attributes[a]; ++a) drw.writeAttribute(srw.attributes[a].name, srw.attributes[a].value);
+			for(var c = 0; c < srw.cells.length; ++c)
+				drw.insertCell(-1).innerHTML = srw.cells[c].innerHTML;
+		}
+	},
+	copyFrom: function(tbl, src) {
+		tbl.clear();
+		tbl.completeFrom(src);
 	}
 });

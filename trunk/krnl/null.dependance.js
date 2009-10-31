@@ -16,15 +16,12 @@ nul.dependance = Class.create(/** @lends nul.dependance# */{
 		this.usages = {};
 		if(dep) {
 			nul.obj.is(dep);
-			switch(dep.expression) {
-			case 'local': this.depend(dep.klgRef, 'local', dep.ndx, dep); break;
-			case 'data':
+			if(nul.obj.local.is(dep)) this.depend(dep.klgRef, 'local', dep.ndx, dep);
+			else if(nul.obj.data.is(dep)) {
 				var ctxName = dep.source.context.toString();
 				if(!nul.dependance.contexts[ctxName]) nul.dependance.contexts[ctxName] = dep.source.context; 
 				this.depend(ctxName, 'local', dep.source.index, dep);
-				break;
-			default: throw nul.internalException('No dependance defined for '+dep.expression);
-			}
+			} else throw nul.internalException('No dependance defined for '+dep.expression);
 		}
 	},
 	

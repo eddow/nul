@@ -103,6 +103,6 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 ////////////////nul.xpr.object implementation
 
 	having: function($super, o, attr) {
-		return this.has(o, attr||{});
+		return this.has(o, attr||{}) || $super(o, attr);
 	}
 });

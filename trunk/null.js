@@ -82,12 +82,13 @@ nul.loading.files = [
 'lng/xpr/obj/undefined/null.obj.operation',
 'lng/xpr/obj/undefined/null.obj.ior3',
 
-'web/null.page',
-
 'data/null.data',
 'data/null.data.container',
-//'data/null.data.compute',
-'data/null.data.dom'
+'data/null.data.time',
+'data/null.data.computer',
+'data/null.data.dom',
+
+'web/null.page'
 ];
 
 nul.loading.total = nul.loading.files.length;

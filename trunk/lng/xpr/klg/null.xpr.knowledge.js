@@ -462,19 +462,20 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	define: function(acsTbl) {
 		this.modify();
 		var rv = [];
+		return rv;	//TODO 1
 		acsTbl = clone1(acsTbl);
 		var used;
 		do {
 			used = false;
 			for(var v in this.access) {
 				if(acsTbl[v]) {
-					var nec = this.access[v].modifiable();
+					var nec = this.removeEC(this.access[v]).modifiable();
 					if(nec.define(acsTbl[v], this)) {
-						this.removeEC(this.access[v]);
-						this.accede(nec.built());
-						rv.push(v);
+						//rv.push(v);
 						used = true;
 					}
+					this.accede(nec.built());
+					//this.unify(acsTbl[v], this.access[v]);
 					delete acsTbl[v];
 					break;
 				}
@@ -532,6 +533,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		value = representer.browse(value);
 		
 		var opposition = this.veto;
+		//TODO 3: browse 'vetos' like 'value'
 		this.veto = [];
 		while(opposition.length)
 			this.oppose(representer.browse(opposition.shift()));

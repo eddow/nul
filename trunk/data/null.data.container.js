@@ -52,7 +52,7 @@ nul.data.container.local.filter = function(objs, exp, att, wrp) {
 	if(!isArray(objs)) objs = [objs];
 	return maf(objs, function(n, orv) {
 		try {
-			if(nul.data.is(orv)) orv = new nul.obj.data(orv);
+			if(nul.data.is(orv)) orv = orv.object;
 			var klg = new nul.xpr.knowledge();
 			var vl = klg.unify(orv, exp);
 			vl = klg.attributed(vl, att);
@@ -71,7 +71,7 @@ nul.data.container.extern = Class.create(nul.data.container.local, /** @lends nu
 	wrap: function(transport) { throw 'abstract'; },
 	seek: function(key) {
 		if('string'!= key.expression) throw nul.semanticException('AJAX', 'Ajax retrieve XML documents from a string URL');
-		var rq = new Ajax.Request(nul.rootPath+key.value, {
+		var rq = new Ajax.Request(key.value, {
 			method: 'get',
 			asynchronous: false,
 			onException: function(rq, x) {
@@ -88,7 +88,7 @@ nul.data.container.extern = Class.create(nul.data.container.local, /** @lends nu
 
 nul.load.containers = function() {
 	nul.globals.library = new nul.obj.node('nul.globals.library', {
-		file: new nul.data.container.extern(/** @lends nul.globals.xml */{
+		file: new nul.data.container.extern(/** @lends nul.globals.library.file# */{
 			wrap: function(transport) {
 				return new nul.subRead(transport.responseText, 'letBM');
 			}
