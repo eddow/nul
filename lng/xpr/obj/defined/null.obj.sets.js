@@ -133,7 +133,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 			//TODO 3: return "o=nbr[this.bound]"
 		}
 		if(!o.defined || 'number'!= o.expression) return $super(o, att, '#number');
-		if(!nul.isJsInt(o.value)) return [];
+		if(!isJsInt(o.value)) return [];
 		if( o.value < this.lower || o.value > this.upper) return [];
 		return [o];
 	},

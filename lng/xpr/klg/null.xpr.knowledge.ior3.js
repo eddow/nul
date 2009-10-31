@@ -6,8 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
 nul.xpr.knowledge.ior3 = Class.create(nul.expression, /** @lends nul.xpr.knowledge.ior3# */{
 	/**
 	 * Represent a list of possible knowledges 

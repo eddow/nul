@@ -121,7 +121,7 @@ nul.xpr.failure = nul.xpr.possible.prototype.failure = new (Class.create(nul.xpr
 
 /**
  * Have a possible for sure. Made with nul.xpr.knowledge.always if an object is given
- * @param {nul.xpr.possible | nul.xpr.object} o
+ * @param {nul.xpr.possible|nul.xpr.object} o
  */
 nul.xpr.possible.cast = function(o) {
 	if('possible'== o.expression) return o;

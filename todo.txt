@@ -19,7 +19,7 @@ sigma[1..]			//inf decomposition
 S = houses [1..5]
 ; houses = { {} => {} [] (n,.. ns) => ((_::number n),.. houses[ns]) }
 ; sigma ={ \/x {x} => {} [] (a,b,.. o) => ((a=>b),.. sigma[b,.. o] ) }
-; neighbours = { (a, b); (a=sigma[S][b] [] b=sigma[S][a])}
+; neighbours = { (a, b); sigma[S](a=>b [] b=>a)}
 ; S(_ ::number 3 ::drink "milk")
 ; S(_ ::number 1 ::nation "norwegian")
 ; S(_ ::color "red" ::nation "english")

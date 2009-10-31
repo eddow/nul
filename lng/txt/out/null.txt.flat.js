@@ -6,8 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
 /**
  * Expression flat description building helper 
  * @class Singleton

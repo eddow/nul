@@ -9,11 +9,11 @@
 //TODO D
 
 tableStack = Class.create( {
-	init: function(nm, tbl) {
+	initialize: function(nm, tbl) {
 		this.nm = nm;
-		this.table = tbl;
+		this.table = $(tbl);
 	},
-	buffer: document.createElement('tbody'),
+	buffer: $(document.createElement('tbody')),
 	getRowValue: function(tr) {
 		var rv = [];
 		for(var i=0; i<tr.cells.length; ++i) rv.push(tr.cells[i].innerHTML);
@@ -40,7 +40,7 @@ tableStack = Class.create( {
 	},
 	clear: function() {
 		this.dirty = true;
-		while(this.buffer.rows.length) this.pop();
+		while(this.buffer.nbrRows()) this.pop();
 		this.apply();		
 	},
 	draw: function(cs) {
@@ -87,7 +87,13 @@ tableStack = Class.create( {
 	apply: function() {
 		if(this.dirty && this.table) {
 			this.dirty = false;
-			this.table.innerHTML = this.buffer.innerHTML;
+			for(var r = this.table.nbrRows(); r<this.buffer.nbrRows(); ++r) {
+				var drw = this.table.insertRow(-1);
+				var srw = this.buffer.rows[r];
+				for(var c = 0; c < srw.cells.length; ++c)
+					drw.insertCell(-1).innerHTML = srw.cells[c].innerHTML;
+			}
+			//this.table.innerHTML = this.buffer.innerHTML;
 		}
 	}
 });
@@ -101,9 +107,9 @@ nul.debug = {
 	logs: new tableStack('logs'),
 	logging: false,
 	watches: false,
-	assert: nul.urlOption('debug'),
-	perf: !nul.urlOption('noperf'),
-	acts: nul.urlOption('actLog'),
+	assert: urlOption('debug'),
+	perf: !urlOption('noperf'),
+	acts: urlOption('actLog'),
 	lcLimit: 500,
 	logCount: function() {
 		if(0< nul.debug.lcLimit && nul.debug.lcNextLimit< nul.debug.lc) {
@@ -274,7 +280,7 @@ nul.debug = {
 			nul.debug.fails.shift();
 			nul.fail(name, args);
 		}
-	},
+	}
 };
 
 if(nul.debug.acts) Function.prototype.describe = nul.debug.described;

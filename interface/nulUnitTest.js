@@ -94,7 +94,7 @@ function drawTests(tests, cs, lvl) {
 	rw.insertCell(-1).innerHTML = rsltDiv('unk');
 	rw.testGroup = tests;
 	
-	for(var i=0; i<tests.length; ++i) if(tests[i])
+	for(var i=0; tests[i]; ++i) if(tests[i])
 	{
 		var t = tests[i];
 		if(isArray(t)) drawTests(t, cs, 1+lvl);
@@ -111,7 +111,7 @@ function drawTests(tests, cs, lvl) {
 			//Result
 			rw.insertCell(-1).innerHTML = rsltDiv('unk');
 			rw.insertCell(-1).innerHTML = t.rslt;
-			for(var j=0; j<rw.cells.length; ++j) if(rw.cells[j]) rw.cells[j].rowSpan=2;
+			for(var j=0; rw.cells[j]; ++j) if(rw.cells[j]) rw.cells[j].rowSpan=2;
 			preCollapsed().insertCell(-1);
 		}
 	}

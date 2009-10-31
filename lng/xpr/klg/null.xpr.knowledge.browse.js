@@ -82,7 +82,7 @@ nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, /** @lends nul.
 	 * Used to browse an equivalence class. As each equivalence class appear in the replacement table, they should be protected not to have
 	 * their whole components replaced by the only representant.
 	 * @param {nul.xpr.knowledge.eqClass} eqc
-     * @return {nul.xpr.knowledge.eqClass | nul.browser.bijectif.unchanged}
+     * @return {nul.xpr.knowledge.eqClass|nul.browser.bijectif.unchanged}
 	 */
 	subBrowse: function(eqc) {
 		nul.xpr.use(eqc, 'nul.xpr.knowledge.eqClass');

@@ -6,9 +6,10 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
-/**@namespace*/
+/**
+ * Defines a set of compiled items
+ * @namespace
+ */
 nul.compiled = {
 	//Compiled just have pure data: operators, operands, stuffs, ...
 	expression: function(oprtr, oprnds) {
@@ -49,6 +50,11 @@ nul.compiled = {
 	}
 };
 
+/**
+ * Recognised operators sorted by precedance
+ * @type [String,String][]
+ * @constant
+ */
 //l => left built ((a . b) . c)
 //r => right built (a . (b . c))
 //m => multi (a , b , c)
@@ -70,22 +76,45 @@ nul.operators = [
 	['..','l']
 ];
 
-nul.compiler = Class.create({
+nul.compiler = Class.create(/** @lends nul.compiler# */{
+	/**
+	 * Compilation information
+	 * @constructs
+	 * @param {String} txt Text to compile
+	 */
 	initialize: function(txt) {
 		this.tknzr = new nul.tokenizer(txt);
 	},
+	/**
+	 * Requires the next token to be an alphanumeric
+	 * @return {String} The alphanumeric value
+	 * @throw {nul.syntaxException}
+	 */
 	alphanum: function() {
 		var rv = this.tknzr.pop(['alphanum']);
 		if(!rv)
 			throw nul.syntaxException('IDE', 'Identifier expected');
 		return rv.value;
 	},
+	/**
+	 * Requires the next token to be a number
+	 * @return {Number} The number value
+	 * @throw {nul.syntaxException}
+	 */
 	number: function() {
 		var rv = this.tknzr.pop(['number']);
 		if(!rv)
 			throw nul.syntaxException('IDE', 'Number expected');
 		return rv.value;
 	},
+	/**
+	 * Takes the list of operands for an expression on the n-th operator level
+	 * @param {nul.compiled} firstOp The already-red operand
+	 * @param {String} oprtr The expected operator
+	 * @param {Number} oprtrLvl tThe operator-level : index in {@link nul.operators}
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.syntaxException}
+	 */
 	list: function(firstOp, oprtr, oprtrLvl) {
 		var rv = [firstOp];
 		switch(oprtr[1])
@@ -110,6 +139,12 @@ nul.compiler = Class.create({
 		}
 		return rv;
 	},
+	/**
+	 * Gets the compiled expressionon the sepcified operator-level
+	 * @param {Number} oprtrLvl tThe operator-level : index in {@link nul.operators}
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.syntaxException}
+	 */
 	expression: function(oprtrLvl) {
 		if(Object.isUndefined(oprtrLvl)) oprtrLvl = 0; 
 		if(nul.operators.length <= oprtrLvl) return this.applied();
@@ -127,6 +162,11 @@ nul.compiler = Class.create({
 		} while('l'== oprtr[1]);
 		return firstOp;
 	},
+	/**
+	 * Gather a compiled value and all its post-fixes 
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.syntaxException}
+	 */	
 	applied: function() {
 		var rv = this.item();
 		do
@@ -146,6 +186,11 @@ nul.compiler = Class.create({
 			else return rv;
 		} while(true);
 	},
+	/**
+	 * Read inside an XML node 
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.syntaxException}
+	 */	
 	innerXML: function() {
 		var comps = [];
 		do
@@ -159,6 +204,11 @@ nul.compiler = Class.create({
 			else throw nul.syntaxException('UEI', "Don't know what to do with '"+this.tknzr.token.value+"'");
 		} while(true);
 	},
+	/**
+	 * Read an XML node 
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.syntaxException}
+	 */	
 	xml: function() {
 		var node = this.alphanum(), attr, attrs = {};
 		while(attr = this.tknzr.pop(['alphanum']))
@@ -172,6 +222,12 @@ nul.compiler = Class.create({
 		this.tknzr.expect(node);
 		return this.tknzr.rawExpect('>', nul.compiled.xml(node, attrs, comps));
 	},
+	/**
+	 * Read an item without precedance
+	 * @param {Boolean} lax Prevent to read an item that should be understood as an operation
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.syntaxException}
+	 */	
 	item: function(lax) {
 		var rv;
 		if('eof'!= this.tknzr.token.type) {
@@ -204,6 +260,12 @@ nul.compiler = Class.create({
 	}
 });
 
+/**
+ * Make a compiled value out of a text.
+ * @param {String} txt
+ * @return {nul.compiled}
+ * @throw {nul.syntaxException}
+ */
 nul.compile = function(txt)
 {
 	var rv = new nul.compiler(txt);

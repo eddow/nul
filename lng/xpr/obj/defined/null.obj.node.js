@@ -5,12 +5,20 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//TODO D
 
-nul.obj.node = Class.create(nul.obj.defined, {
+nul.obj.node = Class.create(nul.obj.defined, /** @lends nul.obj.node# */{
+	/**
+	 * XML node : tag, attributes and list content. There are no restrictions on content and/or attributes.
+	 * @extends nul.obj.defined
+	 * @constructs
+	 * @param {String} tag The tagName of the XML node
+	 * @param {nul.xpr.object[String]} attributes The named attributes
+	 * @param {nul.xpr.object[]} content The list of contained elements
+	 */
 	initialize: function($super, tag, attributes, content) {
 		this.tag = tag;
 		this.attributes = attributes || {};
+		this.attributes[''] = new nul.obj.litteral.string(tag);
 		this.content = content || [];
 		this.alreadyBuilt();
 		$super();
@@ -25,9 +33,6 @@ nul.obj.node = Class.create(nul.obj.defined, {
 		});
 		return new nul.obj.node(nattrs);
 	},
-	intersect: function(o, klg) {
-		return this.unified(o, klg);
-	},
 
 //////////////// nul.xpr.object implementation
 
@@ -37,7 +42,9 @@ nul.obj.node = Class.create(nul.obj.defined, {
 
 //////////////// nul.expression implementation
 
+	/** @constant */
 	expression: 'node',
+	/** @constant */
 	components: {
 		'attributes': {type: 'nul.xpr.object', bunch: true},
 		'content': {type: 'nul.xpr.object', bunch: true}

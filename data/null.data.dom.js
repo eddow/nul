@@ -34,7 +34,7 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 		this.element = $(element);
 		$super();
 	},
-
+//TODO 1: sum_index
 ////////////////nul.data.container.local implementation
 	
 	seek: function(key) {
@@ -47,12 +47,13 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 			var pot = $A(this.element.childNodes);
 			var rv = [];
 			for(var p in pot) if(cstmNdx(p)) if(pot[p].tagName == key.tag) {
-				var nattr = {};
-				for(var a in key.attributes) {
-					var pa = pot[p].getAttribute(a);
-					nattr[a] = (null=== pa)?key.attributes[a]:(new nul.obj.litteral.string(pa));
-				}
-				rv.push(new nul.obj.node(key.tag, nattr));
+				var te = $(pot[p].cloneNode(true));
+				/*var nattr = clone1(key.attributes);
+				for(var a=0; pot[p].attributes[a]; ++a)
+					nattr[pot[p].attributes[a].name] = pot[p].attributes[a].value;
+				rv.push(new nul.obj.node(key.tag, nattr,
+						map(pot[p].childNodes, function() { return new nul.data.dom.element(this); })));*/
+				rv.push(new nul.data.dom.element(te));
 			}
 			return rv;
 		default:
@@ -83,21 +84,9 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 
 nul.load.placeHolders = function() {
 	nul.globals.document = new nul.obj.data(new nul.data.dom.url(this));
-	nul.globals.xml = new nul.data.container.local(/** @lends nul.globals.xml */{
-		seek: function(key) {
-			if('string'!= key.expression) throw nul.semanticException('AJAX', 'Ajax retrieve XML documents from a string URL');
-			var rq = new Ajax.Request(key.value, {
-				method: 'get',
-				asynchronous: false,
-				onException: function(rq, x) {
-					switch(x.code) {
-						case 1012: throw nul.semanticException('AJAX', 'Ajax failure : Not respecting the <a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>');
-						default: throw nul.semanticException('AJAX', 'Ajax failure : '+x);
-					}
-				},
-			});
-			return [new nul.data.dom.url(rq.transport.responseXML)];
-		},
-		expression: 'ajax'
+	nul.globals.xml = new nul.data.container.extern(/** @lends nul.globals.xml */{
+		wrap: function(transport) {
+			return new nul.data.dom.url(transport.responseXML);
+		}
 	});
 };

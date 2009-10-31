@@ -6,13 +6,18 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
 /**@namespace*/
 nul.understanding = {
+	/** Used as return-value local naming @constant */
 	rvName : '&crarr;',
-	objName: 'obj',
+	/** Exception used when a local need to be created @constant */
 	unresolvable: 'unresolved identifier',
+	/**
+	 * Generic expression (operator and operands) understanding
+	 * @example a <b>+</b> b <b>+</b> c
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	expression: function(ub) {
 		var ops;
 		if('[]'== this.operator)
@@ -52,12 +57,32 @@ nul.understanding = {
 				throw nul.internalException('Unknown operator: "'+operator+'"');
 		}
 	},
+	/**
+	 * Precedor understanding : a precedor and an operand
+	 * @example <b>++</b>operand
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	preceded: function(ub) {
 		return ub.attributed(this.operand.understand(ub), this.operator+' ');
 	},
+	/**
+	 * Postcedor understanding : a postcedor and an operand
+	 * @example operand<b>++</b>
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	postceded: function(ub) {
 		return ub.attributed(this.operand.understand(ub), ' '+this.operator);
 	},
+	/**
+	 * Atom understanding : a type and a value
+	 * @example <b>"</b>quoted text<b>"</b>
+	 * @example 42
+	 * @example identifier
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	atom: function(ub) {
 		var value;
 		switch(this.type)
@@ -80,27 +105,57 @@ nul.understanding = {
 		}
 		return nul.obj.litteral.make(value);
 	},
+	/**
+	 * Application understanding : two symbols separated by a space
+	 * @example item applied
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	application: function(ub) {
 		return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
 	},
+	/**
+	 * 'Taking' understanding
+	 * @example item<b>[</b>token<b>]</b>
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	taking: function(ub) {
 		return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
 	},
+	/**
+	 * 'Set' understanding
+	 * @example <b>{</b>content<b>}</b>
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.obj.pair|nul.obj.empty}
+	 */
 	set: function(ub) {
  		if(!this.content) return nul.obj.empty;
 		return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
 	},
+
+	/**
+	 * Local-definition value understanding
+	 * @example <b>\/</b>decl value
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	definition: function(ub) {
 		if('_'== this.decl) throw nul.semanticException('JKD', 'Cannot declare joker !')
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
 	},
 
+	/**
+	 * XML-node understanding
+	 * @example <b>&lt;</b>node <b>/&gt</b>;
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.obj.node}
+	 */
 	xml: function(ub) {
 		var attrs = {};
 		for(var an in this.attributes) if(cstmNdx(an))
 			attrs[an] = this.attributes[an].understand(ub);
-		//TODO 2: content
 		return new nul.obj.node(
 			this.node,
 			map(this.attributes, function() {
@@ -111,23 +166,53 @@ nul.understanding = {
 			}));
 	},
 
+	/**
+	 * Composition understanding
+	 * @example object <b>::</b>aName value
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	composed: function(ub) {
 		return ub.klg.attributed(this.object.understand(ub), this.aName, this.value.understand(ub));
 	},
+	/**
+	 * Objective value understanding
+	 * @example applied<b>.</b>lcl
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	objectivity: function(ub) {
 		return ub.attributed(this.applied.understand(ub), this.lcl);
 	},
+	/**
+	 * Hardcoded JS value
+	 * @example <b><{</b> value = nul.obj.litteral.make(34) <b>}></b>
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
 	hardcode: function(ub) {
 		return this.value;
 	}
 };
 
-nul.understanding.base = Class.create({
+nul.understanding.base = Class.create(/** @lends nul.understanding.base# */{
+	/**
+	 * Understanding context' informations
+	 * @constructs
+	 * @param {nul.understanding.base} prntUb The parent understanding base
+	 * @param {String} klgName The name to give to the created context if any special (if not, one will be generated)
+	 */
 	initialize: function(prntUb, klgName) {
 		this.prntUb = prntUb;
 		this.parms = {};		
 		this.klg = new nul.xpr.knowledge(klgName);
 	},
+	/**
+	 * Gets the value associated with an identifier
+	 * @param {String} identifier
+	 * @return {nul.xpr.object}
+	 * @throw {nul.understanding.unresolvable}
+	 */
 	resolve: function(identifier) {
 		if(!Object.isUndefined(this.parms[identifier]))
 			return this.parms[identifier];
@@ -135,9 +220,13 @@ nul.understanding.base = Class.create({
 		throw nul.understanding.unresolvable;
 	},
 	/**
-	 * Associate name to value.
+	 * Associate an identifier to a value.
 	 * If no value is specified, a local is created
 	 * If value is specified explicitely as 'false', a local is created and the name is not remembered
+	 * @param {String} name
+	 * @param {nul.xpr.object} value
+	 * @return {nul.xpr.object}
+	 * @throw {nul.semanticException}
 	 */
 	createFreedom: function(name, value) {
 		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
@@ -148,9 +237,21 @@ nul.understanding.base = Class.create({
 		if(uniqueName) this.parms[name] = value;
 		return value;
 	},
+	/**
+	 * Applies the understandment process to a compiled node
+	 * @param {nul.compiled} cnt
+	 * @return {nul.xpr.object}
+	 * @throw {nul.semanticException}
+	 */
 	understand: function(cnt) {
 		return this.klg.wrap(cnt.understand(this));
 	},
+	/**
+	 * Gets a value that represent the attribute of an object. Creates a local and assert attribute value.
+	 * @param {nul.xpr.object} obj
+	 * @param {String} anm
+	 * @return {nul.obj.local}
+	 */
 	attributed: function(obj, anm) {
 		//TODO 3? essayer de ne pas créer deux variables si (a.b + a.b)
 		// a.b = a.b ?? non ! mais pas utile deux variables anyway! 
@@ -161,11 +262,25 @@ nul.understanding.base = Class.create({
 	}
 });
 
-nul.understanding.base.set = Class.create(nul.understanding.base, {
+nul.understanding.base.set = Class.create(nul.understanding.base, /** @lends nul.understanding.base.set# */{
+	/**
+	 * Understanding context' information inside brackets
+	 * @extends nul.understanding.base
+	 * @constructs
+	 * @param {nul.understanding.base} prntUb The parent understanding base
+	 * @param {String} selfName The name to use internally (understanding this value) to give to the created value.
+	 * @param {String} klgName The name to give to the created context if any special (if not, one will be generated)
+	 */
 	initialize: function($super, prntUb, selfName, klgName) {
 		$super(prntUb, klgName);
 		if(selfName) this.setSelfRef = (this.parms[selfName] = nul.obj.local.self(null, selfName)).ndx;
 	},
+	/**
+	 * Applies the understandment process to a compiled node
+	 * @param {nul.compiled} cnt
+	 * @return {nul.obj.pair|nul.obj.empty}
+	 * @throw {nul.semanticException}
+	 */
 	understand: function(cnt) {
 		var rv;
 		try {

@@ -20,7 +20,7 @@ merge(nul,
 	 */
 	failure: 'failure',
 	/**
-	 * Failures that happened while these trys
+	 * List of failures that happened during these trys
 	 */
 	fails: [],
 	/**
@@ -44,39 +44,46 @@ merge(nul,
 	failed: function(err) {
 		if(nul.failure!= err) throw nul.exception.notice(err);
 	},
+	
+	/**
+	 * Global NUL values
+	 * @type nul.expression[String]
+	 */
 	globals: {},
 	
-    isJsInt: function(n) {
-    	return n== Math.floor(n);
-    },
-	globalsUse: function(srName) {
-		var ub = new nul.understanding.base.set(null, srName, 'g');
+	/**
+	 * Creates the root understing-base with the declared {@link nul.globals}
+	 * @return {nul.understanding.base.set}
+	 */
+	globalsUse: function() {
+		var ub = new nul.understanding.base.set(null, null, 'g');
 		for(var p in nul.globals) 
 			ub.createFreedom(p, nul.globals[p]);
 		return ub;
 	},
+	/**
+	 * Compile a text and understand it
+	 * @param {String} txt
+	 * @return {nul.expression}
+	 * @throw {nul.semanticException}
+	 * @throw {nul.syntaxException} 
+	 */
+	subRead: function(txt)
+	{
+		return nul.globalsUse().understand(nul.compile(txt));
+	},
+	/**
+	 * Compile a text and understand it in a fresh execution context
+	 * @param {String} txt
+	 * @return {nul.expression}
+	 * @throw {nul.semanticException}
+	 * @throw {nul.syntaxException} 
+	 */
 	read: function(txt, letBM)
 	{
 		nul.execution.reset(letBM);
 		return nul.execution.benchmark.measure('*reading',function(){
-			return nul.globalsUse().understand(nul.compile(txt));
+			return nul.subRead(txt);
 		});
-	},
-	html: function(txt)
-	{
-		nul.erroneus = false;
-		var comps = (new nul.compiler(txt+' </')).innerXML();
-		for(var i=0; i<comps.length; ++i) if(comps[i])
-			comps[i] = nul.globalsUse().understand(comps[i]);
-		return comps;
-	},
-
-	/**
-	 * Weither the string opt appear in the url parameters
-	 */
-	urlOption: function(opt) {
-		var srch = window.location.href.split('?')[1];
-		if(!srch) return;
-		return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
 	}
 });

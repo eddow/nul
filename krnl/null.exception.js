@@ -7,7 +7,9 @@
  *--------------------------------------------------------------------------*/
  
 //TODO D
-
+/**
+ * @class
+ */
 nul.exception = function(type, code, msg, chrct)
 {
 	var err = { nul: true, type: type, message: msg,
@@ -20,6 +22,9 @@ nul.exception = function(type, code, msg, chrct)
 	return nul.erroneus;
 };
 
+/**
+ * Manage an exception and sets the globals if there was JavaScript problems
+ */
 nul.exception.notice = function(err)
 {
 	if(err.fileName && err.stack && !nul.erroneus) {
@@ -29,14 +34,39 @@ nul.exception.notice = function(err)
 	return err;
 };
 
+/**
+ * An exception considering what is expressed by the NUL program
+ * @constructs
+ * @methodOf nul.exception
+ * @param {String} code
+ * @param {String} msg
+ * @param {String} chrct
+ */
 nul.semanticException = function(code, msg, chrct)
 {
 	return nul.exception('semantic', 'SEM'+code, msg, chrct);
 };
+
+/**
+ * An exception considering how is written a NUL program
+ * @constructs
+ * @methodOf nul.exception
+ * @param {String} code
+ * @param {String} msg
+ * @param {String} chrct
+ */
 nul.syntaxException = function(code, msg, chrct)
 {
 	return nul.exception('syntax', 'SYN'+code, msg, chrct);
 };
+
+/**
+ * A bug in the NUL interpreter - ideally never raised
+ * @constructs
+ * @methodOf nul.exception
+ * @param {String} msg
+ * @param {String} chrct
+ */
 nul.internalException = function(msg, chrct)
 {
 	return nul.exception('internal', 'INT', msg, chrct);

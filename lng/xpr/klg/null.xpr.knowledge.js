@@ -369,7 +369,10 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	
  	/**
  	 * Know all what klg knows
- 	 * @return {nul.xpr.object} Value expressed under this knowledge
+ 	 * @param {nul.xpr.knowledge} klg
+ 	 * @param {nul.xpr.object} val [optional] Value to modify too
+ 	 * @return {nul.xpr.object} Value expressed under this knowledge if 
+ 	 * @return {nul.xpr.knowledge.stepUp} Browser to parse further values if no value were specified
  	 * @throws {nul.failure}
  	 */
  	merge: function(klg, val) {
@@ -574,7 +577,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	},
 	modifiable: function($super) {
 		var rv = $super();
-		nul.xpr.knowledge.cloneData(this, rv);
+		rv.locals = clone1(this.locals);
 		rv.eqCls = [];
 		rv.access = {};
 		for(var i in this.eqCls) if(cstmNdx(i)) rv.accede(this.eqCls[i]);
@@ -602,22 +605,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		return (!this.eqCls.length && !this.nbrLocals() && !this.ior3.length && !this.veto.length);
  	}
 });
-
-/**
- * Private use !
- * Cone the data from a knowledge (or a save object) to another knowledge (or a save object)
- */
-nul.xpr.knowledge.cloneData = function(src, dst) {
-	if(!dst) dst = {};
-	if(dst.accede) {
-		dst.access = {};
-		for(var i in this.eqCls) if(cstmNdx(i)) dst.accede(this.eqCls[i]);
-	} else dst.eqCls = clone1(src.eqCls);
-	dst.ior3 = clone1(src.ior3);
-	dst.locals = clone1(src.locals);
-	dst.veto = clone1(src.veto);
-	return dst;	
-};
 
 if(nul.debug) merge(nul.xpr.knowledge.prototype, /** @lends nul.xpr.knowledge# */{
 
