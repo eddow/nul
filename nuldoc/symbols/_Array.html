@@ -211,7 +211,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.compiled.html">nul.compiled</a></li>
 	
+	<li><a href="../symbols/_nul.compiler.html">nul.compiler</a></li>
+	
 	<li><a href="../symbols/_nul.debug.html">nul.debug</a></li>
+	
+	<li><a href="../symbols/_nul.dependance.html">nul.dependance</a></li>
+	
+	<li><a href="../symbols/_nul.exception.html">nul.exception</a></li>
 	
 	<li><a href="../symbols/_nul.execution.html">nul.execution</a></li>
 	
@@ -245,6 +251,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.local.html">nul.obj.local</a></li>
 	
+	<li><a href="../symbols/_nul.obj.node.html">nul.obj.node</a></li>
+	
 	<li><a href="../symbols/_nul.obj.number.html">nul.obj.number</a></li>
 	
 	<li><a href="../symbols/_nul.obj.operation.html">nul.obj.operation</a></li>
@@ -256,6 +264,8 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
 	
 	<li><a href="../symbols/_nul.obj.undefined.html">nul.obj.undefined</a></li>
+	
+	<li><a href="../symbols/_nul.solve.browser.html">nul.solve.browser</a></li>
 	
 	<li><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></li>
 	
@@ -272,6 +282,10 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.txt.html.js.html">nul.txt.html.js</a></li>
 	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
+	
+	<li><a href="../symbols/_nul.understanding.base.html">nul.understanding.base</a></li>
+	
+	<li><a href="../symbols/_nul.understanding.base.set.html">nul.understanding.base.set</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.html">nul.xpr</a></li>
 	
@@ -321,17 +335,14 @@ ul.inheritsList
 
 <!-- ============================== properties summary ===================== -->
 			
-
-<!-- ============================== methods summary ======================== -->
-			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class Array.">
-					<caption>Method Summary</caption>
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class Array.">
+					<caption>Field Summary</caption>
 					<thead>
 						<tr>
-							<th scope="col">Method Attributes</th>
-							<th scope="col">Method Name and Description</th>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -339,54 +350,30 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_Array.html#added">added</a></b>(v)
+								<div class="fixedFont">
+								<b><a href="../symbols/_Array.html#mar">mar</a></b>
 								</div>
-								<div class="description"></div>
+								<div class="description">Returns an array whose elements are the return values of <fct> taken for each item of <itm><fct> return an array of element to add in the return list</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_Array.html#contains">contains</a></b>(v)
+								<div class="fixedFont">
+								<b><a href="../symbols/_Array.html#pushs">pushs</a></b>
 								</div>
-								<div class="description"></div>
+								<div class="description">Concatenate array(s) to this one</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_Array.html#indexOf">indexOf</a></b>(v)
+								<div class="fixedFont">
+								<b><a href="../symbols/_Array.html#union">union</a></b>
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_Array.html#mar">mar</a></b>(fct)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_Array.html#pushs">pushs</a></b>()
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_Array.html#union">union</a></b>()
-								</div>
-								<div class="description"></div>
+								<div class="description">Add elements from an array if they're not already present</div>
 							</td>
 						</tr>
 					
@@ -396,6 +383,9 @@ ul.inheritsList
 				
 				
 			
+
+<!-- ============================== methods summary ======================== -->
+			
 <!-- ============================== events summary ======================== -->
 			
 
@@ -404,139 +394,19 @@ ul.inheritsList
 
 <!-- ============================== field details ========================== -->		
 			
-
-<!-- ============================== method details ========================= -->		
-			
 				<div class="sectionTitle">
-					Method Detail
+					Field Detail
 				</div>
-				
-					<a name="added"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>added</b>(v)
-					
-					</div>
-					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>v</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="contains"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>contains</b>(v)
-					
-					</div>
-					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>v</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="indexOf"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>indexOf</b>(v)
-					
-					</div>
-					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>v</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
 				
 					<a name="mar"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>mar</b>(fct)
+					<b>mar</b>
 					
 					</div>
 					<div class="description">
-						
+						Returns an array whose elements are the return values of <fct> taken for each item of <itm><fct> return an array of element to add in the return list
 						
 							<br />
 							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
@@ -545,21 +415,7 @@ ul.inheritsList
 					</div>
 					
 					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>fct</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
+
 						
 						
 						
@@ -571,11 +427,11 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					
-					<b>pushs</b>()
+					<b>pushs</b>
 					
 					</div>
 					<div class="description">
-						
+						Concatenate array(s) to this one
 						
 							<br />
 							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
@@ -584,10 +440,7 @@ ul.inheritsList
 					</div>
 					
 					
-					
-						
-						
-						
+
 						
 						
 						
@@ -599,11 +452,11 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					
-					<b>union</b>()
+					<b>union</b>
 					
 					</div>
 					<div class="description">
-						
+						Add elements from an array if they're not already present
 						
 							<br />
 							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.helper.js">krnl/null.helper.js</a>.
@@ -612,10 +465,7 @@ ul.inheritsList
 					</div>
 					
 					
-					
-						
-						
-						
+
 						
 						
 						
@@ -623,6 +473,9 @@ ul.inheritsList
 
 					
 				
+			
+
+<!-- ============================== method details ========================= -->		
 			
 			
 <!-- ============================== event details ========================= -->		
@@ -635,7 +488,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Fri Oct 30 2009 14:52:54 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sat Oct 31 2009 11:35:44 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

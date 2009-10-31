@@ -23,7 +23,7 @@ nul = {
 				for(var i=0; i<nss.length; ++i) if(nss[i] && nss[i].src) {
 					var spl = nss[i].src.split('null.js');
 					if(1< spl.length && ''==spl[1]) {
-						nul.loading.path = spl[0];
+						nul.rootPath = spl[0];
 						nul.loading.nsn = nss[i];
 						if(nss[i].attributes.nocache) nul.loading.suffix = '?'+(new Date()).getTime();
 						break;
@@ -31,7 +31,7 @@ nul = {
 				}
 
 				nul.loading.addNexScriptRef();
-				nul.loading.addRef('link', {href: nul.loading.path+'lng/null.css', rel: 'stylesheet', type: 'text/css'});
+				nul.loading.addRef('link', {href: nul.rootPath+'lng/null.css', rel: 'stylesheet', type: 'text/css'});
 			}
 		}
 	}
@@ -85,8 +85,9 @@ nul.loading.files = [
 'web/null.page',
 
 'data/null.data',
-'data/null.data.dom',
-//'data/null.data.compute'
+'data/null.data.container',
+//'data/null.data.compute',
+'data/null.data.dom'
 ];
 
 nul.loading.total = nul.loading.files.length;
@@ -108,22 +109,24 @@ nul.loading.onreadystatechange = function() {
 };
 
 nul.loading.addNexScriptRef = function() {
-	if(!nul.loading.files.length) {
+	var sf = nul.loading.files.shift();
+	if(!sf) {
 		window.status = nul.loading.files.length + '/' + nul.loading.total + ' : Starting script';
 		delete nul.loading;
-		nul.page.load();
+		for(var l in nul.load)
+			if(!function(){}[l])
+				nul.load[l].apply(document);
 		window.status = window.defaultStatus;
 		return;
 	}
-	var sf = nul.loading.files.shift();
 	window.status = nul.loading.files.length + '/' + nul.loading.total + ' : ' + sf;
 	nul.loading.addRef('script', {
 		type: 'text/javascript',
-		src: nul.loading.path+sf+'.js' + nul.loading.suffix,
+		src: nul.rootPath+sf+'.js' + nul.loading.suffix,
 		onreadystatechange: nul.loading.onreadystatechange,
 		onload: nul.loading.addNexScriptRef
 	});
 };
-nul.loading.path = '';
+nul.rootPath = '';
 
 nul.loading();

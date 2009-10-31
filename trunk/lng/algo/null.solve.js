@@ -6,15 +6,13 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
 /**
- * TODO O: a real resolution engine ! :)
- * TODO 3: BIG optimisation : solve first sons, then the root
  * Interface function of Solver.
  * Gets a distributed list of fuzzies that don't contains ior3 anymore
  * @param {nul.xpr.possible} fz
  * @return array(nul.xpr.possible)
+ * @version TODO O: a real resolution engine ! :)
+ * @version TODO 3: BIG optimisation : solve first sons, then the root
  */
 nul.solve = function(fz) {
 	var onceKior3 = new nul.xpr.knowledge.ior3([nul.xpr.knowledge.always]);
@@ -61,13 +59,25 @@ nul.solve.ior3 = function(fzs) {
 	return rv;
 };
 
-nul.solve.browser = Class.create(nul.browser.bijectif, {
+nul.solve.browser = Class.create(nul.browser.bijectif, /** @lends nul.solve.browser# */{
+	/**
+	 * A browser to create an expression based on a choice in all the ior3-s
+	 * @constructs
+	 * @extends nul.browser.bijectif
+	 * @param {nul.xpr.knowledge} klg
+	 * @param {Number[]} tries The indexes of the possibility to take
+	 * @param {nul.browser.bijectif} merger The browser to use on the tried values
+	 */
 	initialize: function($super, klg, tries, merger) {
 		this.klg = klg;
 		this.tries = tries;
 		this.merger = merger;
 		$super('Resolution');
 	},
+	/**
+	 * If xpr is an ior3, give the choosen object out of it
+	 * @param {nul.expression} xpr
+	 */
 	transform: function(xpr) {
 		if('ior3'== xpr.expression && this.klg.name == xpr.klgRef	///Xpr is a ior of this knowledge 
 				&& xpr.ndx<this.tries.length)	//Xpr is a tested one, not a newly imported one

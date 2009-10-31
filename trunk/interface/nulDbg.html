@@ -40,23 +40,23 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 	<div id="evaled"></div>
 	<div id="watch"></div>
 	<div id="info">
-		<input type="hidden" id="infoTS" value="values" />
+		<input type="hidden" id="infoTS" value="tab_values" />
 		<div>
-			<a class="msTab" onclick="tabSelect(this);" name="values">Values</a>
-			<a class="msTab" onclick="tabSelect(this);" name="runtime">Run-time</a>
-			<a class="msTab" onclick="tabSelect(this);" name="logs">Logs</a>
-			<a class="msTab" onclick="tabSelect(this);" name="benchmark">Benchmark</a>
+			<a class="msTab" onclick="tabSelect(this);" name="tab_values">Values</a>
+			<a class="msTab" onclick="tabSelect(this);" name="tab_runtime">Run-time</a>
+			<a class="msTab" onclick="tabSelect(this);" name="tab_logs">Logs</a>
+			<a class="msTab" onclick="tabSelect(this);" name="tab_benchmark">Benchmark</a>
 		</div>
 		<div>
-			<div class="msTab" name="values">
+			<div class="msTab" name="tab_values">
 				<input type="button" onclick="test(tquery, qrd, 'Querying...');" value="Query" disabled="true" id="queryCmd"></input><br />
 				<div id="sandBox"><b t="3">yh</b><i t="4">oo</i></div><br />
 				<div id="queried"></div>
 			</div>
-			<div class="msTab" name="runtime">
+			<div class="msTab" name="tab_runtime">
 				<fieldset><legend>Call stack</legend><table id="callStack"></table></fieldset>
 			</div>
-			<div class="msTab" name="logs">
+			<div class="msTab" name="tab_logs">
 				<table>
 				<thead>
 					<tr>
@@ -69,7 +69,7 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 				<tbody id="logs"></tbody>
 				</table>
 			</div>
-			<div class="msTab" name="benchmark">
+			<div class="msTab" name="tab_benchmark">
 				<table>
 				<thead>
 					<tr>

@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - nul.tokenizer</title>
+		<title>JsDoc Reference - nul.compiler</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -318,7 +318,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class nul.tokenizer
+				Class nul.compiler
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -328,13 +328,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/in/null.tokenizer.js">lng/txt/in/null.tokenizer.js</a>.
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/in/null.compile.js">lng/txt/in/null.compile.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.tokenizer.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.compiler.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -347,9 +347,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.tokenizer.html#constructor">nul.tokenizer</a></b>(src)
+								<b><a href="../symbols/_nul.compiler.html#constructor">nul.compiler</a></b>(txt)
 							</div>
-							<div class="description">Text reader helper</div>
+							<div class="description">Compilation information</div>
 						</td>
 					</tr>
 				</tbody>
@@ -358,50 +358,12 @@ ul.inheritsList
 
 <!-- ============================== properties summary ===================== -->
 			
-				
-				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class nul.tokenizer.">
-					<caption>Field Summary</caption>
-					<thead>
-						<tr>
-							<th scope="col">Field Attributes</th>
-							<th scope="col">Field Name and Description</th>
-						</tr>
-					</thead>
-					<tbody>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.alphabets">alphabets</a></b>
-								</div>
-								<div class="description">Alphabets used by the tokenizer given by name</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.token">token</a></b>
-								</div>
-								<div class="description">The next token to consider</div>
-							</td>
-						</tr>
-					
-					</tbody>
-				</table>
-				
-				
-				
-			
 
 <!-- ============================== methods summary ======================== -->
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.tokenizer.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.compiler.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -412,83 +374,74 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.expect">expect</a></b>(value, rv)
+								<div class="fixedFont"><b><a href="../symbols/_nul.compiler.html#alphanum">alphanum</a></b>()
 								</div>
-								<div class="description">Take next token, asserts its value</div>
+								<div class="description">Requires the next token to be an alphanumeric</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.fly">fly</a></b>(seeked)
+								<div class="fixedFont"><b><a href="../symbols/_nul.compiler.html#applied">applied</a></b>()
 								</div>
-								<div class="description">Get a string until some character</div>
+								<div class="description">Gather a compiled value and all its post-fixes</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.isAB">isAB</a></b>(v, alphabet)
+								<div class="fixedFont"><b><a href="../symbols/_nul.compiler.html#expression">expression</a></b>(oprtrLvl)
 								</div>
-								<div class="description">Try to recognize the string as from an alphabet</div>
+								<div class="description">Gets the compiled expressionon the sepcified operator-level</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.next">next</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/_nul.compiler.html#innerXML">innerXML</a></b>()
 								</div>
-								<div class="description">Consider the next token</div>
+								<div class="description">Read inside an XML node</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.peek">peek</a></b>(accepted)
+								<div class="fixedFont"><b><a href="../symbols/_nul.compiler.html#item">item</a></b>(lax)
 								</div>
-								<div class="description">Compare and return next token</div>
+								<div class="description">Read an item without precedance</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.pop">pop</a></b>(accepted)
+								<div class="fixedFont"><b><a href="../symbols/_nul.compiler.html#list">list</a></b>(firstOp, oprtr, oprtrLvl)
 								</div>
-								<div class="description">Gets next token and advance if accepted.</div>
+								<div class="description">Takes the list of operands for an expression on the n-th operator level</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.rawExpect">rawExpect</a></b>(value, rv)
+								<div class="fixedFont"><b><a href="../symbols/_nul.compiler.html#number">number</a></b>()
 								</div>
-								<div class="description">Take some characters, asserts their value</div>
+								<div class="description">Requires the next token to be a number</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.rawTake">rawTake</a></b>(value)
+								<div class="fixedFont"><b><a href="../symbols/_nul.compiler.html#xml">xml</a></b>()
 								</div>
-								<div class="description">Gets next characters and advance if accepted.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.take">take</a></b>(value)
-								</div>
-								<div class="description">Gets next token and advance if accepted.</div>
+								<div class="description">Read an XML node</div>
 							</td>
 						</tr>
 					
@@ -509,11 +462,11 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.tokenizer</b>(src)
+						<b>nul.compiler</b>(txt)
 				</div>
 				
 				<div class="description">
-					Text reader helper
+					Compilation information
 					
 				</div>
 				
@@ -525,10 +478,10 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{String}</span>  <b>src</b>
+								<span class="light fixedFont">{String}</span>  <b>txt</b>
 								
 							</dt>
-								<dd>The text content</dd>
+								<dd>Text to compile</dd>
 						
 						</dl>
 					
@@ -544,55 +497,6 @@ ul.inheritsList
 
 <!-- ============================== field details ========================== -->		
 			
-				<div class="sectionTitle">
-					Field Detail
-				</div>
-				
-					<a name=".alphabets"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					<span class="light">{RegExp[String]}</span>
-					<span class="light">nul.tokenizer.</span><b>alphabets</b>
-					
-					</div>
-					<div class="description">
-						Alphabets used by the tokenizer given by name
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".token"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.tokenizer.</span><b>token</b>
-					
-					</div>
-					<div class="description">
-						The next token to consider
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					
-				
-			
 
 <!-- ============================== method details ========================= -->		
 			
@@ -600,91 +504,21 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name=".expect"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="alphanum"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>expect</b>(value, rv)
-					
-					</div>
-					<div class="description">
-						Take next token, asserts its value
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>value</b>
-									
-								</dt>
-								<dd>The expected value of the next token</dd>
-							
-								<dt>
-									<span class="light fixedFont">{any}</span> <b>rv</b>
-									
-								</dt>
-								<dd>The return value of this function</dd>
-							
-							</dl>
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Throws:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{nul.synthaxException}</span>  <b></b>
-								</dt>
-								<dd>if the token is not the one expected.</dd>
-							
-							</dl>
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>the parameter 'rv'</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name=".fly"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.tokenizer.</span><b>fly</b>(seeked)
+					<span class="light">{String}</span>
+					<b>alphanum</b>()
 					
 					</div>
 					<div class="description">
-						Get a string until some character
+						Requires the next token to be an alphanumeric
 						
 						
 					</div>
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>seeked</b>
-									
-								</dt>
-								<dd>The bound for seeking</dd>
-							
-							</dl>
 						
 						
 						
@@ -693,7 +527,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>the string until the bound.</dd>
+								<dd><span class="light fixedFont">{String}</span> The alphanumeric value</dd>
 							
 							</dl>
 						
@@ -702,15 +536,47 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".isAB"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="applied"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>isAB</b>(v, alphabet)
+					<span class="light">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span>
+					<b>applied</b>()
 					
 					</div>
 					<div class="description">
-						Try to recognize the string as from an alphabet
+						Gather a compiled value and all its post-fixes
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> The compiled value</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="expression"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span>
+					<b>expression</b>(oprtrLvl)
+					
+					</div>
+					<div class="description">
+						Gets the compiled expressionon the sepcified operator-level
 						
 						
 					</div>
@@ -722,77 +588,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>v</b>
+									<span class="light fixedFont">{Number}</span> <b>oprtrLvl</b>
 									
 								</dt>
-								<dd>The string to recognise</dd>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>alphabet</b>
-									
-								</dt>
-								<dd>The alphabet name</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".next"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.tokenizer.</span><b>next</b>()
-					
-					</div>
-					<div class="description">
-						Consider the next token
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".peek"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.tokenizer.</span><b>peek</b>(accepted)
-					
-					</div>
-					<div class="description">
-						Compare and return next token
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String[]}</span> <b>accepted</b>
-									
-								</dt>
-								<dd>A list of accepted token type</dd>
+								<dd>tThe operator-level : index in <a href="../symbols/_nul.html#.operators">nul.operators</a></dd>
 							
 							</dl>
 						
@@ -803,7 +602,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>next token if accepted or null</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> The compiled value</dd>
 							
 							</dl>
 						
@@ -812,15 +611,47 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".pop"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="innerXML"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>pop</b>(accepted)
+					<span class="light">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span>
+					<b>innerXML</b>()
 					
 					</div>
 					<div class="description">
-						Gets next token and advance if accepted.
+						Read inside an XML node
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> The compiled value</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="item"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span>
+					<b>item</b>(lax)
+					
+					</div>
+					<div class="description">
+						Read an item without precedance
 						
 						
 					</div>
@@ -832,10 +663,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String[]}</span> <b>accepted</b>
+									<span class="light fixedFont">{Boolean}</span> <b>lax</b>
 									
 								</dt>
-								<dd>A list of accepted token type</dd>
+								<dd>Prevent to read an item that should be understood as an operation</dd>
 							
 							</dl>
 						
@@ -846,7 +677,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>next token if accepted or null</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> The compiled value</dd>
 							
 							</dl>
 						
@@ -855,15 +686,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".rawExpect"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="list"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>rawExpect</b>(value, rv)
+					<span class="light">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span>
+					<b>list</b>(firstOp, oprtr, oprtrLvl)
 					
 					</div>
 					<div class="description">
-						Take some characters, asserts their value
+						Takes the list of operands for an expression on the n-th operator level
 						
 						
 					</div>
@@ -875,37 +706,33 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>value</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> <b>firstOp</b>
 									
 								</dt>
-								<dd>The expected string to find</dd>
+								<dd>The already-red operand</dd>
 							
 								<dt>
-									<span class="light fixedFont">{any}</span> <b>rv</b>
+									<span class="light fixedFont">{String}</span> <b>oprtr</b>
 									
 								</dt>
-								<dd>The return value of this function</dd>
+								<dd>The expected operator</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>oprtrLvl</b>
+									
+								</dt>
+								<dd>tThe operator-level : index in <a href="../symbols/_nul.html#.operators">nul.operators</a></dd>
 							
 							</dl>
 						
 						
 						
-						
-							<dl class="detailList">
-							<dt class="heading">Throws:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{nul.synthaxException}</span>  <b></b>
-								</dt>
-								<dd>if the characters were not found exactly</dd>
-							
-							</dl>
 						
 						
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>the parameter 'rv'</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> The compiled value</dd>
 							
 							</dl>
 						
@@ -914,32 +741,21 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".rawTake"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="number"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>rawTake</b>(value)
+					<span class="light">{Number}</span>
+					<b>number</b>()
 					
 					</div>
 					<div class="description">
-						Gets next characters and advance if accepted.
+						Requires the next token to be a number
 						
 						
 					</div>
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>value</b>
-									
-								</dt>
-								<dd>The characters expected to de found</dd>
-							
-							</dl>
 						
 						
 						
@@ -948,7 +764,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>true if the characters were found</dd>
+								<dd><span class="light fixedFont">{Number}</span> The number value</dd>
 							
 							</dl>
 						
@@ -957,32 +773,21 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".take"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="xml"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>take</b>(value)
+					<span class="light">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span>
+					<b>xml</b>()
 					
 					</div>
 					<div class="description">
-						Gets next token and advance if accepted.
+						Read an XML node
 						
 						
 					</div>
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>value</b>
-									
-								</dt>
-								<dd>The only accepted token value</dd>
-							
-							</dl>
 						
 						
 						
@@ -991,7 +796,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>true if token was token, false if nothing changed</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> The compiled value</dd>
 							
 							</dl>
 						
@@ -1012,7 +817,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sat Oct 31 2009 11:35:45 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sat Oct 31 2009 11:35:44 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

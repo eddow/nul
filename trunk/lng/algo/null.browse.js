@@ -151,7 +151,7 @@ nul.browser.bijectif = Class.create(nul.browser.cached, /** @lends nul.browser.b
  	/**
  	 * Called when an expression was not modified
  	 * @param {nul.xpr.expression} xpr
- 	 * @return {nul.xpr.expression | nul.browser.bijectif.unchanged}
+ 	 * @return {nul.xpr.expression|nul.browser.bijectif.unchanged}
  	 */
  	leave: function(xpr) { return nul.browser.bijectif.unchanged; },
 	/**

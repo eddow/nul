@@ -6,8 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
  
-nul.load.nulDbg = function()
-{
+nul.load.nulDbg = function() {
 	selectNamedTab($('info'),$('infoTS').value);
 	nul.debug.callStack.table = $('callStack');
 	nul.debug.logs.table = $('logs');
@@ -41,11 +40,10 @@ function test(cb, dst, prgrsMsg)
 		if($('shwLogging').checked) {
 			nul.debug.logging = {error: true, fail: true};
 			var opts = $('loggingChk').options;
-			for(var o=0; o< opts.length; ++o)
+			for(var o=0; opts[o]; ++o)
 				nul.debug.logging[opts[o].value] = opts[o].selected;
 		} else nul.debug.logging = false;
 	}
-	nul.execution.reset();
 	
 	window.setTimeout('nul.debug.applyTables();', 100);
 	

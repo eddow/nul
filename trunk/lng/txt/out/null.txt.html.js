@@ -314,6 +314,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		 * @param {String} knd The kind of tile the mouse interract with
 		 */
 		enter: function(elm, knd) {
+			$(elm);
 			if(this.entered && elm == this.entered[0] && knd == this.entered[1]) return;
 			if(this.entered) this.leave();
 			this.entered = [elm, knd];

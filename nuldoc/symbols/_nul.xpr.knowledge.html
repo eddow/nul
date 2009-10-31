@@ -211,7 +211,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.compiled.html">nul.compiled</a></li>
 	
+	<li><a href="../symbols/_nul.compiler.html">nul.compiler</a></li>
+	
 	<li><a href="../symbols/_nul.debug.html">nul.debug</a></li>
+	
+	<li><a href="../symbols/_nul.dependance.html">nul.dependance</a></li>
+	
+	<li><a href="../symbols/_nul.exception.html">nul.exception</a></li>
 	
 	<li><a href="../symbols/_nul.execution.html">nul.execution</a></li>
 	
@@ -245,6 +251,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.local.html">nul.obj.local</a></li>
 	
+	<li><a href="../symbols/_nul.obj.node.html">nul.obj.node</a></li>
+	
 	<li><a href="../symbols/_nul.obj.number.html">nul.obj.number</a></li>
 	
 	<li><a href="../symbols/_nul.obj.operation.html">nul.obj.operation</a></li>
@@ -256,6 +264,8 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
 	
 	<li><a href="../symbols/_nul.obj.undefined.html">nul.obj.undefined</a></li>
+	
+	<li><a href="../symbols/_nul.solve.browser.html">nul.solve.browser</a></li>
 	
 	<li><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></li>
 	
@@ -272,6 +282,10 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.txt.html.js.html">nul.txt.html.js</a></li>
 	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
+	
+	<li><a href="../symbols/_nul.understanding.base.html">nul.understanding.base</a></li>
+	
+	<li><a href="../symbols/_nul.understanding.base.set.html">nul.understanding.base.set</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.html">nul.xpr</a></li>
 	
@@ -552,16 +566,6 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#clearAccess">clearAccess</a></b>()
 								</div>
 								<div class="description">Remove the 'access' data used for knowledge modification.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.xpr.knowledge.<b><a href="../symbols/_nul.xpr.knowledge.html#.cloneData">cloneData</a></b>(src, dst)
-								</div>
-								<div class="description">Private use !
-Cone the data from a knowledge (or a save object) to another knowledge (or a save object)</div>
 							</td>
 						</tr>
 					
@@ -1462,49 +1466,6 @@ Debug asserts
 
 					<hr />
 				
-					<a name=".cloneData"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.xpr.knowledge.</span><b>cloneData</b>(src, dst)
-					
-					</div>
-					<div class="description">
-						Private use !
-Cone the data from a knowledge (or a save object) to another knowledge (or a save object)
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>src</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>dst</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="concatLocals"> </a>
 					<div class="fixedFont">
 					
@@ -1836,7 +1797,7 @@ to determine a value, for this knowledge, regarding the equivalence classes
 					<a name="merge"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span>
+					<span class="light">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>, nul.xpr.knowledge.stepUp}</span>
 					<b>merge</b>(klg, val)
 					
 					</div>
@@ -1853,16 +1814,16 @@ to determine a value, for this knowledge, regarding the equivalence classes
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>klg</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>val</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>val</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>[optional] Value to modify too</dd>
 							
 							</dl>
 						
@@ -1883,7 +1844,9 @@ to determine a value, for this knowledge, regarding the equivalence classes
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> Value expressed under this knowledge</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> Value expressed under this knowledge if</dd>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.stepUp.html">nul.xpr.knowledge.stepUp</a>}</span> Browser to parse further values if no value were specified</dd>
 							
 							</dl>
 						
@@ -2626,7 +2589,7 @@ Use the local names to textualise locals references.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Fri Oct 30 2009 14:52:55 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sat Oct 31 2009 11:35:46 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

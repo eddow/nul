@@ -211,7 +211,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.compiled.html">nul.compiled</a></li>
 	
+	<li><a href="../symbols/_nul.compiler.html">nul.compiler</a></li>
+	
 	<li><a href="../symbols/_nul.debug.html">nul.debug</a></li>
+	
+	<li><a href="../symbols/_nul.dependance.html">nul.dependance</a></li>
+	
+	<li><a href="../symbols/_nul.exception.html">nul.exception</a></li>
 	
 	<li><a href="../symbols/_nul.execution.html">nul.execution</a></li>
 	
@@ -245,6 +251,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.local.html">nul.obj.local</a></li>
 	
+	<li><a href="../symbols/_nul.obj.node.html">nul.obj.node</a></li>
+	
 	<li><a href="../symbols/_nul.obj.number.html">nul.obj.number</a></li>
 	
 	<li><a href="../symbols/_nul.obj.operation.html">nul.obj.operation</a></li>
@@ -256,6 +264,8 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
 	
 	<li><a href="../symbols/_nul.obj.undefined.html">nul.obj.undefined</a></li>
+	
+	<li><a href="../symbols/_nul.solve.browser.html">nul.solve.browser</a></li>
 	
 	<li><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></li>
 	
@@ -272,6 +282,10 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.txt.html.js.html">nul.txt.html.js</a></li>
 	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
+	
+	<li><a href="../symbols/_nul.understanding.base.html">nul.understanding.base</a></li>
+	
+	<li><a href="../symbols/_nul.understanding.base.set.html">nul.understanding.base.set</a></li>
 	
 	<li><a href="../symbols/_nul.xpr.html">nul.xpr</a></li>
 	
@@ -360,19 +374,9 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								nul.<b><a href="../symbols/_nul.html#.dependance">dependance</a></b>
-								</div>
-								<div class="description">A list of dependancies toward knowledges</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
 								nul.<b><a href="../symbols/_nul.html#.fails">fails</a></b>
 								</div>
-								<div class="description">Failures that happened while these trys</div>
+								<div class="description">List of failures that happened during these trys</div>
 							</td>
 						</tr>
 					
@@ -383,6 +387,26 @@ ul.inheritsList
 								nul.<b><a href="../symbols/_nul.html#.failure">failure</a></b>
 								</div>
 								<div class="description">Failure object that is thrown and caught</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								nul.<b><a href="../symbols/_nul.html#.globals">globals</a></b>
+								</div>
+								<div class="description">Global NUL values</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &lt;constant&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								nul.<b><a href="../symbols/_nul.html#.operators">operators</a></b>
+								</div>
+								<div class="description">Recognised operators sorted by precedance</div>
 							</td>
 						</tr>
 					
@@ -412,16 +436,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.compile">compile</a></b>(txt)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.exception">exception</a></b>(type, code, msg, chrct)
-								</div>
-								<div class="description"></div>
+								<div class="description">Make a compiled value out of a text.</div>
 							</td>
 						</tr>
 					
@@ -446,36 +461,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.globalsUse">globalsUse</a></b>(srName)
+								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.globalsUse">globalsUse</a></b>()
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.html">html</a></b>(txt)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.internalException">internalException</a></b>(msg, chrct)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.isJsInt">isJsInt</a></b>(n)
-								</div>
-								<div class="description"></div>
+								<div class="description">Creates the root understing-base with the declared <a href="../symbols/_nul.html#.globals">nul.globals</a></div>
 							</td>
 						</tr>
 					
@@ -484,16 +472,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.read">read</a></b>(txt, letBM)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.semanticException">semanticException</a></b>(code, msg, chrct)
-								</div>
-								<div class="description"></div>
+								<div class="description">Compile a text and understand it in a fresh execution context</div>
 							</td>
 						</tr>
 					
@@ -502,9 +481,16 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.solve">solve</a></b>(fz)
 								</div>
-								<div class="description">TODO O: a real resolution engine ! :)
-TODO 3: BIG optimisation : solve first sons, then the root
-Interface function of Solver.</div>
+								<div class="description">Interface function of Solver.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.subRead">subRead</a></b>(txt)
+								</div>
+								<div class="description">Compile a text and understand it</div>
 							</td>
 						</tr>
 					
@@ -520,27 +506,9 @@ Interface function of Solver.</div>
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.syntaxException">syntaxException</a></b>(code, msg, chrct)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.trys">trys</a></b>(cb, name, obj, args)
 								</div>
 								<div class="description">Make several try/catch; accept some failures (debug purpose)</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.urlOption">urlOption</a></b>(opt)
-								</div>
-								<div class="description">Weither the string opt appear in the url parameters</div>
 							</td>
 						</tr>
 					
@@ -589,31 +557,6 @@ Interface function of Solver.</div>
 					Field Detail
 				</div>
 				
-					<a name=".dependance"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.</span><b>dependance</b>
-					
-					</div>
-					<div class="description">
-						A list of dependancies toward knowledges
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.dependance.js">krnl/null.dependance.js</a>.
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name=".fails"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -622,7 +565,7 @@ Interface function of Solver.</div>
 					
 					</div>
 					<div class="description">
-						Failures that happened while these trys
+						List of failures that happened during these trys
 						
 						
 					</div>
@@ -656,6 +599,53 @@ Interface function of Solver.</div>
 						
 						
 
+					<hr />
+				
+					<a name=".globals"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{<a href="../symbols/_nul.expression.html">nul.expression</a>[String]}</span>
+					<span class="light">nul.</span><b>globals</b>
+					
+					</div>
+					<div class="description">
+						Global NUL values
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".operators"> </a>
+					<div class="fixedFont">&lt;static&gt; &lt;constant&gt; 
+					
+					<span class="light">{[String,String][]}</span>
+					<span class="light">nul.</span><b>operators</b>
+					
+					</div>
+					<div class="description">
+						Recognised operators sorted by precedance
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/in/null.compile.js">lng/txt/in/null.compile.js</a>.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
 					
 				
 			
@@ -669,12 +659,12 @@ Interface function of Solver.</div>
 					<a name=".compile"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
+					<span class="light">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span>
 					<span class="light">nul.</span><b>compile</b>(txt)
 					
 					</div>
 					<div class="description">
-						
+						Make a compiled value out of a text.
 						
 							<br />
 							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/in/null.compile.js">lng/txt/in/null.compile.js</a>.
@@ -689,7 +679,7 @@ Interface function of Solver.</div>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>txt</b>
+									<span class="light fixedFont">{String}</span> <b>txt</b>
 									
 								</dt>
 								<dd></dd>
@@ -699,63 +689,13 @@ Interface function of Solver.</div>
 						
 						
 						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".exception"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.</span><b>exception</b>(type, code, msg, chrct)
-					
-					</div>
-					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.exception.js">krnl/null.exception.js</a>.
-						
-						
-					</div>
-					
-					
-					
 						
 							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
+							<dt class="heading">Returns:</dt>
 							
-								<dt>
-									<b>type</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>code</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>msg</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>chrct</b>
-									
-								</dt>
-								<dd></dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> </dd>
 							
 							</dl>
-						
-						
-						
-						
 						
 						
 						
@@ -837,150 +777,29 @@ Interface function of Solver.</div>
 					<a name=".globalsUse"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
-					<span class="light">nul.</span><b>globalsUse</b>(srName)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>srName</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".html"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.</span><b>html</b>(txt)
+					<span class="light">{<a href="../symbols/_nul.understanding.base.set.html">nul.understanding.base.set</a>}</span>
+					<span class="light">nul.</span><b>globalsUse</b>()
 					
 					</div>
 					<div class="description">
-						
+						Creates the root understing-base with the declared <a href="../symbols/_nul.html#.globals">nul.globals</a>
 						
 						
 					</div>
 					
 					
 					
+						
+						
+						
+						
 						
 							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
+							<dt class="heading">Returns:</dt>
 							
-								<dt>
-									<b>txt</b>
-									
-								</dt>
-								<dd></dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.understanding.base.set.html">nul.understanding.base.set</a>}</span> </dd>
 							
 							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".internalException"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.</span><b>internalException</b>(msg, chrct)
-					
-					</div>
-					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.exception.js">krnl/null.exception.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>msg</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>chrct</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".isJsInt"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.</span><b>isJsInt</b>(n)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>n</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
 						
 						
 						
@@ -990,12 +809,12 @@ Interface function of Solver.</div>
 					<a name=".read"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
+					<span class="light">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span>
 					<span class="light">nul.</span><b>read</b>(txt, letBM)
 					
 					</div>
 					<div class="description">
-						
+						Compile a text and understand it in a fresh execution context
 						
 						
 					</div>
@@ -1007,7 +826,7 @@ Interface function of Solver.</div>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>txt</b>
+									<span class="light fixedFont">{String}</span> <b>txt</b>
 									
 								</dt>
 								<dd></dd>
@@ -1024,56 +843,12 @@ Interface function of Solver.</div>
 						
 						
 						
-						
-						
-
-					<hr />
-				
-					<a name=".semanticException"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.</span><b>semanticException</b>(code, msg, chrct)
-					
-					</div>
-					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.exception.js">krnl/null.exception.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
 							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
+							<dt class="heading">Returns:</dt>
 							
-								<dt>
-									<b>code</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>msg</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>chrct</b>
-									
-								</dt>
-								<dd></dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> </dd>
 							
 							</dl>
-						
-						
-						
-						
 						
 						
 						
@@ -1088,9 +863,7 @@ Interface function of Solver.</div>
 					
 					</div>
 					<div class="description">
-						TODO O: a real resolution engine ! :)
-TODO 3: BIG optimisation : solve first sons, then the root
-Interface function of Solver.
+						Interface function of Solver.
 Gets a distributed list of fuzzies that don't contains ior3 anymore
 						
 							<br />
@@ -1129,6 +902,49 @@ Gets a distributed list of fuzzies that don't contains ior3 anymore
 
 					<hr />
 				
+					<a name=".subRead"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span>
+					<span class="light">nul.</span><b>subRead</b>(txt)
+					
+					</div>
+					<div class="description">
+						Compile a text and understand it
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>txt</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name=".summary"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1153,57 +969,6 @@ Gets a distributed list of fuzzies that don't contains ior3 anymore
 							
 								<dt>
 									<b>itm</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".syntaxException"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.</span><b>syntaxException</b>(code, msg, chrct)
-					
-					</div>
-					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.exception.js">krnl/null.exception.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>code</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>msg</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>chrct</b>
 									
 								</dt>
 								<dd></dd>
@@ -1271,42 +1036,6 @@ Gets a distributed list of fuzzies that don't contains ior3 anymore
 						
 						
 
-					<hr />
-				
-					<a name=".urlOption"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.</span><b>urlOption</b>(opt)
-					
-					</div>
-					<div class="description">
-						Weither the string opt appear in the url parameters
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>opt</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
 					
 				
 			
@@ -1321,7 +1050,7 @@ Gets a distributed list of fuzzies that don't contains ior3 anymore
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Fri Oct 30 2009 14:52:54 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sat Oct 31 2009 11:35:44 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

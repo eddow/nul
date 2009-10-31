@@ -5,12 +5,11 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
-//TODO D
-
 
 /**
  * Gets weither this object is an array [] and not an object {}
+ * @param {Object} itm
+ * @return {Boolean}
  */
 function isArray(itm) {
 	return itm &&
@@ -20,29 +19,58 @@ function isArray(itm) {
 }
 
 /**
- * Duplicate myObj where components are just references : shallow clone
+ * Determines weither this number is an integer
+ * @param {Number} n
+ * @return {Boolean}
  */
-function clone1(myObj) {
-	if(null== myObj || typeof(myObj) != 'object') return myObj;
-	return map(myObj, function(i,o) { return o; });
+function isJsInt(n) {
+	return n== Math.floor(n);
 }
 
 /**
- * Gets weither <ndx> is a custom index of <ass>
+ * Weither the string opt appear in the url parameters
+ * @param {String} opt
+ * @return {Boolean}
+ */
+function urlOption(opt) {
+	var srch = window.location.href.split('?')[1];
+	if(!srch) return;
+	return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
+}
+
+/**
+ * Duplicate itm where components are just references : shallow clone
+ * @param {Object} itm
+ * @return {Object}
+ */
+function clone1(itm) {
+	if(null== itm || typeof(itm) != 'object') return itm;
+	return map(itm, function(i,o) { return o; });
+}
+
+/**
+ * Gets weither 'ndx' is a custom index of 'ass'
  * Returns false for all the default properties of the arrays.
+ * @param {String|Number} ndx
+ * @param {Object} ass
+ * @return {Boolean}
  */
 function cstmNdx(ndx, ass) {	//TODO 2: avoid the items that are identical to prototype
 	return ((ass && (!isArray(ass) || ass[ndx]!= [][ndx])) || Object.isUndefined([][ndx]));
 }
+
 /**
  * Internal (helper) use for mapping functions
+ * @private
  */
 function mapCb(fct, ndx, itm) {
 	return fct?fct.apply( ['object','function'].include(typeof itm)?itm:null, [reTyped(ndx), itm]):itm;
 }
 
 /**
- * Returns the first of <itm> for which the function <fct> returned a value evaluated to true
+ * Returns the first of 'itm' for which the function 'fct' returned a value evaluated to true
+ * @param {Object} itm
+ * @param {MapCallBack} fct
  */
 function trys(itm, fct) {
 	var rv;
@@ -52,6 +80,8 @@ function trys(itm, fct) {
 
 /**
  * Returns the sum of the returns value (or 1 if not-false and not-number)
+ * @param {Object} itm
+ * @param {MapCallBack} fct
  */
 function cnt(itm, fct) {
 	var rv = 0;
@@ -64,7 +94,9 @@ function cnt(itm, fct) {
 }
 
 /**
- * Returns the same item as <itm> where each member went through <fct>
+ * Returns the same item as 'itm' where each member went through 'fct'.
+ * @param {Object} itm
+ * @param {MapCallBack} fct
  */
 function map(itm, fct) {
 	var rv = isArray(itm)?[]:{};
@@ -75,8 +107,10 @@ function map(itm, fct) {
 
 
 /**
- * Returns the same item as <itm> where each member went through <fct>
+ * Returns the same item as 'itm' where each member went through 'fct'.
  * Each members returning an empty value are not added
+ * @param {Object} itm
+ * @param {MapCallBack} fct
  */
 function maf(itm, fct) {
 	var rv = isArray(itm)?[]:{};
@@ -91,6 +125,11 @@ function maf(itm, fct) {
 	return rv;
 }
 
+/**
+ * Escape a string for it to be displayable as text in a HTML page
+ * @param {String} str
+ * @return {HTML}
+ */
 function escapeHTML(str) {
    var div = document.createElement('div');
    var text = document.createTextNode(str);
@@ -99,10 +138,10 @@ function escapeHTML(str) {
 };
 
 /**
- * Is o an empty association ? (beside the values contained in array b)
- * @param {association} o
+ * Is 'o' an empty association ? (beside the values contained in array 'b')
+ * @param {Object} o
  * @param {param array} b
- * @return
+ * @return {Boolean}
  */ 
 function isEmpty(o, b) {
 	b = beArrg(arguments, 1);
@@ -112,7 +151,8 @@ function isEmpty(o, b) {
 
 /**
  * If a string is '5', get it as the number 5
- * @param {String or number} v
+ * @param {String|Number} v
+ * @return {String|Number}
  */
 function reTyped(v) {
 	if('string'!= typeof v) return v;
@@ -121,89 +161,84 @@ function reTyped(v) {
 }
 
 /**
- * If elements of t are tables, they become part of t
- * @example [ 1, [2, [3, 4]], 5 ] ==> [ 1, 2, 3, 4, 5 ]
+ * Take the 'param array' parameters of the function
+ * @param {Arguments} args The given "arguments"
+ * @param ndx The argument-index where the param-array begind
+ * @return {any[]}
  */
-function oneFlatTable(t) {
-	var rv = [];
-	for(var i=0; i<t.length; ++i)
-		if(isArray(t[i])) rv = rv.concat(oneFlatTable(t[i]));
-		else rv.push(t[i]);
-	return rv;
-}
-
-//Compare arrays
-function arrCmp(a, b) {
-	if(a.length != b.length) return false;
-	for(var i=0; i<a.length; ++i) if(a[i] != b[i]) return false;
-	return true;
-}
-
-//arguments to Array()
-function arrg(args, ndx) {
-	var rv = [];
-	for(var i=(ndx||0); i<args.length; ++i) rv.push(args[i]);
-	return rv;
-}
-
 function beArrg(args, ndx) {
 	if(!ndx) ndx = 0;
 	if(ndx >= args.length) return [];
 	if(1+ndx== args.length && isArray(args[ndx])) return clone1(args[ndx]);
-	return arrg(args, ndx);
+	return $A(args).slice(ndx);
 }
-
-function merge(a, b, cb) {
-	for(var i in b) if(cstmNdx(i, a)) a[i] = cb?cb(a[i],b[i], i):b[i];
-	if(cb) for(var i in a) if(Object.isUndefined(b[i])) a[i] = cb(a[i], null, i);
-	return a; 
-}
-
-[].indexOf || (Array.prototype.indexOf = function(v){
-       for(var i = this.length; i-- && this[i] !== v;);
-       return i;
-});
-[].contains || (Array.prototype.contains = function(v){ return -1< this.indexOf(v); });
-
-[].pushs || (Array.prototype.pushs = function(){
-	for(var j=0; j<arguments.length; ++j) {
-		var o = arguments[j];
-		if(this===o)
-			throw nul.internalException('Catenating self')
-		for(var i=0; i<o.length; ++i) this.push(o[i]);
-	}
-	return this; 
-});
-
-[].union || (Array.prototype.union = function(){
-	for(var j=0; j<arguments.length; ++j) {
-		var o = arguments[j];
-		for(var i=0; i<o.length; ++i) {
-			var s;
-			for(s=0; s<this.length; ++s) if(this[s]===o[i]) break;
-			if(s>=this.length) this.push(o[i]);
-		}
-	}
-	return this; 
-});
-
-[].added || (Array.prototype.added = function(v){
-	var rv = clone1(this);
-	rv.unshift(v);
-	return rv; 
-});
 
 /**
- * Returns an array whose elements are the return values of <fct> taken for each item of <itm>
- * <fct> return an array of element to add in the return list
+ * Modifies the components of an Object (dst) along the components of another Object {src}
+ * @param {Object} dst The destination Object
+ * @param {Object} src The modifying Object
+ * @param {function(srcElement,dstElement) {any}} cb Call-back to compute the new value
+ * @return {Object} dst
  */
-[].mar || (Array.prototype.mar = function(fct) {
-	var rv = [];
-	for(var i in this) if(cstmNdx(i)) rv.pushs(mapCb(fct, i, this[i]));
-	return rv;
-});
+function merge(dst, src, cb) {
+	for(var i in src) if(cstmNdx(i, dst)) dst[i] = cb?cb(dst[i],src[i], i):src[i];
+	if(cb) for(var i in dst) if(Object.isUndefined(src[i])) dst[i] = cb(dst[i], null, i);
+	return dst; 
+}
 
+[].pushs || (Array.prototype.pushs =
+	/**
+	 * Concatenate array(s) to this one
+	 * @memberOf Array#
+	 * @param {Array} [paramarray]
+	 * @name pushs
+	 */
+	function(){
+		for(var j=0; j<arguments.length; ++j) {
+			var o = arguments[j];
+			if(this===o)
+				throw nul.internalException('Catenating self')
+			for(var i=0; i<o.length; ++i) this.push(o[i]);
+		}
+		return this; 
+	});
+
+[].union || (Array.prototype.union = 
+	/**
+	 * Add elements from an array if they're not already present
+	 * @memberOf Array#
+	 * @param {Array} [paramarray]
+	 * @name union
+	 */
+	function(){
+		for(var j=0; j<arguments.length; ++j) {
+			var o = arguments[j];
+			for(var i=0; i<o.length; ++i) {
+				var s;
+				for(s=0; s<this.length; ++s) if(this[s]===o[i]) break;
+				if(s>=this.length) this.push(o[i]);
+			}
+		}
+		return this; 
+	});
+
+[].mar || (Array.prototype.mar = 
+	/**
+	 * Returns an array whose elements are the return values of <fct> taken for each item of <itm>
+	 * <fct> return an array of element to add in the return list
+	 * @memberOf Array#
+	 * @param {MapCallBack} fct
+	 * @name mar
+	 */
+	function(fct) {
+		var rv = [];
+		for(var i in this) if(cstmNdx(i)) rv.pushs(mapCb(fct, i, this[i]));
+		return rv;
+	});
+
+/** @constant */
 pinf = Number.POSITIVE_INFINITY;
+/** @constant */
 ninf = Number.NEGATIVE_INFINITY;
 
 ////////////////	prototype extension
@@ -229,3 +264,10 @@ Class.Methods.is= function(obj) {
 	while(c && c!= this) c = c.superclass;
 	return c == this;
 };
+
+/** @ignore */
+Element.addMethods(['TABLE', 'tbody'], {
+	nbrRows: function(tbl) {
+		return tbl.rows?tbl.rows.length:0;
+	}
+});

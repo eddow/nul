@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - nul.tokenizer</title>
+		<title>JsDoc Reference - nul.dependance</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -318,7 +318,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class nul.tokenizer
+				Class nul.dependance
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -328,13 +328,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/in/null.tokenizer.js">lng/txt/in/null.tokenizer.js</a>.
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/krnl/null.dependance.js">krnl/null.dependance.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.tokenizer.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.dependance.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -347,9 +347,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.tokenizer.html#constructor">nul.tokenizer</a></b>(src)
+								<b><a href="../symbols/_nul.dependance.html#constructor">nul.dependance</a></b>(dep)
 							</div>
-							<div class="description">Text reader helper</div>
+							<div class="description">A list of dependancies toward knowledges or external resources</div>
 						</td>
 					</tr>
 				</tbody>
@@ -360,7 +360,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class nul.tokenizer.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class nul.dependance.">
 					<caption>Field Summary</caption>
 					<thead>
 						<tr>
@@ -374,19 +374,9 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.alphabets">alphabets</a></b>
+								nul.dependance.<b><a href="../symbols/_nul.dependance.html#.contexts">contexts</a></b>
 								</div>
-								<div class="description">Alphabets used by the tokenizer given by name</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.token">token</a></b>
-								</div>
-								<div class="description">The next token to consider</div>
+								<div class="description">External data-contexts dictionary.</div>
 							</td>
 						</tr>
 					
@@ -401,7 +391,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.tokenizer.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.dependance.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -412,83 +402,56 @@ ul.inheritsList
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.expect">expect</a></b>(value, rv)
+								<div class="fixedFont"><b><a href="../symbols/_nul.dependance.html#also">also</a></b>(deps)
 								</div>
-								<div class="description">Take next token, asserts its value</div>
+								<div class="description">Depends also on all what 'deps' depends on</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.fly">fly</a></b>(seeked)
+								<div class="fixedFont"><b><a href="../symbols/_nul.dependance.html#ior3dep">ior3dep</a></b>(ior3)
 								</div>
-								<div class="description">Get a string until some character</div>
+								<div class="description">Specify dependance from an ior3 expression</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.isAB">isAB</a></b>(v, alphabet)
+								<div class="fixedFont"><b><a href="../symbols/_nul.dependance.html#toFlat">toFlat</a></b>()
 								</div>
-								<div class="description">Try to recognize the string as from an alphabet</div>
+								<div class="description">Draw a flat description of these dependances</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.next">next</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/_nul.dependance.html#toHtml">toHtml</a></b>()
 								</div>
-								<div class="description">Consider the next token</div>
+								<div class="description">Draw a HTML description of these dependances</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.peek">peek</a></b>(accepted)
+								<div class="fixedFont"><b><a href="../symbols/_nul.dependance.html#usage">usage</a></b>(klg)
 								</div>
-								<div class="description">Compare and return next token</div>
+								<div class="description">Retrieve a usage</div>
 							</td>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.pop">pop</a></b>(accepted)
+								<div class="fixedFont"><b><a href="../symbols/_nul.dependance.html#use">use</a></b>(klg)
 								</div>
-								<div class="description">Gets next token and advance if accepted.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.rawExpect">rawExpect</a></b>(value, rv)
-								</div>
-								<div class="description">Take some characters, asserts their value</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.rawTake">rawTake</a></b>(value)
-								</div>
-								<div class="description">Gets next characters and advance if accepted.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.take">take</a></b>(value)
-								</div>
-								<div class="description">Gets next token and advance if accepted.</div>
+								<div class="description">Retrieve a usage and remove it from the list</div>
 							</td>
 						</tr>
 					
@@ -509,11 +472,11 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.tokenizer</b>(src)
+						<b>nul.dependance</b>(dep)
 				</div>
 				
 				<div class="description">
-					Text reader helper
+					A list of dependancies toward knowledges or external resources
 					
 				</div>
 				
@@ -525,10 +488,10 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								<span class="light fixedFont">{String}</span>  <b>src</b>
+								<span class="light fixedFont">{<a href="../symbols/_nul.obj.local.html">nul.obj.local</a>|<a href="../symbols/_nul.obj.data.html">nul.obj.data</a>}</span>  <b>dep</b>
 								
 							</dt>
-								<dd>The text content</dd>
+								<dd></dd>
 						
 						</dl>
 					
@@ -548,37 +511,15 @@ ul.inheritsList
 					Field Detail
 				</div>
 				
-					<a name=".alphabets"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					<span class="light">{RegExp[String]}</span>
-					<span class="light">nul.tokenizer.</span><b>alphabets</b>
-					
-					</div>
-					<div class="description">
-						Alphabets used by the tokenizer given by name
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".token"> </a>
+					<a name=".contexts"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.tokenizer.</span><b>token</b>
+					<span class="light">nul.dependance.</span><b>contexts</b>
 					
 					</div>
 					<div class="description">
-						The next token to consider
+						External data-contexts dictionary.
 						
 						
 					</div>
@@ -600,15 +541,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name=".expect"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="also"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>expect</b>(value, rv)
+					<span class="light">{<a href="../symbols/_nul.dependance.html">nul.dependance</a>}</span>
+					<b>also</b>(deps)
 					
 					</div>
 					<div class="description">
-						Take next token, asserts its value
+						Depends also on all what 'deps' depends on
 						
 						
 					</div>
@@ -620,69 +561,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>value</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.dependance.html">nul.dependance</a>}</span> <b>deps</b>
 									
 								</dt>
-								<dd>The expected value of the next token</dd>
-							
-								<dt>
-									<span class="light fixedFont">{any}</span> <b>rv</b>
-									
-								</dt>
-								<dd>The return value of this function</dd>
-							
-							</dl>
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Throws:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{nul.synthaxException}</span>  <b></b>
-								</dt>
-								<dd>if the token is not the one expected.</dd>
-							
-							</dl>
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>the parameter 'rv'</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name=".fly"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.tokenizer.</span><b>fly</b>(seeked)
-					
-					</div>
-					<div class="description">
-						Get a string until some character
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>seeked</b>
-									
-								</dt>
-								<dd>The bound for seeking</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -693,7 +575,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>the string until the bound.</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.dependance.html">nul.dependance</a>}</span> </dd>
 							
 							</dl>
 						
@@ -702,15 +584,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".isAB"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="ior3dep"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>isAB</b>(v, alphabet)
+					<span class="light">{<a href="../symbols/_nul.dependance.html">nul.dependance</a>}</span>
+					<b>ior3dep</b>(ior3)
 					
 					</div>
 					<div class="description">
-						Try to recognize the string as from an alphabet
+						Specify dependance from an ior3 expression
 						
 						
 					</div>
@@ -722,77 +604,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>v</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.obj.ior3.html">nul.obj.ior3</a>}</span> <b>ior3</b>
 									
 								</dt>
-								<dd>The string to recognise</dd>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>alphabet</b>
-									
-								</dt>
-								<dd>The alphabet name</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".next"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.tokenizer.</span><b>next</b>()
-					
-					</div>
-					<div class="description">
-						Consider the next token
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".peek"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.tokenizer.</span><b>peek</b>(accepted)
-					
-					</div>
-					<div class="description">
-						Compare and return next token
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String[]}</span> <b>accepted</b>
-									
-								</dt>
-								<dd>A list of accepted token type</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -803,7 +618,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>next token if accepted or null</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.dependance.html">nul.dependance</a>}</span> </dd>
 							
 							</dl>
 						
@@ -812,15 +627,79 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".pop"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="toFlat"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>pop</b>(accepted)
+					<span class="light">{String}</span>
+					<b>toFlat</b>()
 					
 					</div>
 					<div class="description">
-						Gets next token and advance if accepted.
+						Draw a flat description of these dependances
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{String}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="toHtml"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{HTML}</span>
+					<b>toHtml</b>()
+					
+					</div>
+					<div class="description">
+						Draw a HTML description of these dependances
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{HTML}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="usage"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{nul.dependance.usage}</span>
+					<b>usage</b>(klg)
+					
+					</div>
+					<div class="description">
+						Retrieve a usage
 						
 						
 					</div>
@@ -832,10 +711,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String[]}</span> <b>accepted</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
 									
 								</dt>
-								<dd>A list of accepted token type</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -846,7 +725,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>next token if accepted or null</dd>
+								<dd><span class="light fixedFont">{nul.dependance.usage}</span> </dd>
 							
 							</dl>
 						
@@ -855,15 +734,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".rawExpect"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="use"> </a>
+					<div class="fixedFont">
 					
-					
-					<span class="light">nul.tokenizer.</span><b>rawExpect</b>(value, rv)
+					<span class="light">{nul.dependance.usage}</span>
+					<b>use</b>(klg)
 					
 					</div>
 					<div class="description">
-						Take some characters, asserts their value
+						Retrieve a usage and remove it from the list
 						
 						
 					</div>
@@ -875,69 +754,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>value</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span> <b>klg</b>
 									
 								</dt>
-								<dd>The expected string to find</dd>
-							
-								<dt>
-									<span class="light fixedFont">{any}</span> <b>rv</b>
-									
-								</dt>
-								<dd>The return value of this function</dd>
-							
-							</dl>
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Throws:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{nul.synthaxException}</span>  <b></b>
-								</dt>
-								<dd>if the characters were not found exactly</dd>
-							
-							</dl>
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>the parameter 'rv'</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name=".rawTake"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.tokenizer.</span><b>rawTake</b>(value)
-					
-					</div>
-					<div class="description">
-						Gets next characters and advance if accepted.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>value</b>
-									
-								</dt>
-								<dd>The characters expected to de found</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -948,50 +768,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>true if the characters were found</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name=".take"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.tokenizer.</span><b>take</b>(value)
-					
-					</div>
-					<div class="description">
-						Gets next token and advance if accepted.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>value</b>
-									
-								</dt>
-								<dd>The only accepted token value</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>true if token was token, false if nothing changed</dd>
+								<dd><span class="light fixedFont">{nul.dependance.usage}</span> </dd>
 							
 							</dl>
 						

@@ -6,30 +6,31 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
-/**
- * A list of dependancies toward knowledges
- */
-nul.dependance = Class.create({
-	initialize: function(lcl) {
+nul.dependance = Class.create(/** @lends nul.dependance# */{
+	/**
+	 * A list of dependancies toward knowledges or external resources
+	 * @constructs
+	 * @param {nul.obj.local|nul.obj.data} dep
+	 */
+	initialize: function(dep) {
 		this.usages = {};
-		if(lcl) {
-			nul.obj.is(lcl);
-			switch(lcl.expression) {
-			case 'local': this.depend(lcl.klgRef, 'local', lcl.ndx, lcl); break;
+		if(dep) {
+			nul.obj.is(dep);
+			switch(dep.expression) {
+			case 'local': this.depend(dep.klgRef, 'local', dep.ndx, dep); break;
 			case 'data':
-				var ctxName = lcl.source.context.toString();
-				if(!nul.dependance.contexts[ctxName]) nul.dependance.contexts[ctxName] = lcl.source.context; 
-				this.depend(ctxName, 'local', lcl.source.index, lcl);
+				var ctxName = dep.source.context.toString();
+				if(!nul.dependance.contexts[ctxName]) nul.dependance.contexts[ctxName] = dep.source.context; 
+				this.depend(ctxName, 'local', dep.source.index, dep);
 				break;
-			default: throw nul.internalException('No dependance defined for '+lcl.expression);
+			default: throw nul.internalException('No dependance defined for '+dep.expression);
 			}
 		}
 	},
 	
 //////////////// private
 	
+	/** @private */
 	depend: function(klgNm, type, ndx, objs) {
 		if(!isArray(objs)) {
 			objs = [objs];
@@ -48,13 +49,17 @@ nul.dependance = Class.create({
 
 	/**
 	 * Retrieve a usage
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {nul.dependance.usage}
 	 */
 	usage: function(klg) {
 		return this.usages[klg.name] || { local: {}, ior3: {} };
 	},
 
 	/**
-	 * Retrieve a usage and forget about it
+	 * Retrieve a usage and remove it from the list
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {nul.dependance.usage}
 	 */
 	use: function(klg) {
 		try{ return this.usage(klg); }
@@ -64,6 +69,7 @@ nul.dependance = Class.create({
 	/**
 	 * Depends also on all what 'deps' depends on
 	 * @param {nul.dependance} deps
+	 * @return {nul.dependance}
 	 */
 	also: function(deps) {
 		for(var klgNm in deps.usages)
@@ -75,6 +81,8 @@ nul.dependance = Class.create({
 
 	/**
 	 * Specify dependance from an ior3 expression
+	 * @param {nul.obj.ior3} ior3
+	 * @return {nul.dependance}
 	 */
 	ior3dep: function(ior3) {
 		nul.xpr.is(ior3, nul.obj.ior3);
@@ -85,6 +93,10 @@ nul.dependance = Class.create({
 	
 //////////////// Text output
 
+	/**
+	 * Draw a HTML description of these dependances
+	 * @return {HTML}
+	 */
 	toHtml : function() {
 		var rv = [];
 		for(var krf in this.usages) {
@@ -96,6 +108,10 @@ nul.dependance = Class.create({
 		return html.table(rv.join());
 	},
 	
+	/**
+	 * Draw a flat description of these dependances
+	 * @return {String}
+	 */
 	toFlat : function() {
 		var rv = [];
 		for(var krf in this.usages) {
@@ -108,4 +124,8 @@ nul.dependance = Class.create({
 	}
 });
 
+/**
+ * External data-contexts dictionary.
+ * @type {nul.data.context[String]} 
+ */
 nul.dependance.contexts = {};

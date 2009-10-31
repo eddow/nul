@@ -14,13 +14,11 @@ set
 [] (_,.. r) => set.sub r 
 }
 
+/*
+set.sigma[x_1, x_2, ..., x_n] ( x_i => x_(i+1) )
+set.sigma[{}] fails
+*/
 ::sigma
  { \/x {x} => {}
 [] (a,b,.. o) => ((a=>b),.. set.sigma[b,.. o] )
 }
-
-::id { x!= (_ => _) }
-
-::fct { (D => I) => set.sub[{ (D _) => (I _) }] }
-
-/>

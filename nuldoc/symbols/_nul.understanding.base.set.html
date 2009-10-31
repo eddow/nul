@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - nul.obj.data</title>
+		<title>JsDoc Reference - nul.understanding.base.set</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -318,23 +318,25 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class nul.obj.data
+				Class nul.understanding.base.set
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
+				<br />Extends
+					<a href="../symbols/_nul.understanding.base.html">nul.understanding.base</a>.<br />
 				
 			
-				Refers to a data-source from nul.data...
 				
 				
-					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/xpr/obj/undefined/null.obj.data.js">lng/xpr/obj/undefined/null.obj.data.js</a>.
+				
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/in/null.understand.js">lng/txt/in/null.understand.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.obj.data.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.understanding.base.set.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -347,9 +349,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.obj.data.html#constructor">nul.obj.data</a></b>()
+								<b><a href="../symbols/_nul.understanding.base.set.html#constructor">nul.understanding.base.set</a></b>(prntUb, selfName, klgName, klgName)
 							</div>
-							<div class="description"></div>
+							<div class="description">Understanding context' information inside brackets</div>
 						</td>
 					</tr>
 				</tbody>
@@ -363,7 +365,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.obj.data.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.understanding.base.set.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -376,18 +378,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.obj.data.html#nul.txt.flat.draw.data">nul.txt.flat.draw.data</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/_nul.understanding.base.set.html#understand">understand</a></b>(cnt)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.obj.data.html#nul.txt.html.draw.data">nul.txt.html.draw.data</a></b>()
-								</div>
-								<div class="description"></div>
+								<div class="description">Applies the understandment process to a compiled node</div>
 							</td>
 						</tr>
 					
@@ -395,6 +388,10 @@ ul.inheritsList
 				</table>
 				
 				
+				
+				<dl class="inheritsList">
+				<dt>Methods borrowed from class <a href="../symbols/_nul.understanding.base.html">nul.understanding.base</a>: </dt><dd><a href="../symbols/_nul.understanding.base.html#attributed">attributed</a>, <a href="../symbols/_nul.understanding.base.html#createFreedom">createFreedom</a>, <a href="../symbols/_nul.understanding.base.html#resolve">resolve</a></dd>
+				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -408,17 +405,46 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.obj.data</b>()
+						<b>nul.understanding.base.set</b>(prntUb, selfName, klgName, klgName)
 				</div>
 				
 				<div class="description">
-					
+					Understanding context' information inside brackets
 					
 				</div>
 				
 				
 				
 				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{<a href="../symbols/_nul.understanding.base.html">nul.understanding.base</a>}</span>  <b>prntUb</b>
+								
+							</dt>
+								<dd>The parent understanding base</dd>
+						
+							<dt>
+								<span class="light fixedFont">{String}</span>  <b>selfName</b>
+								
+							</dt>
+								<dd>The name to use internally (understanding this value) to give to the created value.</dd>
+						
+							<dt>
+								<span class="light fixedFont">{String}</span>  <b>klgName</b>
+								
+							</dt>
+								<dd>The name to give to the created context if any special (if not, one will be generated)</dd>
+						
+							<dt>
+								 <b>klgName</b>
+								
+							</dt>
+								<dd></dd>
+						
+						</dl>
 					
 					
 					
@@ -439,18 +465,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name="nul.txt.flat.draw.data"> </a>
+					<a name="understand"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{String}</span>
-					<b>nul.txt.flat.draw.data</b>()
+					<span class="light">{<a href="../symbols/_nul.obj.pair.html">nul.obj.pair</a>|<a href="../symbols/_nul.obj.empty.html">nul.obj.empty</a>}</span>
+					<b>understand</b>(cnt)
 					
 					</div>
 					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/out/null.txt.flat.js">lng/txt/out/null.txt.flat.js</a>.
+						Applies the understandment process to a compiled node
 						
 						
 					</div>
@@ -458,49 +481,25 @@ ul.inheritsList
 					
 					
 						
-						
-						
-						
-						
 							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
+							<dt class="heading">Parameters:</dt>
 							
-								<dd><span class="light fixedFont">{String}</span> </dd>
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> <b>cnt</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
 						
 						
-
-					<hr />
-				
-					<a name="nul.txt.html.draw.data"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{HTML}</span>
-					<b>nul.txt.html.draw.data</b>()
-					
-					</div>
-					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/out/null.txt.html.js">lng/txt/out/null.txt.html.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
 						
 						
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{HTML}</span> </dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.obj.pair.html">nul.obj.pair</a>|<a href="../symbols/_nul.obj.empty.html">nul.obj.empty</a>}</span> </dd>
 							
 							</dl>
 						

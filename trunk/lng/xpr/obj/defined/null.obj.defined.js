@@ -75,7 +75,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * @param {nul.xpr.object} o
 	 * @param {nul.xpr.object[]} attrs
 	 * @param {nul.xpr.knowledge} klg
-	 * @return {nul.xpr.object[] | nul.xpr.possible[]}
+	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
 	 */
 	has: function(o, attrs) {
 		if(this.subHas) {

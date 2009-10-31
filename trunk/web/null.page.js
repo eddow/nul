@@ -16,5 +16,3 @@ nul.page = {
 		//alert(msg);
 	}
 };
-
-//new Event.observe(window, 'load', nul.page.load);

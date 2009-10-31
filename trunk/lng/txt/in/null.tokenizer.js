@@ -6,17 +6,29 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
-/**@namespace*/
-nul.tokenizer = Class.create({
+nul.tokenizer = Class.create(/** @lends nul.tokenizer */{
+	/**
+	 * Text reader helper
+	 * @constructs
+	 * @param {String} src The text content
+	 */
 	initialize: function(src) {
 		this.txt = src;
 		this.next();
 	},
-	token: { type: '', value: '', raw: '' },
 	/**
-	 * Take next token
+	 * The next token to consider
+	 */
+	token: /** @lends nul.tokenizer.token# */{
+		/** The alphabet that recognised this token */
+		type: '',
+		/** The computed token value */
+		value: '',
+		/** The text that produced this token */
+		raw: ''
+	},
+	/**
+	 * Consider the next token
 	 */
 	next: function()
 	{
@@ -48,7 +60,7 @@ nul.tokenizer = Class.create({
 	/**
 	 * Compare and return next token
 	 * @param {String[]} accepted A list of accepted token type
-	 * @return next token if accepted or null
+	 * @return {} next token if accepted or null
 	 */
 	peek: function(accepted)
 	{
@@ -142,10 +154,19 @@ nul.tokenizer = Class.create({
 	}
 });
 
+/**
+ * Try to recognize the string as from an alphabet
+ * @param {String} v The string to recognise
+ * @param {String} alphabet The alphabet name
+ */
 nul.tokenizer.isAB = function(v, alphabet) {
 	return (new RegExp('^'+nul.tokenizer.alphabets[alphabet], 'g')).exec(v);
 };
 
+/**
+ * Alphabets used by the tokenizer given by name
+ * @type RegExp[String]
+ */
 nul.tokenizer.alphabets = {
 		number:		'(\\d+(\\.\\d+)?)',
 		alphanum:	'([_\\w@]+)',

@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - nul.obj.data</title>
+		<title>JsDoc Reference - nul.solve.browser</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -318,23 +318,25 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class nul.obj.data
+				Class nul.solve.browser
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
+				<br />Extends
+					<a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a>.<br />
 				
 			
-				Refers to a data-source from nul.data...
 				
 				
-					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/xpr/obj/undefined/null.obj.data.js">lng/xpr/obj/undefined/null.obj.data.js</a>.
+				
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/algo/null.solve.js">lng/algo/null.solve.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.obj.data.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.solve.browser.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -347,9 +349,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.obj.data.html#constructor">nul.obj.data</a></b>()
+								<b><a href="../symbols/_nul.solve.browser.html#constructor">nul.solve.browser</a></b>(klg, tries, merger, merger)
 							</div>
-							<div class="description"></div>
+							<div class="description">A browser to create an expression based on a choice in all the ior3-s</div>
 						</td>
 					</tr>
 				</tbody>
@@ -363,7 +365,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.obj.data.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.solve.browser.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -376,18 +378,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.obj.data.html#nul.txt.flat.draw.data">nul.txt.flat.draw.data</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/_nul.solve.browser.html#transform">transform</a></b>(xpr)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.obj.data.html#nul.txt.html.draw.data">nul.txt.html.draw.data</a></b>()
-								</div>
-								<div class="description"></div>
+								<div class="description">If xpr is an ior3, give the choosen object out of it</div>
 							</td>
 						</tr>
 					
@@ -395,6 +388,10 @@ ul.inheritsList
 				</table>
 				
 				
+				
+				<dl class="inheritsList">
+				<dt>Methods borrowed from class <a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a>: </dt><dd><a href="../symbols/_nul.browser.bijectif.html#browse">browse</a>, <a href="../symbols/_nul.browser.bijectif.html#build">build</a>, <a href="../symbols/_nul.browser.bijectif.html#forceBuild">forceBuild</a>, <a href="../symbols/_nul.browser.bijectif.html#leave">leave</a>, <a href="../symbols/_nul.browser.bijectif.html#makeRV">makeRV</a>, <a href="../symbols/_nul.browser.bijectif.html#recursion">recursion</a></dd><dt>Methods borrowed from class <a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a>: </dt><dd><a href="../symbols/_nul.browser.cached.html#cachable">cachable</a>, <a href="../symbols/_nul.browser.cached.html#invalidateCache">invalidateCache</a>, <a href="../symbols/_nul.browser.cached.html#uncache">uncache</a></dd><dt>Methods borrowed from class <a href="../symbols/_nul.browser.html">nul.browser</a>: </dt><dd><a href="../symbols/_nul.browser.html#abort">abort</a>, <a href="../symbols/_nul.browser.html#enter">enter</a></dd>
+				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -408,17 +405,46 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.obj.data</b>()
+						<b>nul.solve.browser</b>(klg, tries, merger, merger)
 				</div>
 				
 				<div class="description">
-					
+					A browser to create an expression based on a choice in all the ior3-s
 					
 				</div>
 				
 				
 				
 				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								<span class="light fixedFont">{<a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a>}</span>  <b>klg</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								<span class="light fixedFont">{Number[]}</span>  <b>tries</b>
+								
+							</dt>
+								<dd>The indexes of the possibility to take</dd>
+						
+							<dt>
+								<span class="light fixedFont">{<a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a>}</span>  <b>merger</b>
+								
+							</dt>
+								<dd>The browser to use on the tried values</dd>
+						
+							<dt>
+								 <b>merger</b>
+								
+							</dt>
+								<dd></dd>
+						
+						</dl>
 					
 					
 					
@@ -439,18 +465,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name="nul.txt.flat.draw.data"> </a>
+					<a name="transform"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{String}</span>
-					<b>nul.txt.flat.draw.data</b>()
+					
+					<b>transform</b>(xpr)
 					
 					</div>
 					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/out/null.txt.flat.js">lng/txt/out/null.txt.flat.js</a>.
+						If xpr is an ior3, give the choosen object out of it
 						
 						
 					</div>
@@ -458,51 +481,20 @@ ul.inheritsList
 					
 					
 						
-						
-						
-						
-						
 							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
+							<dt class="heading">Parameters:</dt>
 							
-								<dd><span class="light fixedFont">{String}</span> </dd>
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
 						
 						
-
-					<hr />
-				
-					<a name="nul.txt.html.draw.data"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{HTML}</span>
-					<b>nul.txt.html.draw.data</b>()
-					
-					</div>
-					<div class="description">
 						
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/txt/out/null.txt.html.js">lng/txt/out/null.txt.html.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{HTML}</span> </dd>
-							
-							</dl>
 						
 						
 						

@@ -1,6 +1,4 @@
 <test name="bidon">
-	traductions
-	<c1 lng="en" oui="yes"></c1>
-	bidons
-	<c2 lng="nl" oui="ya"></c2>
+	<tr att="0"><th>h1</th><th>h2</th></tr>
+	<tr><td>d1</td><td>d2</td></tr>
 </test>
