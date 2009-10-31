@@ -1,3 +1,13 @@
+set.sigma[1..4]
+;set::sigma
+ { \/x {x} => {}
+[] (a,b,.. o) => ((a=>b),.. set.sigma[b,.. o] )
+}
+::: devrait noter l'auto-ref
+
+(1, 2) time.now.seconds
+::: ne renvoie pas phi toujours
+
 document["#sandBox"](text _)
 xml["test.xml"](text _)
 

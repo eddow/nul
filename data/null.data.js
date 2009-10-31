@@ -11,16 +11,22 @@ nul.data = Class.create(/** @lends nul.data# */{
 	 * The data-source provide basic data queries : select, insert, update.
 	 * @constructs
 	 */
-	initialize: function(context, index) {
+	initialize: function(context, index, singleton) {
+		if(singleton) merge(this, singleton);
 		/**
 		 * @type {nul.data.context}
 		 */
-		this.context = context;
+		if(context) this.context = context;
 		/**
 		 * @type string
 		 * Index in this context : URL path, server, ...
 		 */
-		this.index = index;
+		if(index) this.index = index;
+		/**
+		 * @type {nul.obj.data}
+		 * The object refering this data
+		 */
+		this.object = new nul.obj.data(this);
 	},
 	
 	/**
@@ -35,13 +41,12 @@ merge(nul.data, /** @lends nul.data */{
 	query: function(obj) {
 		nul.obj.use(obj);
 		var usg = obj.dependance().usages;
-		if(usg['compute']) obj = nul.data.compute.query(obj);
 		while(!isEmpty(usg)) {
-			var chsdCtx;
+			var chsdCtx = null;
 			for(var d in usg) if(cstmNdx(d)) {
 				var ctx = nul.dependance.contexts[d];
 				nul.data.context.is(ctx);
-				if(!chsdCtx || ctx.context.distance < chsdCtx.distance)
+				if(!chsdCtx || ctx.distance < chsdCtx.distance)
 					chsdCtx = ctx;
 			}
 			//chsdCtx is fixed as minimum distance
@@ -107,7 +112,9 @@ nul.data.context = Class.create(/** @lends nul.data.context# */{
 	 */
 	query: function(obj) {
 		return this.querier().browse(obj);
-	},
+	}.describe('Query', function() {
+		return this.name;
+	}),
 	
 	/**
 	 * Build a querier to browse and replace 'data' object from an expression.

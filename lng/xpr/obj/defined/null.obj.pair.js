@@ -14,12 +14,13 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 	 * @param {nul.xpr.possible} first List head
 	 * @param {nul.xpr.object} second List tail
 	 */
-	initialize: function(first, second) {
+	initialize: function($super, first, second) {
 		nul.xpr.use(first); nul.obj.use(second);
 		/** @type nul.xpr.possible */
 		this.first = nul.xpr.possible.cast(first);
 		/** @type nul.xpr.object */
 		this.second = second;
+		$super();
 	},
 	
 //////////////// Summary

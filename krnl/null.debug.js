@@ -40,7 +40,8 @@ tableStack = Class.create( {
 	},
 	clear: function() {
 		this.dirty = true;
-		while(this.buffer.nbrRows()) this.pop();
+		this.buffer.clear();
+		if(this.table) this.table.clear();
 		this.apply();		
 	},
 	draw: function(cs) {
@@ -87,12 +88,7 @@ tableStack = Class.create( {
 	apply: function() {
 		if(this.dirty && this.table) {
 			this.dirty = false;
-			for(var r = this.table.nbrRows(); r<this.buffer.nbrRows(); ++r) {
-				var drw = this.table.insertRow(-1);
-				var srw = this.buffer.rows[r];
-				for(var c = 0; c < srw.cells.length; ++c)
-					drw.insertCell(-1).innerHTML = srw.cells[c].innerHTML;
-			}
+			this.table.completeFrom(this.buffer);
 			//this.table.innerHTML = this.buffer.innerHTML;
 		}
 	}

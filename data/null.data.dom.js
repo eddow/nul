@@ -21,12 +21,9 @@ nul.data.dom.url = Class.create(nul.data,/** @lends nul.data.dom.url# */{
 			throw 'not implemented'; //TODO 2: load external XML file where doc==url
 		}
 		this.document = doc;
-		this.index = doc.documentURI;
 		this.extract = new nul.data.dom.element($(doc.documentElement));
-	},
-	
-	/** @constant */
-	context: nul.data.dom
+		$super(nul.data.dom, doc.documentURI);
+	}
 });
 
 nul.data.dom.element = Class.create(nul.data.container.local, {
@@ -83,8 +80,8 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 });
 
 nul.load.placeHolders = function() {
-	nul.globals.document = new nul.obj.data(new nul.data.dom.url(this));
-	nul.globals.xml = new nul.data.container.extern(/** @lends nul.globals.xml */{
+	nul.globals.document = new nul.data.dom.url(this).object;
+	nul.globals.xml = new nul.data.container.extern(/** @lends nul.globals.xml# */{
 		wrap: function(transport) {
 			return new nul.data.dom.url(transport.responseXML);
 		}

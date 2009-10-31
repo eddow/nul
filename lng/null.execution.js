@@ -94,7 +94,7 @@ nul.execution = {
 		 * @param {HTMLTable} tbd
 		 */
 		draw: function(tbd) {
-			while(0< $(tbd).nbrRows()) tbd.deleteRow(0);
+			$(tbd).clear();
 			var cs = [];
 			for(var c in this.computed) cs.push([c, this.computed[c]]);
 			cs.sort(function(a, b){ return b[1]-a[1]; });

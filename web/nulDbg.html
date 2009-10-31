@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!--
+NUL language JavaScript framework
+ (c) 2009 E-med Ware
+
+NUL is freely distributable under the terms of GNU GPLv3 license.
+ For details, see the NUL project site : http://code.google.com/p/nul/
+-->
+<html>
+<head>
+<link href="nulDbg.css" rel="stylesheet" type="text/css"></link>
+
+<script type="text/javascript" src="../null.js"></script>
+<script type="text/javascript" src="nulDbg.js"></script>
+<script type="text/nul">
+maGlob = 53
+</script>
+</head>
+<body>
+	<div id="dbgOptions">
+		<fieldset>
+		<legend>
+			<input id="shwLogging" type="checkbox" onclick="shwLoggingClk();" checked="checked"/>
+			Logging
+		</legend>
+		<select id="loggingChk" multiple="multiple">
+		<option>None</option>
+		<option>Resolution</option>
+		<option>Unification</option>
+		<option>Equivalence</option>
+		<option>Wrapping</option>
+		<option>Represent</option>
+		<option>Prune</option>
+		<option>Recursion</option>
+		<option>Extraction</option>
+		<option>Query</option>
+		</select>
+		</fieldset>
+	</div>
+	
+	<textarea cols="80" rows="7" id="source"></textarea>
+	<input type="button" onclick="test(tread, evd, 'Evaluating...');" value="eval"></input>
+	<div id="evaled"></div>
+	<div id="watch"></div>
+	<div id="info">
+		<input type="hidden" id="infoTS" value="tab_values" />
+		<div>
+			<a class="msTab" onclick="tabSelect(this);" name="tab_values">Values</a>
+			<a class="msTab" onclick="tabSelect(this);" name="tab_runtime">Run-time</a>
+			<a class="msTab" onclick="tabSelect(this);" name="tab_logs">Logs</a>
+			<a class="msTab" onclick="tabSelect(this);" name="tab_benchmark">Benchmark</a>
+		</div>
+		<div>
+			<div class="msTab" name="tab_values">
+				<input type="button" onclick="test(tquery, qrd, 'Querying...');" value="Query" disabled="true" id="queryCmd"></input><br />
+				<div id="sandBox"><b t="3">yh</b><i t="4">oo</i></div><br />
+				<div id="queried"></div>
+			</div>
+			<div class="msTab" name="tab_runtime">
+				<fieldset><legend>Call stack</legend><table id="callStack"></table></fieldset>
+			</div>
+			<div class="msTab" name="tab_logs">
+				<table>
+				<thead>
+					<tr>
+						<th>#</th>
+						<th colspan="2">happend ...</th>
+						<th>... with ...</th>
+						<th>... from ...</th>
+					</tr>
+				</thead>
+				<tbody id="logs"></tbody>
+				</table>
+			</div>
+			<div class="msTab" name="tab_benchmark">
+				<table>
+				<thead>
+					<tr>
+						<th>Function</th>
+						<th>Time</th>
+					</tr>
+				</thead>
+				<tbody id="benchmark"></tbody>
+				</table>
+			</div>
+		<div>
+	<div>
+</body>
+</html>

@@ -127,7 +127,14 @@ nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, /** @lends nul.
 
 		return $super(xpr);
 	},
- 	//forceBuild: function(xpr) { return xpr.setSelfRef || 'klg'== xpr.expression; },
+	leave: function($super, xpr) {
+		if('klg'== xpr.expression) {
+			var chd = xpr.modifiable();
+			if(chd.define(this.tbl).length) return chd.built();
+		}
+		return $super(xpr);
+	},
+ 	//forceBuild: function(xpr) { return 'klg'== xpr.expression; },
 	/**
 	 * If a self-ref was planned, make it in the newly built expression.
 	 */

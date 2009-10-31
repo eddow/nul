@@ -151,20 +151,18 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 	 */
 	hasAttr: function(attrs, klg) {
 		this.modify();
-		var useless = true;
+		if(isEmpty(attrs)) return true;
 		if(this.eqvlDefined()) {
 			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
 			this.attribs = {};
-			useless = false;
 		} else if(this.attribs !== attrs) {	//TODO 3: gardien est-il necessaire?
 			merge(this.attribs, attrs, function(a,b) {
 				if((a?a.toString():'')==(b?b.toString():'')) return a;
-				useless = false;
 				return (a&&b)?klg.unify(a,b):(a||b);
 			});
-			if(!useless) this.wedding(klg);
+			this.wedding(klg);
 		}
-		return useless;
+		return false;
 	},
 
 	/**
@@ -175,8 +173,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 	 */
 	define: function(def, klg) {
 		var rv = false;
-		if(!isEmpty(def.attribs, '')) rv |= !this.hasAttr(def.attribs, klg);
-		if(rv) this.wedding(klg);
+		//rv |= !this.hasAttr(def.attribs, klg);
 		return rv;
 	},	
 	
@@ -264,7 +261,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		}
 		subInfluence('equivls', 2);
 		subInfluence('belongs', 1);
-		subInfluence('attribs', 1);
+		subInfluence('attribs', 2);
 		return rv;
 	},
 	
