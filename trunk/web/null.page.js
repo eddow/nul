@@ -7,11 +7,6 @@
  *--------------------------------------------------------------------------*/
  
 nul.page = {
-	load: function() {
-		for(var l in nul.load)
-			if(!function(){}[l])
-				nul.load[l].apply(document);
-	},
 	error: function(msg) {
 		//alert(msg);
 	}

@@ -38,6 +38,13 @@ nul.data = Class.create(/** @lends nul.data# */{
 });
 
 merge(nul.data, /** @lends nul.data */{
+	/**
+	 * Query what is needed to have the queried state of the object
+	 * @param {nul.xpr.object} obj
+	 * @return {nul.xpr.object} The same object without dependancies
+	 * @throw {nul.failure}
+	 * @throw {nul.semanticException}
+	 */
 	query: function(obj) {
 		nul.obj.use(obj);
 		var usg = obj.dependance().usages;
@@ -57,33 +64,32 @@ merge(nul.data, /** @lends nul.data */{
 		return obj;
 	},
 
-	querier: Class.create(nul.browser.bijectif, {
+	querier: Class.create(nul.browser.bijectif, /** @lends nul.data.querier */{
+		/**
+		 * The browser to replace atomic query-dependant values by their queried value
+		 * @constructs
+		 * @extends nul.browser.bijectif
+		 * @param {nul.data.context} context
+		 */
 		initialize: function($super, context, prm) {
 			this.context = context;
 			this.prm = prm;
 			$super();
 		},
+		/**
+		 * Gets the expression-specific queried value if the expression is a data from the queried context
+		 */
 		transform: function(xpr) {
 			if('data'== xpr.expression && this.context.name == xpr.source.context.name)
 				return Object.isFunction(xpr.source.extract)?xpr.source.extract(this.prm):xpr.source.extract;
 			return nul.browser.bijectif.unchanged;
 		}
-	}),
-	
-	/**
-	 * Build the object retrieved by index
-	 */
-	retrieved: function(key, obj, cnstr) {
-		if(!isArray(obj)) return new nul.obj.lambda(key, obj);
-		return map(obj, function() {
-			return new nul.obj.lambda(key, cnstr?(new cnstr(this)):this);
-		});
-	}
+	})
 });
 
 nul.data.context = Class.create(/** @lends nul.data.context# */{
 	/**
-	 * The data-source provide basic data queries : select, insert, update.
+	 * The data-source provider
 	 * @constructs
 	 */
 	initialize: function(name, distance, singleton) {
@@ -125,3 +131,10 @@ nul.data.context = Class.create(/** @lends nul.data.context# */{
 		return new nul.data.querier(this, prm);
 	}
 });
+
+/**
+ * The context used for all computations that doesn't require a connection
+ * @class Singleton
+ * @extends nul.data.context
+ */
+nul.data.context.local = new nul.data.context('local');

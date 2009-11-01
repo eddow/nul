@@ -79,7 +79,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 		var comps = this.components;
 		return maf(this, function(ndx, obj) {
 			if('summarised'!= ndx) 
-				return (comps[ndx] && comps[ndx].bunch)?clone1(obj):obj;
+				return (comps[ndx] && comps[ndx].bunch)?map(obj):obj;
 		});
 	},
 
@@ -99,7 +99,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 		this.modify();
 		for(var comp in this.components)
 			if(this.components[comp].bunch) {
-				for(var ci in this[comp]) if(cstmNdx(ci))
+				for(var ci in this[comp]) if(cstmNdx(ci) && 'function'!= typeof this[comp][ci])
 					this[comp][ci] = this[comp][ci].placed(this);
 			} else this[comp] = this[comp].placed(this);
 		this.summarise(smr);
@@ -256,10 +256,11 @@ nul.xpr = {
  * @returns {nul.expression} rv; set(itm=>rv)
  */
 nul.xpr.application = function(set, itm, klg) {
-	var rv = klg.hesitate(set.having(new nul.obj.lambda(itm, klg.newLocal(nul.understanding.rvName))));
+	var lcl = klg.newLocal(nul.understanding.rvName);
+	var rv = klg.hesitate(set.having(new nul.obj.lambda(itm, lcl)));
 	switch(rv.expression) {
 	case 'lambda': return rv.image;
-	case 'ior3': //TODO 2
+	case 'ior3': return lcl;
 	default: throw nul.internalException('Unexpected having hesitation expression');
 	}
 };

@@ -13,6 +13,18 @@ nul.understanding = {
 	/** Exception used when a local need to be created @constant */
 	unresolvable: 'unresolved identifier',
 	/**
+	 * Understand each 'ops' in a freshly created understand.base
+	 * @param {nul.compiled[]} objs
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.possible[]}
+	 */
+	possibles: function(ops, ub) {
+		return maf(ops, function() {
+			try { return new nul.understanding.base(ub).understand(this); }
+			catch(err) { nul.failed(err); }
+		});
+	},
+	/**
 	 * Generic expression (operator and operands) understanding
 	 * @example a <b>+</b> b <b>+</b> c
 	 * @param {nul.understanding.base} ub
@@ -21,11 +33,11 @@ nul.understanding = {
 	expression: function(ub) {
 		var ops;
 		if('[]'== this.operator)
-			return ub.klg.hesitate(maf(this.operands, function() {
-			//Understand each operands in a freshly created UB that DOESN'T stores locals
+			return ub.klg.hesitate(nul.understanding.possibles(this.operands, ub));
+/*					maf(this.operands, function() {
 				try { return new nul.understanding.base(ub).understand(this); }
 				catch(err) { nul.failed(err); }
-			}));
+			}));*/
 		var ops = map(this.operands, function() { return this.understand(ub); });
 
 		switch(this.operator)
@@ -41,7 +53,7 @@ nul.understanding = {
 			case '=>': return new nul.obj.lambda(ops[0], ops[1]);
 			case ',': return nul.obj.pair.list(ops.follow, ops);
 			case '=': return ub.klg.unify(ops);
-			case '!=': ub.klg.oppose(nul.xpr.knowledge.unification(ops));
+			case '!=': ub.klg.oppose(nul.klg.unification(ops));
 				return ops[0];
 			case ';': return ops[0];
 			case '?': return ops[1];
@@ -64,7 +76,7 @@ nul.understanding = {
 	 * @return {nul.xpr.object}
 	 */
 	preceded: function(ub) {
-		return ub.attributed(this.operand.understand(ub), this.operator+' ');
+		return ub.klg.attribute(this.operand.understand(ub), this.operator+' ');
 	},
 	/**
 	 * Postcedor understanding : a postcedor and an operand
@@ -73,7 +85,7 @@ nul.understanding = {
 	 * @return {nul.xpr.object}
 	 */
 	postceded: function(ub) {
-		return ub.attributed(this.operand.understand(ub), ' '+this.operator);
+		return ub.klg.attribute(this.operand.understand(ub), ' '+this.operator);
 	},
 	/**
 	 * Atom understanding : a type and a value
@@ -94,6 +106,7 @@ nul.understanding = {
 			value = 1*this.value;
 			break;
 		case "alphanum" :
+			if(!this.value) return nul.execution.uberLocal;
 			try { return ub.resolve(this.value); }
 			catch(err) {
 				if(nul.understanding.unresolvable!= err) throw err;
@@ -153,17 +166,10 @@ nul.understanding = {
 	 * @return {nul.obj.node}
 	 */
 	xml: function(ub) {
-		var attrs = {};
-		for(var an in this.attributes) if(cstmNdx(an))
-			attrs[an] = this.attributes[an].understand(ub);
-		return new nul.obj.node(
-			this.node,
-			map(this.attributes, function() {
-				return this.understand(ub);
-			}),
-			map(this.content, function() {
-				return this.understand(ub);
-			}));
+		return new nul.obj.node(this.node,												//tag
+			map(this.attributes, function() { return this.understand(ub); }),			//attributes
+			nul.obj.pair.list(null, nul.understanding.possibles(this.content, ub))		//content
+		);
 	},
 
 	/**
@@ -182,7 +188,7 @@ nul.understanding = {
 	 * @return {nul.xpr.object}
 	 */
 	objectivity: function(ub) {
-		return ub.attributed(this.applied.understand(ub), this.lcl);
+		return ub.klg.attribute(this.applied.understand(ub), this.lcl);
 	},
 	/**
 	 * Hardcoded JS value
@@ -204,8 +210,9 @@ nul.understanding.base = Class.create(/** @lends nul.understanding.base# */{
 	 */
 	initialize: function(prntUb, klgName) {
 		this.prntUb = prntUb;
-		this.parms = {};		
-		this.klg = new nul.xpr.knowledge(klgName);
+		this.parms = {};
+		if(nul.xpr.knowledge.is(klgName)) this.klg = klgName;
+		else this.klg = new nul.xpr.knowledge(klgName);
 	},
 	/**
 	 * Gets the value associated with an identifier
@@ -245,20 +252,6 @@ nul.understanding.base = Class.create(/** @lends nul.understanding.base# */{
 	 */
 	understand: function(cnt) {
 		return this.klg.wrap(cnt.understand(this));
-	},
-	/**
-	 * Gets a value that represent the attribute of an object. Creates a local and assert attribute value.
-	 * @param {nul.xpr.object} obj
-	 * @param {String} anm
-	 * @return {nul.obj.local}
-	 */
-	attributed: function(obj, anm) {
-		//TODO 3? essayer de ne pas créer deux variables si (a.b + a.b)
-		// a.b = a.b ?? non ! mais pas utile deux variables anyway! 
-		if(obj.defined) return obj.attribute(anm);
-		var rv = this.createFreedom('&rarr;'+anm, false);
-		this.klg.attributed(obj, anm, rv);
-		return rv;
 	}
 });
 
@@ -287,6 +280,7 @@ nul.understanding.base.set = Class.create(nul.understanding.base, /** @lends nul
 			rv = nul.obj.pair.list(null, this.klg.wrap(cnt.understand(this)));
 		} catch(err) {
 			nul.failed(err);
+			this.klg.impossible();
 			return nul.obj.empty;
 		}
 		if(this.setSelfRef) rv.selfRef = this.setSelfRef;

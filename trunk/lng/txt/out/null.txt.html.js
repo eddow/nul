@@ -240,7 +240,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		},
 		
 		/**
-		 * @methodOf nul.xpr.knowledge.eqClass#
+		 * @methodOf nul.klg.eqClass#
 		 * @return {HTML}
 		 */
 		eqCls: function() {
@@ -262,8 +262,8 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		klg: function() {
-			if(this==nul.xpr.knowledge.never) return {'':html.op('Never')};
-			if(this==nul.xpr.knowledge.always) return {'':html.op('Always')};
+			if(this==nul.klg.never) return {'':html.op('Never')};
+			if(this==nul.klg.always) return {'':html.op('Always')};
 			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
 			/*var dior3 = [], deps = this.	//TODO 2: retrieve usage
 			for(var i=0; i< this.ior3.length; ++i)
@@ -280,7 +280,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 			};
 		},
 		/**
-		 * @methodOf nul.xpr.knowledge.ior3#
+		 * @methodOf nul.klg.ior3#
 		 * @return {HTML}
 		 */
 		kior3: function() {
@@ -295,7 +295,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		 */
 		possible: function() {
 			if(this===nul.xpr.failure) return { '': html.op('Failure') };
-			if(this.knowledge===nul.xpr.knowledge.always) return { '': this.value.toHtml() };
+			if(this.knowledge===nul.klg.always) return { '': this.value.toHtml() };
 			return {
 				'': html.table(
 					html.tr(html.td(this.value.toHtml(),'freedom')) +

@@ -6,9 +6,12 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO D
-
-nul.data.dom = new nul.data.context('DOM');
+/**
+ * The context of AJAX-accessible items
+ * @class Singleton
+ * @extends nul.data.context
+ */
+nul.data.dom = new nul.data.context('DOM', 10);
 
 nul.data.dom.url = Class.create(nul.data,/** @lends nul.data.dom.url# */{
 	/**
@@ -30,26 +33,31 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 	initialize: function($super, element) {
 		this.element = $(element);
 		$super();
+		this.properties = {
+			'': function() { return new nul.obj.litteral.string(this.element.tagName); },
+			'# ': function() { return new nul.obj.litteral.number(this.element.childNodes.length); }
+		};
+		for(var a=0; this.element.attributes[a]; ++a) this.properties[this.element.attributes[a].name] = function(klg, anm) {
+			return new nul.obj.litteral.string(this.element.getAttribute(anm)); };
 	},
 //TODO 1: sum_index
 ////////////////nul.data.container.local implementation
 	
+	//TODO C
 	seek: function(key) {
 		switch(key.expression) {
 		case 'string':
+			//TODO 2: essayer avec getElementsByTagName si en profondeur et simple CSS selector
 			if(!this.element.select) throw nul.semanticException('DOM', 'Element is not HTML - no CSS selection');
 			var els = this.element.select(key.value);	//cf prototype.js
 			return map(els, function() { return new nul.data.dom.element(this); });
 		case 'node':
+			//TODO 1: utiliser nextSibling
+			//TODO 1: utiliser une fonction filter speciale sur l'idee <n/> / <n/>
 			var pot = $A(this.element.childNodes);
 			var rv = [];
 			for(var p in pot) if(cstmNdx(p)) if(pot[p].tagName == key.tag) {
 				var te = $(pot[p].cloneNode(true));
-				/*var nattr = clone1(key.attributes);
-				for(var a=0; pot[p].attributes[a]; ++a)
-					nattr[pot[p].attributes[a].name] = pot[p].attributes[a].value;
-				rv.push(new nul.obj.node(key.tag, nattr,
-						map(pot[p].childNodes, function() { return new nul.data.dom.element(this); })));*/
 				rv.push(new nul.data.dom.element(te));
 			}
 			return rv;
@@ -57,7 +65,10 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 			throw nul.semanticException('DOM', 'DOM elements can only be indexed by CSS selector or by defaulting node');
 		}
 	},
+	
+	//TODO C
 	list: function() {
+		//TODO 1: utiliser nextSibling
 		return map($A(this.element.childNodes), function() {
 			switch(this.nodeName) {
 			case '#text': return new nul.obj.litteral.string(this.data); 
@@ -66,14 +77,6 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 		});
 	},
 
-////////////////nul.xpr.object.defined implementation
-
-	attribute: function(anm) {
-		var pa = this.element.getAttribute(anm);
-		if(null=== pa) nul.fail(this, ' has no attribute ', anm);
-		return new nul.obj.litteral.string(pa);
-	},
-	
 //////////////// nul.expression implementation
 
 	expression: 'dom'
@@ -81,9 +84,18 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 
 nul.load.placeHolders = function() {
 	nul.globals.document = new nul.data.dom.url(this).object;
-	nul.globals.xml = new nul.data.container.extern(/** @lends nul.globals.xml# */{
-		wrap: function(transport) {
-			return new nul.data.dom.url(transport.responseXML);
-		}
+	/**
+	 * The 'xml' global
+	 * @class Singleton
+	 * @extends nul.data.container.local
+	 */
+	nul.globals.xml = new nul.data.container.local(/** @lends nul.globals.xml# */{
+		//TODO C
+		seek: function(pnt) {
+			if('string'!= pnt.expression) throw nul.semanticException('AJAX', 'Ajax retrieve XML documents from a string URL');
+			return nul.data.container.extern(pnt.value,
+					function(t) { return new nul.data.dom.url(t.responseXML); } );
+		},
+		//TODO 2: list nodes that fit for xml : string attributes and XMLnode/text content
 	});
 };

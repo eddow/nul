@@ -55,11 +55,8 @@ merge(nul,
 	 * Creates the root understing-base with the declared {@link nul.globals}
 	 * @return {nul.understanding.base.set}
 	 */
-	globalsUse: function() {
-		var ub = new nul.understanding.base.set(null, null, 'g');
-		for(var p in nul.globals) 
-			ub.createFreedom(p, nul.globals[p]);
-		return ub;
+	globalsUse: function(glbNm) {
+		return new nul.understanding.base.set(null, null, glbNm);
 	},
 	/**
 	 * Compile a text and understand it
@@ -68,9 +65,9 @@ merge(nul,
 	 * @throw {nul.semanticException}
 	 * @throw {nul.syntaxException} 
 	 */
-	subRead: function(txt)
+	subRead: function(txt, glbNm)
 	{
-		return nul.globalsUse().understand(nul.compile(txt));
+		return nul.globalsUse(glbNm).understand(nul.compile(txt));
 	},
 	/**
 	 * Compile a text and understand it in a fresh execution context
@@ -79,11 +76,23 @@ merge(nul,
 	 * @throw {nul.semanticException}
 	 * @throw {nul.syntaxException} 
 	 */
-	read: function(txt, letBM)
+	read: function(txt)
 	{
-		nul.execution.reset(letBM);
 		return nul.execution.benchmark.measure('*reading',function(){
-			return nul.subRead(txt);
+			try {
+				nul.execution.globalKlg = nul.execution.globalKlg.modifiable();
+				var rv = nul.subRead(txt, nul.execution.globalKlg);
+				if(nul.debug.assert) assert(nul.execution.globalKlg.summarised, 'Reading wrap and wrapping summarise');
+				var gKlg = new nul.xpr.knowledge('g');
+				return gKlg.merge(nul.execution.globalKlg, rv);
+			} catch(err) {
+				nul.execution.globalKlg = nul.klg.never;
+				nul.failed(err);
+				return nul.obj.empty;
+			} finally {
+				if(nul.klg.never!= nul.execution.globalKlg)
+					nul.execution.globalKlg = nul.execution.globalKlg.modifiable().pruned().built();
+			}
 		});
 	}
 });

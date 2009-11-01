@@ -145,7 +145,7 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 		},
 		
 		/**
-		 * @methodOf nul.xpr.knowledge.eqClass#
+		 * @methodOf nul.klg.eqClass#
 		 * @return {String}
 		 */
 		eqCls: function() {
@@ -161,8 +161,8 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 		 * @return {String}
 		 */
 		klg: function() {
-			if(this==nul.xpr.knowledge.never) return 'Never';
-			if(this==nul.xpr.knowledge.always) return '';
+			if(this==nul.klg.never) return 'Never';
+			if(this==nul.klg.always) return '';
 			var rv = nul.txt.flat.all(this.eqCls).join(' &and; ');
 			//var deps = this.usage();
 			var kior3 = nul.txt.flat.all(this.ior3).join(' &and; ')
@@ -171,7 +171,7 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 			return rv?'('+rv+')':'';
 		},
 		/**
-		 * @methodOf nul.xpr.knowledge.ior3#
+		 * @methodOf nul.klg.ior3#
 		 * @return {String}
 		 */
 		kior3: function() {
@@ -183,7 +183,7 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 		 */
 		possible: function() {
 			if(this===nul.xpr.failure) return 'Failure';
-			if(this.knowledge===nul.xpr.knowledge.always) return this.value.toFlat();
+			if(this.knowledge===nul.klg.always) return this.value.toFlat();
 			var klgStr = this.knowledge.toFlat();
 			var valStr = this.value.toFlat();
 			if(!klgStr) return valStr;

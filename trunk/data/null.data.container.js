@@ -6,6 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO D
+
 nul.data.container = Class.create(nul.obj.defined, /** @lends nul.data.container# */{
 	/**
 	 * The data-source provide basic data queries : select, insert, update.
@@ -23,8 +25,10 @@ nul.data.container = Class.create(nul.obj.defined, /** @lends nul.data.container
 	
 	subHas: function(o, attrs) {
 		if('lambda'== o.expression && isEmpty(o.point.dependance().usages)) return this.retrieve(o.point, o.image, attrs);
-		else if(!isEmpty(attrs)) return this.select(o, attrs);
-	}
+		else if(o.defined || !isEmpty(attrs)) return this.select(o, attrs);
+	},
+	
+	expression: 'container'
 });
 
 /**
@@ -45,7 +49,9 @@ nul.data.container.local = Class.create(nul.data.container, /** @lends nul.data.
 	},
 	select: function(obj, att) {
 		return nul.data.container.local.filter(this.list(), obj, att);
-	}
+	},
+	
+	expression: 'container.local'
 });
 
 nul.data.container.local.filter = function(objs, exp, att, wrp) {
@@ -62,36 +68,38 @@ nul.data.container.local.filter = function(objs, exp, att, wrp) {
 	});
 };
 
-nul.data.container.extern = Class.create(nul.data.container.local, /** @lends nul.data.container# */{
-	/**
-	 * Make an expression out of a transport response
-	 * @param {Ajax.Response} transport
-	 * @return {nul.xpr.object} 
-	 */
-	wrap: function(transport) { throw 'abstract'; },
-	seek: function(key) {
-		if('string'!= key.expression) throw nul.semanticException('AJAX', 'Ajax retrieve XML documents from a string URL');
-		var rq = new Ajax.Request(key.value, {
-			method: 'get',
-			asynchronous: false,
-			onException: function(rq, x) {
-				switch(x.code) {
-					case 1012: throw nul.semanticException('AJAX', 'Ajax failure : Not respecting the <a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>');
-					default: throw nul.semanticException('AJAX', 'Ajax failure : '+x);
-				}
+/**
+ * Retrieve a file from url
+ * @param {String} url
+ * @param {function(transport) {nul.xpr.object}} objFct
+ * @return {nul.xpr.object} The result of objFct (or a temporary object to keep on until the file is loaded)
+ */
+nul.data.container.extern = function(url, objFct) {
+	var rq = new Ajax.Request(url, {
+		method: 'get',
+		asynchronous: false,
+		onException: function(rq, x) {
+			switch(x.code) {
+				case 1012: throw nul.semanticException('AJAX', 'Ajax failure : Not respecting the <a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>');
+				default: throw nul.semanticException('AJAX', 'Ajax failure : '+x);
 			}
-		});
-		return [this.wrap(rq.transport)];
-	},
-	expression: 'ajax'
-});
+		}
+	});
+	return objFct(rq.transport);
+};
 
 nul.load.containers = function() {
-	nul.globals.library = new nul.obj.node('nul.globals.library', {
-		file: new nul.data.container.extern(/** @lends nul.globals.library.file# */{
-			wrap: function(transport) {
-				return new nul.subRead(transport.responseText, 'letBM');
-			}
+	nul.globals.library = new nul.obj.node('#library', {
+		file: new nul.data.container.local(/** @lends nul.globals.library.file# */{
+			retrieve: function(pnt, img) {
+				if('string'!= pnt.expression) throw nul.semanticException('LIB', 'Libraries files are retrieved from a string URL');
+				var libSet = nul.data.container.extern(pnt.value,
+					function(t) { return new nul.subRead(t.responseText, pnt.value); } );
+				var klg = new nul.xpr.knowledge();
+				klg.belong(img, libSet);
+				return [klg.wrap(new nul.obj.lambda(pnt,img))];
+			},
+			expression: 'fileLib'
 		})
 	});
 };
