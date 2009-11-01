@@ -167,18 +167,19 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
 	 * @return {nul.compiled} The compiled value
 	 * @throw {nul.syntaxException}
 	 */	
-	applied: function() {
-		var rv = this.item();
+	applied: function(lax) {
+		var rv = this.item(lax);
+		if(!rv) return;
 		do
 		{
 			var tst;
 			if(this.tknzr.take('.')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
 			else if('[]'!= this.tknzr.token.value && this.tknzr.take('['))
 				rv = nul.compiled.taking(rv, this.tknzr.rawExpect(']', this.expression())); 				
-			else if(tst = this.item('lax')) rv = nul.compiled.application(rv, tst);
+			else if(tst = this.applied('lax')) rv = nul.compiled.application(rv, tst);
 			else if(this.tknzr.take('::')) {
 				var anm = this.tknzr.rawTake('(') ?
-						this.tokenizer.rawExpect(')', this.tokenizer.fly(')')) :
+						this.tknzr.rawExpect(')', this.tknzr.fly(')')) :
 						this.alphanum();
 				rv = nul.compiled.composed(rv, anm, this.item());					
 			}
@@ -243,6 +244,8 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
 				if(this.tknzr.take(':')) sr = this.alphanum();
 				return this.tknzr.expect('}', nul.compiled.set(this.expression(), sr));
 			}
+			//Global' attribute
+			if(this.tknzr.take('.')) return nul.compiled.objectivity(nul.compiled.atom({type:'alphanum', value: ''}), this.alphanum());
 			//Parenthesis
 			if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 			if(!lax) {

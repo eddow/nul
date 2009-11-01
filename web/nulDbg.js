@@ -5,7 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
+
 nul.load.nulDbg = function() {
 	selectNamedTab($('info'),$('infoTS').value);
 	nul.debug.callStack.table = $('callStack');
@@ -14,6 +14,7 @@ nul.load.nulDbg = function() {
 	evd = $('evaled');
 	wtc = $('watch');
 	qrd = $('queried');
+	nul.debug.globalKlg = $('globalKlg');
 	for(var i in window) knGlobs[i] = true;
 };
 

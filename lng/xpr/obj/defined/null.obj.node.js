@@ -17,12 +17,22 @@ nul.obj.node = Class.create(nul.obj.defined, /** @lends nul.obj.node# */{
 	 */
 	initialize: function($super, tag, attributes, content) {
 		this.tag = tag;
+		var dupProp = null;
 		this.attributes = attributes || {};
-		this.attributes[''] = new nul.obj.litteral.string(tag);
-		this.content = content || [];
+		for(var anm in this.attributes)
+			if('function'== typeof this.attributes[anm]) {
+				if(!dupProp) dupProp = map(this.properties);
+				dupProp[anm] = this.attributes[anm];
+				delete this.attributes[anm];
+			}
+		if(dupProp) this.properties = dupProp;
+		if(nul.debug.assert) assert(!content || nul.obj.empty==content || 'pair'== content.expression,
+				'Content of a nodae must be pair or empty');
+		this.content = content || nul.obj.empty;	//TODO 2: assert content #set
 		this.alreadyBuilt();
 		$super();
 	},
+
 //////////////// nul.obj.defined implementation
 
 	subUnified: function(o, klg) {
@@ -31,13 +41,18 @@ nul.obj.node = Class.create(nul.obj.defined, /** @lends nul.obj.node# */{
 			if(!a || !b) nul.fail('Attribute not common : '+i);
 			return klg.unify(a, b); 
 		});
-		return new nul.obj.node(nattrs);
+		return new nul.obj.node(this.tag, nattrs, klg.unify(this.content, o.content));
+	},
+
+	properties: {
+		'': function() { new nul.obj.litteral.string(this.tag); },
+		'# ': function(klg) { return this.content.attribute('# ', klg); }
 	},
 
 //////////////// nul.xpr.object implementation
 
 	subHas: function(o, attrs) {
-		throw 'not implememted';	//TODO 2: node.has
+		return this.content.having(o, attrs);
 	},
 
 //////////////// nul.expression implementation
@@ -47,6 +62,6 @@ nul.obj.node = Class.create(nul.obj.defined, /** @lends nul.obj.node# */{
 	/** @constant */
 	components: {
 		'attributes': {type: 'nul.xpr.object', bunch: true},
-		'content': {type: 'nul.xpr.object', bunch: true}
+		'content': {type: 'nul.xpr.object', bunch: false}
 	}
 });

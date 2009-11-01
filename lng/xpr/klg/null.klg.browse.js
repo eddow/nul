@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.xpr.knowledge.stepUp# */{
+nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# */{
 	/**
 	 * @extends nul.browser.bijectif
 	 * @constructs
@@ -27,7 +27,7 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.xpr
 	enterKlg: function(klg) {
 		if(klg && !klg.special && !this.table[klg.name]) {
 			if(nul.debug.assert) assert(!this.forbid[klg.name], 'Knowledge already used before entering');
-			this.table[klg.name] = { klgRef: ++nul.xpr.knowledge.nameSpace };
+			this.table[klg.name] = { klgRef: ++nul.klg.nameSpace };
 			for(var v in this.veto) if(cstmNdx(v)) this.enterKlg(this.veto[v]);
 			for(var i in this.ior3) if(cstmNdx(i))
 				for(var c in this.ior3[i].choices) if(cstmNdx(c))
@@ -64,7 +64,7 @@ nul.xpr.knowledge.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.xpr
 	}
 });
 
-nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, /** @lends nul.xpr.knowledge.represent# */ {
+nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.represent# */ {
 	/**
 	 * Special browser to modifies an expression, replacing any occurrence of an object that appears in an equivalence class
 	 * by the equivalence class representant
@@ -81,11 +81,11 @@ nul.xpr.knowledge.represent = Class.create(nul.browser.bijectif, /** @lends nul.
 	/**
 	 * Used to browse an equivalence class. As each equivalence class appear in the replacement table, they should be protected not to have
 	 * their whole components replaced by the only representant.
-	 * @param {nul.xpr.knowledge.eqClass} eqc
-     * @return {nul.xpr.knowledge.eqClass|nul.browser.bijectif.unchanged}
+	 * @param {nul.klg.eqClass} eqc
+     * @return {nul.klg.eqClass|nul.browser.bijectif.unchanged}
 	 */
 	subBrowse: function(eqc) {
-		nul.xpr.use(eqc, 'nul.xpr.knowledge.eqClass');
+		nul.xpr.use(eqc, 'nul.klg.eqClass');
         this.protect = {};
         for(var i=0; i<eqc.equivls.length; ++i)
         	this.protect[eqc.equivls[i]] = eqc.equivls[i];

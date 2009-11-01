@@ -174,5 +174,14 @@ nul.tokenizer.alphabets = {
 		string:		'"([^"\\uffff]*)"',
 		space:		'[\\s\\uffff]+',
 		comments:	'\\/\\/[^\\uffff]*\\uffff',
-		oprtr:		'([\\~\\:\\+\\-\\>\\<\\=\\*\\/\\!\\&\\|\\\\\\/\\.\\?\\[\\]\\,]+)'
+		oprtr:		[',..', '{', '}', '::', '[', ']', '\\/']
+//		oprtr:		'([\\~\\:\\+\\-\\>\\<\\=\\*\\/\\!\\&\\|\\\\\\/\\.\\?\\[\\]\\,]+)'
 	};
+
+nul.load.operators = function() {
+	var escaper = function(n, s) { return '\\' + s.split('').join('\\'); };
+	var ops = map(nul.operators, function() { return this[0];});
+	ops.pushs(nul.tokenizer.alphabets.oprtr);
+	ops.sort(function(a,b){ return b.length-a.length; })
+	nul.tokenizer.alphabets.oprtr = '(' + map(ops,escaper).join('|') + ')';
+};

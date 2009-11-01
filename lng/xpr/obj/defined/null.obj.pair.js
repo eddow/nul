@@ -75,8 +75,20 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 //////////////// nul.xpr.object implementation
 
 	/** @constant */
-	attributes: {
-		//TODO3: length, &, *, head, tail, ...
+	properties: {
+		'# ': function(klg) {
+			var flw = klg.attribute(this.second, '# ');
+			var mn = this.first.knowledge.minXst();
+			var mx = this.first.knowledge.maxXst();
+			var tl; 
+			if(mn == mx) tl = new nul.obj.litteral.number(mn);
+			else {
+				tl = klg.newLocal('#');
+				klg.belong(tl, new nul.obj.range(mn, mx));
+			}
+			return new nul.obj.operation.Nary('+', [tl, flw]);
+		},
+		'': function() { return nul.obj.litteral.tag.set; }
 	},
 
 //////////////// nul.expression implementation

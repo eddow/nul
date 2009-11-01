@@ -1,4 +1,6 @@
-cmplx = {_
+.cmplx = <library
+i= (.cmplx(i::rl 0 ::img 1))
+><( \/r \/i c
 ::rl(Q r)
 ::img(Q i)
-}
+)></library>

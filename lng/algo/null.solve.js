@@ -15,7 +15,7 @@
  * @version TODO 3: BIG optimisation : solve first sons, then the root
  */
 nul.solve = function(fz) {
-	var onceKior3 = new nul.xpr.knowledge.ior3([nul.xpr.knowledge.always]);
+	var onceKior3 = new nul.klg.ior3([nul.klg.always]);
 		
 	nul.xpr.use(fz, nul.xpr.possible);
 	var cases = fz.knowledge.ior3;

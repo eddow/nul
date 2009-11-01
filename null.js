@@ -13,6 +13,10 @@
 
 /**@namespace*/
 nul = {
+	/**
+	 * Functions that will be called once the scripts are loaded
+	 * @namespace
+	 */
 	load: {},
 	loading : function() {
 		if (document.getElementsByTagName) {
@@ -62,9 +66,10 @@ nul.loading.files = [
 'lng/algo/null.solve',
 
 'lng/xpr/klg/null.xpr.knowledge',
-'lng/xpr/klg/null.xpr.knowledge.browse',
-'lng/xpr/klg/null.xpr.knowledge.eqClass',
-'lng/xpr/klg/null.xpr.knowledge.ior3',
+'lng/xpr/klg/null.klg.algo',
+'lng/xpr/klg/null.klg.browse',
+'lng/xpr/klg/null.klg.eqClass',
+'lng/xpr/klg/null.klg.ior3',
 'lng/xpr/klg/null.xpr.possible',
 
 'lng/xpr/obj/null.xpr.object',
@@ -85,7 +90,6 @@ nul.loading.files = [
 'data/null.data',
 'data/null.data.container',
 'data/null.data.time',
-'data/null.data.computer',
 'data/null.data.dom',
 
 'web/null.page'
@@ -117,6 +121,7 @@ nul.loading.addNexScriptRef = function() {
 		for(var l in nul.load)
 			if(!function(){}[l])
 				nul.load[l].apply(document);
+		nul.execution.ready();
 		window.status = window.defaultStatus;
 		return;
 	}

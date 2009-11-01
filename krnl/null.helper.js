@@ -39,16 +39,6 @@ function urlOption(opt) {
 }
 
 /**
- * Duplicate itm where components are just references : shallow clone
- * @param {Object} itm
- * @return {Object}
- */
-function clone1(itm) {
-	if(null== itm || typeof(itm) != 'object') return itm;
-	return map(itm, function(i,o) { return o; });
-}
-
-/**
  * Gets weither 'ndx' is a custom index of 'ass'
  * Returns false for all the default properties of the arrays.
  * @param {String|Number} ndx
@@ -169,7 +159,7 @@ function reTyped(v) {
 function beArrg(args, ndx) {
 	if(!ndx) ndx = 0;
 	if(ndx >= args.length) return [];
-	if(1+ndx== args.length && isArray(args[ndx])) return clone1(args[ndx]);
+	if(1+ndx== args.length && isArray(args[ndx])) return map(args[ndx]);
 	return $A(args).slice(ndx);
 }
 

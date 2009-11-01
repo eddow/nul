@@ -33,9 +33,11 @@ nul.obj.hcSet = Class.create(nul.obj.defined, /** @lends nul.obj.hcSet */{
 //////////////// nul.obj.defined implementation
 
 	/** @constant */
-	attributes: {
-		'# ': function() { return nul.obj.litteral.make(pinf); }
-	}
+	properties: {
+		'# ': function() { return nul.obj.litteral.make(this.length); },
+		'': function() { return nul.obj.litteral.tag.set; }
+	},
+	length: pinf
 });
 
 /**
@@ -44,6 +46,8 @@ nul.obj.hcSet = Class.create(nul.obj.defined, /** @lends nul.obj.hcSet */{
  * @extends nul.obj.hcSet
  */
 nul.obj.empty = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.empty# */{
+	listed: function() { return []; },
+	
 	intersect: function(o) {
 		nul.fail('No intersection with ', this);
 	},
@@ -55,9 +59,7 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.empty# */{
 //////////////// nul.obj.defined implementation
 
 	/** @constant */
-	attributes: {
-		'# ': function() { return nul.obj.litteral.make(0); }
-	}
+	length: 0
 	
 }))();
 
@@ -72,11 +74,17 @@ nul.obj.number = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.number# */{
 		return $super(o, klg);
 	},
 	subHas: function($super, o, att) {
-		if('number'== o.expression) return [o];
+		if('number'== o.expression) return isFinite(o.value)?[o]:[];
+		if(att.text && att.text.defined) {
+			if('string'!= att.text.expression) return [];	//The attribute text is not a string
+			var nbr = parseInt(att.text.value);
+			if(nbr.toString() != att.text.value) return [];	//The attribute text is not a good numeric string
+			return nul.klg.has(o, new nul.obj.litteral.number(nbr));
+		}
 		return $super(o, att, '#number');
 	},
 	/** @constant */
-	expression: '&#x211a;'
+	expression: '&#x211a;',
 }))();
 
 /**
@@ -89,7 +97,9 @@ nul.obj.string = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.string# */{
 		if('string'== o.expression) return [o];
 		return $super(o, att, '#text');
 	},
-	expression: 'text'
+	expression: 'text',
+
+////////////////nul.obj.defined implementation
 }))();
 
 /**
@@ -99,11 +109,18 @@ nul.obj.string = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.string# */{
  */
 nul.obj.bool = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.bool# */{
 	subHas: function($super, o, att) {
-		if('boolean'== o.expression) return [o];
-		return $super(o, att, '#boolean');
+		var kt = new nul.xpr.knowledge();
+		var kf = new nul.xpr.knowledge();
+		return [kt.wrap(kt.unify(nul.obj.litteral.make(true), o)),
+		        kf.wrap(kf.unify(nul.obj.litteral.make(false), o)) ];
 	},
 	/** @constant */
-	expression: 'bool'
+	expression: 'bool',
+
+////////////////nul.obj.defined implementation
+
+	/** @constant */
+	length: 2
 }))();
 
 nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
@@ -115,8 +132,13 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 	 * @param {Number} upr Upper bound of the set (or nothing for no bound)
 	 */
 	initialize: function($super, lwr, upr) {
-		this.lower = lwr?parseInt(lwr):ninf;
-		this.upper = upr?parseInt(upr):pinf;
+		var specBnd = function(s, inf) { return Object.isUndefined(s)?inf:('string'== typeof s)?parseInt(s):s; };
+		this.lower = specBnd(lwr, ninf);
+		this.upper = specBnd(upr, pinf);
+		if(ninf== this.lower || pinf== this.upper) this.length = pinf;
+		else if(pinf== this.lower) this.length = 0;
+		else this.length = this.upper-this.lower+1;
+		
 		$super();
 	},
 	intersect: function($super, o, klg) {
@@ -132,7 +154,10 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 		if(this.lower==this.upper && !o.defined) {
 			//TODO 3: return "o=nbr[this.bound]"
 		}
-		if(!o.defined || 'number'!= o.expression) return $super(o, att, '#number');
+		var nbr = (o.defined)?nul.obj.number.subHas(o, att):false;
+		if(!nbr) return $super(o, att, '#number');		//dunno if number
+		if(!nbr.length) return [];						//failure to be a number
+		o = nbr[0];	//it's a number !
 		if(!isJsInt(o.value)) return [];
 		if( o.value < this.lower || o.value > this.upper) return [];
 		return [o];
@@ -154,15 +179,6 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 				new nul.obj.range(this.lower+1, this.upper),
 			o.second);
 		return this;
-	},
-
-	/** @constant */
-	attributes: {
-		'# ': function() {
-			if(ninf== this.lower || pinf== this.upper)
-				return nul.obj.litteral.make(pinf);
-			return nul.obj.litteral.make(this.upper-this.lower+1);
-		}
 	},
 
 //////////////// nul.expression implementation

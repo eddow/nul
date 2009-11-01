@@ -15,7 +15,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	 * @param {nul.xpr.knowledge} knowledge
 	 */
 	initialize: function(value, knowledge) {
-		if(!knowledge) knowledge = nul.xpr.knowledge.always;
+		if(!knowledge) knowledge = nul.klg.always;
 		nul.obj.use(value); nul.xpr.use(knowledge, 'nul.xpr.knowledge');
 		/** @type nul.xpr.object */
 		this.value = value;
@@ -120,7 +120,7 @@ nul.xpr.failure = nul.xpr.possible.prototype.failure = new (Class.create(nul.xpr
 }))();
 
 /**
- * Have a possible for sure. Made with nul.xpr.knowledge.always if an object is given
+ * Have a possible for sure. Made with nul.klg.always if an object is given
  * @param {nul.xpr.possible|nul.xpr.object} o
  */
 nul.xpr.possible.cast = function(o) {

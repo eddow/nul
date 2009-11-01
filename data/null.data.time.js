@@ -6,9 +6,27 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.data.time = new nul.data.context('Time');
+nul.data.time = Class.create(nul.obj.node, /** @lends nul.data.time# */{
+	/**
+	 * The DateTime object as a node with attributes
+	 * @extends nul.obj.node
+	 * @constructs
+	 * @param {Date} dto
+	 */
+	initialize: function($super, dto) {
+		if(nul.debug.assert) assert(dto.setFullYear, 'Expected a date as argument');
+		this.dto = dto;
+		$super('DateTime', map(nul.data.time.nul2js, function() { return function(klg, anm) {
+			anm = nul.data.time.nul2js[anm];
+			return new nul.obj.litteral.number(this.dto[anm].apply(this.dto))
+		}; }));
+	}
+});
 
-/** @constant */
+/**
+ * The NUL properties are JS methods
+ * @constant
+ */
 nul.data.time.nul2js = {
 	year: 'getFullYear',
 	month: 'getMonth',
@@ -21,47 +39,51 @@ nul.data.time.nul2js = {
 	stamp: 'getTime'
 };
 
-nul.data.time.node = Class.create(nul.obj.node, /** @lends nul.data.time.node# */{
-	/**
-	 * DateTime object
-	 * @extends nul.obj.node
-	 * @constructs
-	 * @param {Date} dto
-	 */
-	initialize: function($super, dto) {
-		if(nul.debug.assert) assert(dto.setFullYear, 'Expected a date as argument');
-		this.dto = dto;
-		$super('DateTime', map(nul.data.time.nul2js, function(ndx, jsf) {
-			return new nul.data.computer.able(function() {
-				return new nul.obj.litteral.number(dto[jsf].apply(dto));
-			}).object;
-		}));
-	}
-});
-
 nul.load.Timing = function() {
-	nul.globals.time = new nul.data.container.local({
+	/**
+	 * The 'time' global
+	 * @extends nul.data.container.local
+	 */
+	nul.globals.time = new nul.data.container.local(/** @lends nul.globals.time# */{
 		subHas: function(obj, att) {
-			if((nul.obj.data.is(obj) && obj.source.context == nul.data.time) ||
-					nul.data.time.node.is(obj)) return [obj];
+			if(nul.obj.data.is(obj) && 
+					['now'].include(obj.source.index) &&
+					obj.source.context == nul.data.context.local )
+				return [obj];
 			return nul.data.container.local.prototype.subHas.apply(this,[obj, att]);
 		},
 		select: function(obj, att) {
+			if(nul.data.time.is(obj)) return [obj];
+			if(obj.defined) return [];
 			//TODO 3: try to see with the attributes if we can discover the date. If yes, return [built date]
 		},
+		/**
+		 * dateTime.parse(key)
+		 * @param {nul.obj.litteral.string} key
+		 */
 		seek: function(key) {
 			if('string'!= key.expression) throw nul.semanticException('Time', 'Time element can only be retrieved from a string');
 			var t = Date.parse(key.value);
 			if(isNaN(t)) return [];
-			return new nul.data.time.node(new Date(t));
+			return new nul.data.time(new Date(t));
 		},
+		/** @constant */
 		attributes: {
-			now: new nul.data(nul.data.time, 'now', /** @lends nul.data.time.now# */{
+			/**
+			 * The 'time.now' global
+			 * @class
+			 * @extends nul.data
+			 */
+			now: new nul.data(nul.data.context.local, 'now', /** @lends nul.globals.time.attributes.now# */{
+				/**
+				 * Get the time when queried
+				 */
 				extract: function() {
-					return new nul.data.time.node(new Date());
+					return new nul.data.time(new Date());
 				}
 			}).object
 		},
-		expression: 'moment'
+		/** @constant */
+		expression: 'time'
 	});
 };

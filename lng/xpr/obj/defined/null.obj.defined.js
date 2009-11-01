@@ -57,16 +57,35 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 		if(o == this) return true;
 	},
 	
+	
+	/**
+	 * Bunch of named attributes
+	 * @type {nul.xpr.object[String]}
+	 * @constant
+	 */
+	attributes: {},
+	
+	/**
+	 * Bunch of instant-made attributes
+	 * @type {function() {nul.xpr.object} [String]}
+	 * @constant
+	 */
+	properties: {
+		'': function() { throw 'abstract'; }
+	},
+	
 	/**
 	 * Retrieve an attribute
 	 * @param {String} an Attribute Name
 	 * @return {nul.xpr.object}
 	 * @throws {nul.failure}
 	 */
-	attribute: function(an) {
-		var af = this.attributes[an];
-		if(!af) nul.fail(this, 'doesnt have the attribute "'+an+'"');
-		return ('function'== typeof af)?af.apply(this):af;
+	attribute: function(anm, klg) {
+		var af = this.attributes[anm];
+		if(af) return af;
+		af = this.properties[anm];
+		if(af) return af.apply(this, [klg, anm]);
+		nul.fail(this, 'doesnt have the attribute "'+anm+'"');
 	},
 	
 	/**

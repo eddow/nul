@@ -25,11 +25,44 @@ nul.obj.litteral = Class.create(nul.obj.defined, /** @lends nul.obj.litteral# */
  * @class
  * @extends nul.obj.litteral
 */
-nul.obj.litteral.number = Class.create(nul.obj.litteral, /** @lends nul.obj.litteral.number# */{
+nul.obj.litteral.string = Class.create(nul.obj.litteral, /** @lends nul.obj.litteral.string# */{
+
+////////////////	nul.xpr.defined implementation
+	
+	/** @constant */
+	properties: {
+		'# ': function() { return new nul.obj.litteral.number(this.value.length); },
+		'': function() { return nul.obj.litteral.tag.string }
+	},
+	
 //////////////// nul.xpr.object implementation
 
+	/** Strings contain nothing */
+	subHas: function() { nul.fail('Strings contain nothing'); },
+
+//////////////// nul.expression implementation
+
 	/** @constant */
-	attributes: { '':'#number' },
+	expression: 'string',
+	/** Specific index for string litterals */
+	sum_index: function() { return this.indexedSub(this.value.replace(']','[|]')); }
+});
+
+/**
+ * @class
+ * @extends nul.obj.litteral
+*/
+nul.obj.litteral.number = Class.create(nul.obj.litteral, /** @lends nul.obj.litteral.number# */{
+
+////////////////	nul.xpr.defined implementation
+	
+	/** @constant */
+	properties: {
+		'text': function() { return nul.obj.litteral.make(this.value.toString()) },
+		'': function() { return nul.obj.litteral.tag.number; }
+	},
+
+//////////////// nul.xpr.object implementation
 
 	//TODO 3: {2 Q} ==> ( Q _, Q _ ) 
 	subHas: function(o) {
@@ -46,38 +79,22 @@ nul.obj.litteral.number = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
 
 /**
  * @class
- * @extends nul.obj.litteral
-*/
-nul.obj.litteral.string = Class.create(nul.obj.litteral, /** @lends nul.obj.litteral.string# */{
-//////////////// nul.xpr.object implementation
-
-	/** @constant */
-	attributes: {
-		//'# ': function() { return nul.obj.litteral.make(this.value.length); },
-		'':'#text'
-	},
-
-	/** Strings contain nothing */
-	subHas: function() { nul.fail('Strings contain nothing'); },
-
-//////////////// nul.expression implementation
-
-	/** @constant */
-	expression: 'string',
-	/** Specific index for string litterals */
-	sum_index: function() { return this.indexedSub(this.value.replace(']','[|]')); }
-});
-
-/**
- * @class
  * @name nul.obj.litteral.boolean 
  * @extends nul.obj.litteral 
  */
-nul.obj.litteral['boolean'] = Class.create(nul.obj.litteral, /** @lends nul.obj.litteral.boolean# */{
-//////////////// nul.xpr.object implementation
-
+nul.obj.litteral.boolean = Class.create(nul.obj.litteral, /** @lends nul.obj.litteral.boolean# */{
+	
+////////////////	nul.xpr.defined implementation
+	
 	/** @constant */
-	attributes: { '':'#boolean' },
+	properties: {
+		'# ': function() { return nul.obj.litteral.make(this.value.length); },
+		'': function() { return nul.obj.litteral.tag.boolean; }
+	},
+	
+	attributes: {},
+	
+//////////////// nul.xpr.object implementation
 
 	/** Booleans contain nothing */
 	subHas: function() { nul.fail('Booleans contain nothing'); },
@@ -95,5 +112,18 @@ nul.obj.litteral['boolean'] = Class.create(nul.obj.litteral, /** @lends nul.obj.
  */
 nul.obj.litteral.make = function(v) {
 	if(nul.debug.assert) assert(nul.obj.litteral[typeof v], (typeof v)+' is a litteral type')
+	if('boolean'== typeof v) return nul.obj.litteral['boolean'][v?'true':'false'];
 	return new nul.obj.litteral[typeof v](v);
+};
+
+nul.obj.litteral.boolean['true'] = new nul.obj.litteral.boolean(true);
+nul.obj.litteral.boolean['false'] = new nul.obj.litteral.boolean(false);
+nul.obj.litteral.boolean['true'].attributes['! '] = nul.obj.litteral.boolean['false'];
+nul.obj.litteral.boolean['false'].attributes['! '] = nul.obj.litteral.boolean['true'];
+
+nul.obj.litteral.tag = {
+	string: new nul.obj.litteral.string('#text'),
+	number: new nul.obj.litteral.string('#number'),
+	boolean: new nul.obj.litteral.string('#boolean'),
+	set: new nul.obj.litteral.string('#set')
 };

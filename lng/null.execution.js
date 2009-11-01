@@ -9,19 +9,37 @@
 /**@namespace*/
 nul.execution = {
 	/**
-	 * Reset the namespaces, the debug state, the erroneus state and the benchmarks(if not specified else)
-	 * @param {Boolean} letBM If set, don't reset the benchmarks
+	 * Create the global knowledge
 	 */
-	reset: function(letBM)
-	{
+	createGlobalKlg: function() {
 		nul.erroneus = false;
 		//namespaces
-		nul.xpr.knowledge.nameSpace = 0;
+		nul.klg.nameSpace = 0;
 		nul.browser.cached.nameSpace = 0;
 		nul.obj.local.self.nameSpace = 0;
 		
 		nul.debug.reset();
+		nul.execution.globalKlg = new nul.xpr.knowledge('global');
+		nul.execution.uberLocal = nul.execution.globalKlg.newLocal('uberLocal');	//TODO 2: use string ndx
+		nul.execution.globalKlg.rocks = new nul.dependance(nul.execution.uberLocal);
+		nul.execution.globalKlg.impossible = function() { nul.execution.globalKlg = nul.klg.never; };
+	},
+	/**
+	 * Called once nul.globals is made, to close the construction of the primordial globalKlg
+	 */
+	ready: function() {
+		if(!isEmpty(nul.globals)) nul.execution.globalKlg.attributed(nul.execution.uberLocal, nul.globals);
+		nul.execution.globalKlg.built();
+		nul.debug.applyTables();
+	},
+	/**
+	 * Reset the namespaces, the debug state, the erroneus state and the benchmarks(if not specified else)
+	 * @param {Boolean} letBM If set, don't reset the benchmarks
+	 */
+	reset: function(letBM) {
 		if(!letBM) nul.execution.benchmark.reset();
+		nul.execution.createGlobalKlg();
+		nul.execution.ready();
 	},
 	/**@namespace*/
 	benchmark: {
@@ -125,3 +143,5 @@ else
 			finally { nul.execution.benchmark.leave(name); }
 		};
 	};
+
+nul.load.globalKnowledge = nul.execution.createGlobalKlg;

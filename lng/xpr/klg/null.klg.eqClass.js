@@ -6,7 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.knowledge.eqClass# */{
+nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
+//TODO 4: rename local when we have a non-anonymous name
 	/**
 	 * Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes 
 	 * @extends nul.expression
@@ -16,9 +17,9 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 	 */
 	initialize: function(obj, attr) {
  		if(obj && 'eqCls'== obj.expression) {
-			this.equivls = clone1(obj.equivls);	//Equal values
-			this.belongs = clone1(obj.belongs);	//Sets the values belong to
-			this.attribs = clone1(obj.attribs);	//Sets the attributes owned
+			this.equivls = map(obj.equivls);	//Equal values
+			this.belongs = map(obj.belongs);	//Sets the values belong to
+			this.attribs = map(obj.attribs);	//Sets the attributes owned
  		} else {
 			this.equivls = obj?[obj]:[];
 			this.belongs = [];
@@ -125,7 +126,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
  		this.modify(); s.use();
  		if(s.defined) {
  			while(true) {
- 				var ntr, sn;
+ 				var ntr = null, sn;
 	 			for(sn=0; this.belongs[sn] && this.belongs[sn].defined; ++sn) {
 	 				var ntr = this.intersect(klg, s, this.belongs[sn]);
 	 				if(ntr) break;
@@ -153,7 +154,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		this.modify();
 		if(isEmpty(attrs)) return true;
 		if(this.eqvlDefined()) {
-			for(var an in attrs) if(an) klg.unify(attrs[an], this.equivls[0].attribute(an));
+			for(var an in attrs) klg.unify(attrs[an], this.equivls[0].attribute(an, klg));
 			this.attribs = {};
 		} else if(this.attribs !== attrs) {	//TODO 3: gardien est-il necessaire?
 			merge(this.attribs, attrs, function(a,b) {
@@ -167,7 +168,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 
 	/**
 	 * Sets the information that defines the values : the attributes and the defined belong
-	 * @param {nul.xpr.knowledge.eqClass} def The class that give some definitions for me
+	 * @param {nul.klg.eqClass} def The class that give some definitions for me
 	 * @param {nul.xpr.knowledge} klg The knowledge of this class
 	 * @returns {Boolean} Weither something changed
 	 */
@@ -219,7 +220,7 @@ nul.xpr.knowledge.eqClass = Class.create(nul.expression, /** @lends nul.xpr.know
 		var rv;
 		var trueDft = function(c,d) { return (true===c)?d:c; }
 		
-		nul.trys(function() {
+		return nul.trys(function() {
 			try {
 				rv = s1.intersect(s2, klg);
 				if(rv) return trueDft(rv, s1);					//If (1 & 2) give a result, don't even wonder what (2 & 1) is, just be happy with that

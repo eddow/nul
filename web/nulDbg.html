@@ -45,12 +45,17 @@ maGlob = 53
 	<div id="info">
 		<input type="hidden" id="infoTS" value="tab_values" />
 		<div>
+			<a class="msTab" onclick="tabSelect(this);" name="tab_glbKlg">Global knowledge</a>
 			<a class="msTab" onclick="tabSelect(this);" name="tab_values">Values</a>
 			<a class="msTab" onclick="tabSelect(this);" name="tab_runtime">Run-time</a>
 			<a class="msTab" onclick="tabSelect(this);" name="tab_logs">Logs</a>
 			<a class="msTab" onclick="tabSelect(this);" name="tab_benchmark">Benchmark</a>
 		</div>
 		<div>
+			<div class="msTab" name="tab_glbKlg">
+				<input type="button" onclick="nul.execution.reset();" value="Reset"></input>
+				<div id="globalKlg"></div>
+			</div>
 			<div class="msTab" name="tab_values">
 				<input type="button" onclick="test(tquery, qrd, 'Querying...');" value="Query" disabled="true" id="queryCmd"></input><br />
 				<div id="sandBox"><b t="3">yh</b><i t="4">oo</i></div><br />

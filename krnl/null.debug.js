@@ -157,6 +157,7 @@ nul.debug = {
 	applyTables: function() {
 		if(nul.debug.logging) nul.debug.logs.apply();
 		if(nul.debug.watches) nul.debug.callStack.apply();
+		if(nul.debug.globalKlg) nul.debug.globalKlg.innerHTML = nul.execution.globalKlg.toHtml();
 	},
 	ctxTable: function(ctx) {
 		var rv = '';
