@@ -1,3 +1,4 @@
+:::: Query doit se passer dans global aussi ?
 :::: idee : ne pas faire un simple .pruned() : enlever de 'global' tout ce qui est dans 'g' ... ?
 
 .document["#sandBox b"]
@@ -6,19 +7,15 @@
 .time.now.wertyrt
 ::: Si query renvoie failed (vide) : pq garder un klg global ?
 
-.set.sigma[1..7]
-::: developpe jusque 5 .... Oo
-
 ( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")
 ::: fait iech le global : gerer les ior3 du global !!!
 
 
-x ; "" ::() x
-::: doit renvoyer "#text"
-
 .library.file["lib/cmplx.nul"]
 .library.file["lib/set.nul"]
 
+{:f f x}
+:::La tautologie devrait etre reperee
 
 set.sigma[1..4]
 ;set::sigma

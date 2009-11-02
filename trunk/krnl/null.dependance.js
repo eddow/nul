@@ -6,6 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO O: don't feed back an object { local:{..deps..} } : directly feed back {..deps..} instead
 nul.dependance = Class.create(/** @lends nul.dependance# */{
 	/**
 	 * A list of dependancies toward knowledges or external resources
@@ -33,7 +34,7 @@ nul.dependance = Class.create(/** @lends nul.dependance# */{
 			objs = [objs];
 			objs.number = 1;
 		}
-		if(!this.usages[klgNm]) this.usages[klgNm] = { local: {}, ior3: {} };
+		if(!this.usages[klgNm]) this.usages[klgNm] = { local: {} };
 		if(!this.usages[klgNm][type][ndx]) {
 			this.usages[klgNm][type][ndx] = [];
 			this.usages[klgNm][type][ndx].number = 0;
@@ -50,7 +51,7 @@ nul.dependance = Class.create(/** @lends nul.dependance# */{
 	 * @return {nul.dependance.usage}
 	 */
 	usage: function(klg) {
-		return this.usages[klg.name] || { local: {}, ior3: {} };
+		return this.usages[klg.name] || { local: {} };
 	},
 
 	/**
@@ -76,18 +77,6 @@ nul.dependance = Class.create(/** @lends nul.dependance# */{
 		return this;
 	},
 
-	/**
-	 * Specify dependance from an ior3 expression
-	 * @param {nul.obj.ior3} ior3
-	 * @return {nul.dependance}
-	 */
-	ior3dep: function(ior3) {
-		nul.xpr.is(ior3, nul.obj.ior3);
-		this.depend(ior3.klgRef, 'ior3', ior3.ndx, ior3);
-		return this;
-	},
-
-	
 //////////////// Text output
 
 	/**

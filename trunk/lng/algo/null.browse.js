@@ -77,7 +77,7 @@ nul.browser.cached = Class.create(nul.browser, /** @lends nul.browser.cached# */
 	 * @param {String} desc Text description (used mainly for benchmarking)
 	 */
 	initialize: function($super, desc) {
-		this.name = 'browseCache' + ++nul.browser.cached.nameSpace;
+		this.name = 'browseCache' + nul.execution.name.gen('browser.cached');
 		this.cachedExpressions = [];
 		$super(desc);
 	},

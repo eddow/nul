@@ -175,9 +175,11 @@ nul.tokenizer.alphabets = {
 		space:		'[\\s\\uffff]+',
 		comments:	'\\/\\/[^\\uffff]*\\uffff',
 		oprtr:		[',..', '{', '}', '::', '[', ']', '\\/']
-//		oprtr:		'([\\~\\:\\+\\-\\>\\<\\=\\*\\/\\!\\&\\|\\\\\\/\\.\\?\\[\\]\\,]+)'
 	};
 
+/**
+ * Load the operators defined in the compiler to create an alphabet
+ */
 nul.load.operators = function() {
 	var escaper = function(n, s) { return '\\' + s.split('').join('\\'); };
 	var ops = map(nul.operators, function() { return this[0];});

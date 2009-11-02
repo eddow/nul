@@ -12,7 +12,7 @@ nul.data = Class.create(/** @lends nul.data# */{
 	 * @constructs
 	 */
 	initialize: function(context, index, singleton) {
-		if(singleton) merge(this, singleton);
+		if(singleton) Object.extend(this, singleton);
 		/**
 		 * @type {nul.data.context}
 		 */
@@ -105,7 +105,7 @@ nul.data.context = Class.create(/** @lends nul.data.context# */{
 		 * @type Number
 		 */
 		this.distance = distance || 0;
-		if(singleton) merge(this, singleton);
+		if(singleton) Object.extend(this, singleton);
 	},
 
 	toString: function() { return this.name; },

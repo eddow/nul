@@ -8,7 +8,6 @@
 
 nul.load.nulDbg = function() {
 	selectNamedTab($('info'),$('infoTS').value);
-	nul.debug.callStack.table = $('callStack');
 	nul.debug.logs.table = $('logs');
 	src = $('source');
 	evd = $('evaled');
@@ -57,7 +56,6 @@ function test(cb, dst, prgrsMsg)
 	} catch( err ) {
 		nul.exception.notice(err);
 		dst.innerHTML = err.message;
-		if(nul.debug.watches && err.callStack) nul.debug.callStack.draw(err.callStack);
 		if(nul.erroneusJS) throw nul.erroneusJS;
 		//Forward JS errors to Firebug
 	} finally {

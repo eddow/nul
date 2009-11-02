@@ -18,7 +18,6 @@ nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 		this.forbid = {};
 		this.table[srcKlgRef] = {
 			klgRef: dstKlg.name,
-			deltaIor3ndx: dstKlg.ior3.length,
 			deltaLclNdx: dstKlg.nbrLocals(),
 			prime: true
 		};
@@ -27,7 +26,7 @@ nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 	enterKlg: function(klg) {
 		if(klg && !klg.special && !this.table[klg.name]) {
 			if(nul.debug.assert) assert(!this.forbid[klg.name], 'Knowledge already used before entering');
-			this.table[klg.name] = { klgRef: ++nul.klg.nameSpace };
+			this.table[klg.name] = { klgRef: nul.execution.name.gen('klg') };
 			for(var v in this.veto) if(cstmNdx(v)) this.enterKlg(this.veto[v]);
 			for(var i in this.ior3) if(cstmNdx(i))
 				for(var c in this.ior3[i].choices) if(cstmNdx(c))
@@ -51,15 +50,14 @@ nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 		return $super(xpr);
 	},	
 	/**
-	 * Changes locals and ior3 to refer the new context
+	 * Changes locals to refer the new context
 	 */
 	transform: function(xpr) {
 		var dst;
-		if(dst = this.table[xpr.klgRef]) switch(xpr.expression) {
-		case 'local': return new nul.obj.local(dst.klgRef, xpr.ndx+(dst.deltaLclNdx||0), xpr.dbgName);
-		case 'ior3': return new nul.obj.ior3(dst.klgRef, xpr.ndx+(dst.deltaIor3ndx||0), xpr.values);
-		} else if(['local','ior3'].include(xpr.expression))
+		if('local'== xpr.expression) {
+			if(dst = this.table[xpr.klgRef]) return new nul.obj.local(dst.klgRef, xpr.ndx+(dst.deltaLclNdx||0), xpr.dbgName);
 			this.forbid[xpr.klgRef] = true;
+		}
 		return nul.browser.bijectif.unchanged;
 	}
 });
