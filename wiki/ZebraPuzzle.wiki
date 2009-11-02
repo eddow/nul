@@ -71,4 +71,4 @@ The first can be red as _The solution set S contains an object whose attribute `
 
 = Resolution =
 
-On a 2GHz computer, with Google Chrome, this program needs more than 20 minutes to solve
+On a 2GHz computer, with Google Chrome, this program needs more than 40 minutes to solve
