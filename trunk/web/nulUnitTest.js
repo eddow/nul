@@ -63,8 +63,12 @@ tests = [
 	 	{xpr: '.time["Jul 8, 2005"].year',
 		rslt: '{2005}'},
 	 	{xpr: '.time.now.year',
-	 	rslt: '{'+(new Date().getFullYear())+'}'}
-	].named('Data')
+		rslt: '{'+(new Date().getFullYear())+'}'}
+	].named('Data'),
+	[
+	 	{xpr: '<n><a q="1" w="2" /><a q="3" e="4" /></n> [<a q="5" w="6" e="7" r="8" />]',
+	 	rslt: '{&crarr;[g|@1]; (([q: "1", w: "2", # : 0, e: "7", r: "8"]&crarr;[g|@1])) &#9633; &crarr;[g|@1]; (([q: "3", e: "4", # : 0, w: "6", r: "8"]&crarr;[g|@1]))}'}
+	].named('Nodes')	
 ].named('Unit testing');
 
 function rsltDiv(rslt) {

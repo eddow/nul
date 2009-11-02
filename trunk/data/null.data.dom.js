@@ -26,11 +26,11 @@ nul.data.dom.url = Class.create(nul.data,/** @lends nul.data.dom.url# */{
 	}
 });
 
-nul.data.dom.element = Class.create(nul.data.container.local, /** @lends nul.data.dom.element */{
+nul.data.dom.element = Class.create(nul.obj.hc, /** @lends nul.data.dom.element */{
 	/**
 	 * A NUL object corresponding to a DOM element (XML or HTML)
 	 * @constructs
-	 * @extends nul.data.container.local
+	 * @extends nul.obj.hc
 	 * @param {HTMLElement} element
 	 */
 	initialize: function($super, element) {
@@ -45,7 +45,7 @@ nul.data.dom.element = Class.create(nul.data.container.local, /** @lends nul.dat
 		for(var a=0; this.element.attributes[a]; ++a) this.properties[this.element.attributes[a].name] = function(klg, anm) {
 			return new nul.obj.litteral.string(this.element.getAttribute(anm)); };
 	},
-////////////////nul.data.container.local implementation
+////////////////nul.obj.hc implementation
 	
 	/**
 	 * Gets a node from a selector. The selector can be :
@@ -95,15 +95,16 @@ nul.load.dom = function() {
 	/**
 	 * The 'xml' global
 	 * @class Singleton
-	 * @extends nul.data.container.local
+	 * @extends nul.obj.hc
 	 */
-	nul.globals.xml = new nul.data.container.local(/** @lends nul.globals.xml# */{
+	nul.globals.xml = new nul.obj.hc(/** @lends nul.globals.xml# */{
 		//TODO C
 		seek: function(pnt) {
 			if('string'!= pnt.expression) throw nul.semanticException('AJAX', 'Ajax retrieve XML documents from a string URL');
-			return nul.data.container.extern(pnt.value,
+			return nul.data.ajax.load(pnt.value,
 					function(t) { return new nul.data.dom.url(t.responseXML); } );
 		},
 		//TODO 2: list nodes that fit for xml : string attributes and XMLnode/text content
+		expression: 'xml'
 	});
 };

@@ -28,17 +28,6 @@ function isJsInt(n) {
 }
 
 /**
- * Weither the string opt appear in the url parameters
- * @param {String} opt
- * @return {Boolean}
- */
-function urlOption(opt) {
-	var srch = window.location.href.split('?')[1];
-	if(!srch) return;
-	return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
-}
-
-/**
  * Gets weither 'ndx' is a custom index of 'ass'
  * Returns false for all the default properties of the arrays.
  * @param {String|Number} ndx

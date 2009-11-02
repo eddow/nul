@@ -1,3 +1,4 @@
+
 :::: Query doit se passer dans global aussi ?
 :::: idee : ne pas faire un simple .pruned() : enlever de 'global' tout ce qui est dans 'g' ... ?
 
@@ -17,8 +18,7 @@
 {:f f x}
 :::La tautologie devrait etre reperee
 
-set.sigma[1..4]
-;set::sigma
+set::sigma
  { \/x {x} => {}
 [] (a,b,.. o) => ((a=>b),.. set.sigma[b,.. o] )
 }
@@ -47,17 +47,18 @@ S = houses [1..5]
 ; houses = { {} => {} [] (n,.. ns) => ((_::number n),.. houses[ns]) }
 ; sigma ={ \/x {x} => {} [] (a,b,.. o) => ((a=>b),.. sigma[b,.. o] ) }
 ; neighbours = { (a, b); sigma[S](a=>b [] b=>a)}
-; S(_ ::number 3 ::drink "milk")
-; S(_ ::number 1 ::nation "norwegian")
-; S(_ ::color "red" ::nation "english")
-; S(_ ::nation "spaniard" ::animal "dog")
-; S(_ ::nation "ukrainian" ::drink "tea")
-; S(_ ::nation "japanese" ::smoke "Parliaments")
-; S(_ ::color "green" ::drink "coffee")
-; S(_ ::smoke "Lucky Strike" ::drink "orange juice")
-; S(_ ::smoke "Old Gold" ::animal "snails")
-; S(_ ::color "yellow" ::smoke "Kools")
-; sigma[S][_ ::color "green"] = (_ ::color "ivory")
-; neighbours(_ ::smoke "Kools", _ ::animal "horse")
-; neighbours(_ ::smoke "Chesterfields", _ ::animal "fox")
-; neighbours(_ ::nation "norwegian", _ ::color "blue")
+
+; S(_ ::color "red" ::nation "english")						//The Englishman lives in the red house.
+; S(_ ::nation "spaniard" ::animal "dog")					//The Spaniard owns the dog.
+; S(_ ::color "green" ::drink "coffee")						//Coffee is drunk in the green house.
+; S(_ ::nation "ukrainian" ::drink "tea")					//The Ukrainian drinks tea.
+; sigma[S][_ ::color "green"] = (_ ::color "ivory")			//The green house is immediately to the right of the ivory house.
+; S(_ ::smoke "Old Gold" ::animal "snails")					//The Old Gold smoker owns snails.
+; S(_ ::color "yellow" ::smoke "Kools")						//Kools are smoked in the yellow house.
+; S(_ ::number 3 ::drink "milk")							//Milk is drunk in the middle house.
+; S(_ ::number 1 ::nation "norwegian")						//The Norwegian lives in the first house.
+; neighbours(_ ::smoke "Chesterfields", _ ::animal "fox")	//The man who smokes Chesterfields lives in the house next to the man with the fox.
+; neighbours(_ ::smoke "Kools", _ ::animal "horse")			//Kools are smoked in a house next to the house where the horse is kept.
+; S(_ ::smoke "Lucky Strike" ::drink "orange juice")		//The Lucky Strike smoker drinks orange juice.
+; S(_ ::nation "japanese" ::smoke "Parliaments")			//The Japanese smokes Parliaments.
+; neighbours(_ ::nation "norwegian", _ ::color "blue")		//he Norwegian lives next to the blue house.

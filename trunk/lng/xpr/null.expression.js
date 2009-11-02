@@ -258,9 +258,7 @@ nul.xpr = {
 nul.xpr.application = function(set, itm, klg) {
 	var lcl = klg.newLocal(nul.understanding.rvName);
 	var rv = klg.hesitate(set.having(new nul.obj.lambda(itm, lcl)));
-	switch(rv.expression) {
-	case 'lambda': return rv.image;
-	default: throw nul.internalException('Unexpected having hesitation expression');
-	}
+	if(nul.obj.lambda.is(rv.expression)) return rv.image;
+	return lcl;
 };
 

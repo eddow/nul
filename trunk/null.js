@@ -25,11 +25,10 @@ nul = {
 					if(1< spl.length && ''==spl[1]) {
 						nul.rootPath = spl[0];
 						nul.loading.nsn = nss[i];
-						if(nss[i].attributes.nocache) nul.loading.suffix = '?'+(new Date()).getTime();
 						break;
 					}
 				}
-
+				if(urlOption('nocache')) nul.loading.suffix = '?'+(new Date()).getTime();
 				nul.loading.addNexScriptRef();
 				nul.loading.addRef('link', {href: nul.rootPath+'lng/null.css', rel: 'stylesheet', type: 'text/css'});
 			}
@@ -71,10 +70,11 @@ nul.loading.files = [
 'lng/xpr/obj/null.xpr.object',
 
 'lng/xpr/obj/defined/null.obj.defined',
+'lng/xpr/obj/defined/null.obj.hc',
 'lng/xpr/obj/defined/null.obj.litteral',
 'lng/xpr/obj/defined/null.obj.pair',
-'lng/xpr/obj/defined/null.obj.sets',
 'lng/xpr/obj/defined/null.obj.lambda',
+'lng/xpr/obj/defined/null.obj.sets',
 'lng/xpr/obj/defined/null.obj.node',
 
 'lng/xpr/obj/undefined/null.obj.undefined',
@@ -83,7 +83,7 @@ nul.loading.files = [
 'lng/xpr/obj/undefined/null.obj.operation',
 
 'data/null.data',
-'data/null.data.container',
+'data/null.data.ajax',
 'data/null.data.time',
 'data/null.data.dom',
 
@@ -131,3 +131,15 @@ nul.loading.addNexScriptRef = function() {
 nul.rootPath = '';
 
 nul.loading();
+
+
+/**
+ * Weither the string opt appear in the url parameters
+ * @param {String} opt
+ * @return {Boolean}
+ */
+function urlOption(opt) {
+	var srch = window.location.href.split('?')[1];
+	if(!srch) return;
+	return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
+}
