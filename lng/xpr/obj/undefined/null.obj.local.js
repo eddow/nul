@@ -68,7 +68,7 @@ nul.obj.local = Class.create(nul.obj.undefined, /** @lends nul.obj.local# */{
 nul.obj.local.self = function(ndx, dbgName) {
 	return new nul.obj.local(
 			nul.obj.local.self.ref,
-			ndx || ++nul.obj.local.self.nameSpace,
+			ndx || nul.execution.name.gen('obj.local.self'),
 			dbgName || '&uArr;')
 };
 

@@ -8,7 +8,7 @@
 
 nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
  	/**
- 	 * Remove any information about locals or ior3s that are not refered anymore
+ 	 * Remove any information about locals that are not refered anymore
  	 * @param {nul.dependance.usage} deps
  	 * remove all access before : these are not preserved
  	 */
@@ -48,7 +48,6 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
  		//Remove trailing empty ior3s (not more to preserve indexes)
  		while(this.ior3.length && !this.ior3[this.ior3.length-1]) this.ior3.pop();
  		*/
- 		this.useIor3Choices(deps.ior3);
  		
  		//Remove trailing unrefered locals (not more to preserve indexes)
 		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();

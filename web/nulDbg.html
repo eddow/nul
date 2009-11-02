@@ -10,7 +10,7 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 <head>
 <link href="nulDbg.css" rel="stylesheet" type="text/css"></link>
 
-<script type="text/javascript" src="../null.js"></script>
+<script type="text/javascript" src="../null.js" nocache="please"></script>
 <script type="text/javascript" src="nulDbg.js"></script>
 <script type="text/nul">
 maGlob = 53
@@ -47,7 +47,6 @@ maGlob = 53
 		<div>
 			<a class="msTab" onclick="tabSelect(this);" name="tab_glbKlg">Global knowledge</a>
 			<a class="msTab" onclick="tabSelect(this);" name="tab_values">Values</a>
-			<a class="msTab" onclick="tabSelect(this);" name="tab_runtime">Run-time</a>
 			<a class="msTab" onclick="tabSelect(this);" name="tab_logs">Logs</a>
 			<a class="msTab" onclick="tabSelect(this);" name="tab_benchmark">Benchmark</a>
 		</div>
@@ -60,9 +59,6 @@ maGlob = 53
 				<input type="button" onclick="test(tquery, qrd, 'Querying...');" value="Query" disabled="true" id="queryCmd"></input><br />
 				<div id="sandBox"><b t="3">yh</b><i t="4">oo</i></div><br />
 				<div id="queried"></div>
-			</div>
-			<div class="msTab" name="tab_runtime">
-				<fieldset><legend>Call stack</legend><table id="callStack"></table></fieldset>
 			</div>
 			<div class="msTab" name="tab_logs">
 				<table>

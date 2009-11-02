@@ -96,3 +96,9 @@ merge(nul,
 		});
 	}
 });
+
+/**
+ * Functions that will be called once the scripts are loaded
+ * @name nul.load
+ * @namespace
+ */

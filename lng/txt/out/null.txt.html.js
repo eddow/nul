@@ -229,15 +229,6 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 					(flat.follow?(html.op('&cup;')+flat.follow.toHtml()):'')
 			};
 		},
-		/**
-		 * @methodOf nul.obj.ior3#
-		 * @return {HTML}
-		 */
-		ior3: function() {
-			return {'': html.op('(') +
-				nul.txt.html.all(this.possibles()).join(html.op('&#9633;')) +
-				html.op(')')};
-		},
 		
 		/**
 		 * @methodOf nul.klg.eqClass#
@@ -265,13 +256,10 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 			if(this==nul.klg.never) return {'':html.op('Never')};
 			if(this==nul.klg.always) return {'':html.op('Always')};
 			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
-			/*var dior3 = [], deps = this.	//TODO 2: retrieve usage
-			for(var i=0; i< this.ior3.length; ++i)
-				if()*/
-			var kior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'))
+			var ior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'))
 			var veto = nul.txt.html.all(this.veto).join(html.op('&or;'))
-			if(rv && kior3) rv += html.op('&and;') + kior3;
-			else if(kior3) rv = kior3;
+			if(rv && ior3) rv += html.op('&and;') + ior3;
+			else if(ior3) rv = ior3;
 			if(rv && veto) rv += html.op('&and;')+html.op('&not;') + veto;
 			else if(veto) rv = html.op('&not;') + veto;
 			return {
@@ -283,7 +271,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		 * @methodOf nul.klg.ior3#
 		 * @return {HTML}
 		 */
-		kior3: function() {
+		ior3: function() {
 			return {
 				'': html.op('(')+nul.txt.html.all(maf(this.choices)).join(html.op('&or;'))+html.op(')')
 			};

@@ -13,10 +13,6 @@
 
 /**@namespace*/
 nul = {
-	/**
-	 * Functions that will be called once the scripts are loaded
-	 * @namespace
-	 */
 	load: {},
 	loading : function() {
 		if (document.getElementsByTagName) {
@@ -85,7 +81,6 @@ nul.loading.files = [
 'lng/xpr/obj/undefined/null.obj.data',
 'lng/xpr/obj/undefined/null.obj.local',
 'lng/xpr/obj/undefined/null.obj.operation',
-'lng/xpr/obj/undefined/null.obj.ior3',
 
 'data/null.data',
 'data/null.data.container',

@@ -15,24 +15,8 @@ nul.klg.ior3 = Class.create(nul.expression, /** @lends nul.klg.ior3# */{
 	 */
 	initialize: function(choices) {
 		this.choices = choices;
-		//this.mult = 0;	//TODO O: 'mult' optimisation
+		this.add = 0;
 		this.alreadyBuilt();
-	},
-
-//////////////// Internal
-
-	/**
-	 * Specify this cases are not refered by any nul.obj.ior3
-	 * @return {bool} weither something changed
-	 */
-	unrefer: function() {	//TODO O: 'mult' optimisation
-		var ol = this.choices.length;
-		for(var j=0; j<this.choices.length;) 
-			if(!this.choices[j]) {
-				++this.mult;
-				this.choices.splice(j, 1);
-			} else ++j;
-		return ol != this.choices.length;
 	},
 
 //////////////// Existence summaries
@@ -40,23 +24,22 @@ nul.klg.ior3 = Class.create(nul.expression, /** @lends nul.klg.ior3# */{
 	maxXst: nul.summary('maxXst'), 	
 	minXst: nul.summary('minXst'), 	
 	sum_maxXst: function() {
-		var rv = 1;
-		for(var h in this.ior3) if(cstmNdx(h))
-			rv *= this.ior3[h].maxXst();
-		return rv;
+		var rv = 0;
+		for(var h in this.choices) if(cstmNdx(h))
+			rv += this.choices[h].maxXst();
+		return rv+this.add;
 	},
 	sum_minXst: function() {
-		if(this.eqCls.length) return 0;
-		var rv = 1;
-		for(var h in this.ior3) if(cstmNdx(h))
-			rv *= this.ior3[h].minXst();
-		return rv;
+		var rv = 0;
+		for(var h in this.choices) if(cstmNdx(h))
+			rv += this.choices[h].minXst();
+		return rv+this.add;
 	},
 
 //////////////// nul.expression implementation
 
 	/** @constant */
-	expression: 'kior3',
+	expression: 'ior3',
 	/** @constant */
 	components: {'choices': {type: 'nul.xpr.knowledge', bunch: true}},
 	placed: function($super, prnt) {

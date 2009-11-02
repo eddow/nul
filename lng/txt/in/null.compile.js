@@ -8,43 +8,110 @@
 
 /**
  * Defines a set of compiled items
- * @namespace
+ * @class
  */
 nul.compiled = {
-	//Compiled just have pure data: operators, operands, stuffs, ...
+	/**
+	 * @name understand
+	 * @function
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.object}
+	 */
+		
+	/**
+	 * @param {String} oprtr
+	 * @param {nul.compiled[]} oprnds
+	 * @return {nul.compiled}
+	 */
 	expression: function(oprtr, oprnds) {
 		return { operator: oprtr, operands: oprnds, understand: nul.understanding.expression };
 	},
+	/**
+	 * @param {String} oprtr
+	 * @param {nul.compiled} oprnd
+	 * @return {nul.compiled}
+	 */
 	preceded: function(oprtr, oprnd) {
 		return { operator: oprtr, operand: oprnd, understand: nul.understanding.preceded };
 	},
+	/**
+	 * @param {String} oprtr
+	 * @param {nul.compiled} oprnd
+	 * @return {nul.compiled}
+	 */
 	postceded: function(oprtr, oprnd) {
 		return { operator: oprtr, operand: oprnd, understand: nul.understanding.postceded };
 	},
+	/**
+	 * @param {nul.compiled} item
+	 * @param {nul.compiled} applied
+	 * @return {nul.compiled}
+	 */
 	application: function(item, applied) {
 		return { item: item, applied: applied, understand: nul.understanding.application };
 	},
+	/**
+	 * @param {nul.compiled} item
+	 * @param {nul.compiled} token
+	 * @return {nul.compiled}
+	 */
 	taking: function(item, token) {
 		return { item: item, token: token, understand: nul.understanding.taking };
 	},
-	atom: function(token, decl) {
-		return { type: token.type, value: token.value, declared: decl, understand: nul.understanding.atom };
+	/**
+	 * @param {String} type
+	 * @param {Litteral} value
+	 * @return {nul.compiled}
+	 */
+	atom: function(type, value) {
+		return { type: type, value: value, understand: nul.understanding.atom };
 	},
+	/**
+	 * @param {String} decl
+	 * @param {nul.compiled} value
+	 * @return {nul.compiled}
+	 */
 	definition: function(decl, value) {
 		return { decl: decl, value: value, understand: nul.understanding.definition };
 	},
+	/**
+	 * @param {nul.compiled} content
+	 * @param {String} selfRef
+	 * @return {nul.compiled}
+	 */
 	set: function(content, selfRef) {
 		return { content: content, selfRef: selfRef, understand: nul.understanding.set };
 	},
+	/**
+	 * @param {String} node
+	 * @param {nul.compiled[String]} attrs
+	 * @param {nul.compiled[]} content
+	 * @return {nul.compiled}
+	 */
 	xml: function(node, attrs, content) {
 		return { node: node, attributes: attrs, content: content, understand: nul.understanding.xml };
 	},
+	/**
+	 * @param {nul.compiled} obj
+	 * @param {String} anm
+	 * @param {nul.compiled} v
+	 * @return {nul.compiled}
+	 */
 	composed: function(obj, anm, val) {
 		return { object: obj, aName: anm, value: val, understand: nul.understanding.composed };
 	},
+	/**
+	 * @param {nul.compiled} appl
+	 * @param {String} lcl
+	 * @return {nul.compiled}
+	 */
 	objectivity: function(appl, lcl) {
 		return { applied: appl, lcl: lcl, understand: nul.understanding.objectivity };
 	},
+	/**
+	 * @param {nul.xpr.object} val
+	 * @return {nul.compiled}
+	 */
 	hardcode: function(val) {
 		return { value: val, understand: nul.understanding.hardcode };
 	}
@@ -198,7 +265,7 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
 		{
 			var aTxt = this.tknzr.fly('<');
 			if(null=== aTxt) throw nul.syntaxException('XML', 'XML node not closed');
-			if(''!== aTxt) comps.push(nul.compiled.atom({type:'string', value: aTxt}));
+			if(''!== aTxt) comps.push(nul.compiled.atom('string', aTxt));
 			if(this.tknzr.rawTake('<(')) comps.push(this.tknzr.rawExpect(')>',this.expression()));
 			else if(this.tknzr.rawTake('</')) return comps;
 			else if(this.tknzr.rawTake('<')) comps.push(this.xml());
@@ -245,7 +312,7 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
 				return this.tknzr.expect('}', nul.compiled.set(this.expression(), sr));
 			}
 			//Global' attribute
-			if(this.tknzr.take('.')) return nul.compiled.objectivity(nul.compiled.atom({type:'alphanum', value: ''}), this.alphanum());
+			if(this.tknzr.take('.')) return nul.compiled.objectivity(nul.compiled.atom('alphanum', ''), this.alphanum());
 			//Parenthesis
 			if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 			if(!lax) {
@@ -259,7 +326,7 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
 			rv = this.tknzr.pop(['alphanum', 'number', 'string']);
 		}
 		if(!rv && !lax) throw nul.syntaxException('ITE', 'Item expected');
-		if(rv) return nul.compiled.atom(rv);
+		if(rv) return nul.compiled.atom(rv.type, rv.value);
 	}
 });
 

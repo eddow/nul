@@ -136,13 +136,6 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 			return '{' + nul.txt.flat.all(flat).join(' &#9633; ') + '}' +
 				(flat.follow?(' &cup; '+flat.follow.toFlat()):'');
 		},
-		/**
-		 * @methodOf nul.obj.ior3#
-		 * @return {String}
-		 */
-		ior3: function() {
-			return '(' + nul.txt.flat.all(this.possibles()).join(' &#9633; ') + ')';
-		},
 		
 		/**
 		 * @methodOf nul.klg.eqClass#
@@ -164,17 +157,16 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 			if(this==nul.klg.never) return 'Never';
 			if(this==nul.klg.always) return '';
 			var rv = nul.txt.flat.all(this.eqCls).join(' &and; ');
-			//var deps = this.usage();
-			var kior3 = nul.txt.flat.all(this.ior3).join(' &and; ')
-			if(rv && kior3) rv += ' &and; ' + kior3;
-			else if(kior3) rv = kior3;
+			var ior3 = nul.txt.flat.all(this.ior3).join(' &and; ')
+			if(rv && ior3) rv += ' &and; ' + ior3;
+			else if(ior3) rv = ior3;
 			return rv?'('+rv+')':'';
 		},
 		/**
 		 * @methodOf nul.klg.ior3#
 		 * @return {String}
 		 */
-		kior3: function() {
+		ior3: function() {
 			return '('+nul.txt.flat.all(maf(this.choices)).join(' &or; ')+')';
 		},
 		/**

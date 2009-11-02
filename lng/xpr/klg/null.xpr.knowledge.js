@@ -48,7 +48,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		 * Unique name given to the knowledge
  		 * @type String
  		 */
- 		this.name = klgName || ++nul.klg.nameSpace;
+ 		this.name = klgName || nul.execution.name.gen('klg');
  		//this.mult = 1;	//TODO O: 'mult' optimisation
  	},
 
@@ -185,15 +185,21 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		case 1:
 			return choices[0].valueKnowing(this);
 		default:
-			var vals = [];
+			var rv = this.newLocal('&otimes;');
 			var klgs = [];
 			map(choices, function() {
-				var p = nul.xpr.possible.cast(this);
-				vals.push(p.value);
-				klgs.push(p.knowledge);
+				var p = this;
+				var klg;
+				if(nul.xpr.possible.is(p)) {
+					klg = p.knowledge.modifiable();
+					nul.xpr.mod(klg, 'nul.xpr.knowledge')
+					p = p.value;
+				} else klg = new nul.xpr.knowledge();				
+				klg.unify(p, rv);
+				klgs.push(klg.built());	//TODO 2: prune ?
 			});
-			try { return new nul.obj.ior3(this.name, this.ior3.length, vals); }
-	 		finally { this.ior3.push(new nul.klg.ior3(klgs)); }
+	 		this.ior3.push(new nul.klg.ior3(klgs));
+	 		return rv;
 		}
 	},
  	
@@ -208,7 +214,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	merge: function(klg, val) {
  		if(nul.klg.never== klg) nul.fail('Merging failure');
  		if(nul.klg.always== klg) return val;
- 		//if(nul.debug.assert) assert(!klg.ior3.length, 'Merge only uniques')
  		
  		this.modify(); nul.xpr.use(klg, 'nul.xpr.knowledge');
 
@@ -417,15 +422,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 if(nul.debug) nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 
 	/**
-	 * Use the ior3 choices to textualise ior3 references.
-	 */
-	useIor3Choices: function(keep) {
-		for(var i=0; i<this.ior3.length; ++i)
-			if(keep[i]) for(var l = 0; l<keep[i].length; ++l)
-				keep[i][l].invalidateTexts(this.ior3[i].choices);
-	},
-
-	/**
 	 * Remove the names of the unused locals.
 	 * Use the local names to textualise locals references.
 	 */
@@ -466,7 +462,6 @@ if(nul.debug) nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
  	}
  	
 }); else nul.klg.addMethods( /** @ignore */{
-	useIor3Choices: function() {},
 	useLocalNames: function() {},
 	emptyLocals: function() { return 0; },
 	concatLocals: function(klg) { this.locals += klg.locals; },

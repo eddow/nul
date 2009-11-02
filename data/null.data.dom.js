@@ -20,19 +20,24 @@ nul.data.dom.url = Class.create(nul.data,/** @lends nul.data.dom.url# */{
 	 * @param {URL | XMLdocument} doc
 	 */
 	initialize: function($super, doc) {
-		if('string'== typeof doc) {
-			throw 'not implemented'; //TODO 2: load external XML file where doc==url
-		}
 		this.document = doc;
 		this.extract = new nul.data.dom.element($(doc.documentElement));
 		$super(nul.data.dom, doc.documentURI);
 	}
 });
 
-nul.data.dom.element = Class.create(nul.data.container.local, {
+nul.data.dom.element = Class.create(nul.data.container.local, /** @lends nul.data.dom.element */{
+	/**
+	 * A NUL object corresponding to a DOM element (XML or HTML)
+	 * @constructs
+	 * @extends nul.data.container.local
+	 * @param {HTMLElement} element
+	 */
 	initialize: function($super, element) {
 		this.element = $(element);
+		if(!this.element.nulId) this.element.nulId = nul.execution.name.gen('element.nulId');
 		$super();
+		this.tag = this.element.tagName;
 		this.properties = {
 			'': function() { return new nul.obj.litteral.string(this.element.tagName); },
 			'# ': function() { return new nul.obj.litteral.number(this.element.childNodes.length); }
@@ -40,10 +45,15 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 		for(var a=0; this.element.attributes[a]; ++a) this.properties[this.element.attributes[a].name] = function(klg, anm) {
 			return new nul.obj.litteral.string(this.element.getAttribute(anm)); };
 	},
-//TODO 1: sum_index
 ////////////////nul.data.container.local implementation
 	
-	//TODO C
+	/**
+	 * Gets a node from a selector. The selector can be :
+	 * - a string CSS selector (only for HTML element) 
+	 * - a string tag name (simple CSS selector)
+	 * - another node as a template
+	 * @param {nul.obj.defined} key
+	 */
 	seek: function(key) {
 		switch(key.expression) {
 		case 'string':
@@ -52,37 +62,35 @@ nul.data.dom.element = Class.create(nul.data.container.local, {
 			var els = this.element.select(key.value);	//cf prototype.js
 			return map(els, function() { return new nul.data.dom.element(this); });
 		case 'node':
-			//TODO 1: utiliser nextSibling
-			//TODO 1: utiliser une fonction filter speciale sur l'idee <n/> / <n/>
-			var pot = $A(this.element.childNodes);
-			var rv = [];
-			for(var p in pot) if(cstmNdx(p)) if(pot[p].tagName == key.tag) {
-				var te = $(pot[p].cloneNode(true));
-				rv.push(new nul.data.dom.element(te));
-			}
-			return rv;
+			return nul.obj.node.relativise(key, this.list());
 		default:
 			throw nul.semanticException('DOM', 'DOM elements can only be indexed by CSS selector or by defaulting node');
 		}
 	},
 	
-	//TODO C
+	/**
+	 * List all the sub-nodes as nul objects
+	 * @return {nul.xpr.object[]}
+	 */
 	list: function() {
-		//TODO 1: utiliser nextSibling
-		return map($A(this.element.childNodes), function() {
-			switch(this.nodeName) {
-			case '#text': return new nul.obj.litteral.string(this.data); 
-			default: return new nul.data.dom.element(this);
-			}
-		});
+		var rv = [];
+		for(var chld = this.element.firstChild; chld; chld = chld.nextSibling) switch(chld.nodeName) {
+			case '#text': rv.push(new nul.obj.litteral.string(chld.data)); break;
+			default: rv.push(new nul.data.dom.element(chld)); break;
+		}
+		return rv;
 	},
 
 //////////////// nul.expression implementation
 
-	expression: 'dom'
+	expression: 'dom',
+	sum_index: function() { return this.indexedSub(this.element.nulId); }
 });
 
-nul.load.placeHolders = function() {
+/**
+ * Creates DOM and XML globals
+ */
+nul.load.dom = function() {
 	nul.globals.document = new nul.data.dom.url(this).object;
 	/**
 	 * The 'xml' global

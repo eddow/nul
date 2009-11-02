@@ -32,7 +32,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 			var e = [this, o];
 			var rv = 0;
 			if(e[0].selfRef && e[1].selfRef) {
-				var nwSelf = ++nul.obj.local.self.nameSpace;
+				var nwSelf = nul.execution.name.gen('obj.local.self');
 				e[0] = e[0].reself(nwSelf);
 				e[1] = e[1].reself(nwSelf);
 			}
@@ -121,6 +121,13 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	
 ////////////////nul.xpr.object implementation
 
+	/**
+	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
+	 * Try first an assertion of 'this.has'. If nothing is possible, just let the belonging assertion.
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {nul.xpr.possible[]}
+	 */
 	having: function($super, o, attr) {
 		return this.has(o, attr||{}) || $super(o, attr);
 	}

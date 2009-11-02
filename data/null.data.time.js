@@ -39,9 +39,13 @@ nul.data.time.nul2js = {
 	stamp: 'getTime'
 };
 
-nul.load.Timing = function() {
+/**
+ * Creates the 'time' global
+ */
+nul.load.time = function() {
 	/**
 	 * The 'time' global
+	 * @class Singleton
 	 * @extends nul.data.container.local
 	 */
 	nul.globals.time = new nul.data.container.local(/** @lends nul.globals.time# */{
@@ -67,11 +71,15 @@ nul.load.Timing = function() {
 			if(isNaN(t)) return [];
 			return new nul.data.time(new Date(t));
 		},
-		/** @constant */
+		/**
+		 * @constant
+		 * @name nul.globals.time.attributes
+		 */
 		attributes: {
 			/**
 			 * The 'time.now' global
-			 * @class
+			 * @class Singleton
+			 * @name nul.globals.time.attributes.now
 			 * @extends nul.data
 			 */
 			now: new nul.data(nul.data.context.local, 'now', /** @lends nul.globals.time.attributes.now# */{

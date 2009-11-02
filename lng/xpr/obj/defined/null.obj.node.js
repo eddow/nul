@@ -6,6 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO 2: should perhaps override nul.data.container.local ?
+// node[template]
 nul.obj.node = Class.create(nul.obj.defined, /** @lends nul.obj.node# */{
 	/**
 	 * XML node : tag, attributes and list content. There are no restrictions on content and/or attributes.
@@ -65,3 +67,30 @@ nul.obj.node = Class.create(nul.obj.defined, /** @lends nul.obj.node# */{
 		'content': {type: 'nul.xpr.object', bunch: false}
 	}
 });
+
+/**
+ * If the template and the node have the same tag, returns an object who :
+ * - have all the attributes fixed like obj
+ * - have the attributes fixed by tpl and not obj fixed to the value specified by tpl (default value system)
+ * - is undefined and, therefore can have other attributes
+ * @param {nul.obj.defined} tpl Template
+ * @param {nul.obj.defined[]} objs Objects
+ * @return {nul.obj.possible[]}
+ */
+nul.obj.node.relativise = function(tpl, objs) {
+	nul.obj.is(tpl, 'nul.obj.defined');
+	return maf(objs, function(n, obj) {
+		nul.obj.is(obj, 'nul.obj.defined');
+		if(tpl.tag == obj.tag) {
+			var rAtt = map(obj.attributes);
+			var klg = new nul.xpr.knowledge();
+			merge(rAtt, obj.properties, function(a, b, n) { return a || b.apply(obj, [klg, n]); });
+			merge(rAtt, tpl.attributes, function(a, b, n) { return a || b; });
+			merge(rAtt, tpl.properties, function(a, b, n) { return a || b.apply(tpl, [klg, n]); });
+			var trv = klg.newLocal(tpl.tag);
+			klg.attributed(trv, rAtt);
+			return klg.wrap(trv);
+		}
+	});
+	//TODO 3: manage 'content'
+}

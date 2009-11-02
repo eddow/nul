@@ -99,7 +99,6 @@ tableStack = Class.create( {
  */
 nul.debug = {
 	fails: [],
-	callStack: new tableStack('callStack'),
 	logs: new tableStack('logs'),
 	logging: false,
 	watches: false,
@@ -147,7 +146,6 @@ nul.debug = {
 	},
 	reset: function() {
 		nul.debug.logs.clear();
-		nul.debug.callStack.clear();
 		nul.debug.lc = 0;
 		nul.debug.lcs = nul.txt.clpsSstm(this.logs.table, 'dn',
 			function() { return nul.debug.logs.buffer.rows.length; });
@@ -156,7 +154,6 @@ nul.debug = {
 	
 	applyTables: function() {
 		if(nul.debug.logging) nul.debug.logs.apply();
-		if(nul.debug.watches) nul.debug.callStack.apply();
 		if(nul.debug.globalKlg) nul.debug.globalKlg.innerHTML = nul.execution.globalKlg.toHtml();
 	},
 	ctxTable: function(ctx) {

@@ -8,19 +8,28 @@
 
 /**@namespace*/
 nul.execution = {
+	/**@namespace*/
+	name: {
+		gen: function(ns) {
+			if(!nul.execution.name.space[ns]) nul.execution.name.space[ns] = 0;
+			return ++nul.execution.name.space[ns];
+		},
+		space: {}
+	},
 	/**
 	 * Create the global knowledge
 	 */
 	createGlobalKlg: function() {
 		nul.erroneus = false;
-		//namespaces
-		nul.klg.nameSpace = 0;
-		nul.browser.cached.nameSpace = 0;
-		nul.obj.local.self.nameSpace = 0;
+		nul.execution.name.space = {};
 		
 		nul.debug.reset();
+		/**
+		 * The knowledge that is shared as a parent knowledge from a reading to another
+		 * @type {nul.xpr.knowledge}
+		 */
 		nul.execution.globalKlg = new nul.xpr.knowledge('global');
-		nul.execution.uberLocal = nul.execution.globalKlg.newLocal('uberLocal');	//TODO 2: use string ndx
+		nul.execution.uberLocal = nul.execution.globalKlg.newLocal('überLocal');	//TODO 2: use string ndx
 		nul.execution.globalKlg.rocks = new nul.dependance(nul.execution.uberLocal);
 		nul.execution.globalKlg.impossible = function() { nul.execution.globalKlg = nul.klg.never; };
 	},

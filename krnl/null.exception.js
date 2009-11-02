@@ -12,10 +12,7 @@
  */
 nul.exception = function(type, code, msg, chrct)
 {
-	var err = { nul: true, type: type, message: msg,
-		code: code,
-		callStack: nul.debug.watches? nul.debug.callStack.value():null,
-		chrct: chrct };
+	var err = { nul: true, type: type, message: msg, code: code, chrct: chrct };
 	if(!nul.erroneus) nul.erroneus = err;
 	else nul.erroneus.follow = err;
 	nul.debug.log('error')('Error', type, msg);
