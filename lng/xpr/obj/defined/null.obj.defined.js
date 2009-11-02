@@ -50,7 +50,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * Intersect two defined objects
 	 * @return nul.obj.defined
 	 * @throws {nul.failure}
-	 * TODO 2: refaire le même système qu'avec unified : subIntersect de deux defined
+	 * TODO 2: refaire le meme systeme qu'avec unified : subIntersect de deux defined
 	 */
 	intersect: function(o, klg) {
 		this.use(); nul.obj.use(o); nul.xpr.mod(klg, 'nul.xpr.knowledge');
@@ -93,7 +93,6 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * Or nothing if nothing can be simplified
 	 * @param {nul.xpr.object} o
 	 * @param {nul.xpr.object[]} attrs
-	 * @param {nul.xpr.knowledge} klg
 	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
 	 */
 	has: function(o, attrs) {

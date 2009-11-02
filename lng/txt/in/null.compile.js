@@ -338,7 +338,7 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
  */
 nul.compile = function(txt)
 {
-	var rv = new nul.compiler(txt);
+	var rv = new nul.compiler(txt+'\n');
 	var ev = rv.expression();
 	if(rv.tknzr.token.type != 'eof') throw nul.syntaxException('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.");
 	return ev;

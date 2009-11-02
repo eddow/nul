@@ -46,15 +46,15 @@ nul.load.time = function() {
 	/**
 	 * The 'time' global
 	 * @class Singleton
-	 * @extends nul.data.container.local
+	 * @extends nul.obj.hc
 	 */
-	nul.globals.time = new nul.data.container.local(/** @lends nul.globals.time# */{
+	nul.globals.time = new nul.obj.hc(/** @lends nul.globals.time# */{
 		subHas: function(obj, att) {
 			if(nul.obj.data.is(obj) && 
 					['now'].include(obj.source.index) &&
 					obj.source.context == nul.data.context.local )
 				return [obj];
-			return nul.data.container.local.prototype.subHas.apply(this,[obj, att]);
+			return nul.obj.hc.prototype.subHas.apply(this,[obj, att]);
 		},
 		select: function(obj, att) {
 			if(nul.data.time.is(obj)) return [obj];

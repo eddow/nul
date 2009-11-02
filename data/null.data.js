@@ -32,7 +32,7 @@ nul.data = Class.create(/** @lends nul.data# */{
 	/**
 	 * Retrieve an object from a data-point
 	 * @param {any} prm Parameter given to the querier
-	 * @return {nul.data.container}
+	 * @return {nul.obj.defined}
 	 */
 	extract: function(prm) { throw 'abstract'; }
 });

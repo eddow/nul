@@ -6,6 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO 3: express these as descendant from nul.obj.hc
 nul.obj.hcSet = Class.create(nul.obj.defined, /** @lends nul.obj.hcSet */{
 	/**
 	 * A set hard-coded in javascript
