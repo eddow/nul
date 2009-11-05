@@ -62,7 +62,7 @@ nul.data.dom.element = Class.create(nul.obj.hc, /** @lends nul.data.dom.element 
 			var els = this.element.select(key.value);	//cf prototype.js
 			return map(els, function() { return new nul.data.dom.element(this); });
 		case 'node':
-			return nul.obj.node.relativise(key, this.list());
+			return nul.obj.node.relativise(key, this.listed());
 		default:
 			throw nul.semanticException('DOM', 'DOM elements can only be indexed by CSS selector or by defaulting node');
 		}
@@ -72,7 +72,7 @@ nul.data.dom.element = Class.create(nul.obj.hc, /** @lends nul.data.dom.element 
 	 * List all the sub-nodes as nul objects
 	 * @return {nul.xpr.object[]}
 	 */
-	list: function() {
+	listed: function() {
 		var rv = [];
 		for(var chld = this.element.firstChild; chld; chld = chld.nextSibling) switch(chld.nodeName) {
 			case '#text': rv.push(new nul.obj.litteral.string(chld.data)); break;
@@ -108,3 +108,4 @@ nul.load.dom = function() {
 		expression: 'xml'
 	});
 };
+nul.load.dom.provide = ['nul.globals'];

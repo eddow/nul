@@ -37,7 +37,7 @@ nul = {
 };
 
 nul.loading.files = [
-'prototype',
+'3rd/prototype',	//must be first
 
 'krnl/null.helper',
 'krnl/null.std',
@@ -113,10 +113,28 @@ nul.loading.addNexScriptRef = function() {
 	if(!sf) {
 		window.status = nul.loading.files.length + '/' + nul.loading.total + ' : Starting script';
 		delete nul.loading;
+		var toProvide = {};
+		var toLoad = [];
 		for(var l in nul.load)
-			if(!function(){}[l])
-				nul.load[l].apply(document);
-		nul.execution.ready();
+			if(!function(){}[l]) {
+				if(!nul.load[l].provide) nul.load[l].provide = [];
+				if(!nul.load[l].provide.include(l)) nul.load[l].provide.push(l);
+				for(var p=0; nul.load[l].provide[p]; ++p)
+					toProvide[nul.load[l].provide[p]] = 1+(toProvide[nul.load[l].provide[p]]||0);
+				toLoad.push(nul.load[l]);
+			}
+		while(toLoad.length) {
+			var nxtLd = toLoad.shift();
+			var cn = true;
+			if(nxtLd.use)
+				for(var u in nxtLd.use)
+					if(toProvide[u]) cn = false;
+			if(cn) {
+				nxtLd.apply(document);
+				for(var p=0; nxtLd.provide[p]; ++p)
+					--toProvide[nxtLd.provide[p]];
+			} else toLoad.push(nxtLd);
+		}
 		window.status = window.defaultStatus;
 		return;
 	}
@@ -141,5 +159,8 @@ nul.loading();
 function urlOption(opt) {
 	var srch = window.location.href.split('?')[1];
 	if(!srch) return;
-	return 0<=('&'+srch+'&').indexOf('&'+opt+'&');
+	srch = '&'+srch+'&';
+	var rx = new RegExp('\\&'+opt+'(\\=(.*?))?\\&');
+	var mh = rx.exec(srch);
+	return mh?(mh[2]||true):false;
 }

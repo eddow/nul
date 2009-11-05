@@ -105,10 +105,10 @@ nul.debug = {
 	assert: urlOption('debug'),
 	perf: !urlOption('noperf'),
 	acts: urlOption('actLog'),
-	lcLimit: 500,
+	lcLimit: urlOption('break'),
 	logCount: function() {
 		if(0< nul.debug.lcLimit && nul.debug.lcNextLimit< nul.debug.lc) {
-			//nul.debug.warnRecursion();
+			nul.debug.warnRecursion();
 			nul.debug.lcNextLimit += nul.debug.lcLimit;
 		}
 		return nul.debug.lc++;
@@ -128,8 +128,8 @@ nul.debug = {
 			for(var vi = 0; vi<v.length; ++vi) v[vi] = nul.debug.toLogText(v[vi]);
 			v.unshift(nul.debug.logCount());
 			var lg = nul.debug.logs.log(v);
-			for(var i=0; i<nul.debug.lcs.toPair.length; ++i) lg.className = 'collapsed '+lg.className;
-			if(endC) lg.addClassName('uncollapsing');
+			//for(var i=0; i<nul.debug.lcs.toPair.length; ++i) lg.className = 'collapsed '+lg.className;
+			//if(endC) lg.addClassName('uncollapsing');
 			return lg.addClassName(tp+' log');
 		} : nul.debug.logCount;
 	},
@@ -140,16 +140,18 @@ nul.debug = {
 		nul.debug.applyTables();
 		if(!confirm('Keep on recursion?')) throw nul.internalException('Broken by debugger');
 	},
-	watch: function(v)
-	{
-		wtc.innerHTML = v.toHtml();
+	begin: function(nlcl) {
+		nul.debug.lc = 0;
+		if(!Object.isUndefined(nlcl)) nul.debug.lcLimit = nlcl;
+		if(true===nul.debug.lcLimit) nul.debug.lcLimit = 500;
+		nul.debug.lcNextLimit = nul.debug.lcLimit;
 	},
+	
 	reset: function() {
 		nul.debug.logs.clear();
-		nul.debug.lc = 0;
 		nul.debug.lcs = nul.txt.clpsSstm(this.logs.table, 'dn',
 			function() { return nul.debug.logs.buffer.rows.length; });
-		nul.debug.lcNextLimit = nul.debug.lcLimit;
+		nul.debug.begin();
 	},
 	
 	applyTables: function() {
@@ -290,5 +292,4 @@ function assert(cnd, str) {
 }
 
 //Shortcuts to write in the firebug 'watch' box
-function nw(v) { nul.debug.watch(v); return 'drawn'; }
 function dat() { nul.debug.applyTables(); return 'drawn'; }

@@ -19,12 +19,12 @@ set.sigma[x_1, ..., x_n] ( x_i => x_(i+1) )
 set.sigma[{}] fails
 */
 sigma
-={ \/x {x} => {}
-[] (a,b,.. o) => ((a=>b),...set.sigma[b,.. o] )
+={ _,. => {}
+[] (a,b,.. o) => ((a=>b),.. .set.sigma[b,.. o] )
 }
 >
 <(
 
-_::() "#set"
+{:set set _ }
 
 )></library>

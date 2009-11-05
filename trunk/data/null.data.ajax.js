@@ -70,3 +70,4 @@ nul.load.ajax = function() {
 		expression: 'library'
 	});
 };
+nul.load.ajax.provide = ['nul.globals'];

@@ -82,7 +82,10 @@ nul.understanding = {
 	 * @return {nul.xpr.object}
 	 */
 	postceded: function(ub) {
-		return ub.klg.attribute(this.operand.understand(ub), ' '+this.operator);
+		switch(this.operator) {
+		case ',.': return nul.obj.pair.list(null, [this.operand.understand(ub)]);
+		default: return ub.klg.attribute(this.operand.understand(ub), ' '+this.operator);
+		}
 	},
 	/**
 	 * Atom understanding : a type and a value

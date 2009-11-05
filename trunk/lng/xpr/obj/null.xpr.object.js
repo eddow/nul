@@ -39,31 +39,16 @@ nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
 	sum_dependance: function($super) {
 		var rv = $super();
 		if(this.selfRef) {
-			if(nul.debug.assert) assert(
+			/*if(nul.debug.assert) assert(
 					rv.usages[nul.obj.local.self.ref] &&
 					rv.usages[nul.obj.local.self.ref].local[this.selfRef],
-					'Self-reference consistence.');
-			delete rv.usages[nul.obj.local.self.ref].local[this.selfRef];
-			if(!rv.usages[nul.obj.local.self.ref].local.length)
-				delete rv.usages[nul.obj.local.self.ref];
+					'Self-reference consistence.');*/
+			if(rv.usages[nul.obj.local.self.ref] && rv.usages[nul.obj.local.self.ref].local[this.selfRef]) {
+				delete rv.usages[nul.obj.local.self.ref].local[this.selfRef];
+				if(!rv.usages[nul.obj.local.self.ref].local.length)
+					delete rv.usages[nul.obj.local.self.ref];
+			} else delete this.selfRef;
 		}
-		return rv;
-	},
-	
-////////////////	Internals
-
-	/**
-	* Change self sub-representations. Either to change the self-context index or to modify it by another known value
-	* @param {any} newSelf
-	* @param {any} selfRef The actual self reference to replace (this one if none specified)
-	* If newSelf is a {nul.xpr.object}, it will replace the self-references
-	* If not, it will be considered as a new self index
-	*/
-	reself: function(newSelf, selfRef) {
-		if(!this.selfRef && !selfRef) return this;
-		var rv = new nul.xpr.object.reself(selfRef || this.selfRef, newSelf).browse(this);
-		if(nul.debug.assert) assert(this.expression == rv.expression || ('pair'== this.expression && '&phi;'== rv.expression),
-				'Reselfing doesnt modify the definition');
 		return rv;
 	}
 });

@@ -105,9 +105,29 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 	},
 	/** Build this set so that it is a following of pairs which values are most simplified as possible */
 	built: function($super) {
-		if(!this.first.distribuable()) return $super();
-		return nul.obj.pair.list(this.second, this.first.distribute());
-	}
+		if(this.first.distribuable()) return nul.obj.pair.list(this.second, this.first.distribute());
+		//if(this.selfRef) return this.selfRefered(this.selfRef, $super()); //TODO 1
+		return $super();
+	},
+	
+	selfRefered: function(selfNdx, whole) {
+		var fz = this.first;	//TODO 1
+		
+		while(true) {
+			var klg = fz.knowledge.reself(whole, selfNdx).modifiable();
+			var rb = klg.wrap(fz.value).distribute();
+			if(1!= rb.length) break;
+			if(rb[0].toString() == fz.toString()) break;	//attention les reorganisations arbitraires d'eqCls !
+			fz = rb[0];
+		}
+		var rv = this;
+//		if(fz !== this.first) {	//TODO 2 : optimise et ne fais pas trop
+			rv = rv.modifiable();
+			rv.first = fz;
+//		}
+		if(nul.obj.pair.is(rv.second)) rv.second = rv.second.selfRefered(selfNdx, whole).built();
+		return nul.obj.defined.prototype.built.apply(rv);
+	},
 });
 
 /**

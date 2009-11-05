@@ -99,7 +99,28 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	* @param {any} slf The object that is a self-reference
 	*/
 	beself: function(slf, selfRef) {
-		return new nul.xpr.object.reself(selfRef || slf.selfRef, slf).browse(this);
+		var fz = this;	//TODO 1
+		//1 - remove in knowledge : x in y : x is value and y self-ref
+		//TODO O: ne faire cela que si dependance de selfref
+		/*var klg = this.knowledge.modifiable();
+		var ec = klg.access[this.value];
+		if(ec) {
+			nul.xpr.use(ec, 'nul.klg.eqClass');
+			ec = klg.freeEC(ec);
+			for(var b=0; ec.belongs[b]; ++b) {
+				var blg = ec.belongs[b];
+				if(nul.obj.local.is(blg) && nul.obj.local.self.ref == blg.klgRef && slf.selfRef== blg.ndx) {
+					ec.belongs.splice(b,1);
+					klg.arbitre = 'some';
+					break;
+				}
+			}
+			klg.ownEC(ec);
+			fz = klg.wrap(this.value);
+		}*/
+		//2 - replace the self-reference by the set
+		return new nul.xpr.object.reself(selfRef || slf.selfRef, slf).browse(fz);	//TODO 2: reself other fct ?
+		//return fz.reself(slf, selfRef); slf.reself(..., fz) ?
 	}
 });
 
