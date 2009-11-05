@@ -15,11 +15,11 @@ span.comment {
 }
 
 span.error			{ color: #000000; background-color: #ff0000; }
-span.number			{ color: #804000; }
+span.number			{ color: #10a010; }
+span.string			{ color: #10a010; }
 span.operator		{ color: #800040; }
 span.attributer		{ color: #804080; background-color: #e0f0e0; }
 span.reserved		{ color: #808000; background-color: #f0f0e0; }
-span.string			{ color: #10a010; }
 span.surrounder		{ color: #e00000; }
 
 span.attribute		{ color: #006000; }

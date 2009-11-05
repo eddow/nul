@@ -263,9 +263,9 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.klg.represent.html">nul.klg.represent</a></li>
 	
-	<li><a href="../symbols/_nul.klg.special.html">nul.klg.special</a></li>
-	
 	<li><a href="../symbols/_nul.klg.stepUp.html">nul.klg.stepUp</a></li>
+	
+	<li><a href="../symbols/_nul.klg.unconditionalInstance.html">nul.klg.unconditionalInstance</a></li>
 	
 	<li><a href="../symbols/_nul.load.html">nul.load</a></li>
 	
@@ -308,6 +308,8 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
 	
 	<li><a href="../symbols/_nul.obj.undefined.html">nul.obj.undefined</a></li>
+	
+	<li><a href="../symbols/_nul.obj.whole.html">nul.obj.whole</a></li>
 	
 	<li><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></li>
 	
@@ -381,7 +383,7 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.xpr.knowledge.html#constructor">nul.xpr.knowledge</a></b>(klgName)
+								<b><a href="../symbols/_nul.xpr.knowledge.html#constructor">nul.xpr.knowledge</a></b>(klgName, minMlt, maxMlt)
 							</div>
 							<div class="description">Represent a bunch of information about locals and absolute values.</div>
 						</td>
@@ -540,6 +542,15 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#arythm">arythm</a></b>(op, n, x)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#attribute">attribute</a></b>(e, anm)
 								</div>
 								<div class="description">Retrieve the attribute we know for 'e'</div>
@@ -666,15 +677,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#inform">inform</a></b>(obj)
-								</div>
-								<div class="description">Begin modification of an equivalence class</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#isFixed">isFixed</a></b>()
 								</div>
 								<div class="description"></div>
@@ -756,9 +758,27 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#ownEC">ownEC</a></b>(ec)
+								</div>
+								<div class="description">Own ec from this.eqCls</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#pruned">pruned</a></b>(deps)
 								</div>
 								<div class="description">Remove any information about locals that are not refered anymore</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.xpr.knowledge.html#reAccede">reAccede</a></b>()
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -859,7 +879,7 @@ Modifies the knowledge</div>
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/_nul.expression.html">nul.expression</a>: </dt><dd><a href="../symbols/_nul.expression.html#alreadyBuilt">alreadyBuilt</a>, <a href="../symbols/_nul.expression.html#dbgHtml">dbgHtml</a>, <a href="../symbols/_nul.expression.html#dependance">dependance</a>, <a href="../symbols/_nul.expression.html#fix">fix</a>, <a href="../symbols/_nul.expression.html#indexedSub">indexedSub</a>, <a href="../symbols/_nul.expression.html#invalidateTexts">invalidateTexts</a>, <a href="../symbols/_nul.expression.html#isList">isList</a>, <a href="../symbols/_nul.expression.html#modify">modify</a>, <a href="../symbols/_nul.expression.html#nul.txt.flat.draw.other">nul.txt.flat.draw.other</a>, <a href="../symbols/_nul.expression.html#nul.txt.html.draw.other">nul.txt.html.draw.other</a>, <a href="../symbols/_nul.expression.html#placed">placed</a>, <a href="../symbols/_nul.expression.html#sum_components">sum_components</a>, <a href="../symbols/_nul.expression.html#sum_dependance">sum_dependance</a>, <a href="../symbols/_nul.expression.html#sum_flatTxt">sum_flatTxt</a>, <a href="../symbols/_nul.expression.html#sum_htmlTxt">sum_htmlTxt</a>, <a href="../symbols/_nul.expression.html#sum_isList">sum_isList</a>, <a href="../symbols/_nul.expression.html#summarise">summarise</a>, <a href="../symbols/_nul.expression.html#summary">summary</a>, <a href="../symbols/_nul.expression.html#toFlat">toFlat</a>, <a href="../symbols/_nul.expression.html#toHtml">toHtml</a>, <a href="../symbols/_nul.expression.html#toString">toString</a>, <a href="../symbols/_nul.expression.html#use">use</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/_nul.expression.html">nul.expression</a>: </dt><dd><a href="../symbols/_nul.expression.html#alreadyBuilt">alreadyBuilt</a>, <a href="../symbols/_nul.expression.html#dbgHtml">dbgHtml</a>, <a href="../symbols/_nul.expression.html#dependance">dependance</a>, <a href="../symbols/_nul.expression.html#fix">fix</a>, <a href="../symbols/_nul.expression.html#indexedSub">indexedSub</a>, <a href="../symbols/_nul.expression.html#invalidateTexts">invalidateTexts</a>, <a href="../symbols/_nul.expression.html#isList">isList</a>, <a href="../symbols/_nul.expression.html#modify">modify</a>, <a href="../symbols/_nul.expression.html#nul.txt.flat.draw.other">nul.txt.flat.draw.other</a>, <a href="../symbols/_nul.expression.html#nul.txt.html.draw.other">nul.txt.html.draw.other</a>, <a href="../symbols/_nul.expression.html#placed">placed</a>, <a href="../symbols/_nul.expression.html#reself">reself</a>, <a href="../symbols/_nul.expression.html#sum_components">sum_components</a>, <a href="../symbols/_nul.expression.html#sum_dependance">sum_dependance</a>, <a href="../symbols/_nul.expression.html#sum_flatTxt">sum_flatTxt</a>, <a href="../symbols/_nul.expression.html#sum_htmlTxt">sum_htmlTxt</a>, <a href="../symbols/_nul.expression.html#sum_isList">sum_isList</a>, <a href="../symbols/_nul.expression.html#summarise">summarise</a>, <a href="../symbols/_nul.expression.html#summary">summary</a>, <a href="../symbols/_nul.expression.html#toFlat">toFlat</a>, <a href="../symbols/_nul.expression.html#toHtml">toHtml</a>, <a href="../symbols/_nul.expression.html#toString">toString</a>, <a href="../symbols/_nul.expression.html#use">use</a></dd>
 				</dl>
 				
 			
@@ -874,7 +894,7 @@ Modifies the knowledge</div>
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.xpr.knowledge</b>(klgName)
+						<b>nul.xpr.knowledge</b>(klgName, minMlt, maxMlt)
 				</div>
 				
 				<div class="description">
@@ -894,6 +914,18 @@ Modifies the knowledge</div>
 								
 							</dt>
 								<dd>[optional] Knowledge name</dd>
+						
+							<dt>
+								 <b>minMlt</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								 <b>maxMlt</b>
+								
+							</dt>
+								<dd></dd>
 						
 						</dl>
 					
@@ -1194,6 +1226,54 @@ Modifies the knowledge</div>
 								<dd></dd>
 							
 							</dl>
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="arythm"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>arythm</b>(op, n, x)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>op</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>n</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
 						
 						
 						
@@ -1766,49 +1846,6 @@ Debug asserts
 
 					<hr />
 				
-					<a name="inform"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>inform</b>(obj)
-					
-					</div>
-					<div class="description">
-						Begin modification of an equivalence class
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>obj</b>
-									
-								</dt>
-								<dd>Object whose information is brought</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>equivalence class to re-add to the knowledge</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
 					<a name="isFixed"> </a>
 					<div class="fixedFont">
 					
@@ -2154,6 +2191,49 @@ Debug asserts
 
 					<hr />
 				
+					<a name="ownEC"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/_nul.klg.eqClass.html">nul.klg.eqClass</a>}</span>
+					<b>ownEC</b>(ec)
+					
+					</div>
+					<div class="description">
+						Own ec from this.eqCls
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.klg.eqClass.html">nul.klg.eqClass</a>}</span> <b>ec</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.klg.eqClass.html">nul.klg.eqClass</a>}</span> ec</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="pruned"> </a>
 					<div class="fixedFont">
 					
@@ -2181,6 +2261,36 @@ Debug asserts
 									
 								</dt>
 								<dd>remove all access before : these are not preserved</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="reAccede"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>reAccede</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
 							
 							</dl>
 						
@@ -2611,7 +2721,7 @@ Use the local names to textualise locals references.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Mon Nov 02 2009 12:11:53 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Thu Nov 05 2009 23:53:00 GMT+0200 (EET)
 		</div>
 	</body>
 </html>
