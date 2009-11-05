@@ -111,7 +111,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 				var blg = ec.belongs[b];
 				if(nul.obj.local.is(blg) && nul.obj.local.self.ref == blg.klgRef && slf.selfRef== blg.ndx) {
 					ec.belongs.splice(b,1);
-					klg.arbitre = 'some';
+					klg.minMult = 0;
 					break;
 				}
 			}

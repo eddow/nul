@@ -39,12 +39,17 @@ var NULParser = Editor.Parser = (function() {
 			try { return anywhere(source,setState, inText); }
 			catch(e) { if(untokenisable!=e) throw e; }
 
-			if(source.lookAhead('::', true) || source.lookAhead('.', true)) {
+			if(source.lookAhead('::', true)) {
+				setState(inAlphabet(/^[\w@]$/, 'attribute', inText));
+				return 'attributer';
+			}
+			if(source.lookAhead('.', true)) {
 				setState(inAlphabet(/^[\w@]$/, 'attribute', afterItem));
 				return 'attributer';
 			}
 
 			if(source.lookAhead('\\/', true)) {
+				source.nextWhile(isWhiteSpace);
 				setState(inAlphabet(/^[\w@]$/, 'declare', inText));
 				return 'operator';
 			}
@@ -83,6 +88,7 @@ var NULParser = Editor.Parser = (function() {
 			}
 
 			if(source.lookAhead('{:', true)) {
+				source.nextWhile(isWhiteSpace);
 				setState(inAlphabet(/^[\w@]$/, 'declare', inText));
 				return 'surrounder'
 			}

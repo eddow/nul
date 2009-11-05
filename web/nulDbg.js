@@ -49,7 +49,8 @@ nul.debuger = {
 			  stylesheet: "../3rd/codemirror/nulcolors.css",
 			  tabMode: 'shift',
 			  lineNumbers: true,
-			  initCallback: nul.debuger.cmDone
+			  initCallback: nul.debuger.cmDone,
+			  onChange: function() { nul.debuger.DOM.src.value = nul.debuger.DOM.editor.getCode(); }
 			});
 	},
 	reset: function() {

@@ -13,7 +13,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 * @constructs
 	 * @param {String} klgName [optional] Knowledge name
 	 */
-	initialize: function(klgName) {
+	initialize: function(klgName, minMlt, maxMlt) {
 		/**
 		 * Describe the dependance that are kept even if it never appears
 		 * @type Number
@@ -49,14 +49,9 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		 * @type String
  		 */
  		this.name = klgName || nul.execution.name.gen('klg');
- 		//this.mult = 1;	//TODO O: 'mult' optimisation
+ 		this.minMult = Object.isUndefined(minMlt)?1:minMlt;
+ 		this.maxMult = Object.isUndefined(maxMlt)?this.minMult:maxMlt;
  	},
-
-	/**
-	 * Weither this knowlegde filters arbitrarily mopre than what expressed
-	 * @type {'all'|'some'}
-	 */
-	arbitre: 'all',
 
 //////////////// privates
 
@@ -207,6 +202,12 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		}
 	},
  	
+	arythm: function(op, n, x) {
+		if(!n.expression) n = { minMult:n, maxMult: x || n };
+		this.minMult = eval(this.minMult + op + n.minMult);
+		this.maxMult = eval(this.maxMult + op + n.maxMult);
+	},
+	
  	/**
  	 * Know all what klg knows
  	 * @param {nul.xpr.knowledge} klg
@@ -217,7 +218,8 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 */
  	merge: function(klg, val) {
  		if(nul.klg.never== klg) nul.fail('Merging failure');
- 		if(nul.klg.always== klg) return val;
+ 		this.arythm('*', klg);
+ 		if(klg.unconditional) return val;
  		
  		this.modify(); nul.xpr.use(klg, 'nul.xpr.knowledge');
 
@@ -230,7 +232,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		this.addEqCls(klg.eqCls);
 		this.ior3.pushs(klg.ior3);
  		this.veto.pushs(klg.veto);
- 		if('some'== klg.arbitre) this.arbitre = 'some';
  		if(val) return brwsr.browse(val);
  		return brwsr;
  	},
@@ -370,7 +371,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		var rv = 1;
 		for(var h in this.ior3) if(cstmNdx(h))
 			rv *= this.ior3[h].maxXst();
-		return rv;
+		return rv * this.maxMult;
 	},
 	sum_minXst: function() {
 		if(this.eqCls.length || this.veto.length) return 0;
@@ -378,7 +379,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		var rv = 1;
 		for(var h in this.ior3) if(cstmNdx(h))
 			rv *= this.ior3[h].minXst();
-		return rv;
+		return rv * this.minMult;
 	},
 
 	sum_index: function() {
@@ -426,11 +427,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	//TODO C
  	built: function($super) {
 		this.clearAccess();
-		//if(0== this.mult) return nul.klg.never;
- 		if(this.isFixed()) switch(this.arbitre) {
- 		case 'all': if(nul.klg.always) return nul.klg.always; break;
- 		case 'some': if(nul.klg.some) return nul.klg.some; break;
- 		}
+ 		if(!this.unconditional && this.isFixed()) return nul.klg.unconditional(this.minMult, this.maxMult);
  		return $super();
  	},
 	//TODO C
@@ -440,7 +437,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 });
 
 if(nul.debug) nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
-
 	/**
 	 * Remove the names of the unused locals.
 	 * Use the local names to textualise locals references.
@@ -492,84 +488,3 @@ if(nul.debug) nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
  		return new nul.obj.local(this.name, ndx)
  	}
 });
-
-/**
- * Knowledge management helpers
- * @namespace
- */
-nul.klg = {
-	special: Class.create(nul.xpr.knowledge, /** @lends nul.klg.special# */{
-		special: true,
-		/**
-		 * Special knowledge
-		 * @extends nul.xpr.knowledge
-		 * @constructs
-		 * @param {Object} singleton Sub-class definition. Used when sub-classment is made for a singleton, to avoid new Class.create()()
-		 */
-		initialize: function(singleton) {
-			if(singleton) Object.extend(this, singleton);
-	        this.locals = this.emptyLocals();
-			this.alreadyBuilt();
-		},
-		expression: 'klg',
-		
-		components: {},
-		ior3: [],
-		eqCls: [],
-		veto: [],
-		isFixed: function() { return 1== this.on; },
-		minXst: function() { return this.on; },
-		maxXst: function() { return this.on; }
-	})
-};
-/**
- * Special knowledge meaning something that is never verified
- */
-nul.klg.never = new nul.klg.special({
-	name: 'Never',
-	modifiable: function() { nul.fail('No fewer than never'); },
-	on: 0
-});
-
-/**
- * Special knowledge meaning something that is always verified
- */
-nul.klg.always = new nul.klg.special({
-	name: 'Always',
-	modifiable: function() { return new nul.xpr.knowledge(); },
-	on: 1
-});
-
-/**
- * Special knowledge meaning an undefined knowledge
- */
-nul.klg.some = new nul.klg.special({
-	name: 'Some',
-	modifiable: function() { var rv = new nul.xpr.knowledge(); rv.arbitre = 'some'; return rv; },
-	arbitre: 'some',
-	on: 1
-});
-
-/**
- * Return the knowledge knowing all that ops are equal
- */
-nul.klg.unification = function(objs) {
-	objs = beArrg(arguments);
-	var klg = new nul.xpr.knowledge();
-	klg.unify(objs);
-	return klg.built();
-};
-
-/**
- * Return the wrapped singleton when o is val
- * @param {nul.xpr.object} o
- * @param {nul.xpr.object} val
- * @return {nul.xpr.possible[]}
- * @throws {nul.failure}
- */
-nul.klg.has = function(o, val) {
-	var klg = new nul.xpr.knowledge();
-	return [klg.wrap(klg.unify(o, val))];
-};
-
-nul.xpr.knowledge.addMethods({failure: nul.klg.never});

@@ -62,6 +62,7 @@ nul.loading.files = [
 
 'lng/xpr/klg/null.xpr.knowledge',
 'lng/xpr/klg/null.klg.algo',
+'lng/xpr/klg/null.klg',
 'lng/xpr/klg/null.klg.browse',
 'lng/xpr/klg/null.klg.eqClass',
 'lng/xpr/klg/null.klg.ior3',
