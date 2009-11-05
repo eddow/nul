@@ -14,35 +14,14 @@ span.comment {
   color: #aaaaaa;
 }
 
-span.text {
-  color: black;
-}
+span.error			{ color: #000000; background-color: #ff0000; }
+span.number			{ color: #804000; }
+span.operator		{ color: #800040; }
+span.attributer		{ color: #804080; background-color: #e0f0e0; }
+span.reserved		{ color: #808000; background-color: #f0f0e0; }
+span.string			{ color: #10a010; }
+span.surrounder		{ color: #e00000; }
 
-span.number {
-  color: #800000;
-}
-
-span.operator {
-  color: #c00040;
-}
-
-
-span.attribute {
-  color: #008000;
-}
-
-span.attributer {
-  color: #800080;
-}
-
-span.reserved {
-  color: #808000;
-}
-
-span.surrounder {
-  color: #e00040;
-}
-
-span.local {
-  color: #000080;
-}
+span.attribute		{ color: #006000; }
+span.local			{ color: #000080; }
+span.declare		{ color: #8000e0; }
