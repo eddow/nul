@@ -154,3 +154,7 @@ else
 	};
 
 nul.load.globalKnowledge = nul.execution.createGlobalKlg;
+nul.load.globalKnowledge.use = {'debuger': true};
+
+nul.load.executionReady = nul.execution.ready;
+nul.load.executionReady.use = {'nul.globals': true};

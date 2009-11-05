@@ -22,6 +22,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 			this.attribs = map(obj.attribs);	//Sets the attributes owned
  		} else {
 			this.equivls = obj?[obj]:[];
+			if(obj) this.represent(obj);
 			this.belongs = [];
 			this.attribs = attr || {};
 		}
@@ -37,35 +38,26 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * Note: v is undefined 
 	 */
 	orderEqs: function(v, klg) {
+		//if(nul.obj.local.is(v) && nul.obj.local.self.ref == v.klgRef) return -2;
 		if(v.defined) return -1;
 		var d = v.dependance();
 		var rv = 0;
 		if('local'!= this.expression || klg.name!= this.klgRef) rv += 1;
-		if(!isEmpty(d.usage(klg).local)) rv += 2;
+		if(klg && !isEmpty(d.usage(klg).local)) rv += 2;
 		if(v.anonymous) rv += 0.5;
 		return rv;
 	},
 
-//////////////// internal
-
-	/**
-	 * Build and get a representative value for this class.
-	 * @param {nul.xpr.knowledge} kpr
-	 * @return {nul.xpr.object}
-	 */
-	taken: function(klg) {
-		try { return this.equivls[0]; }
-		finally {
-			if(this.summarised) {
-				var rec = this.placed(klg);
-				if(rec) klg.eqCls.push(rec)
-				else klg.unaccede(this);
-			}
-		}
-	},
-
 //////////////// public equivalence class modification
 
+	//TODO C
+	represent: function(obj) {
+		return this.equivls[0];
+		if(obj && (!this.representant || this.orderEqs(obj) < this.orderEqs(this.representant))) this.representant = obj;
+		nul.xpr.use(this.representant);
+		return this.representant;
+	},
+	
 	/**
 	 * Add an object in the equivlence.
 	 * @param {nul.xpr.object} o object to add
@@ -89,7 +81,8 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 						nul.failed(err);
 						unf = o.unified(this.equivls[0], klg);
 					}
-					if(unf && true!== unf) {
+					if(true=== unf) unf = this.equivls[0];
+					else {
 						if(nul.debug.assert) {
 							assert(klg.access[this.equivls[0]] == this, 'Access consistence');
 							assert(klg.access[o] == this, 'Access consistence');
@@ -100,7 +93,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 						klg.access[unf] = this;
 						this.equivls[0] = unf;
 					}
-					return this.equivls[0];
+					return this.represent(unf);
 				}, 'Equivalence', this, [this.equivls[0], o]);
 			else {
 				this.equivls.unshift(o);
@@ -113,6 +106,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 			for(p=0; p<this.equivls.length; ++p) if(ordr<this.orderEqs(this.equivls[p], klg)) break;
 			this.equivls.splice(p,0,o);
 		}
+		return this.represent(o);
 	},
 
 	/**
@@ -139,7 +133,11 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
  				}
  			}
  			this.wedding(klg);
- 		} else this.belongs.push(s);
+ 		} else {
+ 			var b;
+ 			for(b=0; this.belongs[b]; ++b) if(this.belongs[b].toString() == s.toString()) break;
+ 			if(!this.belongs[b]) this.belongs.push(s);
+ 		}
 	},
 	
 	/**
@@ -151,18 +149,20 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	 */
 	hasAttr: function(attrs, klg) {
 		this.modify();
-		if(isEmpty(attrs)) return true;
+		var useless = true;
 		if(this.eqvlDefined()) {
 			for(var an in attrs) klg.unify(attrs[an], this.equivls[0].attribute(an, klg));
+			useless = isEmpty(attrs);
 			this.attribs = {};
 		} else if(this.attribs !== attrs) {	//TODO 3: gardien est-il necessaire?
 			merge(this.attribs, attrs, function(a,b) {
 				if((a?a.toString():'')==(b?b.toString():'')) return a;
+				useless = false
 				return (a&&b)?klg.unify(a,b):(a||b);
 			});
-			this.wedding(klg);
+			if(!useless) this.wedding(klg);
 		}
-		return false;
+		return useless;
 	},
 
 	/**
@@ -173,7 +173,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	 */
 	define: function(def, klg) {
 		var rv = false;
-		//rv |= !this.hasAttr(def.attribs, klg);
+		rv |= !this.hasAttr(def.attribs, klg);
 		return rv;
 	},	
 	

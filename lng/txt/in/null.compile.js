@@ -140,7 +140,8 @@ nul.operators = [
 	['+','m'], ['-','l'],
 	['-','p'], ['#','p'],
 	['*','m'], ['/','l'], ['%','l'],
-	['..','l']
+	['..','l'],
+	[',.','s']				 				//list singleton
 ];
 
 nul.compiler = Class.create(/** @lends nul.compiler# */{

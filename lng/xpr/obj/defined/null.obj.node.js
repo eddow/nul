@@ -59,7 +59,7 @@ nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
 	seek: function(key) {
 		switch(key.expression) {
 		case 'node':
-			return nul.obj.node.relativise(key, this.list());
+			return nul.obj.node.relativise(key, this.listed());
 		default:
 			throw nul.semanticException('NODE', 'NODE elements can only be indexed [by CSS selector or ]by defaulting node');
 		}
@@ -69,7 +69,7 @@ nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
 	 * List the content
 	 * @return {nul.xpr.possible[]}
 	 */
-	list: function() {
+	listed: function() {
 		return this.content.listed();
 	},
 	
@@ -100,14 +100,14 @@ nul.obj.node.relativise = function(tpl, objs) {
 		if(nul.xpr.possible.is(obj)) {
 			klg = obj.knowledge;
 			obj = obj.value;
-		} klg = nul.klg.always;
+		} else klg = nul.klg.always;
 		nul.obj.is(obj, 'nul.obj.defined');
 		if(tpl.tag == obj.tag) {
 			var rAtt = map(obj.attributes);
 			klg = klg.modifiable();
-			merge(rAtt, obj.properties, function(a, b, n) { return a || b.apply(obj, [klg, n]); });
+			merge(rAtt, obj.properties, function(a, b, n) { return a || obj.attribute(n); });
 			merge(rAtt, tpl.attributes, function(a, b, n) { return a || b; });
-			merge(rAtt, tpl.properties, function(a, b, n) { return a || b.apply(tpl, [klg, n]); });
+			merge(rAtt, tpl.properties, function(a, b, n) { return a || tpl.attribute(n); });
 			var trv = klg.newLocal(tpl.tag);
 			klg.attributed(trv, rAtt);
 			return klg.wrap(trv);

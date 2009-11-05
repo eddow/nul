@@ -152,6 +152,24 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 		delete this.summarised.htmlTxt;
 	},
 
+	
+////////////////Internals
+
+	/**
+	 * Change self sub-representations. Either to change the self-context index or to modify it by another known value
+	 * @param {nul.xpr.object|Name} newSelf
+	 * @param {Name} selfRef The actual self reference to replace (this one if none specified)
+	 * If newSelf is a {nul.xpr.object}, it will replace the self-references
+	 * If not, it will be considered as a new self index
+	 */
+	reself: function(newSelf, selfRef) {
+		if(!this.selfRef && !selfRef) return this;
+		var rv = new nul.xpr.object.reself(selfRef || this.selfRef, newSelf).browse(this);
+		if(nul.debug.assert) assert(this.expression == rv.expression || ('pair'== this.expression && '&phi;'== rv.expression),
+			'Reselfing doesnt modify the definition');
+		return rv;
+	},
+
 //////////////// Summary users
 
 	/**

@@ -154,13 +154,12 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 		 * @return {String}
 		 */
 		klg: function() {
-			if(this==nul.klg.never) return 'Never';
-			if(this==nul.klg.always) return '';
+			if(this.special) return {'':(nul.klg.always===this?'':html.op(this.name))};
 			var rv = nul.txt.flat.all(this.eqCls).join(' &and; ');
 			var ior3 = nul.txt.flat.all(this.ior3).join(' &and; ')
 			if(rv && ior3) rv += ' &and; ' + ior3;
 			else if(ior3) rv = ior3;
-			return rv?'('+rv+')':'';
+			return ('all'!=this.arbitre?this.arbitre:'') + rv?'('+rv+')':'';
 		},
 		/**
 		 * @methodOf nul.klg.ior3#

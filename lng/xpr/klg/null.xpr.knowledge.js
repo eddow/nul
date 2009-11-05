@@ -52,6 +52,12 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		//this.mult = 1;	//TODO O: 'mult' optimisation
  	},
 
+	/**
+	 * Weither this knowlegde filters arbitrarily mopre than what expressed
+	 * @type {'all'|'some'}
+	 */
+	arbitre: 'all',
+
 //////////////// privates
 
  	/**
@@ -99,13 +105,24 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 * @return {nul.klg.eqClass} ec
 	 */
 	freeEC: function(ec) {
-		if(!ec.summarised) return ec;
+ 		if(!ec.summarised) return ec;
 		var i = this.eqCls.indexOf(ec);
  		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class')
 		this.eqCls.splice(i, 1);
  		var rv = ec.modifiable();
 		for(var i in this.access) if(this.access[i] === ec) this.access[i] = rv;
  		return rv;
+ 	},
+
+	/**
+	 * Own ec from this.eqCls
+	 * @param {nul.klg.eqClass} ec
+	 * @return {nul.klg.eqClass} ec
+	 */
+	ownEC: function(ec) {
+		var rec = ec.built().placed(this);
+		if(rec) this.eqCls.push(rec)
+		else this.unaccede(ec);
  	},
 
  	/**
@@ -131,19 +148,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		//TODO O: only goes through the access of ec' equivalents
 		for(var i in this.access) if(this.access[i] === ec) delete this.access[i];
 		return ec;
-	},
- 	
- 	/**
- 	 * Begin modification of an equivalence class
- 	 * @param {nul.xpr.object} obj Object whose information is brought
- 	 * @return equivalence class to re-add to the knowledge
- 	 */
-	inform: function(obj) {
-		this.modify(); nul.obj.use(obj);
-		
-		var ec = this.access[obj];
-		if(ec) return this.freeEC(ec);
- 		return new nul.klg.eqClass(obj);
 	},
  	
  	/**
@@ -226,7 +230,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		this.addEqCls(klg.eqCls);
 		this.ior3.pushs(klg.ior3);
  		this.veto.pushs(klg.veto);
- 		
+ 		if('some'== klg.arbitre) this.arbitre = 'some';
  		if(val) return brwsr.browse(val);
  		return brwsr;
  	},
@@ -239,7 +243,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @throws {nul.failure}
  	 */
  	unify: function(a, b) {
- 		return this.unification(beArrg(arguments)).taken(this);
+ 		return this.unification(beArrg(arguments)).represent();
  	},
  	 	
 	/**
@@ -315,20 +319,23 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	define: function(acsTbl) {
 		this.modify();
 		var rv = [];
-		return rv;	//TODO 2
+		return rv;
 		acsTbl = map(acsTbl);
 		var used;
 		do {
 			used = false;
 			for(var v in this.access) {
 				if(acsTbl[v]) {
-					var nec = this.removeEC(this.access[v]).modifiable();
+					var ownClass = !!this.access[v].summarised;	//TODO 4: une interface pour pas trimballer un boolean ownClass a l'air
+					var nec = this.freeEC(this.access[v]);
 					if(nec.define(acsTbl[v], this)) {
-						//rv.push(v);
+						rv.push(v);
 						used = true;
 					}
-					this.accede(nec.built());
-					//this.unify(acsTbl[v], this.access[v]);
+					for(var a in nec.attribs) 
+						if(nul.obj.local.is(nec.attribs[a]) && nul.obj.local.self.ref == nec.attribs[a].klgRef)
+							delete nec.attribs[a];
+					if(ownClass) this.ownEC(nec);
 					delete acsTbl[v];
 					break;
 				}
@@ -388,6 +395,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		'ior3': {type: 'nul.klg.ior3', bunch: true},
 		'veto': {type: 'nul.xpr.knowledge', bunch: true}
 	},
+	//TODO C
 	modifiable: function($super) {
 		var rv = $super();
 		rv.locals = map(this.locals);
@@ -397,7 +405,8 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		return rv;
 	},
 	
-	chew: function($super) {
+	//TODO C
+	reAccede: function($super) {
 		var nwEqCls = this.eqCls;
 		var nwOppstn = this.veto;
 		this.veto = [];
@@ -405,15 +414,26 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		this.access = {};
 		this.addEqCls(nwEqCls);
 		while(nwOppstn.length) this.oppose(nwOppstn.shift());
+		return this;
+	},
+
+	//TODO C
+	chew: function($super) {
+		this.reAccede();
 		return $super();
 	},
 	
+	//TODO C
  	built: function($super) {
 		this.clearAccess();
 		//if(0== this.mult) return nul.klg.never;
- 		if(this.isFixed() && nul.klg.always) return nul.klg.always; 
+ 		if(this.isFixed()) switch(this.arbitre) {
+ 		case 'all': if(nul.klg.always) return nul.klg.always; break;
+ 		case 'some': if(nul.klg.some) return nul.klg.some; break;
+ 		}
  		return $super();
  	},
+	//TODO C
  	isFixed: function() {
  		return (!this.eqCls.length && !this.nbrLocals() && !this.ior3.length && !this.veto.length);
  	}
@@ -484,10 +504,11 @@ nul.klg = {
 		 * Special knowledge
 		 * @extends nul.xpr.knowledge
 		 * @constructs
-		 * @param {hash} comps Components
+		 * @param {Object} singleton Sub-class definition. Used when sub-classment is made for a singleton, to avoid new Class.create()()
 		 */
-		initialize: function(comps) {
-			merge(this, comps);
+		initialize: function(singleton) {
+			if(singleton) Object.extend(this, singleton);
+	        this.locals = this.emptyLocals();
 			this.alreadyBuilt();
 		},
 		expression: 'klg',
@@ -505,18 +526,27 @@ nul.klg = {
  * Special knowledge meaning something that is never verified
  */
 nul.klg.never = new nul.klg.special({
-		name: 'Never',
+	name: 'Never',
 	modifiable: function() { nul.fail('No fewer than never'); },
-	wrap: function(value) { return nul.xpr.failure; },
 	on: 0
 });
+
 /**
  * Special knowledge meaning something that is always verified
  */
 nul.klg.always = new nul.klg.special({
 	name: 'Always',
 	modifiable: function() { return new nul.xpr.knowledge(); },
-	wrap: function(value) { return new nul.xpr.possible.cast(value); },
+	on: 1
+});
+
+/**
+ * Special knowledge meaning an undefined knowledge
+ */
+nul.klg.some = new nul.klg.special({
+	name: 'Some',
+	modifiable: function() { var rv = new nul.xpr.knowledge(); rv.arbitre = 'some'; return rv; },
+	arbitre: 'some',
 	on: 1
 });
 

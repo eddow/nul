@@ -6,10 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
  
-div#dbgOptions {
+#dbgOptions {
 	float: right;
 }
 
+#editor {
+	border: 1px solid black;
+	width: 90%;"
+}
 div#evaled {
 	border: 1px black solid;
 }
@@ -77,3 +81,26 @@ td.ke.c0 {
 #logs .Represent.log { background-color: lightbrown; }
 #logs .error.log { background-color: red; }
 #logs .fail.log { background-color: pink; }
+
+fieldset {
+	padding: 0;
+}
+
+fieldset.collapsed {
+	border: 0;
+}
+
+fieldset.collapsed * {
+	display: none;
+}
+fieldset.collapsed legend, fieldset.collapsed legend * {
+	display: inline;
+}
+
+.CodeMirror-line-numbers {
+  padding: .4em;
+  font-family: monospace;
+  font-size: 10pt;
+  color: #aaaaaa;
+  background-color: #eeeeee;
+}

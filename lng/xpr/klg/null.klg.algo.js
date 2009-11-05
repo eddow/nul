@@ -179,7 +179,7 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 					dstEqCls.isIn(s, this);
 		 		}
 	 		}
-	 		if(ownClass) dstEqCls.built();
+	 		if(ownClass) this.ownEC(dstEqCls);
  		} catch(err) {
  			throw nul.exception.notice(err);
  		}
@@ -231,4 +231,5 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
  		//TODO4: standardise the knowledge name in logs
 		return this.name+': ' + value.dbgHtml() + ' ; ' + this.dbgHtml();
 	})
+	
 });

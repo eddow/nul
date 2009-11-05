@@ -37,7 +37,6 @@ nul.tokenizer = Class.create(/** @lends nul.tokenizer */{
 		{
 			if(''== this.txt)
 				return this.token = { value: '', type: 'eof' };
-			if('/*'== this.txt.substr(0,2)) this.txt = this.txt.substr(this.txt.indexOf('*/', 1)+2);
 			for(alphabet in nul.tokenizer.alphabets)
 				if(match = nul.tokenizer.isAB(this.txt, alphabet))
 				{
@@ -170,11 +169,12 @@ nul.tokenizer.isAB = function(v, alphabet) {
  */
 nul.tokenizer.alphabets = {
 		number:		'(\\d+(\\.\\d+)?)',
-		alphanum:	'([_\\w@]+)',
+		alphanum:	'([\\w@]+)',
 		string:		'"([^"\\uffff]*)"',
 		space:		'[\\s\\uffff]+',
-		comments:	'\\/\\/[^\\uffff]*\\uffff',
-		oprtr:		[',..', '{', '}', '::', '[', ']', '\\/']
+		comm1:		'\\/\\/.*?\\uffff',
+		comm2:		'\\/\\*.*?\\*\\/',
+		oprtr:		[',..', '{', '}', '::', '[', ']', '(', ')', '\\/', '.']
 	};
 
 /**
@@ -185,5 +185,6 @@ nul.load.operators = function() {
 	var ops = map(nul.operators, function() { return this[0];});
 	ops.pushs(nul.tokenizer.alphabets.oprtr);
 	ops.sort(function(a,b){ return b.length-a.length; })
+	nul.tokenizer.operators = ops;	//Useful for outer use, like editArea
 	nul.tokenizer.alphabets.oprtr = '(' + map(ops,escaper).join('|') + ')';
 };

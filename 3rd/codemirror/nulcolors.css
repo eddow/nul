@@ -1,0 +1,48 @@
+.editbox {
+  margin: .4em;
+  padding: 0;
+  font-family: monospace;
+  font-size: 10pt;
+  color: black;
+}
+
+.editbox p {
+  margin: 0;
+}
+
+span.comment {
+  color: #aaaaaa;
+}
+
+span.text {
+  color: black;
+}
+
+span.number {
+  color: #800000;
+}
+
+span.operator {
+  color: #c00040;
+}
+
+
+span.attribute {
+  color: #008000;
+}
+
+span.attributer {
+  color: #800080;
+}
+
+span.reserved {
+  color: #808000;
+}
+
+span.surrounder {
+  color: #e00040;
+}
+
+span.local {
+  color: #000080;
+}

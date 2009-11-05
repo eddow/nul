@@ -253,8 +253,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		klg: function() {
-			if(this==nul.klg.never) return {'':html.op('Never')};
-			if(this==nul.klg.always) return {'':html.op('Always')};
+			if(this.special) return {'':html.op(this.name)};
 			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
 			var ior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'))
 			var veto = nul.txt.html.all(this.veto).join(html.op('&or;'))
@@ -262,10 +261,12 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 			else if(ior3) rv = ior3;
 			if(rv && veto) rv += html.op('&and;')+html.op('&not;') + veto;
 			else if(veto) rv = html.op('&not;') + veto;
-			return {
+			rv = {
 				'': rv?(html.op('(')+rv+html.op(')')):'',
 				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):'')
 			};
+			rv['arbitre_'+this.arbitre] = this.arbitre;
+			return rv;
 		},
 		/**
 		 * @methodOf nul.klg.ior3#

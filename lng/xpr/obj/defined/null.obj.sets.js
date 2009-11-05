@@ -13,8 +13,9 @@ nul.obj.hcSet = Class.create(nul.obj.defined, /** @lends nul.obj.hcSet */{
 	 * @extends nul.obj.defined
 	 * @constructs
 	 */
-	initialize: function() {
+	initialize: function($super) {
 		this.alreadyBuilt();
+		return $super();
 	},
 	
 	/**
@@ -30,15 +31,16 @@ nul.obj.hcSet = Class.create(nul.obj.defined, /** @lends nul.obj.hcSet */{
 			return [klg.wrap(o)];
 		}
 	},
-	
+
+	length: pinf,
+
 //////////////// nul.obj.defined implementation
 
 	/** @constant */
 	properties: {
 		'# ': function() { return nul.obj.litteral.make(this.length); },
 		'': function() { return nul.obj.litteral.tag.set; }
-	},
-	length: pinf
+	}
 });
 
 /**
@@ -61,6 +63,25 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.empty# */{
 
 	/** @constant */
 	length: 0
+	
+}))();
+
+
+/**
+ * Wholistic set : anything
+ * @class Singleton
+ * @extends nul.obj.hcSet
+ */
+nul.obj.whole = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.whole# */{
+	listed: function() { return []; },
+	
+	intersect: function(o) {
+		return o;
+	},
+	subHas: function(o) { return [o]; },
+	
+	/** @constant */
+	expression: 'any',
 	
 }))();
 
@@ -100,7 +121,6 @@ nul.obj.string = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.string# */{
 	},
 	expression: 'text',
 
-////////////////nul.obj.defined implementation
 }))();
 
 /**
@@ -118,7 +138,7 @@ nul.obj.bool = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.bool# */{
 	/** @constant */
 	expression: 'bool',
 
-////////////////nul.obj.defined implementation
+////////////////	nul.obj.hcSet implementation
 
 	/** @constant */
 	length: 2
@@ -194,3 +214,4 @@ nul.globals.Z = new nul.obj.range();
 nul.globals.N = new nul.obj.range(0);
 nul.globals.text = nul.obj.string;
 nul.globals.bool = nul.obj.bool;
+nul.globals.any = nul.obj.whole;

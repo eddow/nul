@@ -165,6 +165,7 @@ function merge(dst, src, cb) {
 	return dst; 
 }
 
+//TODO 2: use prototype addMethod ?
 [].pushs || (Array.prototype.pushs =
 	/**
 	 * Concatenate array(s) to this one
@@ -180,6 +181,18 @@ function merge(dst, src, cb) {
 			for(var i=0; i<o.length; ++i) this.push(o[i]);
 		}
 		return this; 
+	});
+
+[].without || (Array.prototype.without =
+	/**
+	 * Concatenate array(s) to this one
+	 * @memberOf Array#
+	 * @param {Array} [paramarray]
+	 * @name without
+	 */
+	function(){
+		var excl = beArrg(arguments);
+		return maf(this, function(n, o) { return excl.include(o)?null:o; } ); 
 	});
 
 [].union || (Array.prototype.union = 

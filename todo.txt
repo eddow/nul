@@ -1,3 +1,17 @@
+C:\Users\fmdm\AppData\Local\Google\Chrome\Application\3.0.195.27\Resources\Inspector\Images
+http://marijn.haverbeke.nl/codemirror/manual.html
+
+{:f f Q x [] }
+
+{:f f x} equivaut f ::() "#set"
+g => {:f g f x} ::: sous-set
+:::La tautologie devrait etre reperee
+
+nul.obj.defined.106 : dp[0] se repete
+{:ss (x, 1); ss(x, 2) [] (x, 2); ss(x, 1) }
+
+o::a { o.a _ }
+::: noter l'autoref
 
 :::: Query doit se passer dans global aussi ?
 :::: idee : ne pas faire un simple .pruned() : enlever de 'global' tout ce qui est dans 'g' ... ?
@@ -14,9 +28,6 @@
 
 .library.file["lib/cmplx.nul"]
 .library.file["lib/set.nul"]
-
-{:f f x}
-:::La tautologie devrait etre reperee
 
 set::sigma
  { \/x {x} => {}
@@ -43,22 +54,4 @@ todo {
 sigma[1..]			//inf decomposition
 }
 
-S = houses [1..5]
-; houses = { {} => {} [] (n,.. ns) => ((_::number n),.. houses[ns]) }
-; sigma ={ \/x {x} => {} [] (a,b,.. o) => ((a=>b),.. sigma[b,.. o] ) }
-; neighbours = { (a, b); sigma[S](a=>b [] b=>a)}
-
-; S(_ ::color "red" ::nation "english")						//The Englishman lives in the red house.
-; S(_ ::nation "spaniard" ::animal "dog")					//The Spaniard owns the dog.
-; S(_ ::color "green" ::drink "coffee")						//Coffee is drunk in the green house.
-; S(_ ::nation "ukrainian" ::drink "tea")					//The Ukrainian drinks tea.
-; sigma[S][_ ::color "green"] = (_ ::color "ivory")			//The green house is immediately to the right of the ivory house.
-; S(_ ::smoke "Old Gold" ::animal "snails")					//The Old Gold smoker owns snails.
-; S(_ ::color "yellow" ::smoke "Kools")						//Kools are smoked in the yellow house.
-; S(_ ::number 3 ::drink "milk")							//Milk is drunk in the middle house.
-; S(_ ::number 1 ::nation "norwegian")						//The Norwegian lives in the first house.
-; neighbours(_ ::smoke "Chesterfields", _ ::animal "fox")	//The man who smokes Chesterfields lives in the house next to the man with the fox.
-; neighbours(_ ::smoke "Kools", _ ::animal "horse")			//Kools are smoked in a house next to the house where the horse is kept.
-; S(_ ::smoke "Lucky Strike" ::drink "orange juice")		//The Lucky Strike smoker drinks orange juice.
-; S(_ ::nation "japanese" ::smoke "Parliaments")			//The Japanese smokes Parliaments.
-; neighbours(_ ::nation "norwegian", _ ::color "blue")		//he Norwegian lives next to the blue house.
+Systeme d'unites !!!

@@ -13,6 +13,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * @constructs
 	 */
 	initialize: function($super) {
+		this.cachedProperties = {};
 		$super();
 	},
 	defined : true,
@@ -81,10 +82,10 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * @throws {nul.failure}
 	 */
 	attribute: function(anm, klg) {
-		var af = this.attributes[anm];
+		var af = this.attributes[anm] || this.cachedProperties[anm];
 		if(af) return af;
 		af = this.properties[anm];
-		if(af) return af.apply(this, [klg, anm]);
+		if(af) return this.cachedProperties[anm] = af.apply(this, [klg, anm]);
 		nul.fail(this, 'doesnt have the attribute "'+anm+'"');
 	},
 	

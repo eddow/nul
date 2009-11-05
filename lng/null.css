@@ -102,7 +102,7 @@ span.failure {
 	vertical-align: text-bottom;
 }
 
-a.shortStr, a.index, a.locals, a.dependances, a.reference {
+a.shortStr, a.index, a.locals, a.dependances, a.reference, a.arbitre_all, a.arbitre_some {
 	display: table-cell;
 	font-size: 4px;
 	cursor: none;
@@ -115,7 +115,7 @@ a.shortStr, a.index, a.locals, a.dependances, a.reference {
 	vertical-align: top;
 }
 
-div.shortStr, div.index, div.locals, div.dependances, div.reference {
+div.shortStr, div.index, div.locals, div.dependances, div.reference, div.arbitre_all, div.arbitre_some {
 	cursor: default;
 	font-size: 1em;
 	position: absolute;
@@ -143,13 +143,23 @@ div.shortStr, div.index, div.locals, div.dependances, div.reference {
 }
 
 .dependances {
-	border-color: darkgreen;
-	background-color: lightgreen;
+	border-color: darkmagenta;
+	background-color: darkorchid;
 }
 
 .reference {
 	border-color: black;
 	background-color: grey;
+}
+
+.arbitre_all {
+	border-color: darkgreen;
+	background-color: lightgreen;
+}
+
+.arbitre_some {
+	border-color: gold;
+	background-color: goldenrod;
 }
 
 div.dependances {

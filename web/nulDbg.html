@@ -12,6 +12,8 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 
 <script type="text/javascript" src="../null.js"></script>
 <script type="text/javascript" src="nulDbg.js"></script>
+<!--script type="text/javascript" src="../3rd/edit_area/edit_area_full.js"></script-->
+<script type="text/javascript" src="../3rd/codemirror/codemirror.js"></script>
 <script type="text/nul">
 maGlob = 53
 </script>
@@ -19,28 +21,40 @@ maGlob = 53
 <body>
 	<div id="dbgOptions">
 		<fieldset>
-		<legend>
-			<input id="shwLogging" type="checkbox" onclick="shwLoggingClk();" checked="checked"/>
-			Logging
-		</legend>
-		<select id="loggingChk" multiple="multiple">
-		<option>None</option>
-		<option>Resolution</option>
-		<option>Unification</option>
-		<option>Equivalence</option>
-		<option>Wrapping</option>
-		<option>Represent</option>
-		<option>Prune</option>
-		<option>Recursion</option>
-		<option>Extraction</option>
-		<option>Query</option>
-		<option>Relativise</option>
-		</select>
+		<legend>Debug ...</legend>
+			<input type="button" onclick="nul.debuger.eval();" value="Eval" title="F8" />
+			<input type="button" onclick="nul.debuger.reset();" value="Reset" title="F5" />
+			<fieldset id="dbgBreakFS">
+				<legend>
+					<input id="dbgBreak" type="checkbox" onclick="shwDbgOptClk();" checked="checked" />
+					Break
+				</legend>
+				<input id="dbgBreakLimit" type="text" size="10" value="500" />
+			</fieldset>
+			<fieldset id="shwLoggingFS">
+				<legend>
+					<input id="shwLogging" type="checkbox" onclick="shwDbgOptClk();" checked="checked"/>
+					Logging
+				</legend>
+				<select id="loggingChk" multiple="multiple">
+				<option selected="selected">None</option>
+				<option>Resolution</option>
+				<option>Unification</option>
+				<option>Equivalence</option>
+				<option>Wrapping</option>
+				<option>Represent</option>
+				<option>Prune</option>
+				<option>Recursion</option>
+				<option>Extraction</option>
+				<option>Query</option>
+				<option>Relativise</option>
+				</select>
+			</fieldset>
 		</fieldset>
 	</div>
-	
-	<textarea cols="80" rows="7" id="source"></textarea>
-	<input type="button" onclick="test(tread, evd, 'Evaluating...');" value="eval"></input>
+	<div id="editor">
+		<textarea cols="120" rows="20" id="source"></textarea>
+	</div>
 	<div id="evaled"></div>
 	<div id="watch"></div>
 	<div id="info">
@@ -52,12 +66,10 @@ maGlob = 53
 			<a class="msTab" onclick="tabSelect(this);" name="tab_benchmark">Benchmark</a>
 		</div>
 		<div>
-			<div class="msTab" name="tab_glbKlg">
-				<input type="button" onclick="nul.execution.reset();" value="Reset"></input>
-				<div id="globalKlg"></div>
+			<div class="msTab" name="tab_glbKlg" id="globalKlg">
 			</div>
 			<div class="msTab" name="tab_values">
-				<input type="button" onclick="test(tquery, qrd, 'Querying...');" value="Query" disabled="true" id="queryCmd"></input><br />
+				<input type="button" onclick="nul.debuger.query();" value="Query" disabled="true" id="queryCmd" title="F6" /><br />
 				<div id="sandBox"><b t="3">yh</b><i t="4">oo</i></div><br />
 				<div id="queried"></div>
 			</div>

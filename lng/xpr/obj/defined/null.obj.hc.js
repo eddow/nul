@@ -29,7 +29,7 @@ nul.obj.hc = Class.create(nul.obj.defined, /** @lends nul.obj.hc# */{
 	 * Abstract : List the direct values of this set (the values that are not lambdas)
 	 * @return {nul.xpr.object|nul.data|nul.xpr.possible[]}
 	 */
-	list: function() { throw nul.semanticException('CNT', this.expression+' cannot select items'); },
+	listed: function() { throw nul.semanticException('CNT', this.expression+' cannot select items'); },
 	
 	/**
 	 * {@link nul.obj.hc.filter} the {@link nul.obj.hc#.seek} along the expected object to select
@@ -52,7 +52,7 @@ nul.obj.hc = Class.create(nul.obj.defined, /** @lends nul.obj.hc# */{
 	 * @return {nul.xpr.possible[]}
 	 */
 	select: function(obj, att) {
-		return nul.obj.hc.filter(this.list(), obj, att);
+		return nul.obj.hc.filter(this.listed(), obj, att);
 	},	
 	
 	/**

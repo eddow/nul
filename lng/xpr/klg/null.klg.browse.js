@@ -99,7 +99,7 @@ nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.repres
      * @return {nul.expression | null}
      */
     tableTransform: function(xpr) {
-    	if(this.tbl[xpr] && this.tbl[xpr].equivls[0] != xpr) return this.tbl[xpr].equivls[0];
+    	if(this.tbl[xpr] && this.tbl[xpr].represent() != xpr) return this.tbl[xpr].represent();
     },
     /**
      * Only cache if it doesn't appear in the replacement table.\
@@ -143,7 +143,7 @@ nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.repres
 			delete this.prepStack[0].setSelfRef;
 		}
 
-		if('klg'== xpr.expression) xpr.define(this.tbl);
+		if('klg'== xpr.expression) xpr.reAccede().define(this.tbl);
 		
 		return $super(xpr);
 	},
