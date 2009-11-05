@@ -20,8 +20,15 @@ nul.load.debuger.use = {operators:true};
 nul.debuger = {
 	getSrcText: function() { return nul.debuger.DOM.src.value; },
 	cmDone: function() {
+		nul.debuger.DOM.editor.grabKeys(nul.debuger.eventKeyDown, function(kc) { return [116,117,119].include(kc); } );
 		nul.debuger.getSrcText = function() { return nul.debuger.DOM.editor.getCode(); };
 		for(var i in window) knGlobs[i] = true;
+	},
+	eventKeyDown: function(e) {
+		if(!e.charCode && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && nul.debuger.shortcuts[e.keyCode]) { 
+			nul.debuger.shortcuts[e.keyCode]();
+			e.stop();
+		}
 	},
 	init: function() {
 		nul.debuger.DOM.src = $('source');
@@ -30,16 +37,11 @@ nul.debuger = {
 		nul.debuger.DOM.qrd = $('queried');
 
 		nul.debuger.shortcuts = {
-			116: nul.debuger.reset,	//F5
-			117: nul.debuger.query,	//F6
+			116: nul.debuger.reset,		//F5
+			117: nul.debuger.query,		//F6
 			119: nul.debuger.eval		//F8
 		};
-		nul.debuger.DOM.src.observe('keydown', function(e) {
-			if(!e.charCode && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && nul.debuger.shortcuts[e.keyCode]) { 
-				nul.debuger.shortcuts[e.keyCode]();
-				e.stop();
-			}
-		});
+		nul.debuger.DOM.src.observe('keydown', nul.debuger.eventKeyDown);
 
 		nul.debuger.DOM.editor = CodeMirror.fromTextArea(nul.debuger.DOM.src, {
 			  parserfile: ["parsenul.js"],
