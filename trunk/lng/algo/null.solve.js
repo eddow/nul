@@ -23,11 +23,14 @@ nul.solve = function(fz) {
 	var rv = [];
 	while(choices.length) {
 		var tklg = klg.modifiable();
-		try { 
-			var tval = tklg.merge(choices.shift(), val);
-			tval = tklg.wrap(tval);
-			nul.debug.log('Resolution')('','Possibility', tval);
-			rv.pushs(tval.distribute());
+		try {
+			var chxKlg = choices.shift();
+			if(0< chxKlg.maxMult) {	//Shortcut if the first choice is 'Never'
+				var tval = tklg.merge(chxKlg, val);
+				tval = tklg.wrap(tval);
+				nul.debug.log('Resolution')('','Possibility', tval);
+				rv.pushs(tval.distribute());
+			}
 		} catch(err) { nul.failed(err); }
 	}
 	return rv;

@@ -6,14 +6,42 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# */{
+nul.xpr.multiplied = Class.create(nul.expression, /** @lends nul.xpr.multiplied# */{
+	/**
+	 * An expression that have numbered min/max existence
+	 * @extends nul.expression
+	 * @constructs
+	 * @param {number} n minimum existence multiplier
+	 * @param {number} x maximum existence multiplier
+	 */
+	initialize: function(n, x) {
+		if(Object.isUndefined(n)) n = 1;
+		if(Object.isUndefined(x)) x = n;
+		if(!n.expression) n = { minMult:n, maxMult: x || n };
+		this.minMult = n.minMult;
+		this.maxMult = n.maxMult;
+	},
+	//TODO C
+	arythm: function(op, n, x) {
+		this.modify();
+		if(!n.expression) n = { minMult:n, maxMult: x || n };
+		this.minMult = eval(this.minMult + op + n.minMult);
+		this.maxMult = eval(this.maxMult + op + n.maxMult);
+	},
+	//TODO C
+	add: function(n, x) { return this.arythm('+', n, x); },
+	//TODO C
+	mul: function(n, x) { return this.arythm('*', n, x); }
+});
+
+nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledge# */{
 	/**
 	 * Represent a bunch of information about locals and absolute values.
-	 * @extends nul.expression
+	 * @extends nul.xpr.multiplied
 	 * @constructs
 	 * @param {String} klgName [optional] Knowledge name
 	 */
-	initialize: function(klgName, minMlt, maxMlt) {
+	initialize: function($super, klgName, minMlt, maxMlt) {
 		/**
 		 * Describe the dependance that are kept even if it never appears
 		 * @type Number
@@ -49,8 +77,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		 * @type String
  		 */
  		this.name = klgName || nul.execution.name.gen('klg');
- 		this.minMult = Object.isUndefined(minMlt)?1:minMlt;
- 		this.maxMult = Object.isUndefined(maxMlt)?this.minMult:maxMlt;
+ 		$super(minMlt, maxMlt);
  	},
 
 //////////////// privates
@@ -202,12 +229,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		}
 	},
  	
-	arythm: function(op, n, x) {
-		if(!n.expression) n = { minMult:n, maxMult: x || n };
-		this.minMult = eval(this.minMult + op + n.minMult);
-		this.maxMult = eval(this.maxMult + op + n.maxMult);
-	},
-	
  	/**
  	 * Know all what klg knows
  	 * @param {nul.xpr.knowledge} klg
@@ -218,7 +239,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 */
  	merge: function(klg, val) {
  		if(nul.klg.never== klg) nul.fail('Merging failure');
- 		this.arythm('*', klg);
+ 		this.mul(klg);
  		if(klg.unconditional) return val;
  		
  		this.modify(); nul.xpr.use(klg, 'nul.xpr.knowledge');

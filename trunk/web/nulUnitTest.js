@@ -137,6 +137,7 @@ nul.load.unitTest = function() {
 	if(!nul.debug.perf) $('perfTbl').hide();
 	clpsSstm = nul.txt.clpsSstm(tbody = $('tests'),'up');
 	drawTests(tests, clpsSstm, 0);
+	if(urlOption('auto')) prgGrpTest(1);
 };
 
 function setResult(tn, rslt, comm) {
@@ -149,7 +150,7 @@ function setResult(tn, rslt, comm) {
 
 function prgTest(tn) {
 	setResult(tn,'wrk');
-	setTimeout('doTest('+tn+')',200);
+	setTimeout('doTest('+tn+')',50);
 }
 
 function isResult(rslt, v) {
@@ -197,9 +198,15 @@ function prgTests(tn) {
 	var rw, ic;
 	while(true) {
 		if(0<tstsBats.length && tn== tstsBats[0].endl) {
-			tstsBats[0].rsltDiv.innerHTML = rsltDiv(['unk','succ','fail','err'][tstsBats[0].rslt]);
-			tstsBats.shift();
-			if(0==tstsBats.length) return;
+			var tt = tstsBats.shift();
+			tt.rsltDiv.innerHTML = rsltDiv(['unk','succ','fail','err'][tt.rslt]);
+			if(0==tstsBats.length) {
+				if('repeat'== urlOption('auto')) {
+					if(1!= tt.rslt) alert('Unit test failed !');
+					else setTimeout('window.location.reload()',50);
+				}
+				return;
+			}
 		}
 		ic = (rw=tbody.rows[tn]).select('input[type=checkbox]')
 		if(ic) {
@@ -213,7 +220,7 @@ function prgTests(tn) {
 		++tn;
 	}
 	setResult(tn,'wrk');
-	setTimeout('doTests('+tn+')',200);
+	setTimeout('doTests('+tn+')',50);
 }
 
 function doTests(tn) {

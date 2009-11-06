@@ -264,7 +264,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 			rv = {
 				'': rv?(html.op('(')+rv+html.op(')')):'',
 				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):''),
-				arbitre: '['+this.minMult+'-'+this.maxMult+']'
+				arbitre: nul.klg.unconditional(this).name
 			};
 			return rv;
 		},

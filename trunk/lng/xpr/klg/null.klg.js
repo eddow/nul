@@ -12,6 +12,10 @@
  */
 nul.klg = {
 	unconditional: function(min, max, name) {
+		if('klg'== min.expression) {
+			max = min.maxMult;
+			min = min.minMult;
+		}
 		if(nul.debug.assert) assert(max >= min, 'Ordered knowledge constraints');
 		if(!nul.klg.unconditionals[min+'-'+max])
 			nul.klg.unconditionals[min+'-'+max] = new nul.klg.unconditionalInstance(min, max, name);
@@ -28,10 +32,11 @@ nul.klg = {
 		 * @param {Number} max
 		 */
 		initialize: function(min, max, name) {
+			function htmlN(n) { return n==pinf?'&infin;':n.toString(); }
 	        this.locals = this.emptyLocals();
 			this.minMult = min;
 			this.maxMult = max;
-			this.name = name || ('['+this.minMult+'-'+this.maxMult+']');
+			this.name = name || ('['+htmlN(this.minMult)+((this.minMult==this.maxMult)?'':('-'+htmlN(this.maxMult)))+']');
 			this.alreadyBuilt();
 		},
 		expression: 'klg',
