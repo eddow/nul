@@ -1,4 +1,4 @@
-C:\Users\fmdm\AppData\Local\Google\Chrome\Application\3.0.195.27\Resources\Inspector\Images
+ C:\Users\fmdm\AppData\Local\Google\Chrome\Application\3.0.195.27\Resources\Inspector\Images
 http://marijn.haverbeke.nl/codemirror/manual.html
 
 {:f f Q x [] }
