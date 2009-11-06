@@ -83,11 +83,11 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 			var ltr = 0> this.lower ?
 					'&#x2124;':	//ℤ
 					'&#x2115;';	//ℕ			
-			var rv = ltr+'[';
+			var rv = ltr+'(';
 			if(ninf!= this.lower) rv += this.lower;
 			rv += '..';
 			if(pinf!= this.upper) rv += this.upper;
-			return rv + ']';
+			return rv + ')';
 		},
 		/**
 		 * @methodOf nul.obj.data#
@@ -161,7 +161,7 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 			else if(ior3) rv = ior3;
 			rv = rv?'('+rv+')':'';
 			if(1== this.minMult && 1== this.maxMult) return rv;
-			return this.name + rv;
+			return nul.klg.unconditional(this).name + rv;
 		},
 		/**
 		 * @methodOf nul.klg.ior3#

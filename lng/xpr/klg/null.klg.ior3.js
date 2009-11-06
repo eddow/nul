@@ -14,8 +14,8 @@ nul.klg.ior3 = Class.create(nul.expression, /** @lends nul.klg.ior3# */{
 	 * @param {nul.xpr.knowledge[]} choices The possible cases
 	 */
 	initialize: function(choices) {
-		this.choices = choices;
-		this.add = 0;
+		this.choices = map(choices);
+		if(!this.choices[0].unconditional) this.choices.unshift(nul.klg.never);
 		this.alreadyBuilt();
 	},
 
@@ -27,13 +27,13 @@ nul.klg.ior3 = Class.create(nul.expression, /** @lends nul.klg.ior3# */{
 		var rv = 0;
 		for(var h in this.choices) if(cstmNdx(h))
 			rv += this.choices[h].maxXst();
-		return rv+this.add;
+		return rv;
 	},
 	sum_minXst: function() {
 		var rv = 0;
 		for(var h in this.choices) if(cstmNdx(h))
 			rv += this.choices[h].minXst();
-		return rv+this.add;
+		return rv;
 	},
 
 //////////////// nul.expression implementation
@@ -42,12 +42,13 @@ nul.klg.ior3 = Class.create(nul.expression, /** @lends nul.klg.ior3# */{
 	expression: 'ior3',
 	/** @constant */
 	components: {'choices': {type: 'nul.xpr.knowledge', bunch: true}},
-	placed: function($super, prnt) {
-		nul.xpr.mod(prnt, 'nul.xpr.knowledge');
- 		if(!this.choices.length) {	//TODO O: 'mult' optimisation
- 			prnt.mult *= this.mult;
- 			return;
- 		} 
-		return $super(prnt);
+	built: function($super) {
+		for(var c=1; this.choices[c];)
+			if(!this.choices[c].unconditional) ++c;
+			else {
+				this.choices[0].add(this.choices[c]);
+				this.choices.splice(c,1);
+			}
+		return $super();
 	}
 });

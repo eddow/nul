@@ -26,28 +26,19 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 		//Remove useless equivalence class specifications
 		for(var c=0; c<this.eqCls.length;) {
 			this.eqCls[c] = this.eqCls[c].pruned(this, vdps);
- 			/*if(this.eqCls[c] && !this.eqCls[c].belongs.length && (!this.eqCls[c].equivls.length || 
-				(1== this.eqCls[c].equivls.length && isEmpty(this.eqCls[c].attribs,''))))
-					this.eqCls[c] = null;
- 			if(this.eqCls[c] && !this.eqCls[c].equivls.length && isEmpty(this.eqCls[c].attribs,'') && 1== this.eqCls[c].belongs.length && this.eqCls[c].blngDefined()) {
- 				if('&phi;'== this.eqCls[c].belongs[0].expression) nul.fail("&phi; is empty");
- 				this.eqCls[c] = null;
- 			}*/
 			if(!this.eqCls[c]) this.eqCls.splice(c,1);
 			else ++c;
 		} 
  		
  		var deps = this.usage(value);
- 		/*TODO O: 'mult' optimisation
-		//Remove unrefered ior3 tautologies, affect the 'mult' property 
- 		for(i=0; i<this.ior3.length; ++i) if(!deps.ior3[i]) {
- 			var nior3 = this.ior3[i].modifiable();
- 			if(nior3.unrefer()) this.ior3[i] = nior3.built().placed(this);
+ 		for(i=0; this.ior3[i];) switch(this.ior3[i].choices.length) {
+ 		case 0: throw nul.internalException('IOR3 Always has a first unconditional');
+ 		case 1:
+ 			this.merge(this.ior3[0]);
+ 			this.ior3.splice(i, 1);
+ 			break;
+ 		default: ++i; break;
  		}
- 		
- 		//Remove trailing empty ior3s (not more to preserve indexes)
- 		while(this.ior3.length && !this.ior3[this.ior3.length-1]) this.ior3.pop();
- 		*/
  		
  		//Remove trailing unrefered locals (not more to preserve indexes)
 		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();
