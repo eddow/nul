@@ -31,7 +31,7 @@ This enigma is especially the kindof problems that declarative languages aim to 
 
 ; S = houses[1..5]
 ; houses = { {} => {} [] (n,.. ns) => ((_::number n),.. houses[ns]) }
-; sigma ={ \/x {x} => {} [] (a,b,.. o) => ((a=>b),.. sigma[b,.. o] ) }
+; sigma ={ _,. => {} [] (a,b,.. o) => ((a=>b),.. sigma[b,.. o] ) }
 ; neighbours = { (a, b); sigma[S](a=>b [] b=>a)}
 
 ; S(_ ::color "red" ::nation "english")				//The Englishman lives in the red house.
