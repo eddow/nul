@@ -49,6 +49,12 @@ nul.load.time = function() {
 	 * @extends nul.obj.hc
 	 */
 	nul.globals.time = new nul.obj.hc(/** @lends nul.globals.time# */{
+		/**
+		 * Try to accept the value if the object is 'Now' data. If not, use the regular behaviour
+		 * @param {nul.xpr.object} obj
+		 * @param {nul.xpr.object[]} att
+		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
+		 */
 		subHas: function(obj, att) {
 			if(nul.obj.data.is(obj) && 
 					['now'].include(obj.source.index) &&
@@ -56,6 +62,12 @@ nul.load.time = function() {
 				return [obj];
 			return nul.obj.hc.prototype.subHas.apply(this,[obj, att]);
 		},
+		/**
+		 * Try to build a time object if we have enough specifications in attributes
+		 * @param {nul.xpr.object} obj
+		 * @param {nul.xpr.object[]} att
+		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
+		 */
 		select: function(obj, att) {
 			if(nul.data.time.is(obj)) return [obj];
 			if(obj.defined) return [];

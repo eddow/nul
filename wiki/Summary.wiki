@@ -2,4 +2,47 @@
 
 = Introduction =
 
-TODO
+Expressions can be refered more than once. Therefore, modifying one expression can, as a side-effect modify another one's component !
+
+To avoid undesired interractions, expressions can have two states : modifiable and summarised;
+These states refer to "read-write" or "read-only". If an expression has to be used and stored, it has to be "closed" to further writing : summarised.
+
+Usually, the closure of an expression goes through the "built" member-method that will, beside summarising, make sure the components are fitting and well-placed.
+Also, some peculiar expressions (like NulKlg) have special closures actions.
+
+= Consequences =
+
+Once an expression is closed to further modification, we can tabulate some results about it, like the dependance, the string representation, etc. : all the recursive computation that we would like to avoid to compute several times.
+Therefore, any built expression has a property named "summarised" that is an object containing all the tabulated properties.
+
+The summarised property retrieval is made through function calls who will compute the result if needed and store the result or return directly the tabulated result if available.
+
+== Closing ==
+
+Closing an expression to further modification is done by creating the "summarised" object. This is done through the "built" method {{{myObj.built()}}}.
+This function either return the same object summarised either return a short-cut object (a constant for instance)
+
+For instance, building a NulPair can result, once the results are distributed, in an empty-set ... therefore, the {{{pair.built()}}} method can return {{nul.obj.empty}}}.
+If another value is returned, the given expression is *still* summarised (so, closed to further modification) but can be forgotten (while its value is given by the constant)
+
+== Re-opening ==
+
+Once a modification of the expression is needed, the expression must be opened again through the method "modifiable". This function will indeed clone the expression (so that the given expression, perhaps used in another context, don't get modified) and give an unsummarised version of the given expression.
+
+== Assert system ==
+
+Before using or modifying an expression, any method should therefore verify its status. This can be done through the functions :
+
+ * {{{this.modify()}}} to assert this expression is in a modifiable state.
+ * {{{nul.xpr.mod(xpr[,type])}}}, {{{nul.obj.mod(obj[,type])}}}, {{{nul.klg.mod(klg)}}} : These functions assert the parameter is of a given type and in a modifiable state.
+ * {{{this.use()}}} to assert this expression is in a summarised state.
+ * {{{nul.xpr.use(xpr[,type])}}}, {{{nul.obj.use(obj[,type])}}}, {{{nul.klg.use(klg)}}} : These functions assert the parameter is of a given type and in a summarised state.
+
+== Internal system ==
+
+The expressions therefore have for each summarisable value (exemple: {{{index}}}) :
+- an access function (the method {{{index()}}})
+- a summary computation function (the method {{{sum_index()}}})
+The summary computation function is therefore ensured to be called no more than once for any expression.
+
+TODO: links

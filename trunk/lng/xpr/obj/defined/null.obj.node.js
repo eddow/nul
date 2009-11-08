@@ -52,7 +52,7 @@ nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
 
 	/**
 	 * Gets a node from a selector. The selector can be :
-	 * TODO - a string tag name (simple CSS selector)
+	 * TODO 3- a string tag name (simple CSS selector)
 	 * - another node as a template
 	 * @param {nul.obj.defined} key
 	 */

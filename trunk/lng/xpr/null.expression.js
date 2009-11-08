@@ -6,9 +6,9 @@
  *
  *--------------------------------------------------------------------------*/
 
- /**
-  * Used to build expression summary items
-  */
+/**
+ * Shortcut to build expression summary items
+ */
 nul.summary = function(itm) {
 	return function() { return this.summary(itm); };
 };
@@ -63,7 +63,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	},
 	
 	/**
-	 * Stop the modifications brought to this expression. Now, we compute some values about
+	 * Compute the summary of this expression. Marks it as unmodifiable
 	 * @param {Association} smr The given summary
 	 */
 	summarise: function(smr) {
@@ -76,9 +76,18 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 */
 	modifiable: function() {
 		this.use();
+		return this.clone('summarised');
+	},
+
+	/**
+	 * Return a clone version of this expression to modify it.
+	 * @param {String} paramarray List of elements to exclude from clone
+	 */
+	clone: function() {
+		var bsd = beArrg(arguments)
 		var comps = this.components;
 		return maf(this, function(ndx, obj) {
-			if('summarised'!= ndx) 
+			if(!bsd.include(ndx)) 
 				return (comps[ndx] && comps[ndx].bunch)?map(obj):obj;
 		});
 	},
@@ -93,15 +102,20 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 		return this.built();
 	},	
 	/**
-	 * Return a summarised version of this.
+	 * Return a summarised version of this. Verify children consistency and make them {@link placed}
 	 */
 	built: function(smr) {
 		this.modify();
 		for(var comp in this.components)
 			if(this.components[comp].bunch) {
-				for(var ci in this[comp]) if(cstmNdx(ci) && 'function'!= typeof this[comp][ci])
+				for(var ci in this[comp]) if(cstmNdx(ci) && 'function'!= typeof this[comp][ci]) {
 					this[comp][ci] = this[comp][ci].placed(this);
-			} else this[comp] = this[comp].placed(this);
+					nul.xpr.use(this[comp][ci], this.components[comp].type);
+				}
+			} else {
+				this[comp] = this[comp].placed(this);
+				nul.xpr.use(this[comp], this.components[comp].type);
+			}
 		this.summarise(smr);
 		return this.fix();
 	},
@@ -173,38 +187,33 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 //////////////// Summary users
 
 	/**
-	 * Summary: The key string-index of this expression
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The key string-index of this expression
 	 * @function
-	 * @type string
+	 * @return {String}
 	 */
 	toString: nul.summary('index'),
 	/**
-	 * Summary: The HTML representation
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The HTML representation
 	 * @function
-	 * @type string
+	 * @return {HTML}
 	 */
-	toHtml: nul.summary('htmlTxt'),			//The HTML representation of an expression
+	toHtml: nul.summary('htmlTxt'),
 	/**
-	 * Summary: The flat-text representation
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The flat-text representation
 	 * @function
-	 * @type string
+	 * @return {String}
 	 */
-	toFlat: nul.summary('flatTxt'),			//The flat-text representation of an expression
+	toFlat: nul.summary('flatTxt'),
 	/**
-	 * Summary: Weither this expression is a list
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The dependances of this expression.
 	 * @function
-	 * @type boolean
+	 * @return {nul.dependance}
 	 */
-	isList: nul.summary('isList'),
-	/**
-	 * Summary: The dependances of this expression.
-	 * @function
-	 * @type nul.dependance
-	 */
-	dependance: nul.summary('dependance'),	//nul.dependance
+	dependance: nul.summary('dependance'),
 
 //////////////// Generic summary providers
 
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of 'components' */
 	sum_components: function() {
 		var rv = {};
 		for(var comp in this.components)
@@ -215,13 +224,18 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 		return rv;
 	},
 	
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
 	sum_index: function() {
 		var cs = [];
 		for(var c in this.components) cs.push(this[c]);
 		return this.indexedSub();
 	},
 
-	indexedSub: function(items) {
+	/**
+	 * Create an index string out of this object and some given more information
+	 * @param {String[]} paramarray Specification to hold
+	 */
+	indexedSub: function() {
 		//TODO 3: assert no infinite recursion
 		nul.xpr.is(this);
 	 	items = beArrg(arguments).join(',');
@@ -236,33 +250,55 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 	return '['+ rv.join('|') +']';
 	},
 
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link toHtml} */
 	sum_htmlTxt: function() { return nul.txt.html.toText(this); },
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link toFlat} */
 	sum_flatTxt: function() { return nul.txt.flat.toText(this); },
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link dependance} */
 	sum_dependance: function() {
 		var comps = this.summary('components');
 		var rv = new nul.dependance();
 		for(var c in comps) if(comps[c])
 			rv.also(comps[c].dependance());
 		return rv;
-	},
-	sum_isList: function() { return true; }
+	}
 	
 });
 
 /** @namespace Expression helper */
 nul.xpr = {
+	/**
+	 * Assert: 'x' are a collection of expression of type 't'
+	 * @param {nul.expression[]} x
+	 * @param {String} t JS type name
+	 */
 	are: function(x, t) {
 		nul.debug.are(t||'nul.expression')(x);
 		return x;
 	},
+	/**
+	 * Assert: 'x' is an expression of type 't'
+	 * @param {nul.expression} x
+	 * @param {String} t JS type name
+	 */
 	is: function(x, t) {
 		nul.debug.is(t||'nul.expression')(x);
 		return x;
 	},
+	/**
+	 * Assert: 'x' is an expression of type 't'. 'x' is summarised.
+	 * @param {nul.expression} x
+	 * @param {String} t JS type name
+	 */
 	use: function(x, t) {
 		nul.debug.is(t||'nul.expression', 'summarised', function(o) { return !!o.summarised; })(x);
 		return x;
 	},
+	/**
+	 * Assert: 'x' is an expression of type 't'. 'x' is not summarised.
+	 * @param {nul.expression} x
+	 * @param {String} t JS type name
+	 */
 	mod: function(x, t) {
 		nul.debug.is(t||'nul.expression', 'modifiable', function(o) { return !o.summarised; })(x);
 		return x;

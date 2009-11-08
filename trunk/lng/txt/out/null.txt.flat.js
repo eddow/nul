@@ -154,7 +154,7 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 		 * @return {String}
 		 */
 		klg: function() {
-			if(this.unconditional) return {'':(nul.klg.always===this?'':html.op(this.name))};
+			if(nul.klg.ncndtnl.is(this)) return nul.klg.always===this?'':html.op(this.name);
 			var rv = nul.txt.flat.all(this.eqCls).join(' &and; ');
 			var ior3 = nul.txt.flat.all(this.ior3).join(' &and; ')
 			if(rv && ior3) rv += ' &and; ' + ior3;

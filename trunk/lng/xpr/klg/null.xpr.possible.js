@@ -16,7 +16,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	 */
 	initialize: function(value, knowledge) {
 		if(!knowledge) knowledge = nul.klg.always;
-		nul.obj.use(value); nul.xpr.use(knowledge, 'nul.xpr.knowledge');
+		nul.obj.use(value); nul.klg.use(knowledge);
 		/** @type nul.xpr.object */
 		this.value = value;
 		/** @type nul.xpr.knowledge */
@@ -59,7 +59,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	 * @return {Boolean}
 	 */
 	distribuable: function() {
-		return !!this.knowledge.ior3.length;
+		return this.knowledge.distribuable();
 	},
 	
 	/**
@@ -67,8 +67,9 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	 * @return {nul.xpr.possible[]}
 	 */
 	distribute: function() {
-		if(this.knowledge.ior3.length) return nul.solve(this);
-		return [this];
+		if(!this.knowledge.distribuable()) return [this];
+		var val = this.value;
+		return maf(this.knowledge.distribute(), function() { try { return this.wrap(val); } catch(e) { nul.failed(e); } })
 	},
 	
 //////////////// nul.expression summaries

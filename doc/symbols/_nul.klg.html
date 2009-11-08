@@ -261,11 +261,11 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.klg.ior3.html">nul.klg.ior3</a></li>
 	
+	<li><a href="../symbols/_nul.klg.ncndtnl.html">nul.klg.ncndtnl</a></li>
+	
 	<li><a href="../symbols/_nul.klg.represent.html">nul.klg.represent</a></li>
 	
 	<li><a href="../symbols/_nul.klg.stepUp.html">nul.klg.stepUp</a></li>
-	
-	<li><a href="../symbols/_nul.klg.unconditionalInstance.html">nul.klg.unconditionalInstance</a></li>
 	
 	<li><a href="../symbols/_nul.load.html">nul.load</a></li>
 	
@@ -362,7 +362,7 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/xpr/klg/null.klg.js">lng/xpr/klg/null.klg.js</a>.
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/xpr/klg/null.klg.js">/lng/xpr/klg/null.klg.js</a>.
 				
 			</p>
 
@@ -448,9 +448,36 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">nul.klg.<b><a href="../symbols/_nul.klg.html#.are">are</a></b>(x)
+								</div>
+								<div class="description">Assert: 'x' are a collection of knowledges</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">nul.klg.<b><a href="../symbols/_nul.klg.html#.has">has</a></b>(o, val)
 								</div>
 								<div class="description">Return the wrapped singleton when o is val</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.klg.<b><a href="../symbols/_nul.klg.html#.is">is</a></b>(x)
+								</div>
+								<div class="description">Assert: 'x' is a knowledge</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.klg.<b><a href="../symbols/_nul.klg.html#.mod">mod</a></b>(x)
+								</div>
+								<div class="description">Assert: 'x' is a knowledge.</div>
 							</td>
 						</tr>
 					
@@ -469,6 +496,15 @@ ul.inheritsList
 								<div class="fixedFont">nul.klg.<b><a href="../symbols/_nul.klg.html#.unification">unification</a></b>(objs)
 								</div>
 								<div class="description">Return the knowledge knowing all that ops are equal</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.klg.<b><a href="../symbols/_nul.klg.html#.use">use</a></b>(x)
+								</div>
+								<div class="description">Assert: 'x' is a knowledge.</div>
 							</td>
 						</tr>
 					
@@ -569,6 +605,42 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
+					<a name=".are"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.klg.</span><b>are</b>(x)
+					
+					</div>
+					<div class="description">
+						Assert: 'x' are a collection of knowledges
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{nul.object[]}</span> <b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".has"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -622,6 +694,78 @@ ul.inheritsList
 								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a>[]}</span> </dd>
 							
 							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".is"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.klg.</span><b>is</b>(x)
+					
+					</div>
+					<div class="description">
+						Assert: 'x' is a knowledge
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{nul.object}</span> <b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".mod"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.klg.</span><b>mod</b>(x)
+					
+					</div>
+					<div class="description">
+						Assert: 'x' is a knowledge. 'x' is not summarised.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{nul.object}</span> <b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
 						
 						
 						
@@ -710,6 +854,42 @@ ul.inheritsList
 						
 						
 
+					<hr />
+				
+					<a name=".use"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.klg.</span><b>use</b>(x)
+					
+					</div>
+					<div class="description">
+						Assert: 'x' is a knowledge. 'x' is summarised.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{nul.object}</span> <b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -724,7 +904,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Thu Nov 05 2009 23:52:59 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sun Nov 08 2009 13:46:49 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

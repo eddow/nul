@@ -89,7 +89,6 @@ tableStack = Class.create( {
 		if(this.dirty && this.table) {
 			this.dirty = false;
 			this.table.completeFrom(this.buffer);
-			//this.table.innerHTML = this.buffer.innerHTML;
 		}
 	}
 });
@@ -128,8 +127,8 @@ nul.debug = {
 			for(var vi = 0; vi<v.length; ++vi) v[vi] = nul.debug.toLogText(v[vi]);
 			v.unshift(nul.debug.logCount());
 			var lg = nul.debug.logs.log(v);
-			//for(var i=0; i<nul.debug.lcs.toPair.length; ++i) lg.className = 'collapsed '+lg.className;
-			//if(endC) lg.addClassName('uncollapsing');
+			for(var i=0; i<nul.debug.lcs.toPair.length; ++i) lg.className = 'collapsed '+lg.className;
+			if(endC) lg.addClassName('uncollapsing');
 			return lg.addClassName(tp+' log');
 		} : nul.debug.logCount;
 	},
@@ -239,7 +238,7 @@ nul.debug = {
 		cb = cb || nm;
 		if(!Object.isFunction(cb)) cb = null;
 		return function(objs) {
-			if(nul.debug.assert) map(objs, function(i, o) { assert(
+			if(nul.debug.assert) map(objs, function(i, obj) { assert(
 					obj && 
 					cls.is(obj) &&
 					(!cb || cb(obj)),
@@ -269,7 +268,7 @@ nul.debug = {
 		} catch(err) {
 			nul.failed(err);
 			if(nul.debug.assert) assert(nul.debug.fails.length && nul.debug.fails[0].length,'Finally failed if failed once');
-			nul.debug.fails[0].pop();	//Remove the last '|'
+			nul.debug.fails[0].pop();	//Remove the last '|' TODO O: ?
 			var le = nul.debug.log(name);
 			if(le) le(nul.debug.lcs.endCollapser('Abort', 'Failed'), name, nul.debug.fails[0]);
 			else nul.debug.log('fail', 'end')('', 'Failure', nul.debug.fails[0]);

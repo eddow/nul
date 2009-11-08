@@ -261,11 +261,11 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.klg.ior3.html">nul.klg.ior3</a></li>
 	
+	<li><a href="../symbols/_nul.klg.ncndtnl.html">nul.klg.ncndtnl</a></li>
+	
 	<li><a href="../symbols/_nul.klg.represent.html">nul.klg.represent</a></li>
 	
 	<li><a href="../symbols/_nul.klg.stepUp.html">nul.klg.stepUp</a></li>
-	
-	<li><a href="../symbols/_nul.klg.unconditionalInstance.html">nul.klg.unconditionalInstance</a></li>
 	
 	<li><a href="../symbols/_nul.load.html">nul.load</a></li>
 	
@@ -362,7 +362,7 @@ ul.inheritsList
 				Objects helper
 				
 				
-					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk/lng/xpr/obj/null.xpr.object.js">lng/xpr/obj/null.xpr.object.js</a>.
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/xpr/obj/null.xpr.object.js">/lng/xpr/obj/null.xpr.object.js</a>.
 				
 			</p>
 
@@ -412,7 +412,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.obj.<b><a href="../symbols/_nul.obj.html#.are">are</a></b>(x, t)
 								</div>
-								<div class="description"></div>
+								<div class="description">Assert: 'x' are a collection of objects of type 't'</div>
 							</td>
 						</tr>
 					
@@ -421,7 +421,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.obj.<b><a href="../symbols/_nul.obj.html#.is">is</a></b>(x, t)
 								</div>
-								<div class="description"></div>
+								<div class="description">Assert: 'x' is an object of type 't'</div>
 							</td>
 						</tr>
 					
@@ -430,7 +430,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.obj.<b><a href="../symbols/_nul.obj.html#.mod">mod</a></b>(x, t)
 								</div>
-								<div class="description"></div>
+								<div class="description">Assert: 'x' is an object of type 't'.</div>
 							</td>
 						</tr>
 					
@@ -439,7 +439,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">nul.obj.<b><a href="../symbols/_nul.obj.html#.use">use</a></b>(x, t)
 								</div>
-								<div class="description"></div>
+								<div class="description">Assert: 'x' is an object of type 't'.</div>
 							</td>
 						</tr>
 					
@@ -499,7 +499,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Assert: 'x' are a collection of objects of type 't'
 						
 						
 					</div>
@@ -511,16 +511,16 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>x</b>
+									<span class="light fixedFont">{nul.object[]}</span> <b>x</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>t</b>
+									<span class="light fixedFont">{String}</span> <b>t</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>JS type name</dd>
 							
 							</dl>
 						
@@ -541,7 +541,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Assert: 'x' is an object of type 't'
 						
 						
 					</div>
@@ -553,16 +553,16 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>x</b>
+									<span class="light fixedFont">{nul.object}</span> <b>x</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>t</b>
+									<span class="light fixedFont">{String}</span> <b>t</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>JS type name</dd>
 							
 							</dl>
 						
@@ -583,7 +583,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Assert: 'x' is an object of type 't'. 'x' is not summarised.
 						
 						
 					</div>
@@ -595,16 +595,16 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>x</b>
+									<span class="light fixedFont">{nul.object}</span> <b>x</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>t</b>
+									<span class="light fixedFont">{String}</span> <b>t</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>JS type name</dd>
 							
 							</dl>
 						
@@ -625,7 +625,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Assert: 'x' is an object of type 't'. 'x' is summarised.
 						
 						
 					</div>
@@ -637,16 +637,16 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>x</b>
+									<span class="light fixedFont">{nul.object}</span> <b>x</b>
 									
 								</dt>
 								<dd></dd>
 							
 								<dt>
-									<b>t</b>
+									<span class="light fixedFont">{String}</span> <b>t</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>JS type name</dd>
 							
 							</dl>
 						
@@ -671,7 +671,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Thu Nov 05 2009 23:52:59 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sun Nov 08 2009 13:46:49 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

@@ -91,8 +91,28 @@ nul.xpr.object.reself = Class.create(nul.browser.bijectif, /** @lends nul.xpr.ob
 
 /** @namespace Objects helper */
 nul.obj = {
+	/**
+	 * Assert: 'x' are a collection of objects of type 't'
+	 * @param {nul.object[]} x
+	 * @param {String} t JS type name
+	 */
 	are: function(x, t) { return nul.xpr.are(x,t||'nul.xpr.object'); },
+	/**
+	 * Assert: 'x' is an object of type 't'
+	 * @param {nul.object} x
+	 * @param {String} t JS type name
+	 */
 	is: function(x, t) { return nul.xpr.is(x,t||'nul.xpr.object'); },
+	/**
+	 * Assert: 'x' is an object of type 't'. 'x' is summarised.
+	 * @param {nul.object} x
+	 * @param {String} t JS type name
+	 */
 	use: function(x, t) { return nul.xpr.use(x,t||'nul.xpr.object'); },
+	/**
+	 * Assert: 'x' is an object of type 't'. 'x' is not summarised.
+	 * @param {nul.object} x
+	 * @param {String} t JS type name
+	 */
 	mod: function(x, t) { return nul.xpr.mod(x,t||'nul.xpr.object'); }
 };

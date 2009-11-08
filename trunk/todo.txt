@@ -1,4 +1,12 @@
- C:\Users\fmdm\AppData\Local\Google\Chrome\Application\3.0.195.27\Resources\Inspector\Images
+ior3 et veto geres au built
+veto du veto n'est pas ma verite !!
+
+brother["John"]
+; brother = { x => y != x; father[x] = father[y]}
+; father = { p.name => p.father ; p = .xml["xml/familly.xml"][<person />] }
+
+
+C:\Users\...\AppData\Local\Google\Chrome\Application\3.0.195.27\Resources\Inspector\Images
 http://marijn.haverbeke.nl/codemirror/manual.html
 
 {:f f Q x [] }

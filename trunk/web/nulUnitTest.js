@@ -58,7 +58,7 @@ tests = [
 	[
 	 	{xpr: '.document["#sandBox b"](.text _)',
 	 	rslt: '{"yh"}'},
-	 	{xpr: '.xml["test.xml"].ab',
+	 	{xpr: '.xml["xml/test.xml"].ab',
 	 	rslt: '{"bidon"}'},
 	 	{xpr: '.time["Jul 8, 2005"].year',
 		rslt: '{2005}'},
