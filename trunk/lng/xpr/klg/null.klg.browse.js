@@ -143,7 +143,10 @@ nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.repres
 			delete this.prepStack[0].setSelfRef;
 		}
 
-		if('klg'== xpr.expression) return xpr.reAccede().define(this.tbl).built();
+		if('klg'== xpr.expression) {
+			xpr.reAccede().define(this.tbl);
+			return xpr.built();
+		}
 		
 		return $super(xpr);
 	},
