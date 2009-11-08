@@ -6,42 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.multiplied = Class.create(nul.expression, /** @lends nul.xpr.multiplied# */{
-	/**
-	 * An expression that have numbered min/max existence
-	 * @extends nul.expression
-	 * @constructs
-	 * @param {number} n minimum existence multiplier
-	 * @param {number} x maximum existence multiplier
-	 */
-	initialize: function(n, x) {
-		if(Object.isUndefined(n)) n = 1;
-		if(Object.isUndefined(x)) x = n;
-		if(!n.expression) n = { minMult:n, maxMult: x || n };
-		this.minMult = n.minMult;
-		this.maxMult = n.maxMult;
-	},
-	//TODO C
-	arythm: function(op, n, x) {
-		this.modify();
-		if(!n.expression) n = { minMult:n, maxMult: x || n };
-		this.minMult = eval(this.minMult + op + n.minMult);
-		this.maxMult = eval(this.maxMult + op + n.maxMult);
-	},
-	//TODO C
-	add: function(n, x) { return this.arythm('+', n, x); },
-	//TODO C
-	mul: function(n, x) { return this.arythm('*', n, x); }
-});
-
-nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledge# */{
+nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# */{
 	/**
 	 * Represent a bunch of information about locals and absolute values.
-	 * @extends nul.xpr.multiplied
+	 * @extends nul.expression
 	 * @constructs
 	 * @param {String} klgName [optional] Knowledge name
 	 */
-	initialize: function($super, klgName, minMlt, maxMlt) {
+	initialize: function($super, klgName, n, x) {
 		/**
 		 * Describe the dependance that are kept even if it never appears
 		 * @type Number
@@ -77,8 +49,24 @@ nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledg
  		 * @type String
  		 */
  		this.name = klgName || nul.execution.name.gen('klg');
- 		$super(minMlt, maxMlt);
+		if(Object.isUndefined(n)) n = 1;
+		if(Object.isUndefined(x)) x = n;
+		if(!n.expression) n = { minMult:n, maxMult: x || n };
+		this.minMult = n.minMult;
+		this.maxMult = n.maxMult;
  	},
+
+	//TODO C
+	arythm: function(op, n, x) {
+		this.modify();
+		if(!n.expression) n = { minMult:n, maxMult: x || n };
+		this.minMult = eval(this.minMult + op + n.minMult);
+		this.maxMult = eval(this.maxMult + op + n.maxMult);
+	},
+	//TODO C
+	add: function(n, x) { return this.arythm('+', n, x); },
+	//TODO C
+	mul: function(n, x) { return this.arythm('*', n, x); },
 
 //////////////// privates
 
@@ -218,7 +206,7 @@ nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledg
 				var klg;
 				if(nul.xpr.possible.is(p)) {
 					klg = p.knowledge.modifiable();
-					nul.xpr.mod(klg, 'nul.xpr.knowledge')
+					nul.klg.mod(klg)
 					p = p.value;
 				} else klg = new nul.xpr.knowledge();				
 				klg.unify(p, rv);
@@ -240,9 +228,9 @@ nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledg
  	merge: function(klg, val) {
  		if(nul.klg.never== klg) nul.fail('Merging failure');
  		this.mul(klg);
- 		if(klg.unconditional) return val;
+ 		if(nul.klg.ncndtnl.is(klg)) return val;
  		
- 		this.modify(); nul.xpr.use(klg, 'nul.xpr.knowledge');
+ 		this.modify(); nul.klg.use(klg);
 
  		var brwsr = new nul.klg.stepUp(klg.name, this);
 		
@@ -372,12 +360,7 @@ nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledg
 	 * @throws {nul.failure}
 	 */
 	oppose: function(klg) {
-		this.modify(); nul.xpr.use(klg, 'nul.xpr.knowledge');
-		if(klg.veto && klg.veto.length) {
-			klg = klg.modifiable();
-			while(klg.veto.length) this.merge(klg.veto.pop());
-			klg = klg.built();
-		}
+		this.modify(); nul.klg.use(klg);
 		if(0< klg.minXst()) nul.fail('Opposition : ', klg);
 		if(nul.klg.never!= klg) this.veto.push(klg);
 		return this;
@@ -385,8 +368,19 @@ nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledg
 
 //////////////// Existence summaries
 
+	/**
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: Maximum existance cases of this knowledge
+	 * @function
+	 * @return {Number}
+	 */
 	maxXst: nul.summary('maxXst'), 	
+	/**
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: Minimum existance cases of this knowledge
+	 * @function
+	 * @return {Number}
+	 */
 	minXst: nul.summary('minXst'), 	
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link maxXst} */
 	sum_maxXst: function() {
 		if(0<this.nbrLocals()) return pinf;
 		var rv = 1;
@@ -394,6 +388,7 @@ nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledg
 			rv *= this.ior3[h].maxXst();
 		return rv * this.maxMult;
 	},
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link minXst} */
 	sum_minXst: function() {
 		if(this.eqCls.length || this.veto.length) return 0;
 		if(0<this.nbrLocals()) return pinf;
@@ -403,6 +398,7 @@ nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledg
 		return rv * this.minMult;
 	},
 
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
 	sum_index: function() {
 		return this.indexedSub(this.name);
 	},
@@ -417,17 +413,32 @@ nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledg
 		'ior3': {type: 'nul.klg.ior3', bunch: true},
 		'veto': {type: 'nul.xpr.knowledge', bunch: true}
 	},
-	//TODO C
+
+	/**
+	 * Re-built the access for the new modifiable knowledge.
+	 */
 	modifiable: function($super) {
 		var rv = $super();
-		rv.locals = map(this.locals);
 		rv.eqCls = [];
 		rv.access = {};
 		for(var i in this.eqCls) if(cstmNdx(i)) rv.accede(this.eqCls[i]);
 		return rv;
 	},
 	
-	//TODO C
+	/**
+	 * Clone taking care to shallow clone access and locals (not refered as components)
+	 */
+	clone: function($super) {
+		var rv = $super(beArrg(arguments, 1));
+		if(rv.access) rv.access = map(rv.access);
+		rv.locals = this.emptyLocals();
+		rv.concatLocals(this);
+		return rv;
+	},
+
+	/**
+	 * When equivalence classes were modified by a browser, re-accede them for the access to be valid and for equivalence class to be consistant.
+	 */
 	reAccede: function($super) {
 		var nwEqCls = this.eqCls;
 		var nwOppstn = this.veto;
@@ -439,21 +450,54 @@ nul.xpr.knowledge = Class.create(nul.xpr.multiplied, /** @lends nul.xpr.knowledg
 		return this;
 	},
 
-	//TODO C
+	/**
+	 * Reaccede the equivalence classes and build.
+	 */
 	chew: function($super) {
 		this.reAccede();
 		return $super();
 	},
 	
-	//TODO C
+	/**
+	 * Remove the redundant values. Ensure that the structured is simplified at maximum (no 1-choice IOR3 and no veto's vetos)
+	 */
  	built: function($super) {
+		//Reduce vetos of vetos into ior3s
+		var veto;
+		for(var v=0; veto = this.veto[v];)
+			if(veto.veto.length) {
+				this.veto.splice(v, 1);
+				//TODO 4: care about multiplicity 
+				var unvetoed = veto.modify();
+				unvetoed.veto = [];
+				
+				var choices = map(veto.veto, function() {
+					return unvetoed.clone().merge(this).built();
+				});
+				var tklg = new nul.xpr.knowledge();
+				tklg.oppose(unvetoed.built());
+				choices.push(tklg);
+				
+				this.ior3.push(new nul.klg.ior3(choices));
+			} else ++v;
+
+		//Reduce IOR3s : if one has one choice, just merge this choice and forget about ior3
+ 		for(i=0; this.ior3[i];) switch(this.ior3[i].choices.length) {
+ 		case 0: throw nul.internalException('IOR3 Always has a first unconditional');
+ 		case 1:
+ 			this.merge(this.ior3[0]);
+ 			this.ior3.splice(i, 1);
+ 			break;
+ 		default: ++i; break;
+ 		}
+ 		
+		var acs = this.access;
 		this.clearAccess();
- 		if(!this.unconditional && this.isFixed()) return nul.klg.unconditional(this.minMult, this.maxMult);
- 		return $super();
- 	},
-	//TODO C
- 	isFixed: function() {
- 		return (!this.eqCls.length && !this.nbrLocals() && !this.ior3.length && !this.veto.length);
+ 		if(!nul.klg.ncndtnl.is(this) && !this.eqCls.length && !this.nbrLocals() && !this.ior3.length && !this.veto.length)
+ 			return nul.klg.unconditional(this.minMult, this.maxMult);
+ 		var rv = $super();
+ 		if(rv === this) rv.summarised.access = acs;
+ 		return rv;
  	}
 });
 

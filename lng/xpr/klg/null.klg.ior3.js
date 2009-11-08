@@ -15,7 +15,7 @@ nul.klg.ior3 = Class.create(nul.expression, /** @lends nul.klg.ior3# */{
 	 */
 	initialize: function(choices) {
 		this.choices = map(choices);
-		if(!this.choices[0].unconditional) this.choices.unshift(nul.klg.never);
+		if(!nul.klg.ncndtnl.is(this.choices[0])) this.choices.unshift(nul.klg.never);
 		this.alreadyBuilt();
 	},
 
@@ -43,12 +43,15 @@ nul.klg.ior3 = Class.create(nul.expression, /** @lends nul.klg.ior3# */{
 	/** @constant */
 	components: {'choices': {type: 'nul.xpr.knowledge', bunch: true}},
 	built: function($super) {
+		if(nul.debug.assert) assert(this.choices.length, 'IOR3 Always has a first unconditional')
+		this.choices = nul.solve.ior3(this.choices)
 		for(var c=1; this.choices[c];)
-			if(!this.choices[c].unconditional) ++c;
+			if(!nul.klg.ncndtnl.is(this.choices[c])) ++c;
 			else {
 				this.choices[0].add(this.choices[c]);
 				this.choices.splice(c,1);
 			}
+		if(nul.klg.never== this.choices[0]) this.choices.shift();
 		return $super();
 	}
 });

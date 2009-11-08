@@ -12,7 +12,8 @@ nul.data.ajax = {
 	 * Load a file from an URL and build an object through objFct
 	 * @param {URL} url
 	 * @param {function(transport) nul.xpr.object} objFct
-	 * Note: a mock object can be retrieved and loaded effectively later, when the transport is done [TODO]
+	 * @return {nul.xpr.object} as objFct returned it
+	 * @return {nul.xpr.object} An undefined object, meaning "Not yet loaded" that will be replaced later. [TODO O]
 	 */
 	load: function(url, objFct) {
 		var rq = new Ajax.Request(url, {

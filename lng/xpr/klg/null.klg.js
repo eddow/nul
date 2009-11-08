@@ -11,6 +11,7 @@
  * @namespace
  */
 nul.klg = {
+	//TODO C
 	unconditional: function(min, max, name) {
 		if('klg'== min.expression) {
 			max = min.maxMult;
@@ -18,12 +19,13 @@ nul.klg = {
 		}
 		if(nul.debug.assert) assert(max >= min, 'Ordered knowledge constraints');
 		if(!nul.klg.unconditionals[min+'-'+max])
-			nul.klg.unconditionals[min+'-'+max] = new nul.klg.unconditionalInstance(min, max, name);
+			nul.klg.unconditionals[min+'-'+max] = new nul.klg.ncndtnl(min, max, name);
 		return nul.klg.unconditionals[min+'-'+max];
 	},
+	//TODO C
 	unconditionals: {},
-	unconditionalInstance: Class.create(nul.xpr.knowledge, /** @lends nul.klg.unconditionalInstance# */{
-		unconditional: true,
+	//TODO C
+	ncndtnl: Class.create(nul.xpr.knowledge, /** @lends nul.klg.ncndtnl# */{
 		/**
 		 * Unconditional knowledge : only characterised by a min/max existence, no real knowledge, condition
 		 * @extends nul.xpr.knowledge
@@ -39,20 +41,48 @@ nul.klg = {
 			this.name = name || ('['+htmlN(this.minMult)+((this.minMult==this.maxMult)?'':('-'+htmlN(this.maxMult)))+']');
 			this.alreadyBuilt();
 		},
+		/** @constant */
 		expression: 'klg',
+		//TODO C
 		modifiable: function() {
 			if(0== this.maxMult) nul.fail('No fewer than never');
 			return new nul.xpr.knowledge(null, this.minMult, this.maxMult);
 		},
 		
+		/** @constant */
 		components: {},
+		/** @constant */
 		ior3: [],
+		/** @constant */
 		eqCls: [],
+		/** @constant */
 		veto: [],
-		isFixed: function() { return true; },	//The conditions are fixed
+		//TODO C
 		minXst: function() { return this.minMult; },
+		//TODO C
 		maxXst: function() { return this.maxMult; }
-	})
+	}),
+	
+	/**
+	 * Assert: 'x' are a collection of knowledges
+	 * @param {nul.object[]} x
+	 */
+	are: function(x) { return nul.xpr.are(x,'nul.xpr.knowledge'); },
+	/**
+	 * Assert: 'x' is a knowledge
+	 * @param {nul.object} x
+	 */
+	is: function(x) { return nul.xpr.is(x,'nul.xpr.knowledge'); },
+	/**
+	 * Assert: 'x' is a knowledge. 'x' is summarised.
+	 * @param {nul.object} x
+	 */
+	use: function(x) { return nul.xpr.use(x,'nul.xpr.knowledge'); },
+	/**
+	 * Assert: 'x' is a knowledge. 'x' is not summarised.
+	 * @param {nul.object} x
+	 */
+	mod: function(x) { return nul.xpr.mod(x,'nul.xpr.knowledge'); }
 };
 /**
  * Unconditional knowledge meaning something that is never verified

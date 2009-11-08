@@ -50,7 +50,11 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 
 //////////////// public equivalence class modification
 
-	//TODO C
+	/**
+	 * Retrieve the representant of this equivalence class, knowing that it could be 'obj' also.
+	 * @param {nul.xpr.object} obj
+	 * @return {nul.xpr.object}
+	 */
 	represent: function(obj) {
 		return this.equivls[0];
 		if(obj && (!this.representant || this.orderEqs(obj) < this.orderEqs(this.representant))) this.representant = obj;
@@ -72,7 +76,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 		if(o.defined) {
 			if(this.eqvlDefined())
 				nul.trys(function() {
-					nul.xpr.mod(klg, 'nul.xpr.knowledge');
+					nul.klg.mod(klg);
 					var unf;
 					try {
 						unf = this.equivls[0].unified(o, klg);
@@ -184,7 +188,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {nul.xpr.knowledge} klg
 	 */
 	wedding: function(klg) {
-		nul.xpr.mod(klg, 'nul.xpr.knowledge');
+		nul.klg.mod(klg);
 		var unf = this.equivls[0];
 		if(!isEmpty(this.attribs) && !unf && this.blngDefined()) {
 			unf = klg.newLocal(nul.understanding.rvName);
@@ -316,7 +320,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	},
 
 	placed: function($super, prnt) {
-		nul.xpr.mod(prnt, 'nul.xpr.knowledge');
+		nul.klg.mod(prnt);
 		if(!this.equivls.length && isEmpty(this.attribs,'') && 1== this.belongs.length && this.blngDefined()) {
 			if('&phi;'== this.belongs[0].expression) nul.fail("&phi; is empty");
 			return;

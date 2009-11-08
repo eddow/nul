@@ -24,7 +24,7 @@ nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 		$super('StepUp');
 	},
 	enterKlg: function(klg) {
-		if(klg && !klg.unconditional && !this.table[klg.name]) {
+		if(klg && !nul.klg.ncndtnl.is(klg) && !this.table[klg.name]) {
 			if(nul.debug.assert) assert(!this.forbid[klg.name], 'Knowledge already used before entering');
 			this.table[klg.name] = { klgRef: nul.execution.name.gen('klg') };
 			for(var v in this.veto) if(cstmNdx(v)) this.enterKlg(this.veto[v]);
@@ -38,12 +38,12 @@ nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 		if('klg'== xpr.expression) this.enterKlg(xpr);
 		return $super(xpr);
 	},
- 	forceBuild: function(xpr) { return 'klg'== xpr.expression && !xpr.unconditional; },
+ 	forceBuild: function(xpr) { return 'klg'== xpr.expression && !nul.klg.ncndtnl.is(xpr); },
 	/**
 	 * If a self-ref was planned, make it in the newly built expression.
 	 */
 	build: function($super, xpr) {
-		if('klg'== xpr.expression && !xpr.unconditional) {
+		if('klg'== xpr.expression && !nul.klg.ncndtnl.is(xpr)) {
 			if(nul.debug.assert) assert(this.table[xpr.name], 'Only leave entered knowledge');
 			xpr.name = this.table[xpr.name].klgRef;
 		}
@@ -143,7 +143,7 @@ nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.repres
 			delete this.prepStack[0].setSelfRef;
 		}
 
-		if('klg'== xpr.expression) xpr.reAccede().define(this.tbl);
+		if('klg'== xpr.expression) return xpr.reAccede().define(this.tbl).built();
 		
 		return $super(xpr);
 	},

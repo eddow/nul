@@ -253,7 +253,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		klg: function() {
-			if(this.unconditional) return {'':html.op(this.name)};
+			if(nul.klg.ncndtnl.is(this)) return {'':html.op(this.name)};
 			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
 			var ior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'))
 			var veto = nul.txt.html.all(this.veto).join(html.op('&or;'))

@@ -83,7 +83,10 @@ nul.data.dom.element = Class.create(nul.obj.hc, /** @lends nul.data.dom.element 
 
 //////////////// nul.expression implementation
 
+	/** @constant */
 	expression: 'dom',
+
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
 	sum_index: function() { return this.indexedSub(this.element.nulId); }
 });
 
@@ -98,13 +101,18 @@ nul.load.dom = function() {
 	 * @extends nul.obj.hc
 	 */
 	nul.globals.xml = new nul.obj.hc(/** @lends nul.globals.xml# */{
-		//TODO C
+		/**
+		 * Give an XML node out of an URL string
+		 * @param {nul.obj.defined} pnt
+		 * @return {nul.data.dom.url} The loaded document
+		 */
 		seek: function(pnt) {
 			if('string'!= pnt.expression) throw nul.semanticException('AJAX', 'Ajax retrieve XML documents from a string URL');
 			return nul.data.ajax.load(pnt.value,
 					function(t) { return new nul.data.dom.url(t.responseXML); } );
 		},
 		//TODO 2: list nodes that fit for xml : string attributes and XMLnode/text content
+		/** @constant */
 		expression: 'xml'
 	});
 };

@@ -32,6 +32,11 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 	 */
 	listed: nul.summary('listed'),
 
+	/**
+	 * Summary calculation of 
+	 * @function
+	 * @returns {nul.xpr.possible[]}
+	 */
 	sum_listed: function() {
 		var rv = [];
 		var brwsr = this;
@@ -45,7 +50,12 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 
 //////////////// nul.obj.defined implementation
 
-	//TODO C
+	/**
+	 * Try to unify elements
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {nul.xpr.object}
+	 */
 	subUnified: function(o, klg) {
 		if('&phi;'== o.expression) {
 			klg.oppose(this.first.knowledge);
@@ -60,7 +70,12 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 		nul.fail(o, ' not unifiable pair');
 	},
 	
-	//TODO C
+	/**
+	 * Extract an object o that fit one of these possibles (either the first possible, either subHas from second)
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.object[]} attrs
+	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
+	 */
 	subHas: function(o, attrs) {
 		this.use(); nul.obj.use(o);
 		//TODO 2: use attrs?
@@ -97,15 +112,26 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 	expression: 'pair',
 	/** @constant */
 	components: {
-		'first': {type: 'nul.xpr.object', bunch: false},
+		'first': {type: 'nul.xpr.possible', bunch: false},
 		'second': {type: 'nul.xpr.object', bunch: false}
 	},
+	/**
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: Weither this pair is a list
+	 * @function
+	 * @return {Boolean}
+	 */
+	isList: nul.summary('isList'),
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link isList} */
 	sum_isList: function() {
-		return this.first.knowledge.isFixed() && this.second.isList();
+		return nul.klg.ncndtnl.is(this.first.knowledge) && (!this.second.isList || this.second.isList());
 	},
 	/** Build this set so that it is a following of pairs which values are most simplified as possible */
 	built: function($super) {
-		if(this.first.distribuable()) return nul.obj.pair.list(this.second, this.first.distribute());
+		if(this.first.distribuable()) {
+			var dList = this.first.distribute();
+			if(1!= dList.length) return nul.obj.pair.list(this.second, dList);
+			this.first = dList[0];
+		}
 		//if(this.selfRef) return this.selfRefered(this.selfRef, $super()); //TODO 1
 		return $super();
 	},

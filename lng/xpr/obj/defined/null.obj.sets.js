@@ -58,7 +58,8 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.empty# */{
 	
 	/** @constant */
 	expression: '&phi;',
-	
+	//TODO C
+	isList: function() { return true; },
 //////////////// nul.obj.defined implementation
 
 	/** @constant */
@@ -162,6 +163,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 		
 		$super();
 	},
+	//TODO C
 	intersect: function($super, o, klg) {
 		if('range'== o.expression) {
 			var lwr = this.lower<o.lower?o.lower:this.lower;
@@ -171,6 +173,7 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 		}
 		return $super(o, klg);
 	},
+	//TODO C
 	subHas: function($super, o, att) {
 		if(this.lower==this.upper && !o.defined) {
 			//TODO 3: return "o=nbr[this.bound]"
@@ -186,8 +189,9 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 
 //////////////// nul.obj.defined implementation
 
+	//TODO C
 	subUnified: function(o, klg) {
-		this.use(); nul.obj.use(o); nul.xpr.mod(klg, 'nul.xpr.knowledge');
+		this.use(); nul.obj.use(o); nul.klg.mod(klg);
 		
 		if('range'== o.expression) return (o.lower==this.lower && o.upper==this.upper);
 		if('pair'!= o.expression) nul.fail(o, ' is not a range nor a pair');
@@ -206,9 +210,11 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 
 	/** @constant */
 	expression: 'range',
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
 	sum_index: function() { return this.indexedSub(this.lower, this.upper); }
 });
 
+//TODO C
 nul.globals.Q = nul.obj.number;
 nul.globals.Z = new nul.obj.range();
 nul.globals.N = new nul.obj.range(0);

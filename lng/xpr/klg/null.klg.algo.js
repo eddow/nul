@@ -31,14 +31,6 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 		} 
  		
  		var deps = this.usage(value);
- 		for(i=0; this.ior3[i];) switch(this.ior3[i].choices.length) {
- 		case 0: throw nul.internalException('IOR3 Always has a first unconditional');
- 		case 1:
- 			this.merge(this.ior3[0]);
- 			this.ior3.splice(i, 1);
- 			break;
- 		default: ++i; break;
- 		}
  		
  		//Remove trailing unrefered locals (not more to preserve indexes)
 		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();
@@ -221,6 +213,32 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
  	}.describe('Wrapping', function(value) {
  		//TODO4: standardise the knowledge name in logs
 		return this.name+': ' + value.dbgHtml() + ' ; ' + this.dbgHtml();
-	})
+	}),
 	
+	
+	/**
+	 * Determine wether the resolution engine can distribute anything
+	 * @return {Boolean}
+	 */
+	distribuable: function() {
+		return !!this.ior3.length;
+	},
+	
+	/**
+	 * Use the resolution engine : make several knowledges (modifiables) without ior3
+	 * @return {nul.xpr.possible[]}
+	 */
+	distribute: function() {
+		if(this.ior3.length) return nul.solve.apply(this.modifiable());
+		return [this.modifiable()];
+	},
+	
+	/**
+	 * Use the resolution engine : make several knowledges (built) without ior3
+	 * @return {nul.xpr.possible[]}
+	 */
+	distributed: function() {
+		if(this.ior3.length) return map(nul.solve.apply(this.modifiable()), this.built);
+		return [this];
+	}
 });

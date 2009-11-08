@@ -44,7 +44,7 @@ nul.obj.litteral.string = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
 
 	/** @constant */
 	expression: 'string',
-	/** Specific index for string litterals */
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
 	sum_index: function() { return this.indexedSub(this.value.replace(']','[|]')); }
 });
 
@@ -64,16 +64,17 @@ nul.obj.litteral.number = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
 
 //////////////// nul.xpr.object implementation
 
-	//TODO 3: {2 Q} ==> ( Q _, Q _ ) 
+	//TODO 3: {2[Q]} ==> ( Q _, Q _ ) ? 
+	//TODO C
 	subHas: function(o) {
-		nul.fail('TODO');
+		nul.fail('TODO 3');
 	},
 	
 //////////////// nul.expression implementation
 
 	/** @constant */
 	expression: 'number',
-	/** Specific index for numbers litterals */
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
 	sum_index: function() { return this.indexedSub(this.value.toString().replace(']','[|]')); }
 });
 
@@ -92,6 +93,7 @@ nul.obj.litteral.boolean = Class.create(nul.obj.litteral, /** @lends nul.obj.lit
 		'': function() { return nul.obj.litteral.tag.boolean; }
 	},
 	
+	/** @constant */
 	attributes: {},
 	
 //////////////// nul.xpr.object implementation
@@ -103,7 +105,7 @@ nul.obj.litteral.boolean = Class.create(nul.obj.litteral, /** @lends nul.obj.lit
 
 	/** @constant */
 	expression: 'boolean',
-	/** Specific index for boolean litterals */
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
 	sum_index: function() { return this.indexedSub(this.value?'T':'F'); }
 });
 
@@ -116,11 +118,13 @@ nul.obj.litteral.make = function(v) {
 	return new nul.obj.litteral[typeof v](v);
 };
 
+//TODO C
 nul.obj.litteral.boolean['true'] = new nul.obj.litteral.boolean(true);
 nul.obj.litteral.boolean['false'] = new nul.obj.litteral.boolean(false);
 nul.obj.litteral.boolean['true'].attributes['! '] = nul.obj.litteral.boolean['false'];
 nul.obj.litteral.boolean['false'].attributes['! '] = nul.obj.litteral.boolean['true'];
 
+//TODO C
 nul.obj.litteral.tag = {
 	string: new nul.obj.litteral.string('#text'),
 	number: new nul.obj.litteral.string('#number'),

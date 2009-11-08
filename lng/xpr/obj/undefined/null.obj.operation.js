@@ -6,9 +6,9 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO4: ((a + b) + (c + d)) => (a + b + c + d)
-//TODO4: ((a - b) - c) =?> (a - (b + c)) 
-//TODO4: (a - (b - c)) =?> ((a + c) - b) !!!/0 
+//TODO 4: ((a + b) + (c + d)) => (a + b + c + d)
+//TODO 4: ((a - b) - c) =?> (a - (b + c)) 
+//TODO 4: (a - (b - c)) =?> ((a + c) - b) !!!/0 
 
 nul.obj.operation = Class.create(nul.obj.undefined, /** @lends nul.obj.operation# */{
 	/**

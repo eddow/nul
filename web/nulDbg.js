@@ -44,14 +44,14 @@ nul.debuger = {
 		nul.debuger.DOM.src.observe('keydown', nul.debuger.eventKeyDown);
 
 		nul.debuger.DOM.editor = CodeMirror.fromTextArea(nul.debuger.DOM.src, {
-			  parserfile: ["parsenul.js"],
-			  path: "../3rd/codemirror/",
-			  stylesheet: "../3rd/codemirror/nulcolors.css",
-			  tabMode: 'shift',
-			  lineNumbers: true,
-			  initCallback: nul.debuger.cmDone,
-			  onChange: function() { nul.debuger.DOM.src.value = nul.debuger.DOM.editor.getCode(); }
-			});
+			parserfile: ["parsenul.js"],
+			path: "../3rd/codemirror/",
+			stylesheet: "../3rd/codemirror/nulcolors.css",
+			tabMode: 'shift',
+			lineNumbers: true,
+			initCallback: nul.debuger.cmDone,
+			onChange: function() { if(nul.debuger.DOM.editor.editor) nul.debuger.DOM.src.value = nul.debuger.DOM.editor.getCode(); }
+		});
 	},
 	reset: function() {
 		nul.execution.reset();

@@ -6,11 +6,12 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * @class
- * Refers to a data-source from nul.data...
- */
-nul.obj.data = Class.create(nul.obj.undefined, {
+nul.obj.data = Class.create(nul.obj.undefined, /** @lends nul.obj.data# */{
+	/**
+	 * @extends nul.obj.undefined
+	 * @constructs
+	 * Refers to a data-source from nul.data...
+	 */
 	initialize: function($super, ds) {
 		this.source = ds;
 		this.alreadyBuilt();
@@ -18,10 +19,13 @@ nul.obj.data = Class.create(nul.obj.undefined, {
 
 //////////////// nul.expression implementation
 
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link dependance} */
 	sum_dependance: function($super) {
 		return new nul.dependance(this);
 	},
 
+	/** @constant */
 	expression: 'data',
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
 	sum_index: function() { return this.indexedSub(this.source.context, this.source.index); }
 });
