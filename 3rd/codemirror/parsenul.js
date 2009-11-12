@@ -1,6 +1,7 @@
 //TODO indents management
 //TODO XML sub-parse
 //TODO Javascript sub-parse?
+//TODO paste twice ? Oo
 var NULParser = Editor.Parser = (function() {
 	var tokenizeNUL = (function() {
 		var untokenisable = "Untokenisable";
@@ -40,11 +41,11 @@ var NULParser = Editor.Parser = (function() {
 			catch(e) { if(untokenisable!=e) throw e; }
 
 			if(source.lookAhead('::', true)) {
-				setState(inAlphabet(/^[\w@]$/, 'attribute', inText));
+				setState(inAlphabet(/^[\w@]$/, source.matches(/^[A-Za-z@_]$/)?'attribute':'error', inText));
 				return 'attributer';
 			}
 			if(source.lookAhead('.', true)) {
-				setState(inAlphabet(/^[\w@]$/, 'attribute', afterItem));
+				setState(inAlphabet(/^[\w@]$/, source.matches(/^[A-Za-z@_]$/)?'attribute':'error', afterItem));
 				return 'attributer';
 			}
 
@@ -54,12 +55,16 @@ var NULParser = Editor.Parser = (function() {
 				return 'operator';
 			}
 
-			var ops =  ["!", "#", "-"];
+			var ops =  ['!', '#', '-', '$'];
 			for(var o=0; ops[o]; ++o) if(source.lookAhead(ops[o], true)) return 'operator';
 
 			if(source.matches(/^\d$/)) {
 				source.nextWhileMatches(/^\d$/);
-				if(source.lookAhead('.', true)) source.nextWhileMatches(/^\d$/);
+				var bp = source.save();
+				if(source.lookAhead('.', true)) {
+					if(source.matches(/^\d$/)) source.nextWhileMatches(/^\d$/);
+					else source.load(bp);	//Oops ... not a decimal separator.
+				}
 				setState(afterItem);
 				if(!source.matches(/^\w$/)) return 'number';
 				source.nextWhileMatches(/^\w$/);
@@ -90,7 +95,7 @@ var NULParser = Editor.Parser = (function() {
 			if(source.lookAhead('{:', true)) {
 				source.nextWhile(isWhiteSpace);
 				setState(inAlphabet(/^[\w@]$/, 'declare', inText));
-				return 'surrounder'
+				return 'surrounder';
 			}
 
 			var ops =  ['{', '('];
@@ -133,7 +138,7 @@ var NULParser = Editor.Parser = (function() {
 	})();
 
 	function parseNUL(source) {
-		function indentTo(n) {return function() {return n;}}
+		function indentTo(n) {return function() {return n;};}
 		source = tokenizeNUL(source);
 		var space = 0;
 

@@ -15,132 +15,136 @@
 // This is applied to the result of traverseDOM (see codemirror.js),
 // and the resulting stream is fed to the parser.
 window.stringStream = function(source){
-  // String that's currently being iterated over.
-  var current = "";
-  // Position in that string.
-  var pos = 0;
-  // Accumulator for strings that have been iterated over but not
-  // get()-ed yet.
-  var accum = "";
-  // Make sure there are more characters ready, or throw
-  // StopIteration.
-  function ensureChars() {
-    while (pos == current.length) {
-      accum += current;
-      current = ""; // In case source.next() throws
-      pos = 0;
-      try {current = source.next();}
-      catch (e) {
-        if (e != StopIteration) throw e;
-        else return false;
-      }
-    }
-    return true;
-  }
+	// String that's currently being iterated over.
+	var current = "";
+	// Position in that string.
+	var pos = 0;
+	// Accumulator for strings that have been iterated over but not
+	// get()-ed yet.
+	var accum = "";
+	// Make sure there are more characters ready, or throw
+	// StopIteration.
+	function ensureChars() {
+		while (pos == current.length) {
+			accum += current;
+			current = ""; // In case source.next() throws
+			pos = 0;
+			try {current = source.next();}
+			catch (e) {
+				if (e != StopIteration) throw e;
+				else return false;
+			}
+		}
+		return true;
+	}
 
-  return {
-    // Return the next character in the stream.
-    peek: function() {
-      if (!ensureChars()) return null;
-      return current.charAt(pos);
-    },
-    // Get the next character, throw StopIteration if at end, check
-    // for unused content.
-    next: function() {
-      if (!ensureChars()) {
-        if (accum.length > 0)
-          throw "End of stringstream reached without emptying buffer ('" + accum + "').";
-        else
-          throw StopIteration;
-      }
-      return current.charAt(pos++);
-    },
-    // Return the characters iterated over since the last call to
-    // .get().
-    get: function() {
-      var temp = accum;
-      accum = "";
-      if (pos > 0){
-        temp += current.slice(0, pos);
-        current = current.slice(pos);
-        pos = 0;
-      }
-      return temp;
-    },
-    // Push a string back into the stream.
-    push: function(str) {
-      current = current.slice(0, pos) + str + current.slice(pos);
-    },
-    lookAhead: function(str, consume, skipSpaces, caseInsensitive) {
-      var cased = caseInsensitive?function(str) {return str.toLowerCase();}:function(str) { return str;};
-      str = cased(str);
-      var found = false;
+	return {
+		// Return the next character in the stream.
+		peek: function() {
+			if (!ensureChars()) return null;
+			return current.charAt(pos);
+		},
+		// Get the next character, throw StopIteration if at end, check
+		// for unused content.
+		next: function() {
+			if (!ensureChars()) {
+				if (accum.length > 0)
+					throw "End of stringstream reached without emptying buffer ('" + accum + "').";
+				else
+					throw StopIteration;
+			}
+			return current.charAt(pos++);
+		},
+		// Return the characters iterated over since the last call to
+		// .get().
+		get: function() {
+			var temp = accum;
+			accum = "";
+			if (pos > 0){
+				temp += current.slice(0, pos);
+				current = current.slice(pos);
+				pos = 0;
+			}
+			return temp;
+		},
+		// Push a string back into the stream.
+		push: function(str) {
+			current = current.slice(0, pos) + str + current.slice(pos);
+		},
+		save: function() {
+			return { accum: accum, pos: pos };
+		},
+		load: function(sobj) {
+			current = accum.slice(sobj.accum.length) + current;
+			pos = sobj.pos;
+			accum = sobj.accum;
+		},
+		lookAhead: function(str, consume, skipSpaces, caseInsensitive) {
+			var cased = caseInsensitive?function(str) {return str.toLowerCase();}:function(str) { return str;};
+			str = cased(str);
+			var found = false;
 
-      var _accum = accum, _pos = pos;
-      if (skipSpaces) this.nextWhileMatches(/[\s\u00a0]/);
+			var sobj = this.save();
+			if (skipSpaces) this.nextWhileMatches(/[\s\u00a0]/);
 
-      while (true) {
-        var end = pos + str.length, left = current.length - pos;
-        if (end <= current.length) {
-          found = str == cased(current.slice(pos, end));
-          pos = end;
-          break;
-        }
-        else if (str.slice(0, left) == cased(current.slice(pos))) {
-          accum += current; current = "";
-          try {current = source.next();}
-          catch (e) {break;}
-          pos = 0;
-          str = str.slice(left);
-        }
-        else {
-          break;
-        }
-      }
+			while (true) {
+				var end = pos + str.length, left = current.length - pos;
+				if (end <= current.length) {
+					found = str == cased(current.slice(pos, end));
+					pos = end;
+					break;
+				}
+				else if (str.slice(0, left) == cased(current.slice(pos))) {
+					accum += current; current = "";
+					try {current = source.next();}
+					catch (e) {break;}
+					pos = 0;
+					str = str.slice(left);
+				}
+				else {
+					break;
+				}
+			}
 
-      if (!(found && consume)) {
-        current = accum.slice(_accum.length) + current;
-        pos = _pos;
-        accum = _accum;
-      }
+			if (!(found && consume)) this.load(sobj);
 
-      return found;
-    },
+			return found;
+		},
 
-    // Utils built on top of the above
-    more: function() {
-      return this.peek() !== null;
-    },
-    applies: function(test) {
-      var next = this.peek();
-      return (next !== null && test(next));
-    },
-    nextWhile: function(test) {
-      var next;
-      while ((next = this.peek()) !== null && test(next))
-        this.next();
-    },
-    matches: function(re) {
-      var next = this.peek();
-      return (next !== null && re.test(next));
-    },
-    nextWhileMatches: function(re) {
-      var next;
-      while ((next = this.peek()) !== null && re.test(next))
-        this.next();
-    },
-    equals: function(ch) {
-      return ch === this.peek();
-    },
-    endOfLine: function() {
-      var next = this.peek();
-      return next == null || next == "\n";
-    },
-    match: function(re) {
-    	var x = re.exec(current.substr(pos));
-    	if(!x) return false;
-    	pos += x[1].length;
-    	return true;
-    }
-  };
+		// Utils built on top of the above
+		more: function() {
+			return this.peek() !== null;
+		},
+		applies: function(test) {
+			var next = this.peek();
+			return (next !== null && test(next));
+		},
+		nextWhile: function(test) {
+			var next;
+			while ((next = this.peek()) !== null && test(next))
+				this.next();
+		},
+		matches: function(re) {
+			var next = this.peek();
+			return (next !== null && re.test(next));
+		},
+		nextWhileMatches: function(re) {
+			var next;
+			while ((next = this.peek()) !== null && re.test(next))
+				this.next();
+		},
+		equals: function(ch) {
+			return ch === this.peek();
+		},
+		endOfLine: function() {
+			var next = this.peek();
+			return next == null || next == "\n";
+		},
+		match: function(re) {
+			var x = re.exec(current.substr(pos));
+			if(!x) return false;
+			pos += x[1].length;
+			return true;
+		}
+	};
 };

@@ -177,7 +177,7 @@ function merge(dst, src, cb) {
 		for(var j=0; j<arguments.length; ++j) {
 			var o = arguments[j];
 			if(this===o)
-				throw nul.internalException('Catenating self')
+				throw nul.internalException('Catenating self');
 			for(var i=0; i<o.length; ++i) this.push(o[i]);
 		}
 		return this; 

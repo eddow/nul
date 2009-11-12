@@ -1,5 +1,20 @@
-ior3 et veto geres au built
-veto du veto n'est pas ma verite !!
+confronter au uber-global dans subRead/xmlRead!
+
+
+$append
+; append = { ({}, s, s) [] ((a,.. r), s, (a,.. ra ; append(r, s, ra)))}
+
+${:append ({}, s, s) [] ((a,.. r), s, (a,.. ra ; append(r, s, ra)))}
+
+
+X
+; append(X, (4,5,6), (1, 2, 3, 4, 5, 6))
+; append={ ({}, s, s) [] ((a,.. r), s, (a,.. ra ; append(r, s, ra)))}
+::: donne du flou
+
+codeMirror paste twice Oo (chrome?)
+
+arbitre dans sortie html : un knowledge ? Oo
 
 brother["John"]
 ; brother = { x => y != x; father[x] = father[y]}
@@ -14,9 +29,6 @@ http://marijn.haverbeke.nl/codemirror/manual.html
 {:f f x} equivaut f ::() "#set"
 g => {:f g f x} ::: sous-set
 :::La tautologie devrait etre reperee
-
-nul.obj.defined.106 : dp[0] se repete
-{:ss (x, 1); ss(x, 2) [] (x, 2); ss(x, 1) }
 
 o::a { o.a _ }
 ::: noter l'autoref
@@ -43,9 +55,6 @@ set::sigma
 }
 ::: devrait noter l'auto-ref
 
-(1, 2) .time.now.seconds
-::: ne renvoie pas phi toujours
-
 document["#sandBox"](text _)
 xml["test.xml"](text _)
 
@@ -62,4 +71,7 @@ todo {
 sigma[1..]			//inf decomposition
 }
 
-Systeme d'unites !!!
+Systeme d'unites !!! cf. lib/units.nul
+.library.file["lib/units.nul"]
+
+Pas tout builder hors du browse : trop de .modifiable() apres

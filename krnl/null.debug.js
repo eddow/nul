@@ -52,11 +52,11 @@ tableStack = Class.create( {
 	},
 	push: function(v) {
 		this.dirty = true;
-		return this.setRowValue(this.buffer.insertRow(0), beArrg(arguments))
+		return this.setRowValue(this.buffer.insertRow(0), beArrg(arguments));
 	},
 	log: function(v) {
 		this.dirty = true;
-		return this.setRowValue(this.buffer.insertRow(-1), beArrg(arguments))
+		return this.setRowValue(this.buffer.insertRow(-1), beArrg(arguments));
 	},
 	unlog: function() {
 		this.dirty = true;

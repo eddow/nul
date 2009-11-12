@@ -22,6 +22,6 @@ span.attributer		{ color: #804080; background-color: #e0f0e0; }
 span.reserved		{ color: #808000; background-color: #f0f0e0; }
 span.surrounder		{ color: #e00000; }
 
-span.attribute		{ color: #006000; }
+span.attribute		{ color: #006000; border : 1px #80f080 dotted; }
 span.local			{ color: #000080; }
 span.declare		{ color: #8000e0; }

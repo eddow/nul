@@ -27,6 +27,10 @@ nul.data.ajax = {
 			}
 		});
 		return objFct(rq.transport);
+	},
+	loadNul : function(url) {
+		return nul.data.ajax.load(url,
+			function(t) { return nul.subRead(t.responseText, url); } );
 	}
 };
 
@@ -58,8 +62,7 @@ nul.load.ajax = function() {
 				 */
 				retrieve: function(pnt, img) {
 					if('string'!= pnt.expression) throw nul.semanticException('LIB', 'Libraries files are retrieved from a string URL');
-					var libSet = nul.data.ajax.load(pnt.value,
-						function(t) { return new nul.subRead(t.responseText, pnt.value); } );
+					var libSet = nul.data.ajax.loadNul(pnt.value);
 					var klg = new nul.xpr.knowledge();
 					klg.belong(img, libSet);
 					return [klg.wrap(new nul.obj.lambda(pnt,img))];

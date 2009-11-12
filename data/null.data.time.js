@@ -18,7 +18,7 @@ nul.data.time = Class.create(nul.obj.node, /** @lends nul.data.time# */{
 		this.dto = dto;
 		$super('DateTime', map(nul.data.time.nul2js, function() { return function(klg, anm) {
 			anm = nul.data.time.nul2js[anm];
-			return new nul.obj.litteral.number(this.dto[anm].apply(this.dto))
+			return new nul.obj.litteral.number(this.dto[anm].apply(this.dto));
 		}; }));
 	}
 });

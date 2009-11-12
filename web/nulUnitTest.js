@@ -40,12 +40,14 @@ tests = [
 		rslt: '{"p"}'},
 		{xpr: 'i[1..3] _ ; i = { _,. => {} [] (a,b,.. o) => ((a,b),.. i[b,.. o] ) }',
 		rslt: '((1, 2), (2, 3))'},
-		{xpr: 'tp={ {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
-		rslt: '{{&phi; &rArr; &phi; &#9633; (T[@k|@0],.. Ts[@k|@1]) &rArr; (_[@k|@2],.. &crarr;[@k|@3]); ((_[@k|@2]) &isin; T[@k|@0] &and; (Ts[@k|@1] &rArr; &crarr;[@k|@3]) &isin; &uArr;[&crarr;|@r])}}'},
-		{xpr: 'tp[.Q, .text] ; tp={ {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
+		{xpr: '{:tp {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
+		rslt: '{{&phi; &rArr; &phi; &#9633; (T[@k|@0],.. Ts[@k|@1]) &rArr; (_[@k|@2],.. &crarr;[@k|@3]); ((_[@k|@2]) &isin; T[@k|@0] &and; (Ts[@k|@1] &rArr; &crarr;[@k|@3]) &isin; tp[&crarr;|@r])}}'},
+		{xpr: '{:tp {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }[.Q, .text]',
 		rslt: '{(_[g|@4], _[g|@8]); ((_[g|@4]) &isin; &#x211a; &and; (_[g|@8]) &isin; text)}'},
-		{xpr:'t[.Q, .text] ; t ={ {} => {{}} [] (T,.. Ts) => { T _,.. t[Ts] _ } }',
-		rslt:'{{(_[@k|@0], _[@k|@3]); ((_[@k|@0]) &isin; &#x211a; &and; (_[@k|@3]) &isin; text)}}'}
+		{xpr:'{:t {} => {{}} [] (T,.. Ts) => { T _,.. t[Ts] _ } }[.Q, .text]',
+		rslt:'{{(_[@k|@0], _[@k|@3]); ((_[@k|@0]) &isin; &#x211a; &and; (_[@k|@3]) &isin; text)}}'},
+		{xpr:'{:ap ({}, s) => s [] ((a,.. r), s) => (a,.. ap[r,s])}[(1,2,3), (4,5,6)]',
+		rslt:'{(1, 2, 3, 4, 5, 6)}'}
 	].named('Complexs'),
 	[
 		{xpr: '( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")',
@@ -130,7 +132,7 @@ function drawTests(tests, cs, lvl) {
 		}
 	}
 	cs.endCollapser('','').toString();
-	preCollapsed('uncollapsing')
+	preCollapsed('uncollapsing');
 }
 
 nul.load.unitTest = function() {
@@ -208,7 +210,7 @@ function prgTests(tn) {
 				return;
 			}
 		}
-		ic = (rw=tbody.rows[tn]).select('input[type=checkbox]')
+		ic = (rw=tbody.rows[tn]).select('input[type=checkbox]');
 		if(ic) {
 			if(rw.test && ic[0].checked) break;
 			if(rw.testGroup) {
