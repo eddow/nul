@@ -117,7 +117,7 @@ nul.txt = {
 							'onclick="nul.txt.uncollapse(this, '+this.lineCount+');">+</a></span>'+
 							html;
 					}
-				}
+				};
 			},
 			/**
 			 * Create a HTML collapser end that draw a given information
@@ -133,7 +133,7 @@ nul.txt = {
 					collapsing: this.collapsing,
 					toString: function() {
 						var plc = this.toPair.pop();
-						if(nul.debug.assert) assert(Object.isUndefined(this.collapsing[plc]), 'Debug collapsers correspondance')
+						if(nul.debug.assert) assert(Object.isUndefined(this.collapsing[plc]), 'Debug collapsers correspondance');
 						this.collapsing[plc] = this.lineCount;
 						return '<span class="collapser end">' +
 							'<a class="collapser" ' +

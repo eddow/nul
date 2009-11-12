@@ -138,7 +138,7 @@ nul.operators = [
 	['=','m'], ['!=','r'],					//unify
 	['<','r'], ['>','r'], ['<=','r'], ['>=','r'],
 	['+','m'], ['-','l'],
-	['-','p'], ['#','p'],
+	['-','p'], ['#','p'], ['$','p'],
 	['*','m'], ['/','l'], ['%','l'],
 	['..','l'],
 	[',.','s']				 				//list singleton
@@ -247,8 +247,8 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
 			else if(tst = this.applied('lax')) rv = nul.compiled.application(rv, tst);
 			else if(this.tknzr.take('::')) {
 				var anm = this.tknzr.rawTake('(') ?
-						this.tknzr.rawExpect(')', this.tknzr.fly(')')) :
-						this.alphanum();
+					this.tknzr.rawExpect(')', this.tknzr.fly(')')) :
+					this.alphanum();
 				rv = nul.compiled.composed(rv, anm, this.item());					
 			}
 			
@@ -266,7 +266,7 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
 		{
 			var aTxt = this.tknzr.fly('<');
 			if(null=== aTxt) throw nul.syntaxException('XML', 'XML node not closed');
-			if(''!== aTxt) comps.push(nul.compiled.atom('string', aTxt));
+			if(''!== aTxt) comps.push(nul.compiled.atom('string', aTxt.replace(/\uffff/g, '\n')));
 			if(this.tknzr.rawTake('<(')) comps.push(this.tknzr.rawExpect(')>',this.expression()));
 			else if(this.tknzr.rawTake('</')) return comps;
 			else if(this.tknzr.rawTake('<')) comps.push(this.xml());
@@ -341,6 +341,20 @@ nul.compile = function(txt)
 {
 	var rv = new nul.compiler(txt+'\n');
 	var ev = rv.expression();
+	if(rv.tknzr.token.type != 'eof') throw nul.syntaxException('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.");
+	return ev;
+};
+
+/**
+ * Make a compiled value out of an XML content.
+ * @param {XML} txt
+ * @return {nul.compiled}
+ * @throw {nul.syntaxException}
+ */
+nul.compile.xml = function(txt)
+{
+	var rv = new nul.compiler(txt+'</');
+	var ev = rv.innerXML();
 	if(rv.tknzr.token.type != 'eof') throw nul.syntaxException('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.");
 	return ev;
 };

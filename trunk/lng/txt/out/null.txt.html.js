@@ -255,8 +255,8 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		klg: function() {
 			if(nul.klg.ncndtnl.is(this)) return {'':html.op(this.name)};
 			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
-			var ior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'))
-			var veto = nul.txt.html.all(this.veto).join(html.op('&or;'))
+			var ior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'));
+			var veto = nul.txt.html.all(this.veto).join(html.op('&or;'));
 			if(rv && ior3) rv += html.op('&and;') + ior3;
 			else if(ior3) rv = ior3;
 			if(rv && veto) rv += html.op('&and;')+html.op('&not;') + veto;
@@ -330,4 +330,4 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 			elm.getElementsBySelector('div.'+knd).each(Element.hide);
 		}
 	}
-}, nul.txt)
+}, nul.txt);
