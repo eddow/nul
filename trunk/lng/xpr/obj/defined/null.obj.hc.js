@@ -82,7 +82,7 @@ nul.obj.hc.filter = function(objs, exp, att, wrp) {
 			var klg;
 			if(nul.xpr.possible.is(orv)) {
 				klg = orv.knowledge.modifiable();
-				nul.klg.mod(klg)
+				nul.klg.mod(klg);
 				orv = orv.value;
 			} else klg = new nul.xpr.knowledge();
 			nul.obj.use(orv);

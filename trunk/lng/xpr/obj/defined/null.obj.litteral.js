@@ -32,7 +32,16 @@ nul.obj.litteral.string = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
 	/** @constant */
 	properties: {
 		'# ': function() { return new nul.obj.litteral.number(this.value.length); },
-		'': function() { return nul.obj.litteral.tag.string }
+		'': function() { return nul.obj.litteral.tag.string; }
+	},
+	
+	/**
+	 * @param {document} doc
+	 * @return {XML}
+	 * TODO 2 returns Element
+	 */
+	XML: function(doc) {
+		return this.value;	//TODO 2: remplacer par des &...; ?
 	},
 	
 //////////////// nul.xpr.object implementation
@@ -58,7 +67,7 @@ nul.obj.litteral.number = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
 	
 	/** @constant */
 	properties: {
-		'text': function() { return nul.obj.litteral.make(this.value.toString()) },
+		'text': function() { return nul.obj.litteral.make(this.value.toString()); },
 		'': function() { return nul.obj.litteral.tag.number; }
 	},
 
@@ -113,7 +122,7 @@ nul.obj.litteral.boolean = Class.create(nul.obj.litteral, /** @lends nul.obj.lit
  * Make a litteral from a javascript value - choose the wright class
  */
 nul.obj.litteral.make = function(v) {
-	if(nul.debug.assert) assert(nul.obj.litteral[typeof v], (typeof v)+' is a litteral type')
+	if(nul.debug.assert) assert(nul.obj.litteral[typeof v], (typeof v)+' is a litteral type');
 	if('boolean'== typeof v) return nul.obj.litteral['boolean'][v?'true':'false'];
 	return new nul.obj.litteral[typeof v](v);
 };

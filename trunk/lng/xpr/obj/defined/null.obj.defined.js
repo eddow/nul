@@ -118,6 +118,12 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 			}, 'Recursion', this, [o, this]);
 		}
 	},
+
+	/**
+	 * The set who give, for each parameter, the recursive parameter applied
+	 * @return {nul.obj.list}
+	 */
+	recursion: function() { return nul.obj.empty; },
 	
 ////////////////nul.xpr.object implementation
 

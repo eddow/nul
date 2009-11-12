@@ -7,7 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 //TODO 3: express these as descendant from nul.obj.hc
-nul.obj.hcSet = Class.create(nul.obj.defined, /** @lends nul.obj.hcSet */{
+nul.obj.hcSet = Class.create(nul.obj.list, /** @lends nul.obj.hcSet */{
 	/**
 	 * A set hard-coded in javascript
 	 * @extends nul.obj.defined
@@ -58,8 +58,6 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.empty# */{
 	
 	/** @constant */
 	expression: '&phi;',
-	//TODO C
-	isList: function() { return true; },
 //////////////// nul.obj.defined implementation
 
 	/** @constant */
@@ -82,7 +80,7 @@ nul.obj.whole = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.whole# */{
 	subHas: function(o) { return [o]; },
 	
 	/** @constant */
-	expression: 'any',
+	expression: 'any'
 	
 }))();
 
@@ -107,7 +105,7 @@ nul.obj.number = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.number# */{
 		return $super(o, att, '#number');
 	},
 	/** @constant */
-	expression: '&#x211a;',
+	expression: '&#x211a;'
 }))();
 
 /**
@@ -120,7 +118,7 @@ nul.obj.string = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.string# */{
 		if('string'== o.expression) return [o];
 		return $super(o, att, '#text');
 	},
-	expression: 'text',
+	expression: 'text'
 
 }))();
 
@@ -146,6 +144,7 @@ nul.obj.bool = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.bool# */{
 }))();
 
 nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
+	//TODO 4: solve or XML make them define as extension ?
 	/**
 	 * A range of integer numbers
 	 * @extends nul.obj.hcSet
