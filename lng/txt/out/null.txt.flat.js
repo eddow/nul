@@ -144,7 +144,7 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 		eqCls: function() {
 			var attr = [];
 			for(var anm in this.attribs) if(anm)
-				attr.push(anm+': '+this.attribs[anm].toFlat())
+				attr.push(anm+': '+this.attribs[anm].toFlat());
 			attr = (attr.length)?('['+attr.join(', ')+']'):'';
 			return '(' + attr + nul.txt.flat.all(this.equivls).join(' = ') + ')' +
 				(this.belongs.length?(' &isin; ' + nul.txt.flat.all(this.belongs).join(', ')):'');
@@ -156,7 +156,7 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 		klg: function() {
 			if(nul.klg.ncndtnl.is(this)) return nul.klg.always===this?'':html.op(this.name);
 			var rv = nul.txt.flat.all(this.eqCls).join(' &and; ');
-			var ior3 = nul.txt.flat.all(this.ior3).join(' &and; ')
+			var ior3 = nul.txt.flat.all(this.ior3).join(' &and; ');
 			if(rv && ior3) rv += ' &and; ' + ior3;
 			else if(ior3) rv = ior3;
 			rv = rv?'('+rv+')':'';

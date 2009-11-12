@@ -13,7 +13,7 @@ nul.tokenizer = Class.create(/** @lends nul.tokenizer */{
 	 * @param {String} src The text content
 	 */
 	initialize: function(src) {
-		this.txt = src.replace(/\n/g,'\uffff');
+		this.txt = src.replace(/\n\r/g,'\uffff').replace(/\n/g,'\uffff').replace(/\r/g,'\uffff');
 		this.next();
 	},
 	/**
@@ -184,7 +184,7 @@ nul.load.operators = function() {
 	var escaper = function(n, s) { return '\\' + s.split('').join('\\'); };
 	var ops = map(nul.operators, function() { return this[0];});
 	ops.pushs(nul.tokenizer.alphabets.oprtr);
-	ops.sort(function(a,b){ return b.length-a.length; })
+	ops.sort(function(a,b){ return b.length-a.length; });
 	nul.tokenizer.operators = ops;	//Useful for outer use, like editArea
 	nul.tokenizer.alphabets.oprtr = '(' + map(ops,escaper).join('|') + ')';
 };

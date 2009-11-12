@@ -154,7 +154,7 @@ nul.understanding = {
 	 * @return {nul.xpr.object}
 	 */
 	definition: function(ub) {
-		if('_'== this.decl) throw nul.semanticException('JKD', 'Cannot declare joker !')
+		if('_'== this.decl) throw nul.semanticException('JKD', 'Cannot declare joker !');
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
 	},
