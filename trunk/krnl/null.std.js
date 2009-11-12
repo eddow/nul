@@ -69,6 +69,22 @@ merge(nul,
 	{
 		return nul.globalsUse(glbNm).understand(nul.compile(txt));
 	},
+
+	/**
+	 * Compile an XML content and understand it
+	 * @param {XML} txt
+	 * @return {nul.expression}
+	 * @throw {nul.semanticException}
+	 * @throw {nul.syntaxException} 
+	 */
+	xmlRead: function(txt, glbNm)
+	{
+		return nul.compile.xml(txt).mar(function() {
+			return nul.globalsUse(glbNm).understand(this).listed();
+		});
+		
+	},
+
 	/**
 	 * Compile a text and understand it in a fresh execution context
 	 * @param {String} txt

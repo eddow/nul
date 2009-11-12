@@ -37,7 +37,7 @@ nul.data = Class.create(/** @lends nul.data# */{
 	extract: function(prm) { throw 'abstract'; }
 });
 
-merge(nul.data, /** @lends nul.data */{
+Object.extend(nul.data, /** @lends nul.data */{
 	/**
 	 * Query what is needed to have the queried state of the object
 	 * @param {nul.xpr.object} obj
@@ -57,6 +57,7 @@ merge(nul.data, /** @lends nul.data */{
 					chsdCtx = ctx;
 			}
 			//chsdCtx is fixed as minimum distance
+			if(!chsdCtx) throw nul.internalException('Cannot query : ' + Object.keys(usg).join(', '));
 			nul.data.context.is(chsdCtx);
 			obj = chsdCtx.query(obj);
 			usg = obj.dependance().usages;
