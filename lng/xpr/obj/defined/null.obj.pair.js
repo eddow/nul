@@ -6,10 +6,10 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
+nul.obj.pair = Class.create(nul.obj.list, /** @lends nul.obj.pair# */{
 	/**
 	 * Pair used to build lists : a head and a tail.
-	 * @extends nul.obj.defined
+	 * @extends nul.obj.list
 	 * @constructs
 	 * @param {nul.xpr.possible} first List head
 	 * @param {nul.xpr.object} second List tail
@@ -62,11 +62,13 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 			return klg.unify(this.second, o);
 		}
 		if('pair'!= o.expression) nul.fail(o, ' not a pair');
+		if(this === o) return true;
 		if(this.first.knowledge === o.first.knowledge)
 			return (new nul.obj.pair(
 				klg.unify(this.first.value, o.first.value),
 				klg.unify(this.second, o.second))).built();
 		nul.debug.log('error')('Warning', 'pair', 'Pair fuzzy comparison not yet implemented');
+		if(this.toString() === o.toString()) return true;
 		nul.fail(o, ' not unifiable pair');
 	},
 	
@@ -91,6 +93,9 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 
 	/** @constant */
 	properties: {
+		'$ ': function() {
+			return this.recursion();
+		},
 		'# ': function(klg) {
 			var flw = klg.attribute(this.second, '# ');
 			var mn = this.first.knowledge.minXst();
@@ -132,40 +137,29 @@ nul.obj.pair = Class.create(nul.obj.defined, /** @lends nul.obj.pair# */{
 			if(1!= dList.length) return nul.obj.pair.list(this.second, dList);
 			this.first = dList[0];
 		}
-		//if(this.selfRef) return this.selfRefered(this.selfRef, $super()); //TODO 1
 		return $super();
 	},
 	
-	selfRefered: function(selfNdx, whole) {
-		var fz = this.first;	//TODO 1
-		
-		while(true) {
-			var klg = fz.knowledge.reself(whole, selfNdx).modifiable();
-			var rb = klg.wrap(fz.value).distribute();
-			if(1!= rb.length) break;
-			if(rb[0].toString() == fz.toString()) break;	//attention les reorganisations arbitraires d'eqCls !
-			fz = rb[0];
-		}
-		var rv = this;
-//		if(fz !== this.first) {	//TODO 2 : optimise et ne fais pas trop
-			rv = rv.modifiable();
-			rv.first = fz;
-//		}
-		if(nul.obj.pair.is(rv.second)) rv.second = rv.second.selfRefered(selfNdx, whole).built();
-		return nul.obj.defined.prototype.built.apply(rv);
-	},
+	sum_recursion: function() {
+		if(!this.selfRef) this.selfRef = nul.execution.name.gen('obj.local.self');
+		var rv = [];
+		for(var p=this; nul.obj.pair.is(p); p=p.second)
+			rv.pushs(p.first.knowledge.modifiable().sumRecursion(this.selfRef, [], p.first.value));
+		return nul.obj.pair.list(null, rv);
+	}
+
 });
 
 /**
  * Helper to create triling pairs from a list
- * @param {nul.xpr.object|null} flw Trail of this list. Will be the empty set if not specified
- * @param {nul.xpr.possible[]} elms The elements that will be the 'first' of each pairs.
- * @returns {nul.obj.pair} The built pair
+ * @param flw Trail of this list. Will be the empty set if not specified
+ * @param elms The elements that will be the 'first' of each pairs.
+ * @return {nul.obj.pair} The built pair
  * @throws {nul.failure}
  */
-nul.obj.pair.list = function(flw, elms) {
+nul.obj.pair.list = function(/**nul.xpr.object|null*/flw, /**nul.xpr.possible[]*/elms) {
 	elms = beArrg(arguments, 1);
-	var rv = flw?flw:nul.obj.empty;
+	var rv = flw || nul.obj.empty;
 	while(elms.length) {
 		var elm = elms.pop();
 		nul.xpr.use(elm);

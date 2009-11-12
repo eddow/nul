@@ -26,14 +26,16 @@ nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
 				delete this.attributes[anm];
 			}
 		if(dupProp) this.properties = dupProp;
-		if(nul.debug.assert) assert(!content || nul.obj.empty==content || 'pair'== content.expression,
-				'Content of a nodae must be pair or empty');
+
 		this.content = content || nul.obj.empty;	//TODO 2: assert content #set
+		nul.obj.use(this.content, 'nul.obj.list');
+		
 		$super();
 	},
 
 //////////////// nul.obj.defined implementation
 
+	//TODO C
 	subUnified: function(o, klg) {
 		if('node'!= o.expression) nul.fail(o, ' not a node');
 		var nattrs = merge(this.attributes, o.attributes, function(a, b, i) {
@@ -42,10 +44,34 @@ nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
 		});
 		return new nul.obj.node(this.tag, nattrs, klg.unify(this.content, o.content));
 	},
-
+	//TODO C
 	properties: {
 		'': function() { return new nul.obj.litteral.string(this.tag); },
 		'# ': function(klg) { return this.content.attribute('# ', klg); }
+	},
+	
+	recursion: function() { return this.content.recursion(); },
+
+	/**
+	 * @param {document} doc
+	 * @return {XML}
+	 * @throw {nul.semanticException}
+	 * TODO 2 returns Element
+	 */
+	XML: function(doc) {
+		var rv = '<'+this.tag;
+		for(var a in this.attributes) {
+			//TODO 3: check a as attribute name
+			if(!nul.obj.litteral.string.is(this.attributes[a]))
+				throw nul.semanticException('XML', this.attributes[a] + ' doesnt fit for XML attribute');
+			rv += ' '+a+'="'+this.attributes[a].value+'"';
+		}
+		if(nul.obj.empty === this.content) return rv+' />';
+		rv += '>';
+		var lst = this.content.listed();
+		for(var c=0; lst[c]; ++c)
+			rv += lst[c].XML(doc);
+		return rv + '</'+this.tag+'>';
 	},
 
 //////////////// nul.obj.hc implementation
