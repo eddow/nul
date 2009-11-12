@@ -69,8 +69,22 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	distribute: function() {
 		if(!this.knowledge.distribuable()) return [this];
 		var val = this.value;
-		return maf(this.knowledge.distribute(), function() { try { return this.wrap(val); } catch(e) { nul.failed(e); } })
+		return maf(this.knowledge.distribute(), function() {
+			try { return this.wrap(val); } catch(e) { nul.failed(e); }
+		});
 	},
+	
+	/**
+	 * @param {document} doc
+	 * @return {XML}
+	 * @throw {nul.semanticException}
+	 * TODO 2 returns Element
+	 */
+	XML: function(doc) {
+		if(nul.klg.always != this.knowledge)
+			throw nul.semanticException('XML', 'No XML fixed representation for fuzzy expression');
+		return this.value.XML(doc);
+	},	
 	
 //////////////// nul.expression summaries
 
@@ -97,9 +111,9 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 
 	/**
 	* Change self references to the given self-refered object
-	* @param {any} slf The object that is a self-reference
+	* @param {nul.obj.defined} recursion The object that contains 'this' and makes recursion
 	*/
-	beself: function(slf, selfRef) {
+	beself: function(recursion) {
 		var fz = this;	//TODO 1
 		//1 - remove in knowledge : x in y : x is value and y self-ref
 		//TODO O: ne faire cela que si dependance de selfref
@@ -120,7 +134,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 			fz = klg.wrap(this.value);
 		}*/
 		//2 - replace the self-reference by the set
-		return new nul.xpr.object.reself(selfRef || slf.selfRef, slf).browse(fz);	//TODO 2: reself other fct ?
+		return new nul.xpr.object.reself(recursion.selfRef, recursion).browse(fz);	//TODO 2: reself other fct ?
 		//return fz.reself(slf, selfRef); slf.reself(..., fz) ?
 	}
 });

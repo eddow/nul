@@ -117,7 +117,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	freeEC: function(ec) {
  		if(!ec.summarised) return ec;
 		var i = this.eqCls.indexOf(ec);
- 		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class')
+ 		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class');
 		this.eqCls.splice(i, 1);
  		var rv = ec.modifiable();
 		for(var i in this.access) if(this.access[i] === ec) this.access[i] = rv;
@@ -131,7 +131,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 */
 	ownEC: function(ec) {
 		var rec = ec.built().placed(this);
-		if(rec) this.eqCls.push(rec)
+		if(rec) this.eqCls.push(rec);
 		else this.unaccede(ec);
  	},
 
@@ -143,7 +143,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	removeEC: function(ec) {
  		this.modify(); nul.xpr.use(ec, 'nul.klg.eqClass');
 		var i = this.eqCls.indexOf(ec);
- 		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class')
+ 		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class');
 		this.eqCls.splice(i, 1);
 		return this.unaccede(ec);
 	},
@@ -206,7 +206,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 				var klg;
 				if(nul.xpr.possible.is(p)) {
 					klg = p.knowledge.modifiable();
-					nul.klg.mod(klg)
+					nul.klg.mod(klg);
 					p = p.value;
 				} else klg = new nul.xpr.knowledge();				
 				klg.unify(p, rv);
@@ -329,7 +329,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	define: function(acsTbl) {
 		this.modify();
 		var rv = [];
-		return rv;
+//		return rv;
 		acsTbl = map(acsTbl);
 		var used;
 		do {
@@ -342,9 +342,9 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 						rv.push(v);
 						used = true;
 					}
-					for(var a in nec.attribs) 
-						if(nul.obj.local.is(nec.attribs[a]) && nul.obj.local.self.ref == nec.attribs[a].klgRef)
-							delete nec.attribs[a];
+					//for(var a in nec.attribs) 
+					//	if(nul.obj.local.is(nec.attribs[a]) && nul.obj.local.self.ref == nec.attribs[a].klgRef)
+					//		delete nec.attribs[a];
 					if(ownClass) this.ownEC(nec);
 					delete acsTbl[v];
 					break;
@@ -461,7 +461,8 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	/**
 	 * Remove the redundant values. Ensure that the structured is simplified at maximum (no 1-choice IOR3 and no veto's vetos)
 	 */
- 	built: function($super) {
+	simplify: function() {
+		this.modify();
 		//Reduce vetos of vetos into ior3s
 		var veto;
 		for(var v=0; veto = this.veto[v];)
@@ -490,11 +491,26 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  			break;
  		default: ++i; break;
  		}
- 		
+ 		return this;
+	},
+	
+	/**
+	 * {@link simplify} and regular build. Return an unconditional global if not conditional.
+	 */
+ 	built: function($super) {
+ 		this.simplify();
 		var acs = this.access;
 		this.clearAccess();
- 		if(!nul.klg.ncndtnl.is(this) && !this.eqCls.length && !this.nbrLocals() && !this.ior3.length && !this.veto.length)
+ 		if(
+ 				!nul.klg.ncndtnl.is(this) &&	//This is not already an unconditional
+ 				!this.eqCls.length &&			//There are no equivalence/belonging/attribute constraints
+ 				!this.nbrLocals() &&			//There are no locals involved
+ 				!this.ior3.length &&			//There are no choices to make
+ 				!this.veto.length &&			//Nothing oppose to this knowledge
+ 				this.minMult == this.maxMult)	//This is not an undefined knowledge
  			return nul.klg.unconditional(this.minMult, this.maxMult);
+ 		//if(this.minMult < this.maxMult) this.undefined = nul.execution.name.gen('klg.undefined');
+ 		//No need : name differenciate different knowledges already
  		var rv = $super();
  		if(rv === this) rv.summarised.access = acs;
  		return rv;
@@ -539,7 +555,7 @@ if(nul.debug) nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
  	newLocal: function(name, ndx) {
  		if(Object.isUndefined(ndx)) ndx = this.locals.length;
 		this.locals[ndx] = name;
- 		return new nul.obj.local(this.name, ndx, name)
+ 		return new nul.obj.local(this.name, ndx, name);
  	}
  	
 }); else nul.klg.addMethods( /** @ignore */{
@@ -550,6 +566,6 @@ if(nul.debug) nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 	nbrLocals: function() { return this.locals; },
  	newLocal: function(name, ndx) {
  		if(Object.isUndefined(ndx)) ndx = this.locals++;
- 		return new nul.obj.local(this.name, ndx)
+ 		return new nul.obj.local(this.name, ndx);
  	}
 });

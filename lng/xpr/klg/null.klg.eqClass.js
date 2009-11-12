@@ -161,7 +161,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 		} else if(this.attribs !== attrs) {	//TODO 3: gardien est-il necessaire?
 			merge(this.attribs, attrs, function(a,b) {
 				if((a?a.toString():'')==(b?b.toString():'')) return a;
-				useless = false
+				useless = false;
 				return (a&&b)?klg.unify(a,b):(a||b);
 			});
 			if(!useless) this.wedding(klg);
@@ -177,7 +177,12 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	 */
 	define: function(def, klg) {
 		var rv = false;
-		rv |= !this.hasAttr(def.attribs, klg);
+		for(var a in def.attribs) if(this.attribs[a] && def.attribs[a] != this.attribs[a]) {
+			rv = true;
+			klg.unify(def.attribs[a], this.attribs[a]);
+			delete this.attribs[a];
+		}
+		//rv |= !this.hasAttr(def.attribs, klg);
 		return rv;
 	},	
 	
@@ -221,7 +226,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	intersect: function(klg, s1, s2) {
 		if(s1==s2) return s1;
 		var rv;
-		var trueDft = function(c,d) { return (true===c)?d:c; }
+		var trueDft = function(c,d) { return (true===c)?d:c; };
 		
 		return nul.trys(function() {
 			try {
@@ -262,7 +267,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 				for(var e in eqc[cn]) if(cstmNdx(e) && destSelect(cn, e))
 					for(var ndx in eqc[cn][e].dependance().usage(klg).local)
 						if(!rv[ndx] || rv[ndx]<infl) rv[ndx] = infl;
-		}
+		};
 		subInfluence('equivls', 2);
 		subInfluence('belongs', 1);
 		subInfluence('attribs', 2);
@@ -295,7 +300,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 		return rv.built().placed(klg); 
 	},
 	
-////////////////	public status modification
+////////////////	public 
 	
 	/**
 	 * Is the equivalences defined or is there only undefined objects unified ?
@@ -308,6 +313,17 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	 */
 	blngDefined: function() { return this.belongs.length && this.belongs[0].defined; },
 
+	/**
+	 * Determines weither this class defines elements of obj
+	 * @param {nul.xpr.object} obj
+	 * @return {Number} Index in belongs or -1 if not found
+	 */
+	extend: function(obj) {
+		for(var b=0; this.belongs[b]; ++b)
+			if(obj.toString() == this.belongs[b].toString())
+				return b;
+	},
+	
 //////////////// nul.expression implementation
 	
 	/** @constant */
