@@ -43,8 +43,8 @@ nul.klg.ior3 = Class.create(nul.expression, /** @lends nul.klg.ior3# */{
 	/** @constant */
 	components: {'choices': {type: 'nul.xpr.knowledge', bunch: true}},
 	built: function($super) {
-		if(nul.debug.assert) assert(this.choices.length, 'IOR3 Always has a first unconditional')
-		this.choices = nul.solve.ior3(this.choices)
+		if(nul.debug.assert) assert(this.choices.length, 'IOR3 Always has a first unconditional');
+		this.choices = nul.solve.ior3(this.choices);
 		for(var c=1; this.choices[c];)
 			if(!nul.klg.ncndtnl.is(this.choices[c])) ++c;
 			else {

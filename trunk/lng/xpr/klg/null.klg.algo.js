@@ -9,8 +9,9 @@
 nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
  	/**
  	 * Remove any information about locals that are not refered anymore
- 	 * @param {nul.dependance.usage} deps
- 	 * remove all access before : these are not preserved
+ 	 * @param {nul.xpr.object} value
+ 	 * @note remove all access before : they are not preserved
+ 	 * @return nothing
  	 */
  	pruned: function(value) {
  		this.modify();
@@ -18,8 +19,9 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
  		var vdps = new nul.dependance();
 		
 		if(value) vdps.also(value.dependance());
-		for(var i in this.ior3) if(cstmNdx(i) && this.ior3[i]) vdps.also(this.ior3[i].dependance());
-		for(var i in this.veto) if(cstmNdx(i) && this.veto[i]) vdps.also(this.veto[i].dependance());
+		var i;
+		for(i in this.ior3) if(cstmNdx(i) && this.ior3[i]) vdps.also(this.ior3[i].dependance());
+		for(i in this.veto) if(cstmNdx(i) && this.veto[i]) vdps.also(this.veto[i].dependance());
 		vdps.also(this.rocks);
 		vdps = this.localNeed(vdps.usage(this).local);
 
@@ -188,7 +190,7 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 			if(nul.browser.bijectif.unchanged == nec) ++i;
 			else {
 				value = representer.browse(value);
-				this.removeEC(ec)
+				this.removeEC(ec);
 				nec = this.unify(nec);
 				
 				//this.unification has effect on other equivalence classes that have to change in the representer
@@ -207,7 +209,10 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 		this.veto = [];
 		while(opposition.length)
 			this.oppose(representer.browse(opposition.shift()));
- 		this.pruned(value);
+ 		
+		this.simplify();
+		
+		this.pruned(value);
  		
  		return new nul.xpr.possible(value, this.built());
  	}.describe('Wrapping', function(value) {
@@ -240,5 +245,57 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 	distributed: function() {
 		if(this.ior3.length) return map(nul.solve.apply(this.modifiable()), this.built);
 		return [this];
+	},
+	
+	/**
+	 * Returns a list of all the eqClass we know 'obj' contains
+	 * @param {nul.xpr.object} obj
+	 * @return {Number[]} The indexes of the equivalence classes defining obj in extension 
+	 */
+	extend: function(obj) {
+		var rv = {};
+		for(var ec=0; this.eqCls[ec]; ++ec) {
+			var b = this.eqCls[ec].extend(obj);
+			if(-1< b) rv[ec] = b;
+		}
+		return rv;
+	},
+
+	//TODO C
+	/**
+	 * @param {String} selfRef
+	 * @param {nul.xpr.object[]} alrEqs TODO 1: rename param
+	 * @param {nul.xpr.object} point
+	 * @return {nul.xpr.possible}
+	 */
+	sumRecursion: function(selfRef, alrEqs, point) {
+		this.modify(); nul.obj.use(point); nul.obj.are(alrEqs);
+		var rv = [];
+		var blgSpec = false;
+		for(var ec=0; this.eqCls[ec]; ++ec) {
+			for(var b=0; this.eqCls[ec].belongs[b]; ++b) {
+				blgSpec = true;
+				//TODO O: ne pas faire unify et diff sur tout, quand c'est trivial
+				try {
+					var klg = this.clone();
+					var eqc = klg.freeEC(klg.eqCls[ec]);
+					klg.oppose(nul.klg.unification(eqc.belongs.splice(b, 1)[0], nul.obj.local.self(selfRef)));
+					klg.ownEC(eqc);
+					rv.pushs(klg.sumRecursion(selfRef, alrEqs, point));
+				} catch(e) { nul.failed(e); }
+
+				try {
+					var klg = this.clone();		//TODO 1: don't clone?
+					var nalrEqs = map(alrEqs);	//TODO 1: don't clone?
+					var eqc = klg.freeEC(klg.eqCls[ec]);
+					klg.unify(eqc.belongs.splice(b, 1)[0], nul.obj.local.self(selfRef));
+					klg.ownEC(eqc);
+					nalrEqs.unshift(eqc.represent());
+					rv.pushs(klg.sumRecursion(selfRef, nalrEqs, point));
+				} catch(e) { nul.failed(e); }
+			}
+		}
+		if(blgSpec) return rv;
+		return [this.wrap(new nul.obj.lambda(point, nul.obj.pair.list(null, alrEqs)))];
 	}
 });

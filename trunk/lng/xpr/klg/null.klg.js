@@ -12,15 +12,10 @@
  */
 nul.klg = {
 	//TODO C
-	unconditional: function(min, max, name) {
-		if('klg'== min.expression) {
-			max = min.maxMult;
-			min = min.minMult;
-		}
-		if(nul.debug.assert) assert(max >= min, 'Ordered knowledge constraints');
-		if(!nul.klg.unconditionals[min+'-'+max])
-			nul.klg.unconditionals[min+'-'+max] = new nul.klg.ncndtnl(min, max, name);
-		return nul.klg.unconditionals[min+'-'+max];
+	unconditional: function(mul, name) {
+		if(!nul.klg.unconditionals[mul])
+			nul.klg.unconditionals[mul] = new nul.klg.ncndtnl(mul, name);
+		return nul.klg.unconditionals[mul];
 	},
 	//TODO C
 	unconditionals: {},
@@ -33,12 +28,11 @@ nul.klg = {
 		 * @param {Number} min
 		 * @param {Number} max
 		 */
-		initialize: function(min, max, name) {
-			function htmlN(n) { return n==pinf?'&infin;':n.toString(); }
+		initialize: function(mul, name) {
 	        this.locals = this.emptyLocals();
-			this.minMult = min;
-			this.maxMult = max;
-			this.name = name || ('['+htmlN(this.minMult)+((this.minMult==this.maxMult)?'':('-'+htmlN(this.maxMult)))+']');
+			this.minMult = mul;
+			this.maxMult = mul;
+			this.name = name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']');
 			this.alreadyBuilt();
 		},
 		/** @constant */
@@ -87,12 +81,12 @@ nul.klg = {
 /**
  * Unconditional knowledge meaning something that is never verified
  */
-nul.klg.never = new nul.klg.unconditional(0, 0, 'Never');
+nul.klg.never = new nul.klg.unconditional(0, 'Never');
 
 /**
  * Unconditional knowledge meaning something that is always verified
  */
-nul.klg.always = new nul.klg.unconditional(1, 1, 'Always');
+nul.klg.always = new nul.klg.unconditional(1, 'Always');
 
 
 /**

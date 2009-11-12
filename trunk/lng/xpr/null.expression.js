@@ -84,7 +84,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 * @param {String} paramarray List of elements to exclude from clone
 	 */
 	clone: function() {
-		var bsd = beArrg(arguments)
+		var bsd = beArrg(arguments);
 		var comps = this.components;
 		return maf(this, function(ndx, obj) {
 			if(!bsd.include(ndx)) 
@@ -150,7 +150,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 * @return {String}
 	 */
 	dbgHtml: function() {
-		if(!nul.debug || !nul.debug.logging) return "[?]"
+		if(!nul.debug || !nul.debug.logging) return "[?]";
 		var f = this.toFlat();
 		if(500>f.length) return this.toHtml();
 		return f;
@@ -184,6 +184,16 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 		return rv;
 	},
 
+	/**
+	 * @param {document} doc
+	 * @return {XML}
+	 * @throw {nul.semanticException}
+	 * TODO 2 returns Element
+	 */
+	XML: function(doc) {
+		throw nul.semanticException('XML', this.expression + ' doesnt fit for XML output');
+	},
+	
 //////////////// Summary users
 
 	/**
@@ -243,7 +253,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 	for(var c in this.components)
 	 		if(this.components[c].bunch) {
 	 			for(var e in this[c]) if(cstmNdx(e, this[c]))
-	 				rv.push(c+'.'+e+':'+this[c][e].toString())
+	 				rv.push(c+'.'+e+':'+this[c][e].toString());
 	 		} else rv.push(c+':'+this[c].toString());
 	 	if(items) rv.unshift(items);
 	 	rv.unshift(this.expression);
