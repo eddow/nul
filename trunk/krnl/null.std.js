@@ -52,12 +52,16 @@ merge(nul,
 	globals: {},
 	
 	/**
-	 * Creates the root understing-base with the declared {@link nul.globals}
-	 * @return {nul.understanding.base.set}
+	 * Understand the compiled text in a knowledge named glbNm, using the uber-local
+	 * @param {nul.compiled} cmpl
+	 * @param {String} glbNm
+	 * @return {nul.xpr.object}
 	 */
-	globalsUse: function(glbNm) {
-		return new nul.understanding.base.set(null, null, glbNm);
+	understand: function(cmpl, glbNm) {
+		var rv = (new nul.understanding.base.set(null, null, glbNm || 'g')).understand(cmpl);
+		return (new nul.klg.represent(nul.execution.globalKlg)).browse(rv);
 	},
+	
 	/**
 	 * Compile a text and understand it
 	 * @param {String} txt
@@ -65,9 +69,16 @@ merge(nul,
 	 * @throw {nul.semanticException}
 	 * @throw {nul.syntaxException} 
 	 */
-	subRead: function(txt, glbNm)
+	nulRead: function(txt, glbNm)
 	{
-		return nul.globalsUse(glbNm).understand(nul.compile(txt));
+		return nul.execution.benchmark.measure('*reading',function(){
+			try {
+				return nul.understand(nul.compile(txt), glbNm);
+			} catch(x) {
+				nul.failed(x);
+				return nul.obj.empty;
+			}
+		});
 	},
 
 	/**
@@ -80,11 +91,42 @@ merge(nul,
 	xmlRead: function(txt, glbNm)
 	{
 		return nul.compile.xml(txt).mar(function() {
-			return nul.globalsUse(glbNm).understand(this).listed();
+			try {
+				return nul.understand(this, glbNm).listed();
+			} catch(x) {
+				nul.failed(x);
+				return [];
+			}
 		});
-		
 	},
 
+	/**
+	 * Modify the global knowledge : the set contains one and only one element
+	 * @param {nul.xpr.object} set The set of value to make known
+	 * @return {nul.xpr.object} The value asserted
+	 */
+	known: function(set, name) {
+		var gKlg = nul.execution.globalKlg.modifiable();
+		var rv = gKlg.newLocal('known');
+		var reason = 'is too fuzzy';
+		try {
+			gKlg.hesitate(set.having(rv));
+			gKlg = gKlg.wrap(rv);
+			rv = gKlg.value;
+			gKlg = gKlg.knowledge;
+		} catch(x) {
+			nul.failed(x);
+			gKlg = null;
+			reason = 'failed';
+		}
+		if(!gKlg || gKlg.ior3.length || 1!= gKlg.nbrLocals())	//kill globalKlg ?
+			throw nul.semanticException('KNW', 'The evaluation of '+name+' '+reason);
+		nul.execution.globalKlg = gKlg;
+		if(nul.debug.assert) assert(!rv.dependance().usages['global'],
+				'Knowning is enough to unreference global knowledge');
+		return rv;
+	},
+	
 	/**
 	 * Compile a text and understand it in a fresh execution context
 	 * @param {String} txt
@@ -92,24 +134,9 @@ merge(nul,
 	 * @throw {nul.semanticException}
 	 * @throw {nul.syntaxException} 
 	 */
-	read: function(txt)
+	read: function(txt, glbNm)
 	{
-		return nul.execution.benchmark.measure('*reading',function(){
-			try {
-				nul.execution.globalKlg = nul.execution.globalKlg.modifiable();
-				var rv = nul.subRead(txt, nul.execution.globalKlg);
-				if(nul.debug.assert) assert(nul.execution.globalKlg.summarised, 'Reading wrap and wrapping summarise');
-				var gKlg = new nul.xpr.knowledge('g');
-				return gKlg.merge(nul.execution.globalKlg, rv);
-			} catch(err) {
-				nul.execution.globalKlg = nul.klg.never;
-				nul.failed(err);
-				return nul.obj.empty;
-			} finally {
-				if(nul.klg.never!= nul.execution.globalKlg)
-					nul.execution.globalKlg = nul.execution.globalKlg.modifiable().pruned().built();
-			}
-		});
+		return nul.known(nul.data.query(nul.nulRead(txt, glbNm)), glbNm);
 	}
 });
 

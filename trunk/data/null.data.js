@@ -48,7 +48,7 @@ Object.extend(nul.data, /** @lends nul.data */{
 	query: function(obj) {
 		nul.obj.use(obj);
 		var usg = obj.dependance().usages;
-		while(!isEmpty(usg)) {
+		while(!isEmpty(usg, 'global')) {
 			var chsdCtx = null;
 			for(var d in usg) if(cstmNdx(d)) {
 				var ctx = nul.dependance.contexts[d];

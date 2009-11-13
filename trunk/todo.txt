@@ -14,15 +14,12 @@ X
 
 codeMirror paste twice Oo (chrome?)
 
-arbitre dans sortie html : un knowledge ? Oo
-
 brother["John"]
 ; brother = { x => y != x; father[x] = father[y]}
 ; father = { p.name => p.father ; p = .xml["xml/familly.xml"][<person />] }
 
 
 C:\Users\...\AppData\Local\Google\Chrome\Application\3.0.195.27\Resources\Inspector\Images
-http://marijn.haverbeke.nl/codemirror/manual.html
 
 {:f f Q x [] }
 
@@ -32,19 +29,6 @@ g => {:f g f x} ::: sous-set
 
 o::a { o.a _ }
 ::: noter l'autoref
-
-:::: Query doit se passer dans global aussi ?
-:::: idee : ne pas faire un simple .pruned() : enlever de 'global' tout ce qui est dans 'g' ... ?
-
-.document["#sandBox b"]
-::: bizarre a la reevaluation
-
-.time.now.wertyrt
-::: Si query renvoie failed (vide) : pq garder un klg global ?
-
-( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")
-::: fait iech le global : gerer les ior3 du global !!!
-
 
 .library.file["lib/cmplx.nul"]
 .library.file["lib/set.nul"]

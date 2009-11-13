@@ -439,7 +439,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	/**
 	 * When equivalence classes were modified by a browser, re-accede them for the access to be valid and for equivalence class to be consistant.
 	 */
-	reAccede: function($super) {
+	reAccede: function() {
 		var nwEqCls = this.eqCls;
 		var nwOppstn = this.veto;
 		this.veto = [];
@@ -508,7 +508,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  				!this.ior3.length &&			//There are no choices to make
  				!this.veto.length &&			//Nothing oppose to this knowledge
  				this.minMult == this.maxMult)	//This is not an undefined knowledge
- 			return nul.klg.unconditional(this.minMult, this.maxMult);
+ 			return nul.klg.unconditional(this.minMult);
  		//if(this.minMult < this.maxMult) this.undefined = nul.execution.name.gen('klg.undefined');
  		//No need : name differenciate different knowledges already
  		var rv = $super();

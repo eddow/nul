@@ -30,7 +30,7 @@ nul.data.ajax = {
 	},
 	loadNul : function(url) {
 		return nul.data.ajax.load(url,
-			function(t) { return nul.subRead(t.responseText, url); } );
+			function(t) { return nul.read(t.responseText, url); } );
 	}
 };
 

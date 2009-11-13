@@ -211,8 +211,7 @@ nul.understanding.base = Class.create(/** @lends nul.understanding.base# */{
 	initialize: function(prntUb, klgName) {
 		this.prntUb = prntUb;
 		this.parms = {};
-		if(nul.xpr.knowledge.is(klgName)) this.klg = klgName;
-		else this.klg = new nul.xpr.knowledge(klgName);
+		this.klg = new nul.xpr.knowledge(klgName);
 	},
 	/**
 	 * Gets the value associated with an identifier

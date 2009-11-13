@@ -175,7 +175,7 @@ function doTest(tn) {
 	var v, test = tbody.rows[tn].test;
 	nul.execution.reset('letBM');
 	try {
-		v = nul.data.query(nul.read(test.xpr)).toFlat();
+		v = nul.data.query(nul.nulRead(test.xpr)).toFlat();
 	} catch(err) {
 		nul.exception.notice(err);
 		if(nul.erroneusJS) throw nul.erroneusJS;

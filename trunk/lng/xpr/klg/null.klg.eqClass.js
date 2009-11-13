@@ -268,9 +268,9 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 					for(var ndx in eqc[cn][e].dependance().usage(klg).local)
 						if(!rv[ndx] || rv[ndx]<infl) rv[ndx] = infl;
 		};
-		subInfluence('equivls', 2);
 		subInfluence('belongs', 1);
-		subInfluence('attribs', 2);
+		subInfluence('equivls', 2);
+		subInfluence('attribs', 3);
 		return rv;
 	},
 	

@@ -161,7 +161,7 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 			else if(ior3) rv = ior3;
 			rv = rv?'('+rv+')':'';
 			if(1== this.minMult && 1== this.maxMult) return rv;
-			return nul.klg.unconditional(this).name + rv;
+			return '['+this.minMult+((this.minMult==this.maxMult)?'':('-'+this.maxMult))+']' + rv;
 		},
 		/**
 		 * @methodOf nul.klg.ior3#
