@@ -38,6 +38,8 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();
  		this.useLocalNames(deps.local);
  		
+ 		this.reAccede();	//TODO O: maintaint access while pruning instead of rebuilding it
+ 		
  		return this;
  	}.describe('Prune', function(value) {
 		return this.name+': ' + (value?(value.dbgHtml()+' ; '):'') + this.dbgHtml();

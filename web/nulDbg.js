@@ -7,6 +7,9 @@
  *--------------------------------------------------------------------------*/
 
 nul.load.debuger = function() {
+	$('knownCmd').disable();
+	$('resetCmd').disable();
+	$('queryCmd').disable();
 	selectNamedTab($('info'),$('infoTS').value);
 	nul.debug.logs.table = $('logs');
 	nul.debug.globalKlg = $('globalKlg');
@@ -22,7 +25,7 @@ nul.debuger = {
 	cmDone: function() {
 		nul.debuger.DOM.editor.grabKeys(nul.debuger.eventKeyDown, function(kc) { return [116,117,119].include(kc); } );
 		nul.debuger.getSrcText = function() { return nul.debuger.DOM.editor.getCode(); };
-		for(var i in window) knGlobs[i] = true;
+		for(var i in window) nul.debuger.knGlobs[i] = true;
 	},
 	eventKeyDown: function(e) {
 		if(!e.charCode && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && nul.debuger.shortcuts[e.keyCode]) { 
@@ -39,7 +42,8 @@ nul.debuger = {
 		nul.debuger.shortcuts = {
 			116: nul.debuger.reset,		//F5
 			117: nul.debuger.query,		//F6
-			119: nul.debuger.eval		//F8
+			119: nul.debuger.eval,		//F8
+			120: nul.debuger.known		//F9
 		};
 		nul.debuger.DOM.src.observe('keydown', nul.debuger.eventKeyDown);
 
@@ -54,29 +58,38 @@ nul.debuger = {
 		});
 	},
 	reset: function() {
+		$('resetCmd').disable();
 		nul.execution.reset();
 		nul.debuger.DOM.evd.innerHTML = '';
 		nul.debuger.DOM.qrd.innerHTML = '';
 	},
 
 	DOM: {},
-	eval: function() { nul.debuger.test(nul.debuger.tread, nul.debuger.DOM.evd, 'Evaluating...'); },
-	query: function() { nul.debuger.test(nul.debuger.tquery, nul.debuger.DOM.qrd, 'Querying...'); },
-	
-	tquery: function() { return nul.data.query($('queryCmd').query).toHtml(); },
-	tread: function() { 
-		var v = nul.read(nul.debuger.getSrcText());
-		$('queryCmd').query = v;
-		return v.toHtml();
-		var cpt = 0;
-		while('pair'== v.expression) {
-			++cpt;
-			v = v.second;
-		}
-		return cpt;
+	evaled: null,
+	eval: function() {
+		nul.debuger.test('Evaluating...', nul.debuger.DOM.evd, function() {
+			nul.debuger.evaled = nul.nulRead(nul.debuger.getSrcText());
+			if(nul.debuger.evaled.dependance().usages['global'])
+				$('knownCmd').enable();
+			return nul.debuger.evaled.toHtml();
+		});
+	},
+	query: function() {
+		if(!nul.debuger.evaled) return;
+		nul.debuger.test('Querying...', nul.debuger.DOM.qrd, function () {
+			return nul.data.query(nul.debuger.evaled).toHtml();
+		});
+	},
+	known: function() {
+		if(!nul.debuger.evaled || !nul.debuger.evaled.dependance().usages['global']) return;
+		$('knownCmd').disable();
+		$('resetCmd').enable();
+		nul.debuger.test('Knowing...', nul.debuger.DOM.evd, function() {
+			return nul.known(nul.debuger.evaled, 'this expression').toHtml();
+		});
 	},
 	
-	test: function(cb, dst, prgrsMsg)
+	test: function(prgrsMsg, dst, cb)
 	{
 		if(nul.debug) {	//Set the debug options as it is checked
 			if($('shwLogging').checked) {
@@ -93,9 +106,9 @@ nul.debuger = {
 		try {
 			nul.debuger.DOM.wtc.innerHTML = '';
 			dst.innerHTML = prgrsMsg;
-			$('queryCmd').writeAttribute('disabled','true');
+			$('queryCmd').disable();
 			dst.innerHTML = cb();
-			$('queryCmd').writeAttribute('disabled', null);
+			$('queryCmd').enable();
 		} catch( err ) {
 			nul.exception.notice(err);
 			dst.innerHTML = err.message;
@@ -104,65 +117,26 @@ nul.debuger = {
 		} finally {
 			nul.debug.applyTables();
 			nul.execution.benchmark.draw($('benchmark'));
-			assertSmGlobals();
+			nul.debuger.assertSmGlobals();
 		}
-	},
-	ea_syntax: function() {
-		return {
-			'COMMENT_SINGLE' : {1 : '//'},
-			'COMMENT_MULTI' : {'/*' : '*/'},
-			'QUOTEMARKS' : {1: '"'},
-			'KEYWORD_CASE_SENSITIVE' : true,
-			'KEYWORDS' : {},
-			'OPERATORS' : nul.tokenizer.operators.without('::', '.'),
-			'DELIMITERS' :[
-				'(', ')', '[', ']', '{', '}'
-			],
-			'REGEXPS' : {
-				/*'ior3' : {
-					'search' : '()(\\[\\])()'
-					,'class' : 'ior3'
-					,'modifiers' : 'g'
-					,'execute' : 'before'
-				},*/
-				'phi' : {
-					'search' : '()(\\{\\})()'
-					,'class' : 'phi'
-					,'modifiers' : 'g'
-					,'execute' : 'before'
-				},
-				'attribute' : {
-					'search' : '(::|\\.)([_\\w@]+)()'
-					,'class' : 'attribute'
-					,'modifiers' : 'g'
-					,'execute' : 'after'
-				},
-				'attributer' : {
-					'search' : '()(::|\\.)()'
-					,'class' : 'attributer'
-					,'modifiers' : 'g'
-					,'execute' : 'after'
-				}
-			},
-			'STYLES' : {
-				'COMMENTS': 'color: #AAAAAA;'
-				,'QUOTESMARKS': 'color: #6381F8;'
-				,'KEYWORDS' : {}
-				,'OPERATORS' : 'color: #c00020;'
-				,'DELIMITERS' : 'color: #e038E1;'
-				,'REGEXPS' : {
-					//'ior3' : 'color: #c00020;'
-					'attribute' : 'color: #009900;',
-					'attributer' : 'color: #d08000;',
-					'phi' : 'color: #ff1080;'
-				}
-			}
-		};
 	},
 	watch: function(v)
 	{
 		nul.debuger.DOM.wtc.innerHTML = v.toHtml();
+	},
+	
+	knGlobs: {},
+	ignGlobs: {},
+	assertSmGlobals: function() {
+		var nwGlb = [];
+		for(var i in window)
+			if(!nul.debuger.knGlobs[i] && !nul.debuger.ignGlobs[i] && '_fire'!= i.substr(0,5).toLowerCase()) {
+				nwGlb.push(i);
+				nul.debuger.ignGlobs[i] = true;
+			}
+		if(0<nwGlb.length) alert('Unexpected global(s) created : ' + nwGlb.join(', ')); 
 	}
+	
 };
 
 function selectNamedTab(elm, tnm) {
@@ -182,17 +156,6 @@ function shwDbgOptClk() {
 	else $('shwLoggingFS').addClassName('collapsed');
 	if($('dbgBreak').checked) $('dbgBreakFS').removeClassName('collapsed');
 	else $('dbgBreakFS').addClassName('collapsed');
-}
-
-var knGlobs = {}, ignGlobs = {};
-function assertSmGlobals() {
-	var nwGlb = [];
-	for(var i in this)
-		if(!knGlobs[i] && !ignGlobs[i] && '_fire'!= i.substr(0,5).toLowerCase()) {
-			nwGlb.push(i);
-			ignGlobs[i] = true;
-		}
-	if(0<nwGlb.length) alert('Unexpected global(s) created : ' + nwGlb.join(', ')); 
 }
 
 function nw(v) { nul.debuger.watch(v); return 'drawn'; }

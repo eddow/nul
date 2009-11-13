@@ -71,7 +71,8 @@ nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.repres
 	 * @param {Access} access The access to use to replace values
 	 */
 	initialize: function($super, klg) {
-		this.tbl = klg.access;
+		nul.klg.is(klg);
+		this.tbl = klg.access || klg.summarised.access;
 		this.dbgName = klg.name;
 		$super('Representation');
 		this.prepStack = [];

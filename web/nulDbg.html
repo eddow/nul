@@ -18,8 +18,9 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 	<div id="dbgOptions">
 		<fieldset>
 		<legend>Debug ...</legend>
-			<input type="button" onclick="nul.debuger.eval();" value="Eval" title="F8" />
-			<input type="button" onclick="nul.debuger.reset();" value="Reset" title="F5" />
+			<input type="button" onclick="nul.debuger.eval();" value="Eval" title="F8" /><br/>
+			<input type="button" onclick="nul.debuger.reset();" value="Reset" id="resetCmd" title="F5" /><br/>
+			<input type="button" onclick="nul.debuger.known();" value="Know" id="knownCmd" title="F9" />			
 			<fieldset id="dbgBreakFS">
 				<legend>
 					<input id="dbgBreak" type="checkbox" onclick="shwDbgOptClk();" checked="checked" />
@@ -65,7 +66,7 @@ NUL is freely distributable under the terms of GNU GPLv3 license.
 			<div class="msTab" name="tab_glbKlg" id="globalKlg">
 			</div>
 			<div class="msTab" name="tab_values">
-				<input type="button" onclick="nul.debuger.query();" value="Query" disabled="true" id="queryCmd" title="F6" /><br />
+				<input type="button" onclick="nul.debuger.query();" value="Query" id="queryCmd" title="F6" /><br />
 				<div id="sandBox"><b t="3">yh</b><i t="4">oo</i></div><br />
 				<div id="queried"></div>
 			</div>

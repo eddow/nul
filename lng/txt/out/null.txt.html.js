@@ -261,12 +261,11 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 			else if(ior3) rv = ior3;
 			if(rv && veto) rv += html.op('&and;')+html.op('&not;') + veto;
 			else if(veto) rv = html.op('&not;') + veto;
-			rv = {
+			return {
 				'': rv?(html.op('(')+rv+html.op(')')):'',
 				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):''),
-				arbitre: nul.klg.unconditional(this).name
+				arbitre: '['+this.minMult+((this.minMult==this.maxMult)?'':('-'+this.maxMult))+']'
 			};
-			return rv;
 		},
 		/**
 		 * @methodOf nul.klg.ior3#

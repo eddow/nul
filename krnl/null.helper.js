@@ -258,6 +258,17 @@ Class.Methods.is= function(obj) {
 };
 
 /** @ignore */
+Element.addMethods({
+	enable: function(elm, tf) {
+		if(Object.isUndefined(tf)) tf = true;
+		elm.writeAttribute('disabled',tf?null:'true');
+	},
+	disable: function(elm, tf) {
+		if(Object.isUndefined(tf)) tf = true;
+		elm.enable(!tf);
+	}
+});
+/** @ignore */
 Element.addMethods(['TABLE', 'tbody'], {
 	nbrRows: function(tbl) {
 		return tbl.rows?tbl.rows.length:0;
