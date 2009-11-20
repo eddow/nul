@@ -29,9 +29,9 @@ nul.execution = {
 		 * @type {nul.xpr.knowledge}
 		 */
 		nul.execution.globalKlg = new nul.xpr.knowledge('global');
-		nul.execution.uberLocal = nul.execution.globalKlg.newLocal('überLocal');	//TODO 2: use string ndx
-		nul.execution.globalKlg.rocks = new nul.dependance(nul.execution.uberLocal);
-		nul.execution.globalKlg.impossible = function() { nul.execution.globalKlg = nul.klg.never; };
+		nul.execution.uberLocal = nul.execution.globalKlg.newLocal('überLocal');	//TODO 2: use string ndx?
+		nul.execution.evalLocal = nul.execution.globalKlg.newLocal('evalLocal');	//TODO 2: use string ndx?
+		nul.execution.globalKlg.attributed(nul.execution.uberLocal, {eval: nul.execution.evalLocal});
 	},
 	/**
 	 * Called once nul.globals is made, to close the construction of the primordial globalKlg
@@ -39,7 +39,6 @@ nul.execution = {
 	ready: function() {
 		if(!isEmpty(nul.globals)) nul.execution.globalKlg.attributed(nul.execution.uberLocal, nul.globals);
 		nul.execution.globalKlg.built();
-		nul.debug.applyTables();
 	},
 	/**
 	 * Reset the namespaces, the debug state, the erroneus state and the benchmarks(if not specified else)
@@ -131,6 +130,17 @@ nul.execution = {
 				rw.insertCell(1).innerHTML = cs[i][1];
 			}
 		}
+	},
+	
+	/**
+	 * Called when the page should have a fixed value (when all libs are loaded)
+	 * @throw {nul.semanticException}
+	 */
+	existOnce: function() {
+		//TODO 2: verify that all attribs of evalLocal are context-free from 'global'
+		if(nul.execution.globalKlg.ior3.length || 2!= nul.execution.globalKlg.nbrLocals())	//kill globalKlg ?
+			//TODO 2: specify which .attr is too fuzzy
+			throw nul.semanticException('GLB', 'The global knowledge is too fuzzy');
 	}
 };
 
@@ -154,7 +164,7 @@ else
 	};
 
 nul.load.globalKnowledge = nul.execution.createGlobalKlg;
-nul.load.globalKnowledge.use = {'debuger': true};
 
 nul.load.executionReady = nul.execution.ready;
 nul.load.executionReady.use = {'nul.globals': true};
+nul.load.executionReady.use = {'globalKnowledge': true};

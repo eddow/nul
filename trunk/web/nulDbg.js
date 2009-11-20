@@ -16,9 +16,11 @@ nul.load.debuger = function() {
 	shwDbgOptClk();
 
 	nul.debuger.init();
+	nul.debug.applyTables();
+	nul.debug.reset();
 };
-
 nul.load.debuger.use = {operators:true};
+nul.load.debuger.use = {page:true};
 
 nul.debuger = {
 	getSrcText: function() { return nul.debuger.DOM.src.value; },
@@ -69,8 +71,7 @@ nul.debuger = {
 	eval: function() {
 		nul.debuger.test('Evaluating...', nul.debuger.DOM.evd, function() {
 			nul.debuger.evaled = nul.nulRead(nul.debuger.getSrcText());
-			if(nul.debuger.evaled.dependance().usages['global'])
-				$('knownCmd').enable();
+			$('knownCmd').enable();
 			return nul.debuger.evaled.toHtml();
 		});
 	},
@@ -81,11 +82,11 @@ nul.debuger = {
 		});
 	},
 	known: function() {
-		if(!nul.debuger.evaled || !nul.debuger.evaled.dependance().usages['global']) return;
+		if(!nul.debuger.evaled) return;
 		$('knownCmd').disable();
 		$('resetCmd').enable();
 		nul.debuger.test('Knowing...', nul.debuger.DOM.evd, function() {
-			return nul.known(nul.debuger.evaled, 'this expression').toHtml();
+			return nul.known(nul.debuger.evaled, 'g'+nul.execution.name.gen('nul.debuger.eval')).toHtml();
 		});
 	},
 	

@@ -27,8 +27,10 @@ nul.load.page = function() {
 		var nulScripts = $A(elm.select('script[type="text/nul"]'));
 		for(var s=0; nulScripts[s]; ++s) {
 			var val;
-			if(nulScripts[s].src) val = nul.data.ajax.loadNul(nulScripts[s].src);
-			else val = nul.read(nulScripts[s].text, 'script');	//TODO 1:Name script?
+			if(nulScripts[s].src) val = nul.data.ajax.loadNul(nulScripts[s].src, nulScripts[s].readAttribute('id'));
+			else val = nul.read(nulScripts[s].text,
+				nulScripts[s].readAttribute('id') ||
+				'script'+nul.execution.name.gen('nul.debuger.eval'));
 			//We don't really use the value afterward
 		}
 		var nulNodes = $A(elm.select('nul'));

@@ -118,7 +118,7 @@ nul.solve.information = function(dps, jgmnt, jgEC, choice, klg) {
 //3- attributes collision	
 	var aClsnsPoints = 0;	
 	//TOTEST
-	var acs = choice.summarised.access || {};
+	var acs = choice.info();
 	for(var ec=0; jgEC[ec]; ++ec) {
 		var attr = map(jgEC[ec].attribs, function() { return [this]; });
 		for(var eq=0; jgEC[ec].equivls[eq]; ++eq) {

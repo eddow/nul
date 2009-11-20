@@ -279,7 +279,6 @@ nul.understanding.base.set = Class.create(nul.understanding.base, /** @lends nul
 			rv = nul.obj.pair.list(null, this.klg.wrap(cnt.understand(this)));
 		} catch(err) {
 			nul.failed(err);
-			this.klg.impossible();
 			return nul.obj.empty;
 		}
 		if(this.setSelfRef) rv.selfRef = this.setSelfRef;

@@ -14,11 +14,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	 * @param {String} klgName [optional] Knowledge name
 	 */
 	initialize: function($super, klgName, n, x) {
-		/**
-		 * Describe the dependance that are kept even if it never appears
-		 * @type Number
-		 */
-		this.rocks = new nul.dependance();
  		/**
  		 * Describe the used localspace
  		 * @type String[]
@@ -68,12 +63,18 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	//TODO C
 	mul: function(n, x) { return this.arythm('*', n, x); },
 
+	/**
+	 * Retrieve the equivalence class that describe obj
+	 * @param {nul.xpr.object|null} obj
+	 * @return {nul.xpr.eqClass|null} if obj was specified
+	 * @return {nul.xpr.eqClass[String]} if obj was not specified
+	 */
+	info: function(obj) {
+		var atbl = this.summarised?this.summarised.access:this.access;
+		return obj?atbl[obj]:atbl;
+	},
+	
 //////////////// privates
-
- 	/**
- 	 * Called when this knowledge leads to impossibility
- 	 */
- 	impossible: function() {},
  	
  	/**
  	 * Remove the 'access' data used for knowledge modification.
@@ -179,7 +180,6 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		comps.pushs(this.eqCls, this.ior3);
 		for(var c=0; c<comps.length; ++c)
 			rv.also(comps[c].dependance());
-		rv.also(this.rocks);
 		return rv.use(this);
 	},
 
@@ -314,7 +314,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	attribute: function(e, anm) {
  		nul.obj.use(e);
  		if(e.defined) return e.attribute(anm, this);
-		var ec = this.access[e];
+		var ec = this.info(e);
 		if(ec && ec.attribs[anm]) return ec.attribs[anm];
 		var rv = this.newLocal('&rarr;'+anm);
 		this.attributed(e, anm, rv);
