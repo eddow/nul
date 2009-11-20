@@ -40,7 +40,7 @@ set::sigma
 ::: devrait noter l'auto-ref
 
 document["#sandBox"](text _)
-xml["test.xml"](text _)
+xml["xml/test.xml"](text _)
 
 
 x 1

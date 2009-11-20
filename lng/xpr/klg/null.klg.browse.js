@@ -72,7 +72,7 @@ nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.repres
 	 */
 	initialize: function($super, klg) {
 		nul.klg.is(klg);
-		this.tbl = klg.access || klg.summarised.access;
+		this.tbl = klg.info();
 		this.dbgName = klg.name;
 		$super('Representation');
 		this.prepStack = [];

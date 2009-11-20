@@ -30,11 +30,19 @@ nul = {
 				}
 				if(urlOption('nocache')) nul.loading.suffix = '?'+(new Date()).getTime();
 				nul.loading.addNexScriptRef();
-				nul.loading.addRef('link', {href: nul.rootPath+'lng/null.css', rel: 'stylesheet', type: 'text/css'});
+				while(nul.loading.styles.length) nul.loading.addRef('link', {
+					href: nul.rootPath+nul.loading.styles.shift()+'.css',
+					rel: 'stylesheet', type: 'text/css'
+				});
 			}
 		}
 	}
 };
+
+nul.loading.styles = [
+'web/null.page',
+'lng/txt/out/null.txt.clpsSstm'
+];
 
 nul.loading.files = [
 '3rd/prototype',	//must be first

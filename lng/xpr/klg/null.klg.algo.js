@@ -22,7 +22,6 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 		var i;
 		for(i in this.ior3) if(cstmNdx(i) && this.ior3[i]) vdps.also(this.ior3[i].dependance());
 		for(i in this.veto) if(cstmNdx(i) && this.veto[i]) vdps.also(this.veto[i].dependance());
-		vdps.also(this.rocks);
 		vdps = this.localNeed(vdps.usage(this).local);
 
 		//Remove useless equivalence class specifications

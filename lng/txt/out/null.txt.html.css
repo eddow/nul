@@ -5,24 +5,6 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
-a.collapser {
-	text-decoration: none;
-	cursor: pointer;
-	background-color: white;
-	border: 1px solid black;
-	font-size: 0.6em;
-}
-tr.collapsed {
-	display: none;
-}
-
-tr span.collapser { display: inline; }
-tr span.uncollapser { display: none; }
-tr.uncollapsing span.collapser.end { display: none; }
-tr.uncollapsing span.uncollapser.end { display: inline; }
-tr.unsubcollapsing span.collapser.start { display: none; }
-tr.unsubcollapsing span.uncollapser.start { display: inline; }
 
 table.attributes {
 	display: inline-block;
@@ -102,6 +84,8 @@ span.failure {
 	vertical-align: text-bottom;
 }
 
+/* Decorqtive tiles */
+
 a.shortStr, a.index, a.locals, a.dependances, a.reference, a.arbitre {
 	display: table-cell;
 	font-size: 4px;
@@ -162,21 +146,9 @@ div.dependances {
 	padding-top: 2.5em;
 }
 
-/*
-.belongs {
-	border-color: firebrick;
-	background-color: plum;
-}
-
-*/
-
 .dependances table {
 	empty-cells: show;
 }
 .dependances th {
 	border-right: 1px solid black;
-}
-div.shortStr.level {
-	left: -1.3em;
-	padding: 2px;
 }

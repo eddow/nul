@@ -28,9 +28,9 @@ nul.data.ajax = {
 		});
 		return objFct(rq.transport);
 	},
-	loadNul : function(url) {
+	loadNul : function(url, id) {
 		return nul.data.ajax.load(url,
-			function(t) { return nul.read(t.responseText, url); } );
+			function(t) { return nul.read(t.responseText, id || url); } );
 	}
 };
 

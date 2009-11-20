@@ -6,6 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO 3: parser les CDATA et <!-- -->
+
 /**
  * Defines a set of compiled items
  * @class

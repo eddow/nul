@@ -90,13 +90,15 @@ merge(nul,
 	 */
 	xmlRead: function(txt, glbNm)
 	{
-		return nul.compile.xml(txt).mar(function() {
-			try {
-				return nul.understand(this, glbNm).listed();
-			} catch(x) {
-				nul.failed(x);
-				return [];
-			}
+		return nul.execution.benchmark.measure('*reading',function(){
+			return nul.compile.xml(txt).mar(function() {
+				try {
+					return nul.understand(this, glbNm).listed();
+				} catch(x) {
+					nul.failed(x);
+					return [];
+				}
+			});
 		});
 	},
 
@@ -108,22 +110,19 @@ merge(nul,
 	known: function(set, name) {
 		var gKlg = nul.execution.globalKlg.modifiable();
 		var rv = gKlg.newLocal('known');
-		var reason = 'is too fuzzy';
 		try {
-			gKlg.hesitate(set.having(rv));
-			gKlg = gKlg.wrap(rv);
-			rv = gKlg.value;
-			gKlg = gKlg.knowledge;
+			var tattr = {};
+			tattr[name] = gKlg.hesitate(set.having(rv));
+			gKlg.attributed(nul.execution.evalLocal, tattr);
+			gKlg = gKlg.wrap(nul.execution.uberLocal).knowledge;
+			rv = gKlg.attribute(nul.execution.evalLocal, name);
 		} catch(x) {
 			nul.failed(x);
-			gKlg = null;
-			reason = 'failed';
+			throw nul.semanticException('KNW', 'The evaluation of '+name+' failed');
 		}
-		if(!gKlg || gKlg.ior3.length || 1!= gKlg.nbrLocals())	//kill globalKlg ?
-			throw nul.semanticException('KNW', 'The evaluation of '+name+' '+reason);
 		nul.execution.globalKlg = gKlg;
-		if(nul.debug.assert) assert(!rv.dependance().usages['global'],
-				'Knowning is enough to unreference global knowledge');
+		/*if(nul.debug.assert) assert(!rv.dependance().usages['global'],
+				'Knowning is enough to unreference global knowledge');*/
 		return rv;
 	},
 	
