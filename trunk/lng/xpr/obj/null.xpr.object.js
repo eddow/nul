@@ -45,7 +45,7 @@ nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
 					'Self-reference consistence.');*/
 			if(rv.usages[nul.obj.local.self.ref] && rv.usages[nul.obj.local.self.ref].local[this.selfRef]) {
 				delete rv.usages[nul.obj.local.self.ref].local[this.selfRef];
-				if(!rv.usages[nul.obj.local.self.ref].local.length)
+				if(isEmpty(rv.usages[nul.obj.local.self.ref].local))
 					delete rv.usages[nul.obj.local.self.ref];
 			} else delete this.selfRef;
 		}

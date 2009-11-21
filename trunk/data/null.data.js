@@ -50,7 +50,7 @@ Object.extend(nul.data, /** @lends nul.data */{
 		var usg = obj.dependance().usages;
 		while(!isEmpty(usg, 'global')) {
 			var chsdCtx = null;
-			for(var d in usg) if(cstmNdx(d)) {
+			for(var d in ownNdx(usg)) {
 				var ctx = nul.dependance.contexts[d];
 				nul.data.context.is(ctx);
 				if(!chsdCtx || ctx.distance < chsdCtx.distance)

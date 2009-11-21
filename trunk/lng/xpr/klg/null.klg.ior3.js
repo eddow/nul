@@ -25,13 +25,13 @@ nul.klg.ior3 = Class.create(nul.expression, /** @lends nul.klg.ior3# */{
 	minXst: nul.summary('minXst'), 	
 	sum_maxXst: function() {
 		var rv = 0;
-		for(var h in this.choices) if(cstmNdx(h))
+		for(var h in ownNdx(this.choices))
 			rv += this.choices[h].maxXst();
 		return rv;
 	},
 	sum_minXst: function() {
 		var rv = 0;
-		for(var h in this.choices) if(cstmNdx(h))
+		for(var h in ownNdx(this.choices))
 			rv += this.choices[h].minXst();
 		return rv;
 	},

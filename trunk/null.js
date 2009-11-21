@@ -46,6 +46,7 @@ nul.loading.styles = [
 
 nul.loading.files = [
 '3rd/prototype',	//must be first
+'3rd/jquery',	//must be first
 
 'krnl/null.helper',
 'krnl/null.std',

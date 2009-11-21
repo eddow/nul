@@ -20,8 +20,8 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 		
 		if(value) vdps.also(value.dependance());
 		var i;
-		for(i in this.ior3) if(cstmNdx(i) && this.ior3[i]) vdps.also(this.ior3[i].dependance());
-		for(i in this.veto) if(cstmNdx(i) && this.veto[i]) vdps.also(this.veto[i].dependance());
+		for(i in ownNdx(this.ior3)) vdps.also(this.ior3[i].dependance());
+		for(i in ownNdx(this.veto)) vdps.also(this.veto[i].dependance());
 		vdps = this.localNeed(vdps.usage(this).local);
 
 		//Remove useless equivalence class specifications
@@ -92,8 +92,7 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 			//Compute influence from other knowledge.
 			// If influence from several elements, influence the whole class
 			// If influence from only one element, influence the class without that element 
-			for(var e in elms) if(cstmNdx(e) &&
-				('local'!= elms[e].expression || this.name!= elms[e].klgRef)) {
+			for(var e in ownNdx(elms)) if('local'!= elms[e].expression || this.name!= elms[e].klgRef) {
 					extInfl = extInfl?true:e;
 					if(true=== extInfl) break;
 				}
@@ -106,7 +105,7 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 			
 			if(extInfl) //If this refer to something defined in another context
 				toNeed.pushs(influence(ec.influence(this, extInfl), lcls));
-			if(true!== extInfl) for(var e in elms) if(cstmNdx(e)) {
+			if(true!== extInfl) for(var e in ownNdx(elms)) {
 				//For each usage of this element, influence each other usage of the eqclass
 				for(var srcNdx in elms[e].dependance().usage(this).local)
 					lclInfl[srcNdx] = ec.influence(this, e, extInfl, lclInfl[srcNdx]);

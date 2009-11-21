@@ -156,9 +156,9 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 		var specBnd = function(s, inf) { return Object.isUndefined(s)?inf:('string'== typeof s)?parseInt(s):s; };
 		this.lower = specBnd(lwr, ninf);
 		this.upper = specBnd(upr, pinf);
-		if(ninf== this.lower || pinf== this.upper) this.length = pinf;
-		else if(pinf== this.lower) this.length = 0;
-		else this.length = this.upper-this.lower+1;
+		//if(ninf== this.lower || pinf== this.upper) this.length = pinf;
+		//else if(pinf== this.lower) this.length = 0;
+		//else this.length = this.upper-this.lower+1;
 		
 		$super();
 	},

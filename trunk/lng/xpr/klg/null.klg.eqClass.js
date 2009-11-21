@@ -264,7 +264,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 		};
 		var subInfluence = function(cn, infl) {
 			if(destSelect(cn))
-				for(var e in eqc[cn]) if(cstmNdx(e) && destSelect(cn, e))
+				for(var e in ownNdx(eqc[cn])) if(destSelect(cn, e))
 					for(var ndx in eqc[cn][e].dependance().usage(klg).local)
 						if(!rv[ndx] || rv[ndx]<infl) rv[ndx] = infl;
 		};

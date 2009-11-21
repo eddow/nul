@@ -15,7 +15,8 @@ nul.exception = function(type, code, msg, chrct)
 	var err = { nul: true, type: type, message: msg, code: code, chrct: chrct };
 	if(!nul.erroneus) nul.erroneus = err;
 	else nul.erroneus.follow = err;
-	nul.debug.log('error')('Error', type, msg);
+	try { nul.debug.log('error')('Error', type, msg); }
+	catch(err) { alert('Error on exception Log : ', err); }
 	return nul.erroneus;
 };
 
@@ -24,7 +25,7 @@ nul.exception = function(type, code, msg, chrct)
  */
 nul.exception.notice = function(err)
 {
-	if(err.fileName && err.stack && !nul.erroneus) {
+	if(((err.fileName && err.stack) || 'number'== typeof err.number) && !nul.erroneus) {
 		nul.internalException('Javascript error : '+err.message);
 		nul.erroneusJS = err;
 	}
