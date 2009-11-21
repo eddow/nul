@@ -10,7 +10,7 @@ function method(obj, name) {
 }
 
 // The value used to signal the end of a sequence in iterators.
-var StopIteration = {toString: function() {return "StopIteration"}};
+var StopIteration = {toString: function() {return "StopIteration";}};
 
 // Apply a function to each element in a sequence.
 function forEach(iter, f) {

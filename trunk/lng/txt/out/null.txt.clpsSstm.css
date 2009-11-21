@@ -21,5 +21,5 @@ tr span.collapser { display: inline; }
 tr span.uncollapser { display: none; }
 tr.uncollapsing span.collapser.end { display: none; }
 tr.uncollapsing span.uncollapser.end { display: inline; }
-tr.unsubcollapsing span.collapser.start { display: none; }
-tr.unsubcollapsing span.uncollapser.start { display: inline; }
+tr.unsubcollapsing span.start.collapser { display: none; }
+tr.unsubcollapsing span.start.uncollapser { display: inline; }

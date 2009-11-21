@@ -188,7 +188,7 @@ History.prototype = {
 
   // Notify the editor that some nodes have changed.
   notifyDirty: function(nodes) {
-    forEach(nodes, method(this.editor, "addDirtyNode"))
+    forEach(nodes, method(this.editor, "addDirtyNode"));
     this.editor.scheduleHighlight();
   },
 

@@ -18,7 +18,7 @@ var Prototype = {
       WebKit:         ua.indexOf('AppleWebKit/') > -1,
       Gecko:          ua.indexOf('Gecko') > -1 && ua.indexOf('KHTML') === -1,
       MobileSafari:   /Apple.*Mobile.*Safari/.test(ua)
-    }
+    };
   })(),
 
   BrowserFeatures: {
@@ -50,7 +50,7 @@ var Prototype = {
   JSONFilter: /^\/\*-secure-([\s\S]*)\*\/\s*$/,
 
   emptyFunction: function() { },
-  K: function(x) { return x }
+  K: function(x) { return x; }
 };
 
 if (Prototype.Browser.MobileSafari)
@@ -289,7 +289,7 @@ Object.extend(Function.prototype, (function() {
     return function() {
       var a = merge(args, arguments);
       return __method.apply(context, a);
-    }
+    };
   }
 
   function bindAsEventListener(context) {
@@ -297,7 +297,7 @@ Object.extend(Function.prototype, (function() {
     return function(event) {
       var a = update([event || window.event], args);
       return __method.apply(context, a);
-    }
+    };
   }
 
   function curry() {
@@ -306,12 +306,12 @@ Object.extend(Function.prototype, (function() {
     return function() {
       var a = merge(args, arguments);
       return __method.apply(this, a);
-    }
+    };
   }
 
   function delay(timeout) {
     var __method = this, args = slice.call(arguments, 1);
-    timeout = timeout * 1000
+    timeout = timeout * 1000;
     return window.setTimeout(function() {
       return __method.apply(__method, args);
     }, timeout);
@@ -327,7 +327,7 @@ Object.extend(Function.prototype, (function() {
     return function() {
       var a = update([__method.bind(this)], arguments);
       return wrapper.apply(this, a);
-    }
+    };
   }
 
   function methodize() {
@@ -348,7 +348,7 @@ Object.extend(Function.prototype, (function() {
     defer:               defer,
     wrap:                wrap,
     methodize:           methodize
-  }
+  };
 })());
 
 
@@ -422,7 +422,7 @@ Object.extend(String.prototype, (function() {
   function prepareReplacement(replacement) {
     if (Object.isFunction(replacement)) return replacement;
     var template = new Template(replacement);
-    return function(match) { return template.evaluate(match) };
+    return function(match) { return template.evaluate(match); };
   }
 
   function gsub(pattern, replacement) {
@@ -492,7 +492,7 @@ Object.extend(String.prototype, (function() {
   }
 
   function evalScripts() {
-    return this.extractScripts().map(function(script) { return eval(script) });
+    return this.extractScripts().map(function(script) { return eval(script); });
   }
 
   function escapeHTML() {
@@ -1020,7 +1020,7 @@ Array.from = $A;
 
   function intersect(array) {
     return this.uniq().findAll(function(item) {
-      return array.detect(function(value) { return item === value });
+      return array.detect(function(value) { return item === value; });
     });
   }
 
@@ -1100,7 +1100,7 @@ Array.from = $A;
 
   var CONCAT_ARGUMENTS_BUGGY = (function() {
     return [].concat(arguments)[0][0] !== 1;
-  })(1,2)
+  })(1,2);
 
   if (CONCAT_ARGUMENTS_BUGGY) arrayProto.concat = concat;
 
@@ -1313,9 +1313,9 @@ var ObjectRange = Class.create(Enumerable, (function() {
 var Ajax = {
   getTransport: function() {
     return Try.these(
-      function() {return new XMLHttpRequest()},
-      function() {return new ActiveXObject('Msxml2.XMLHTTP')},
-      function() {return new ActiveXObject('Microsoft.XMLHTTP')}
+      function() {return new XMLHttpRequest();},
+      function() {return new ActiveXObject('Msxml2.XMLHTTP');},
+      function() {return new ActiveXObject('Microsoft.XMLHTTP');}
     ) || false;
   },
 
@@ -1352,8 +1352,8 @@ Ajax.Responders = {
 Object.extend(Ajax.Responders, Enumerable);
 
 Ajax.Responders.register({
-  onCreate:   function() { Ajax.activeRequestCount++ },
-  onComplete: function() { Ajax.activeRequestCount-- }
+  onCreate:   function() { Ajax.activeRequestCount++; },
+  onComplete: function() { Ajax.activeRequestCount--; }
 });
 Ajax.Base = Class.create({
   initialize: function(options) {
@@ -1463,7 +1463,7 @@ Ajax.Request = Class.create(Ajax.Base, {
         for (var i = 0, length = extras.length; i < length; i += 2)
           headers[extras[i]] = extras[i+1];
       else
-        $H(extras).each(function(pair) { headers[pair.key] = pair.value });
+        $H(extras).each(function(pair) { headers[pair.key] = pair.value; });
     }
 
     for (var name in headers)
@@ -1478,7 +1478,7 @@ Ajax.Request = Class.create(Ajax.Base, {
   getStatus: function() {
     try {
       return this.transport.status || 0;
-    } catch (e) { return 0 }
+    } catch (e) { return 0; }
   },
 
   respondToReadyState: function(readyState) {
@@ -1581,7 +1581,7 @@ Ajax.Response = Class.create({
   getStatusText: function() {
     try {
       return this.transport.statusText || '';
-    } catch (e) { return '' }
+    } catch (e) { return ''; }
   },
 
   getHeader: Ajax.Request.prototype.getHeader,
@@ -1589,7 +1589,7 @@ Ajax.Response = Class.create({
   getAllHeaders: function() {
     try {
       return this.getAllResponseHeaders();
-    } catch (e) { return null }
+    } catch (e) { return null; }
   },
 
   getResponseHeader: function(name) {
@@ -1883,7 +1883,7 @@ Element.Methods = {
           }
           Element._getContentFromAnonymousElement(tagName, content.stripScripts())
             .each(function(node) {
-              element.appendChild(node)
+              element.appendChild(node);
             });
         }
         else {
@@ -2070,7 +2070,7 @@ Element.Methods = {
     element = $(element);
     var id = Element.readAttribute(element, 'id');
     if (id) return id;
-    do { id = 'anonymous_element_' + Element.idCounter++ } while ($(id));
+    do { id = 'anonymous_element_' + Element.idCounter++; } while ($(id));
     Element.writeAttribute(element, 'id', id);
     return id;
   },
@@ -2495,8 +2495,8 @@ else if (Prototype.Browser.IE) {
   Element.Methods.getOffsetParent = Element.Methods.getOffsetParent.wrap(
     function(proceed, element) {
       element = $(element);
-      try { element.offsetParent }
-      catch(e) { return $(document.body) }
+      try { element.offsetParent; }
+      catch(e) { return $(document.body); }
       var position = element.getStyle('position');
       if (position !== 'static') return proceed(element);
       element.setStyle({ position: 'relative' });
@@ -2510,8 +2510,8 @@ else if (Prototype.Browser.IE) {
     Element.Methods[method] = Element.Methods[method].wrap(
       function(proceed, element) {
         element = $(element);
-        try { element.offsetParent }
-        catch(e) { return Element._returnOffset(0,0) }
+        try { element.offsetParent; }
+        catch(e) { return Element._returnOffset(0,0); }
         var position = element.getStyle('position');
         if (position !== 'static') return proceed(element);
         var offsetParent = element.getOffsetParent();
@@ -2527,8 +2527,8 @@ else if (Prototype.Browser.IE) {
 
   Element.Methods.cumulativeOffset = Element.Methods.cumulativeOffset.wrap(
     function(proceed, element) {
-      try { element.offsetParent }
-      catch(e) { return Element._returnOffset(0,0) }
+      try { element.offsetParent; }
+      catch(e) { return Element._returnOffset(0,0); }
       return proceed(element);
     }
   );
@@ -2658,7 +2658,7 @@ else if (Prototype.Browser.IE) {
           }
         }
       }
-    }
+    };
   })();
 
   Element._attributeTranslations.write = {
@@ -2731,7 +2731,7 @@ else if (Prototype.Browser.IE) {
         if (arguments.length == 1) return element.firstDescendant();
         return Object.isNumber(expression) ? _descendants(element)[expression] :
           Element.select(element, expression)[index || 0];
-      }
+      };
     })();
   }
 
@@ -2797,9 +2797,9 @@ if ('outerHTML' in document.documentElement) {
       var fragments = Element._getContentFromAnonymousElement(tagName, content.stripScripts());
       parent.removeChild(element);
       if (nextSibling)
-        fragments.each(function(node) { parent.insertBefore(node, nextSibling) });
+        fragments.each(function(node) { parent.insertBefore(node, nextSibling); });
       else
-        fragments.each(function(node) { parent.appendChild(node) });
+        fragments.each(function(node) { parent.appendChild(node); });
     }
     else element.outerHTML = content.stripScripts();
 
@@ -2819,7 +2819,7 @@ Element._getContentFromAnonymousElement = function(tagName, html) {
   var div = new Element('div'), t = Element._insertionTranslations.tags[tagName];
   if (t) {
     div.innerHTML = t[0] + html + t[1];
-    t[2].times(function() { div = div.firstChild });
+    t[2].times(function() { div = div.firstChild; });
   } else div.innerHTML = html;
   return $A(div.childNodes);
 };
@@ -2877,7 +2877,7 @@ Object.extend(Element, Element.Methods);
 
   div = null;
 
-})(document.createElement('div'))
+})(document.createElement('div'));
 
 Element.extend = (function() {
 
@@ -2919,7 +2919,7 @@ Element.extend = (function() {
           }
         }
         return element;
-      }
+      };
     }
     return Prototype.K;
   }
@@ -3081,7 +3081,7 @@ document.viewport = {
 
     property[D] = 'client' + D;
 
-    viewport['get' + D] = function() { return element[property[D]] };
+    viewport['get' + D] = function() { return element[property[D]]; };
     return viewport['get' + D]();
   }
 
@@ -3207,7 +3207,7 @@ var Selector = Class.create({
       if (IS_DESCENDANT_SELECTOR_BUGGY) return false;
 
       return true;
-    }
+    };
 
   })(),
 
@@ -3419,7 +3419,7 @@ Object.extend(Selector, {
         while (e && le != e && (/\S/).test(e)) {
           le = e;
           for (var i = 0; i<len; i++) {
-            name = p[i].name
+            name = p[i].name;
             if (m = e.match(p[i].re)) {
               v = Object.isFunction(x[name]) ? x[name](m) : new Template(x[name]).evaluate(m);
               exclusion.push("(" + v.substring(1, v.length - 1) + ")");
@@ -3546,7 +3546,7 @@ Object.extend(Selector, {
         var el = document.createElement('div'),
             isBuggy = false,
             propName = '_countedByPrototype',
-            value = 'x'
+            value = 'x';
         el[propName] = value;
         isBuggy = (el.getAttribute(propName) === value);
         el = null;
@@ -3563,7 +3563,7 @@ Object.extend(Selector, {
           for (var i = 0, node; node = nodes[i]; i++)
             node._countedByPrototype = void 0;
           return nodes;
-        }
+        };
     })(),
 
     index: function(parentNode, reverse, ofType) {
@@ -3962,7 +3962,7 @@ Form.Methods = {
       if (serializers[child.tagName.toLowerCase()])
         elements.push(Element.extend(child));
       return elements;
-    })
+    });
   },
 
   getInputs: function(form, typeName, name) {
@@ -3999,7 +3999,7 @@ Form.Methods = {
     });
     var firstByIndex = elements.findAll(function(element) {
       return element.hasAttribute('tabIndex') && element.tabIndex >= 0;
-    }).sortBy(function(element) { return element.tabIndex }).first();
+    }).sortBy(function(element) { return element.tabIndex; }).first();
 
     return firstByIndex ? firstByIndex : elements.find(function(element) {
       return /^(?:input|select|textarea)$/i.test(element.tagName);
@@ -4306,11 +4306,11 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
     };
   }
 
-  function isLeftClick(event)   { return _isButton(event, 0) }
+  function isLeftClick(event)   { return _isButton(event, 0); }
 
-  function isMiddleClick(event) { return _isButton(event, 1) }
+  function isMiddleClick(event) { return _isButton(event, 1); }
 
-  function isRightClick(event)  { return _isButton(event, 2) }
+  function isRightClick(event)  { return _isButton(event, 2); }
 
   function element(event) {
     event = Event.extend(event);
@@ -4402,9 +4402,9 @@ Form.EventObserver = Class.create(Abstract.EventObserver, {
     }
 
     Object.extend(methods, {
-      stopPropagation: function() { this.cancelBubble = true },
-      preventDefault:  function() { this.returnValue = false },
-      inspect: function() { return '[object Event]' }
+      stopPropagation: function() { this.cancelBubble = true; },
+      preventDefault:  function() { this.returnValue = false; },
+      inspect: function() { return '[object Event]'; }
     });
 
     Event.extend = function(event, element) {
