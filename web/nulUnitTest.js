@@ -127,7 +127,8 @@ function drawTests(tests, cs, lvl) {
 			//Result
 			rw.insertCell(-1).innerHTML = rsltDiv('unk');
 			rw.insertCell(-1).innerHTML = t.rslt;
-			for(var j=0; rw.cells[j]; ++j) if(rw.cells[j]) rw.cells[j].rowSpan=2;
+//			for(var j=0; rw.cells[j]; ++j) if(rw.cells[j]) rw.cells[j].rowSpan=2;
+
 			preCollapsed().insertCell(-1);
 		}
 	}
@@ -145,7 +146,8 @@ nul.load.unitTest = function() {
 function setResult(tn, rslt, comm) {
 	var rw = tbody.rows[tn];
 	rw.cells[2].innerHTML = rsltDiv(rslt);
-	rw.cells[3].rowSpan=comm?1:2;
+	if(comm) for(var j=0; 3>j; ++j) rw.cells[j].rowSpan=2;
+	//rw.cells[3].rowSpan=comm?1:2;
 	tbody.rows[1+tn].cells[0].innerHTML = comm || '';
 	return rslt;
 }

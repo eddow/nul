@@ -8,13 +8,15 @@
  
 #dbgOptions {
 	float: right;
+	width: 110px;
 }
 
 #editor {
 	border: 1px solid black;
-	width: 90%;"
+	width: 90%;
 }
-div#evaled {
+
+#evaled {
 	border: 1px black solid;
 }
 

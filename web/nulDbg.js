@@ -56,7 +56,10 @@ nul.debuger = {
 			tabMode: 'shift',
 			lineNumbers: true,
 			initCallback: nul.debuger.cmDone,
-			onChange: function() { if(nul.debuger.DOM.editor.editor) nul.debuger.DOM.src.value = nul.debuger.DOM.editor.getCode(); }
+			onChange: function() {
+				if(nul.debuger.DOM.editor && nul.debuger.DOM.editor.editor)
+					nul.debuger.DOM.src.value = nul.debuger.DOM.editor.getCode();
+			}
 		});
 	},
 	reset: function() {

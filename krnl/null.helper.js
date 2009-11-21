@@ -228,6 +228,16 @@ function merge(dst, src, cb) {
 		return rv;
 	});
 
+[].nn || (Array.prototype.nn = 
+	/**
+	 * Length of the array. Try to be the same under each browser
+	 * @memberOf Array#
+	 * @name nn
+	 */
+	function(){
+		if(nul && nul.debug && nul.debug.assert) assert(!Object.isUndefined(this[this.length-1]), 'Array length dont count named items');
+		return this.length;
+	});
 /** @constant */
 pinf = Number.POSITIVE_INFINITY;
 /** @constant */
