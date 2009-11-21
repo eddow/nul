@@ -27,9 +27,9 @@ nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 		if(klg && !nul.klg.ncndtnl.is(klg) && !this.table[klg.name]) {
 			if(nul.debug.assert) assert(!this.forbid[klg.name], 'Knowledge already used before entering');
 			this.table[klg.name] = { klgRef: nul.execution.name.gen('klg') };
-			for(var v in this.veto) if(cstmNdx(v)) this.enterKlg(this.veto[v]);
-			for(var i in this.ior3) if(cstmNdx(i))
-				for(var c in this.ior3[i].choices) if(cstmNdx(c))
+			for(var v in ownNdx(this.veto)) this.enterKlg(this.veto[v]);
+			for(var i in ownNdx(this.ior3))
+				for(var c in ownNdx(this.ior3[i].choices))
 					this.enterKlg(this.ior3[i].choices[c]);
 		}
 	},

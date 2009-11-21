@@ -236,7 +236,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		 */
 		eqCls: function() {
 			var attrs = [];
-			for(var an in this.attribs) if(cstmNdx(an))
+			for(var an in ownNdx(this.attribs))
 				attrs.push(html.tr(html.th(an)+html.td(this.attribs[an].toHtml())));
 
 			attrs = attrs.length?html.table(attrs.join(''),'attributes'):'';

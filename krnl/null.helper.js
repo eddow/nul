@@ -12,10 +12,7 @@
  * @return {Boolean}
  */
 function isArray(itm) {
-	return itm &&
-		typeof(itm) == 'object' &&
-		typeof itm.length === 'number' &&
-		typeof itm.splice === 'function';
+	return itm.constructor == Array;
 }
 
 /**
@@ -28,14 +25,62 @@ function isJsInt(n) {
 }
 
 /**
- * Gets weither 'ndx' is a custom index of 'ass'
- * Returns false for all the default properties of the arrays.
- * @param {String|Number} ndx
- * @param {Object} ass
+ * Gets weither the index is defined in the class definition
+ * @param obj
+ * @param ndx
  * @return {Boolean}
  */
-function cstmNdx(ndx, ass) {	//TODO 2: avoid the items that are identical to prototype
-	return ((ass && (!isArray(ass) || ass[ndx]!= [][ndx])) || Object.isUndefined([][ndx]));
+function isClsNdx(obj, ndx) {
+	if(!obj || 'object'!= typeof obj) return false;
+	if('constructor'== ndx) return true;
+	var c = obj.constructor;
+	while(c) {
+		if(!Object.isUndefined(c.prototype[ndx])) return c.prototype[ndx] === obj[ndx];
+		c = c.superclass;
+	}
+	return false;
+}
+
+/**
+ * Gets weither the index is defined in the class definition
+ * @param obj
+ * @param ndx
+ * @return {Boolean}
+ */
+function newEmpty(obj) {
+	if(!obj.constructor) return obj;
+	var nativeTypes = [Array, Boolean, Date, String, Number];
+	var c = obj.constructor;
+	var rv = nativeTypes.include(c) ? c() : {constructor: c, toString: obj.toString};
+	var cts = [];
+	for(; c; c = c.superclass) cts.push(c.prototype);
+	while(cts.length) {
+		c = cts.pop();
+		for(var i in c) if(c[i]===obj[i]) rv[i] = c[i];
+	}
+	return rv;
+}
+
+/**
+ * Return all the elements that are owned by the object, not his prototype or such
+ * @param itm
+ * @param fct function(dst, src, ndx)
+ * @return
+ */
+function ownNdx(itm, fct) {
+	//TODO 3: use yield
+	if(fct) {
+		var rv = newEmpty(itm);
+		for(var ndx in itm)
+			if(!isClsNdx(itm, ndx))
+				fct(rv, itm, reTyped(ndx));
+		return rv;
+	}
+	var rv = {};
+	for(var ndx in itm)
+		if(!isClsNdx(itm, ndx))
+			rv[ndx] = itm[ndx];
+	return rv;
 }
 
 /**
@@ -53,7 +98,7 @@ function mapCb(fct, ndx, itm) {
  */
 function trys(itm, fct) {
 	var rv;
-	for(var i in itm) if(cstmNdx(i, itm))
+	for(var i in ownNdx(itm))
 		if(rv = mapCb(fct, i, itm[i])) return rv;
 }
 
@@ -64,7 +109,8 @@ function trys(itm, fct) {
  */
 function cnt(itm, fct) {
 	var rv = 0;
-	for(var i in itm) if(cstmNdx(i, itm)) { 
+	
+	for(var i in ownNdx(itm)) { 
 		var trv = mapCb(fct, i, itm[i]);
 		if('number'== typeof trv) rv += trv;
 		else if(trv) ++rv;
@@ -78,10 +124,9 @@ function cnt(itm, fct) {
  * @param {MapCallBack} fct
  */
 function map(itm, fct) {
-	var rv = isArray(itm)?[]:{};
-	for(var i in itm) if(cstmNdx(i, itm)) 
-		rv[i] = mapCb(fct, i, itm[i]);
-	return rv;
+	return ownNdx(itm, function(dst, src, ndx) {
+		dst[ndx] = mapCb(fct, ndx, itm[ndx]);
+	});
 }
 
 
@@ -92,16 +137,13 @@ function map(itm, fct) {
  * @param {MapCallBack} fct
  */
 function maf(itm, fct) {
-	var rv = isArray(itm)?[]:{};
-	for(var i in itm) if(cstmNdx(i, itm)) {
-		var ndx = reTyped(i); 
-		var trv = mapCb(fct, i, itm[i]);
+	return ownNdx(itm, function(dst, src, ndx) {
+		var trv = mapCb(fct, ndx, itm[ndx]);
 		if(!Object.isUndefined(trv) && null!== trv) {
-			if('number'== typeof ndx) rv.push(trv);
-			else rv[ndx] = trv;
+			if('number'== typeof ndx) dst.push(trv);
+			else dst[ndx] = trv;
 		}
-	}
-	return rv;
+	});
 }
 
 /**
@@ -160,8 +202,8 @@ function beArrg(args, ndx) {
  * @return {Object} dst
  */
 function merge(dst, src, cb) {
-	for(var i in src) if(cstmNdx(i, dst)) dst[i] = cb?cb(dst[i],src[i], i):src[i];
-	if(cb) for(var i in dst) if(Object.isUndefined(src[i])) dst[i] = cb(dst[i], null, i);
+	for(var i in ownNdx(src)) dst[i] = cb?cb(dst[i],src[i], i):src[i];
+	if(cb) for(var i in ownNdx(dst)) if(Object.isUndefined(src[i])) dst[i] = cb(dst[i], null, i);
 	return dst; 
 }
 
@@ -224,20 +266,10 @@ function merge(dst, src, cb) {
 	 */
 	function(fct) {
 		var rv = [];
-		for(var i in this) if(cstmNdx(i)) rv.pushs(mapCb(fct, i, this[i]));
+		for(var i in ownNdx(this)) rv.pushs(mapCb(fct, i, this[i]));
 		return rv;
 	});
 
-[].nn || (Array.prototype.nn = 
-	/**
-	 * Length of the array. Try to be the same under each browser
-	 * @memberOf Array#
-	 * @name nn
-	 */
-	function(){
-		if(nul && nul.debug && nul.debug.assert) assert(!Object.isUndefined(this[this.length-1]), 'Array length dont count named items');
-		return this.length;
-	});
 /** @constant */
 pinf = Number.POSITIVE_INFINITY;
 /** @constant */
@@ -245,22 +277,8 @@ ninf = Number.NEGATIVE_INFINITY;
 
 ////////////////	prototype extension
 
-Element.addMethods(/** @ignore */{
-	asHTML: function() {
-		if(this.outerHTML) return this.outerHTML;
-		var parent = this.parentNode;
-		var posNext = this.nextSibling;
-		var el = document.createElement(parent.tagName);
-		el.appendChild(this);
-		var shtml = el.innerHTML;
-		if(!posNext) parent.appendChild(this);
-		else parent.insertBefore(this, posNext);
-		return shtml;
-	}
-});
-
 /** @ignore */
-Class.Methods.is= function(obj) {
+Class.Methods.is = function(obj) {
 	if(!obj || 'object'!= typeof obj) return false;
 	var c = obj.constructor;
 	while(c && c!= this) c = c.superclass;
@@ -300,3 +318,9 @@ Element.addMethods(['TABLE', 'tbody'], {
 		tbl.completeFrom(src);
 	}
 });
+
+
+window.onerror = function(a, b, c) {
+	alert(a + ':' + b + ':' + c);	//TODO 2
+	throw 'a';
+};

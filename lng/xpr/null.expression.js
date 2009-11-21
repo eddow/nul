@@ -86,10 +86,12 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	clone: function() {
 		var bsd = beArrg(arguments);
 		var comps = this.components;
-		return maf(this, function(ndx, obj) {
+		var rv = maf(this, function(ndx, obj) {
 			if(!bsd.include(ndx)) 
 				return (comps[ndx] && comps[ndx].bunch)?map(obj):obj;
 		});
+		//rv.constructor = this.constructor;
+		return rv;
 	},
 
 //////////////// Virtuals
@@ -108,7 +110,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 		this.modify();
 		for(var comp in this.components)
 			if(this.components[comp].bunch) {
-				for(var ci in this[comp]) if(cstmNdx(ci) && 'function'!= typeof this[comp][ci]) {
+				for(var ci in ownNdx(this[comp])) if('function'!= typeof this[comp][ci]) {
 					this[comp][ci] = this[comp][ci].placed(this);
 					nul.xpr.use(this[comp][ci], this.components[comp].type);
 				}
@@ -228,7 +230,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 		var rv = {};
 		for(var comp in this.components)
 			if(this.components[comp].bunch) {
-				for(var ci in this[comp]) if(cstmNdx(ci))
+				for(var ci in ownNdx(this[comp]))
 					rv[comp+':'+ci] = this[comp][ci];
 			} else rv[comp] = this[comp];
 		return rv;
@@ -252,7 +254,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	 	var rv = [];
 	 	for(var c in this.components)
 	 		if(this.components[c].bunch) {
-	 			for(var e in this[c]) if(cstmNdx(e, this[c]))
+	 			for(var e in ownNdx(this[c]))
 	 				rv.push(c+'.'+e+':'+this[c][e].toString());
 	 		} else rv.push(c+':'+this[c].toString());
 	 	if(items) rv.unshift(items);

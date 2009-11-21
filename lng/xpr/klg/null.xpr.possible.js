@@ -104,6 +104,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 		'knowledge': {type: 'nul.xpr.knowledge', bunch: false}
 	},
 	chew: function() {
+		nul.klg.use(this.knowledge);
 		return this.knowledge.modifiable().wrap(this.value);
 	},
 

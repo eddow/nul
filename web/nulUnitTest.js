@@ -31,7 +31,7 @@ tests = [
 		{xpr: 'S = (_,_); S 5',
 		rslt: '{(5, _[g|@0]) &#9633; (_[g|@1], 5)}'},
 		{xpr: '<{ nul.obj.litteral.make(34) }>',
-		rslt: '{34}'},
+		rslt: '{34}'}
 	].named('Simples'),
 	[
 		{xpr: 'b["j"]'+
@@ -106,11 +106,12 @@ function drawTests(tests, cs, lvl) {
 	rw.insertCell(-1).innerHTML = 
 		'<input type="checkbox" checked="checked" '+
 			'onclick="prgGrpCheck(this.checked,'+tbody.rows.length+')" />'+
-		'<input type="button" value="'+tests.length+'" onclick="prgGrpTest('+tbody.rows.length+')" />';
+		'<input type="button" value="*" onclick="prgGrpTest('+tbody.rows.length+')" />';
 	rw.insertCell(-1).innerHTML = rsltDiv('unk');
 	rw.testGroup = tests;
 	
-	for(var i=0; tests[i]; ++i) if(tests[i])
+//	for(var i=0; tests[i]; ++i)
+	for(var i=0; i<tests.length; ++i)
 	{
 		var t = tests[i];
 		if(isArray(t)) drawTests(t, cs, 1+lvl);
@@ -127,7 +128,6 @@ function drawTests(tests, cs, lvl) {
 			//Result
 			rw.insertCell(-1).innerHTML = rsltDiv('unk');
 			rw.insertCell(-1).innerHTML = t.rslt;
-//			for(var j=0; rw.cells[j]; ++j) if(rw.cells[j]) rw.cells[j].rowSpan=2;
 
 			preCollapsed().insertCell(-1);
 		}

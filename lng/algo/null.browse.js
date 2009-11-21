@@ -246,7 +246,7 @@ nul.browser.bijectif.evolution = Class.create( /** @lends nul.browser.bijectif.e
 });
 nul.browser.bijectif.firstChange = function(vals, b) {
 	if(b) vals = [vals, b];
-	for(var i in vals) if(cstmNdx(i,vals))
+	for(var i in ownNdx(vals))
 		if(vals[i] != nul.browser.bijectif.unchanged)
 			return vals[i];
 	return nul.browser.bijectif.unchanged;

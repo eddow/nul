@@ -83,11 +83,11 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	clearAccess: function() {
  		if(!this.access) return;
 		if(nul.debug.assert) {
-			for(var i in this.access) if(cstmNdx(i))
+			for(var i in ownNdx(this.access))
 				assert(this.access[i].summarised && 0<= this.eqCls.indexOf(this.access[i]),
 		 			'Knowledge access consistence');
-			for(var i in this.eqCls) if(cstmNdx(i))
-				for(var e in this.eqCls[i].equivls) if(cstmNdx(e))
+			for(var i in ownNdx(this.eqCls))
+				for(var e in ownNdx(this.eqCls[i].equivls))
 					assert(this.access[this.eqCls[i].equivls[e]] === this.eqCls[i],
 		 				'Knowledge access consistence');
 		}
@@ -102,7 +102,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		if(ec) ec = ec.placed(this);
 		if(ec) {
 	 		this.eqCls.push(ec);
-			for(var unfd in ec.equivls) if(cstmNdx(unfd)) {
+			for(var unfd in ownNdx(ec.equivls)) {
 				if(nul.debug.assert) assert(!this.access[ec.equivls[unfd]], 'No double access');
 				this.access[ec.equivls[unfd]] = ec;
 			}
@@ -167,7 +167,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @throws {nul.failure}
  	 */
  	addEqCls: function(eqCls) {
- 		for(var ec in eqCls) if(cstmNdx(ec)) this.unify(nul.xpr.use(eqCls[ec], 'nul.klg.eqClass'));
+ 		for(var ec in ownNdx(eqCls)) this.unify(nul.xpr.use(eqCls[ec], 'nul.klg.eqClass'));
  	},
  	
  	/**
@@ -384,7 +384,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	sum_maxXst: function() {
 		if(0<this.nbrLocals()) return pinf;
 		var rv = 1;
-		for(var h in this.ior3) if(cstmNdx(h))
+		for(var h in ownNdx(this.ior3))
 			rv *= this.ior3[h].maxXst();
 		return rv * this.maxMult;
 	},
@@ -393,7 +393,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		if(this.eqCls.length || this.veto.length) return 0;
 		if(0<this.nbrLocals()) return pinf;
 		var rv = 1;
-		for(var h in this.ior3) if(cstmNdx(h))
+		for(var h in ownNdx(this.ior3))
 			rv *= this.ior3[h].minXst();
 		return rv * this.minMult;
 	},
@@ -421,7 +421,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		var rv = $super();
 		rv.eqCls = [];
 		rv.access = {};
-		for(var i in this.eqCls) if(cstmNdx(i)) rv.accede(this.eqCls[i]);
+		for(var i in ownNdx(this.eqCls)) rv.accede(this.eqCls[i]);
 		return rv;
 	},
 	

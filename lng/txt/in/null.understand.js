@@ -35,7 +35,9 @@ nul.understanding = {
 		if('[]'== this.operator)
 			return ub.klg.hesitate(nul.understanding.possibles(this.operands, ub));
 
-		var ops = map(this.operands, function() { return this.understand(ub); });
+		var ops = map(this.operands, function(n, o) {
+			return this.understand(ub);
+		});
 
 		switch(this.operator)
 		{
