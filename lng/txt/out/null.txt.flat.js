@@ -143,7 +143,7 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 		 */
 		eqCls: function() {
 			var attr = [];
-			for(var anm in this.attribs) if(anm)
+			for(var anm in ownNdx(this.attribs)) if(anm)
 				attr.push(anm+': '+this.attribs[anm].toFlat());
 			attr = (attr.length)?('['+attr.join(', ')+']'):'';
 			return '(' + attr + nul.txt.flat.all(this.equivls).join(' = ') + ')' +

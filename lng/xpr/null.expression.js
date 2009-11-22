@@ -188,7 +188,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 
 	/**
 	 * @param {document} doc
-	 * @return {XML}
+	 * @return {XMLElement}
 	 * @throw {nul.semanticException}
 	 * TODO 2 returns Element
 	 */

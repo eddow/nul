@@ -26,24 +26,26 @@ nul.load.page = function() {
 		var elm = $(this.documentElement);
 		var nulScripts = $A(elm.select('script[type="text/nul"]'));
 		for(var s=0; nulScripts[s]; ++s) {
-			var val;
-			if(nulScripts[s].src) val = nul.data.ajax.loadNul(nulScripts[s].src, nulScripts[s].readAttribute('id'));
-			else val = nul.read(nulScripts[s].text,
-				nulScripts[s].readAttribute('id') ||
-				'script'+nul.execution.name.gen('nul.debuger.eval'));
+			if(nulScripts[s].src) nul.data.ajax.loadNul(nulScripts[s].src, nulScripts[s].readAttribute('id'));
+			else nul.read(nulScripts[s].text,
+				nulScripts[s].readAttribute('id') || 'script'+nul.execution.name.gen('nul.debuger.eval'));
 			//We don't really use the value afterward
 		}
 		var nulNodes = $A(elm.select('nul'));
+		var exts = {}, ints= {};
 		for(var n=0; nulNodes[n]; ++n) {
-			var val;
-			if(nulNodes[s].src) val = nul.data.ajax.loadNul(nulNodes[s].src);
-			else val = nul.xmlRead(nulNodes[s].textContent, 'node');	//TODO 1:Name node?
-			//TODO 3: a real element reader
-			var doc = this;
-			//TODO 3: replace the node, not its content
-			nulNodes[n].innerHTML = map(val, function() {
-				return nul.data.query(this).XML(doc);
-			}).join('');
+			if(!nulNodes[s].readAttribute('id')) nulNodes[s].writeAttribute('inline'+nul.execution.name.gen('nul.page.inline'));
+			if(nulNodes[s].src) exts[nulNodes[s].readAttribute('id')] = nulNodes[s].src;
+			else ints[nulNodes[s].readAttribute('id')] = nulNodes[s].text;
+			nulNodes[s].innerHTML = 'Loading...';
+			nulNodes[s].addClassName('loading');
+		}
+
+		for(var n in exts) nul.data.ajax.loadNul(exts[n], n);
+		for(var n in ints) nul.read(ints[n], n);
+		//nul.execution.existOnce();
+		for(var n=0; nulNodes[n]; ++n) {
+			//nulNodes[n].parentNode.replaceChild(val.XML(this), nulNodes[n]);
 		}
 	} catch(x) {
 		var msg = nul.exception.notice(x).message;
@@ -51,4 +53,4 @@ nul.load.page = function() {
 		else nul.page.error(msg);
 	}
 };
-nul.load.page.use = {'executionReady': true};
+nul.load.page.use = {'executionReady': true, 'console': true, 'HTML': true};

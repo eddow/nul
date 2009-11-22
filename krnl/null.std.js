@@ -11,7 +11,7 @@
  * @namespace
  */
 
-merge(nul, 
+Object.extend(nul, 
 /** @lends nul */
 {
 	/**
@@ -109,7 +109,7 @@ merge(nul,
 	 */
 	known: function(set, name) {
 		var gKlg = nul.execution.globalKlg.modifiable();
-		var rv = gKlg.newLocal('known');
+		var rv = gKlg.newLocal(name);
 		try {
 			var tattr = {};
 			tattr[name] = gKlg.hesitate(set.having(rv));

@@ -54,24 +54,22 @@ nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
 
 	/**
 	 * @param {document} doc
-	 * @return {XML}
+	 * @return {XMLElement}
 	 * @throw {nul.semanticException}
 	 * TODO 2 returns Element
 	 */
 	XML: function(doc) {
-		var rv = '<'+this.tag;
+		var rv = doc.createElement(this.tag);
 		for(var a in this.attributes) {
 			//TODO 3: check a as attribute name
 			if(!nul.obj.litteral.string.is(this.attributes[a]))
 				throw nul.semanticException('XML', this.attributes[a] + ' doesnt fit for XML attribute');
-			rv += ' '+a+'="'+this.attributes[a].value+'"';
+			rv.setAttribute(a, this.attributes[a].value);
 		}
-		if(nul.obj.empty === this.content) return rv+' />';
-		rv += '>';
 		var lst = this.content.listed();
 		for(var c=0; lst[c]; ++c)
-			rv += lst[c].XML(doc);
-		return rv + '</'+this.tag+'>';
+			rv.appendChild(lst[c].XML(doc));
+		return rv;
 	},
 
 //////////////// nul.obj.hc implementation
