@@ -33,11 +33,9 @@ function isJsInt(n) {
 function isClsNdx(obj, ndx) {
 	if(!obj || 'object'!= typeof obj) return false;
 	if('constructor'== ndx) return true;
-	var c = obj.constructor;
-	while(c) {
-		if(!Object.isUndefined(c.prototype[ndx])) return c.prototype[ndx] === obj[ndx];
-		c = c.superclass;
-	}
+	for(var c = obj.constructor; c; c = c.superclass)
+		if(!Object.isUndefined(c.prototype[ndx]))
+			return c.prototype[ndx] === obj[ndx];
 	return false;
 }
 
@@ -48,16 +46,25 @@ function isClsNdx(obj, ndx) {
  * @return {Boolean}
  */
 function newEmpty(obj) {
-	if(!obj.constructor) return obj;
+	if('object' != typeof obj) return obj;
+	if(!obj.constructor) return {};
 	var nativeTypes = [Array, Boolean, Date, String, Number];
+
+	/*
+	var pttpd = {}, b;
+	for(var c = obj.constructor; c; b = c, c = c.superclass)
+		for(var p in c.prototype)
+			if(c.prototype[i]===obj[i])
+				pttpd[p] = true;
+	
+	var rv = nativeTypes.include(c) ? c() : {constructor: c, toString: obj.toString};
+
+	for(var p in pttpd) rv[p] = obj[p];
+	/*/
 	var c = obj.constructor;
 	var rv = nativeTypes.include(c) ? c() : {constructor: c, toString: obj.toString};
-	var cts = [];
-	for(; c; c = c.superclass) cts.push(c.prototype);
-	while(cts.length) {
-		c = cts.pop();
-		for(var i in c) if(c[i]===obj[i]) rv[i] = c[i];
-	}
+	for(; c; c = c.superclass) for(var i in c.prototype) if(c.prototype[i]===obj[i]) rv[i] = c.prototype[i];
+	//*/
 	return rv;
 }
 
@@ -318,9 +325,9 @@ Element.addMethods(['TABLE', 'tbody'], {
 		tbl.completeFrom(src);
 	}
 });
-
-
+/*
 window.onerror = function(a, b, c) {
 	alert(a + ':' + b + ':' + c);	//TODO 2
 	throw 'a';
 };
+*/

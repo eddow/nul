@@ -6,13 +6,10 @@
  *
  *--------------------------------------------------------------------------*/
 
-@namespace test "http://nul.googlecode.com/";
+@namespace nul "http://nul.googlecode.com/";
 
-/*
-nul|* * {
-	display: none;
-}*/
-
-test|span {
+nul.loading {
 	border: 1px solid black;
+	color: blue;
+	background-color: lightgreen;
 }

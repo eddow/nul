@@ -134,6 +134,7 @@ nul.operators = [
 	['[]','m'],								//booleans:meta OR
 	[';','m'],								//booleans:meta AND
 	[',','k'],				 				//list
+	[',.','s'],				 				//list singleton
 	['=>','r'],								//lambda
 	['!','p'],
 	['?','l'],
@@ -142,8 +143,7 @@ nul.operators = [
 	['+','m'], ['-','l'],
 	['-','p'], ['#','p'], ['$','p'],
 	['*','m'], ['/','l'], ['%','l'],
-	['..','l'],
-	[',.','s']				 				//list singleton
+	['..','l']
 ];
 
 nul.compiler = Class.create(/** @lends nul.compiler# */{
@@ -215,11 +215,12 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
 	 * @return {nul.compiled} The compiled value
 	 * @throw {nul.syntaxException}
 	 */
-	expression: function(oprtrLvl) {
+	expression: function(oprtrLvl, firstOp) {
 		if(Object.isUndefined(oprtrLvl)) oprtrLvl = 0; 
-		if(nul.operators.length <= oprtrLvl) return this.applied();
+		if(nul.operators.length <= oprtrLvl) return firstOp || this.applied();
 		var oprtr = nul.operators[oprtrLvl];
-		var firstOp = this.expression(1+oprtrLvl);
+		if(!firstOp) firstOp = this.expression(1+oprtrLvl);
+		else firstOp = this.expression(1+oprtrLvl, firstOp);
 		if('p'== oprtr[1]) return firstOp;	//don't manage preceders here but in .item
 		var rv = [firstOp];
 		do
@@ -227,7 +228,9 @@ nul.compiler = Class.create(/** @lends nul.compiler# */{
 			rv = this.list(firstOp, oprtr, 1+oprtrLvl);
 			if(0== rv.length) throw nul.internalException('No components and an operator');
 			if(1== rv.length && !rv.follow) return rv[0];
-			if('ceded'== rv[1]) firstOp = nul.compiled.postceded(oprtr[0], rv[0]);
+			if('ceded'== rv[1]) firstOp = 
+				this.expression(0, nul.compiled.postceded(oprtr[0], rv[0]));
+				//nul.compiled.postceded(oprtr[0], rv[0]);
 			else firstOp = nul.compiled.expression(oprtr[0], rv);
 		} while('l'== oprtr[1]);
 		return firstOp;

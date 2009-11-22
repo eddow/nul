@@ -76,7 +76,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	
 	/**
 	 * @param {document} doc
-	 * @return {XML}
+	 * @return {XMLElement}
 	 * @throw {nul.semanticException}
 	 * TODO 2 returns Element
 	 */

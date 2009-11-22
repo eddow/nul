@@ -6,6 +6,8 @@
  *
  *--------------------------------------------------------------------------*/
 
+//TODO 2: Begin the "load scripts process" on window.onload or manage the nul.load....use.HTML
+
 /**
  * @fileoverview
  * This file just load the needed script files. 
@@ -41,12 +43,17 @@ nul = {
 
 nul.loading.styles = [
 'web/null.page',
+'web/console/null.console',
 'lng/txt/out/null.txt.clpsSstm'
 ];
 
 nul.loading.files = [
 '3rd/prototype',	//must be first
-'3rd/jquery',	//must be first
+
+'3rd/jquery',
+'3rd/jquery/ui.all',
+'3rd/jquery/xmlns',
+'3rd/jquery/ui.layout',
 
 'krnl/null.helper',
 'krnl/null.std',
@@ -98,7 +105,8 @@ nul.loading.files = [
 'data/null.data.time',
 'data/null.data.dom',
 
-'web/null.page'
+'web/null.page',
+'web/console/null.console'
 ];
 
 nul.loading.total = nul.loading.files.length;
@@ -119,11 +127,9 @@ nul.loading.onreadystatechange = function() {
 	}
 };
 
-nul.loading.addNexScriptRef = function() {
-	var sf = nul.loading.files.shift();
-	if(!sf) {
-		window.status = nul.loading.files.length + '/' + nul.loading.total + ' : Starting script';
-		delete nul.loading;
+nul.loading.loaded = function(wwl) {
+	nul.loading.loaded.already[wwl] = true;
+	if(nul.loading.loaded.already.document && nul.loading.loaded.already.scripts) {
 		var toProvide = {};
 		var toLoad = [];
 		for(var l in nul.load)
@@ -132,6 +138,7 @@ nul.loading.addNexScriptRef = function() {
 				if(!nul.load[l].provide.include(l)) nul.load[l].provide.push(l);
 				for(var p=0; nul.load[l].provide[p]; ++p)
 					toProvide[nul.load[l].provide[p]] = 1+(toProvide[nul.load[l].provide[p]]||0);
+				nul.load[l].name = l;
 				toLoad.push(nul.load[l]);
 			}
 		while(toLoad.length) {
@@ -141,15 +148,34 @@ nul.loading.addNexScriptRef = function() {
 				for(var u in nxtLd.use)
 					if(toProvide[u]) cn = false;
 			if(cn) {
+				nul.loading.status('loader', nxtLd.name);
 				nxtLd.apply(document);
 				for(var p=0; nxtLd.provide[p]; ++p)
 					--toProvide[nxtLd.provide[p]];
 			} else toLoad.push(nxtLd);
 		}
-		window.status = window.defaultStatus;
-		return;
+		nul.loading.status('end');
+		delete nul.loading;
 	}
-	window.status = nul.loading.files.length + '/' + nul.loading.total + ' : ' + sf;
+};
+nul.loading.loaded.already = {};
+
+nul.loading.status = function(type, arg) {
+	if('undefined'== typeof $j) return;	//Need jquery to be loaded
+	if(!nul.loading.status.bar) {
+		nul.loading.status.bar = $j('<div id="nul_loading_bar"></div>');
+		$j('body').prepend(nul.loading.status.bar);
+	}
+	if('end'== type) nul.loading.status.bar.remove();
+	else {
+		nul.loading.status.bar.innerHTML = arg;
+	}
+};
+
+nul.loading.addNexScriptRef = function() {
+	var sf = nul.loading.files.shift();
+	if(!sf) return nul.loading.loaded('scripts');
+	nul.loading.status('script', sf);
 	nul.loading.addRef('script', {
 		type: 'text/javascript',
 		src: nul.rootPath+sf+'.js' + nul.loading.suffix,

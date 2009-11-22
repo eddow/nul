@@ -37,11 +37,11 @@ nul.obj.litteral.string = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
 	
 	/**
 	 * @param {document} doc
-	 * @return {XML}
+	 * @return {XMLElement}
 	 * TODO 2 returns Element
 	 */
 	XML: function(doc) {
-		return this.value;	//TODO 2: remplacer par des &...; ?
+		return doc.createTextNode(this.value);	//TODO 2: remplacer par des &...; ?
 	},
 	
 //////////////// nul.xpr.object implementation
