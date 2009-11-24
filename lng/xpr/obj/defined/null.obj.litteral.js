@@ -76,7 +76,7 @@ nul.obj.litteral.number = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
 	//TODO 3: {2[Q]} ==> ( Q _, Q _ ) ? 
 	//TODO C
 	subHas: function(o) {
-		nul.fail('TODO 3');
+		nul.fail('TODO 3: number has');
 	},
 	
 //////////////// nul.expression implementation

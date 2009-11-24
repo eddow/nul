@@ -325,9 +325,3 @@ Element.addMethods(['TABLE', 'tbody'], {
 		tbl.completeFrom(src);
 	}
 });
-/*
-window.onerror = function(a, b, c) {
-	alert(a + ':' + b + ':' + c);	//TODO 2
-	throw 'a';
-};
-*/

@@ -6,14 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# */{
+nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# */{
 	/**
 	 * @extends nul.browser.bijectif
 	 * @constructs
 	 * @param {String} srcKlgRef The knowledge name whose space the expression is taken of
 	 * @param {nul.xpr.knowledge} dstKlg The knowledge whose space the expression is taken to
 	 */
-	initialize: function($super, srcKlgRef, dstKlg) {
+	initialize: function(srcKlgRef, dstKlg) {
 		this.table = {};
 		this.forbid = {};
 		this.table[srcKlgRef] = {
@@ -21,7 +21,7 @@ nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 			deltaLclNdx: dstKlg.nbrLocals(),
 			prime: true
 		};
-		$super('StepUp');
+		this.callSuper('StepUp');
 	},
 	enterKlg: function(klg) {
 		if(klg && !nul.klg.ncndtnl.is(klg) && !this.table[klg.name]) {
@@ -33,21 +33,21 @@ nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 					this.enterKlg(this.ior3[i].choices[c]);
 		}
 	},
-	enter: function($super, xpr) {
+	enter: function(xpr) {
 		if('possible'== xpr.expression) this.enterKlg(xpr.knowledge);
 		if('klg'== xpr.expression) this.enterKlg(xpr);
-		return $super(xpr);
+		return this.callSuper();
 	},
  	forceBuild: function(xpr) { return 'klg'== xpr.expression && !nul.klg.ncndtnl.is(xpr); },
 	/**
 	 * If a self-ref was planned, make it in the newly built expression.
 	 */
-	build: function($super, xpr) {
+	build: function(xpr) {
 		if('klg'== xpr.expression && !nul.klg.ncndtnl.is(xpr)) {
 			if(nul.debug.assert) assert(this.table[xpr.name], 'Only leave entered knowledge');
 			xpr.name = this.table[xpr.name].klgRef;
 		}
-		return $super(xpr);
+		return this.callSuper();
 	},	
 	/**
 	 * Changes locals to refer the new context
@@ -62,7 +62,7 @@ nul.klg.stepUp = Class.create(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 	}
 });
 
-nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.represent# */ {
+nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.represent# */ {
 	/**
 	 * Special browser to modifies an expression, replacing any occurrence of an object that appears in an equivalence class
 	 * by the equivalence class representant
@@ -70,11 +70,11 @@ nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.repres
 	 * @constructs
 	 * @param {Access} access The access to use to replace values
 	 */
-	initialize: function($super, klg) {
+	initialize: function(klg) {
 		nul.klg.is(klg);
 		this.tbl = klg.info();
 		this.dbgName = klg.name;
-		$super('Representation');
+		this.callSuper('Representation');
 		this.prepStack = [];
 	},
 	/**
@@ -120,24 +120,24 @@ nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.repres
 	/**
 	 * Only enter if we don't have a replacement value directly in the access table
 	 */
-	enter: function($super, xpr) {
+	enter: function(xpr) {
 		this.prepStack.unshift(xpr);
 		if(this.changeable(xpr)) return false;
 
-		return $super(xpr);
+		return this.callSuper();
 	},
-	leave: function($super, xpr) {
+	leave: function(xpr) {
 		if('klg'== xpr.expression) {
 			var chd = xpr.modifiable();
 			if(chd.define(this.tbl).length) return chd.built();
 		}
-		return $super(xpr);
+		return this.callSuper();
 	},
  	//forceBuild: function(xpr) { return 'klg'== xpr.expression; },
 	/**
 	 * If a self-ref was planned, make it in the newly built expression.
 	 */
-	build: function($super, xpr) {
+	build: function(xpr) {
 		if(xpr.setSelfRef) {
 			xpr.selfRef = xpr.setSelfRef;
 			delete xpr.setSelfRef;
@@ -149,14 +149,14 @@ nul.klg.represent = Class.create(nul.browser.bijectif, /** @lends nul.klg.repres
 			return xpr.built();
 		}
 		
-		return $super(xpr);
+		return this.callSuper();
 	},
 	/**
 	 * Manage the prepStack in case of failure
 	 */
-	abort: function($super, xpr) {
+	abort: function(xpr) {
 		this.prepStack.shift();
-		return $super(xpr);
+		return this.callSuper();
 	},
 	/**
 	 * Change an expression into another along the table. Mark a selfRef to do if needed.

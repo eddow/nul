@@ -31,22 +31,21 @@ nul.load.page = function() {
 				nulScripts[s].readAttribute('id') || 'script'+nul.execution.name.gen('nul.debuger.eval'));
 			//We don't really use the value afterward
 		}
-		var nulNodes = $A(elm.select('nul'));
+		return;
+		var nulNodes = $j('nul');
 		var exts = {}, ints= {};
+		var nds = {};
 		for(var n=0; nulNodes[n]; ++n) {
-			if(!nulNodes[s].readAttribute('id')) nulNodes[s].writeAttribute('inline'+nul.execution.name.gen('nul.page.inline'));
-			if(nulNodes[s].src) exts[nulNodes[s].readAttribute('id')] = nulNodes[s].src;
-			else ints[nulNodes[s].readAttribute('id')] = nulNodes[s].text;
-			nulNodes[s].innerHTML = 'Loading...';
-			nulNodes[s].addClassName('loading');
+			var nnid = nulNodes[s].readAttribute('id');
+			if(!nnid) nulNodes[s].writeAttribute(nnid = ('inline'+nul.execution.name.gen('nul.page.inline')));
+			nds[nnid] = $j(nulNodes[s]);
+			if(nulNodes[s].src) exts[nnid] = nulNodes[s].src;
+			else ints[nnid] = nulNodes[s].textContent;
 		}
 
-		for(var n in exts) nul.data.ajax.loadNul(exts[n], n);
-		for(var n in ints) nul.read(ints[n], n);
-		//nul.execution.existOnce();
-		for(var n=0; nulNodes[n]; ++n) {
-			//nulNodes[n].parentNode.replaceChild(val.XML(this), nulNodes[n]);
-		}
+		for(var n in ints) nds[n].replaceWith(nul.read(ints[n], n).XML(this));
+		for(var n in exts) nds[n].replaceWith(nul.data.ajax.loadNul(exts[n], n).XML(this));
+		nul.execution.existOnce();
 	} catch(x) {
 		var msg = nul.exception.notice(x).message;
 		if(nul.erroneusJS) throw nul.erroneusJS;

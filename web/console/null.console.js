@@ -6,20 +6,46 @@
  *
  *--------------------------------------------------------------------------*/
 
-
 nul.load.console = function() {
-};
-nul.load.page.use = {'executionReady': true, 'HTML': true};
-
-$j(document).ready(function () {
-	var console= $j('<div id="_nul_console" class="ui-layout-south">coucou</div>');
-	var bdy = $j('body');
+	if(nul.noConsole) return;
+	nul.console.frame = $j('<iframe id="_nul_console" src="javascript:false;" frameborder="0" scrolling="auto"></iframe>');
 	
-	bdy.wrapInner('<div id="_nul_content" class="ui-layout-center"></div>');
-	bdy.append(console);
-	var myLayout = bdy.layout({
-		resizable: true,
-		slidable: false,
-		closable: true
+	var bdy = $j('body');
+	bdy.wrapInner('<div id="_nul_content" class="ui-layout-center" ></div>');
+	bdy.append(nul.console.frame);
+	nul.console.layout = bdy.layout({
+		south : {
+			paneSelector: '#_nul_console',
+			togglerAlign_open: 'right',
+			togglerAlign_closed: 'right',
+			maskIframesOnResize: '#_nul_console',
+			resizable: true,
+			slidable: false,
+			closable: true,
+			size: 300,
+			initClosed: false,
+			togglerTip_closed: 'NUL console',
+			minSize: 150,
+			resizeWhileDragging: true,
+			fxName: "none",
+			onopen_end: nul.console.loadFrame
+		}
 	});
-});
+};
+nul.load.console.use = {'operators': true, 'executionReady': true, 'HTML': true};
+
+nul.console = {
+	loadFrame: function(pane, $Pane) {
+		if(!nul.console.frame.loaded) {
+			nul.console.frame.attr('src', nul.rootPath + '/web/console/nulConsole.html'); 	//TODO 2: rel src
+			nul.console.frame.ready(nul.console.frameLoaded);
+			nul.console.frame.loaded = true;
+		}
+	},
+	frameLoaded: function() {
+		var cw = nul.console.frame[0].contentWindow;
+		var cde = nul.console.frame[0].contentDocument.documentElement;
+		cw.nul = nul;
+	}
+};
+

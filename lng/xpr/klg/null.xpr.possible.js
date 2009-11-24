@@ -81,7 +81,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	 * TODO 2 returns Element
 	 */
 	XML: function(doc) {
-		if(nul.klg.always != this.knowledge)
+		if(nul.klg.always != this.knowledge) //TODO 2: if possible too fuzzy, get a "loading" node 
 			throw nul.semanticException('XML', 'No XML fixed representation for fuzzy expression');
 		return this.value.XML(doc);
 	},	
@@ -115,7 +115,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	* @param {nul.obj.defined} recursion The object that contains 'this' and makes recursion
 	*/
 	beself: function(recursion) {
-		var fz = this;	//TODO 1
+		var fz = this;	//TODO 2
 		//1 - remove in knowledge : x in y : x is value and y self-ref
 		//TODO O: ne faire cela que si dependance de selfref
 		/*var klg = this.knowledge.modifiable();

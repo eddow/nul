@@ -135,7 +135,8 @@ Object.extend(nul,
 	 */
 	read: function(txt, glbNm)
 	{
-		return nul.known(nul.data.query(nul.nulRead(txt, glbNm)), glbNm);
+		try { return nul.known(nul.data.query(nul.nulRead(txt, glbNm)), glbNm); }
+		finally { nul.debug.applyTables(); }
 	}
 });
 

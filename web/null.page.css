@@ -8,8 +8,14 @@
 
 @namespace nul "http://nul.googlecode.com/";
 
-nul.loading {
-	border: 1px solid black;
-	color: blue;
-	background-color: lightgreen;
+nul {
+	height: 32px;
+	width: 32px;
+	border: 1px solid blue;
+	background-image: url('images/loading.gif');
+	display: inline-block;
+	text-indent: -99999px;
+	overflow: hidden;
+	background-repeat: no-repeat;
+	-moz-border-radius: 4px; -webkit-border-radius: 4px;
 }

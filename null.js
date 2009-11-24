@@ -6,8 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO 2: Begin the "load scripts process" on window.onload or manage the nul.load....use.HTML
-
 /**
  * @fileoverview
  * This file just load the needed script files. 
@@ -27,6 +25,7 @@ nul = {
 					if(1< spl.length && ''==spl[1]) {
 						nul.rootPath = spl[0];
 						nul.loading.nsn = nss[i];
+						nul.noConsole = nss[i].getAttribute('noconsole');
 						break;
 					}
 				}
@@ -43,17 +42,21 @@ nul = {
 
 nul.loading.styles = [
 'web/null.page',
-'web/console/null.console',
-'lng/txt/out/null.txt.clpsSstm'
+'lng/txt/out/null.txt.html',
+'lng/txt/out/null.txt.clpsSstm',
+'3rd/jquery/smoothness/theme',
+'web/console/null.console'
 ];
 
 nul.loading.files = [
-'3rd/prototype',	//must be first
+'3rd/prototype',
+'3rd/jsclass/core',		//must be first
 
-'3rd/jquery',
+'3rd/jquery/jquery',
 '3rd/jquery/ui.all',
 '3rd/jquery/xmlns',
 '3rd/jquery/ui.layout',
+'3rd/jquery/emw',
 
 'krnl/null.helper',
 'krnl/null.std',
@@ -173,6 +176,10 @@ nul.loading.status = function(type, arg) {
 };
 
 nul.loading.addNexScriptRef = function() {
+	if('undefined'!= typeof $j && !nul.loading.jquery) {
+		$j(document).ready(function () { nul.loading.loaded('document'); });
+		nul.loading.jquery = true;
+	}
 	var sf = nul.loading.files.shift();
 	if(!sf) return nul.loading.loaded('scripts');
 	nul.loading.status('script', sf);

@@ -8,12 +8,12 @@
  
 //TODO D
 
-tableStack = Class.create( {
+tableStack = new JS.Class( {
 	initialize: function(nm, tbl) {
 		this.nm = nm;
 		this.table = $(tbl);
 	},
-	buffer: $(document.createElement('tbody')),
+	buffer: $j('<tbody></tbody>'),
 	getRowValue: function(tr) {
 		var rv = [];
 		for(var i=0; i<tr.cells.length; ++i) rv.push(tr.cells[i].innerHTML);
@@ -29,53 +29,47 @@ tableStack = Class.create( {
 		}
 		return $(tr);
 	},
-	value: function() {
-		var rv = [];
-		for(var i=this.buffer.rows.length-1; i>=0; --i)
-			rv.push(this.getRowValue(this.buffer.rows[i]));
-		return rv;
-	},
 	length: function() {
-		return this.buffer.rows.length;
+		return this.buffer.nbrRows();
 	},
 	clear: function() {
 		this.dirty = true;
-		this.buffer.clear();
-		if(this.table) this.table.clear();
+		this.buffer.clearRows();
+		if(this.table) this.table.clearRows();
 		this.apply();		
 	},
 	draw: function(cs) {
 		this.dirty = true;
-		this.clear();
+		this.clearRows();
 		for(var i=0; i<cs.length; ++i) this.push(cs[i]);
 		this.apply();
 	},
 	push: function(v) {
 		this.dirty = true;
-		return this.setRowValue(this.buffer.insertRow(0), beArrg(arguments));
+		return this.setRowValue(this.buffer[0].insertRow(0), beArrg(arguments));
 	},
 	log: function(v) {
 		this.dirty = true;
-		return this.setRowValue(this.buffer.insertRow(-1), beArrg(arguments));
+		return this.setRowValue(this.buffer[0].insertRow(-1), beArrg(arguments));
 	},
 	unlog: function() {
 		this.dirty = true;
-		var p = this.buffer.rows.length-1;
-		var rv = this.getRowValue(this.buffer.rows[p]);
-		this.buffer.deleteRow(p);
+		var p = this.buffer[0].nbrRows()-1;
+		var rv = this.getRowValue(this.buffer[0].rows[p]);
+		this.buffer[0].deleteRow(p);
 		return rv;
 	},
 	pop: function() {
 		this.dirty = true;
-		var rv = this.getRowValue(this.buffer.rows[0]);
-		this.buffer.deleteRow(0);
+		var rv = this.getRowValue(this.buffer[0].rows[0]);
+		this.buffer[0].deleteRow(0);
 		return rv;
 	},
 	item: function(ndx) {
 		if(!ndx) ndx = 0;
 		return {
 			ts: this,
-			tr: this.buffer.rows[ndx],
+			tr: this.buffer[0].rows[ndx],
 			set: function(rv) {
 				this.ts.dirty = true;
 				this.ts.setRowValue(this.tr, beArrg(arguments));
@@ -88,7 +82,7 @@ tableStack = Class.create( {
 	apply: function() {
 		if(this.dirty && this.table) {
 			this.dirty = false;
-			this.table.completeFrom(this.buffer);
+			this.table.completeRowsFrom(this.buffer);
 		}
 	}
 });
@@ -100,6 +94,17 @@ nul.debug = {
 	fails: [],
 	logs: new tableStack('logs'),
 	logging: false,
+	possibleLogging: [
+		'Resolution',
+		'Unification',
+		'Equivalence',
+		'Wrapping',
+		'Represent',
+		'Prune',
+		'Recursion',
+		'Extraction',
+		'Query',
+		'Relativise'],
 	watches: false,
 	assert: urlOption('debug'),
 	perf: !urlOption('noperf'),
@@ -146,10 +151,11 @@ nul.debug = {
 		nul.debug.lcNextLimit = nul.debug.lcLimit;
 	},
 	
-	reset: function() {
+	newLog: function(logTbl) {
+		if(logTbl) this.logs.table = logTbl;
 		nul.debug.logs.clear();
 		nul.debug.lcs = nul.txt.clpsSstm(this.logs.table, 'dn',
-			function() { return nul.debug.logs.buffer.rows.length; });
+			function() { return nul.debug.logs.buffer.nbrRows(); });
 		nul.debug.begin();
 	},
 	

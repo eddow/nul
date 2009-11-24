@@ -7,7 +7,7 @@
  *--------------------------------------------------------------------------*/
 
 //TODO O: don't feed back an object { local:{..deps..} } : directly feed back {..deps..} instead
-nul.dependance = Class.create(/** @lends nul.dependance# */{
+nul.dependance = new JS.Class(/** @lends nul.dependance# */{
 	/**
 	 * A list of dependancies toward knowledges or external resources
 	 * @constructs

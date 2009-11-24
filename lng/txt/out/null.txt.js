@@ -10,7 +10,7 @@
  * Text output kernel
  * @class Singleton
  */
-nul.txt = {
+nul.txt = new JS.Singleton({
 	/**
 	 * Main function, making a string out of an expression
 	 * @param {nul.expression} xpr
@@ -207,4 +207,4 @@ nul.txt = {
 		if(xpr)
 			delete this.context[xpr.name];
 	}
-};
+});

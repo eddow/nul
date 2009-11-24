@@ -54,7 +54,7 @@ nul.semanticException = function(code, msg, chrct)
  * @param {String} chrct
  */
 nul.syntaxException = function(code, msg, chrct)
-{
+{	//TODO 3: line/char position in text
 	return nul.exception('syntax', 'SYN'+code, msg, chrct);
 };
 
