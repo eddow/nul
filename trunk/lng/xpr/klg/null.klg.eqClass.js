@@ -341,7 +341,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 			if('&phi;'== this.belongs[0].expression) nul.fail("&phi; is empty");
 			return;
 		}
-		//TODO 4: this goes in knowledge prune (cf comment in prune) : pruned called on wrap and generl built (for opposition, ior3, ...)
+		//TODO 4: this goes in knowledge prune (cf comment in prune) : pruned called on wrap and general built (for opposition, ior3, ...)
 		if(!this.belongs.length && (!this.equivls.length || 
 			(1== this.equivls.length && isEmpty(this.attribs))))
 				return;

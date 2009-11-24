@@ -11,31 +11,55 @@
  * @class Singleton
  */
 html = {
+	_attrd: function(a) {
+		switch(typeof a) {
+		case 'undefined': return {};
+		case 'object': return a;
+		case 'string': return {'class':a};
+		}
+		throw 'unknown attributes';
+	},
 	tagged: function(tag, attrs, cnt) {
 		var rv = '<'+tag;
 		for(var a in attrs) if(attrs[a]) rv += ' '+a+'="'+attrs[a]+'"';
 		if(null=== cnt) return rv + ' />';
 		return rv + '>' + cnt + '</'+tag+'>';
 	},
-	span: function(cls, cnt) {
-		return html.tagged('span', {'class': cls}, cnt);
+	
+	div: function(a, cnt) {
+		return html.tagged('div', html._attrd(a), cnt);
+	},
+	span: function(a, cnt) {
+		return html.tagged('span', html._attrd(a), cnt);
 	},
 	op: function(o) {
 		return ' ' + html.span('op', o) + ' ';
 	},
-	table: function(cnt, cls) {
-		return html.tagged('table', {'class': cls}, cnt);
+	table: function(cnt, a) {
+		return html.tagged('table', html._attrd(a), cnt);
 	},
-	tr: function(cnt, cls) {
-		return html.tagged('tr', {'class': cls}, cnt);
+	tr: function(cnt, a) {
+		return html.tagged('tr', html._attrd(a), cnt);
 	},
-	th: function(cnt, cls) {
-		return html.tagged('th', {'class': cls}, cnt);
+	th: function(cnt, a) {
+		return html.tagged('th', html._attrd(a), cnt);
 	},
-	td: function(cnt, cls) {
-		return html.tagged('td', {'class': cls}, cnt);
+	td: function(cnt, a) {
+		return html.tagged('td', html._attrd(a), cnt);
 	},
 
+	tilesStr: function(knd, cnt, pos) {
+		if(cnt.toFlat) {
+			ttl = cnt.toFlat();
+			cnt = cnt.toHtml();
+		} else ttl = cnt;
+		return ''+
+			html.tagged('a', {
+				'class': knd+' _nul_xpr_tile',
+				//title: ttl,
+		        style: 'margin-left: '+(5*pos)+'px;'
+			}, html.div({}, cnt));
+	},
 	tilePopup: function(knd, cnt) {
 		return ''+
 			html.tagged('div', {
@@ -59,7 +83,8 @@ html = {
  * Expression HTML description building helper 
  * @class Singleton
  */
-nul.txt.html = merge(/** @lends nul.txt.html */{
+nul.txt.html = new JS.Singleton(/** @lends nul.txt.html */{
+	
 	drawing: [],
 	/**
 	 * Shortcut to make a table of string out of a table of expressions
@@ -78,7 +103,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 	 * @return {HTML}
 	 */
 	wrap: function(txt, xpr) {
-		var tileSquares = '', tilePopups = '';
+		var tilesStr = '';
 		var tiles = {};
 		tiles.shortStr = xpr.toFlat();
 		tiles.index = xpr.toString();
@@ -86,19 +111,13 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 		merge(tiles, txt);
 		delete tiles[''];
 		var spos = 0;
-		for(var t in tiles) {
-			tileSquares += html.tileSquare(t, tiles[t], spos++);
-			tilePopups += html.tilePopup(t, tiles[t]);
-		}
+		for(var t in tiles) tilesStr += html.tilesStr(t, tiles[t], spos++);
 		
 		var deps = xpr.dependance();
 		var df = deps.toFlat();
-		if(df) {
-			tileSquares += html.tileSquare('dependances', df, spos++);
-			tilePopups += html.tilePopup('dependances', deps.toHtml());
-		}
+		if(df) tilesStr += html.tilesStr('dependances', deps, spos++);
 		return html.span('xpr',
-			tilePopups+tileSquares+
+				tilesStr+
 				html.span(xpr.expression, txt['']));
 	},
 	outp: function(xpr) { return xpr; },
@@ -291,42 +310,7 @@ nul.txt.html = merge(/** @lends nul.txt.html */{
 					'xpr freedom')
 			};
 		}
-	},
-	
-	/** @namespace Tiles managing events*/
-	js: {
-		/**
-		 * Event occuring when the mouse enters a tile
-		 * @event
-		 * @param {HTMLElement} elm The element (expression span) this event applies to
-		 * @param {String} knd The kind of tile the mouse interract with
-		 */
-		enter: function(elm, knd) {
-			$(elm);
-			if(this.entered && elm == this.entered[0] && knd == this.entered[1]) return;
-			if(this.entered) this.leave();
-			this.entered = [elm, knd];
-			elm.addClassName('lined');
-			elm.getElementsBySelector('a.'+knd).each(Element.hide);
-			elm.getElementsBySelector('div.'+knd).each(Element.show);
-			elm.getElementsBySelector('span a.'+knd).each(Element.show);
-			elm.getElementsBySelector('span div.'+knd).each(Element.hide);
-			//this.keepTimeOut = window.setTimeout('nul.txt.js.leave();',100);
-		},
-		/**
-		 * Event occuring when the mouse leaves a tile
-		 * @event
-		 * @param {HTMLElement} elm The element (expression span) this event applies to
-		 * @param {String} knd The kind of tile the mouse interract with
-		 */
-		leave: function(elm, knd) {
-			if(!this.entered) return;
-			elm = this.entered[0];
-			knd = this.entered[1];
-			delete this.entered;
-			elm.removeClassName('lined');
-			elm.getElementsBySelector('a.'+knd).each(Element.show);
-			elm.getElementsBySelector('div.'+knd).each(Element.hide);
-		}
 	}
-}, nul.txt);
+
+});
+nul.txt.html.extend(nul.txt);

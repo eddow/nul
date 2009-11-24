@@ -11,16 +11,14 @@ nul.load.debuger = function() {
 	$('resetCmd').disable();
 	$('queryCmd').disable();
 	selectNamedTab($('info'),$('infoTS').value);
-	nul.debug.logs.table = $('logs');
 	nul.debug.globalKlg = $('globalKlg');
 	shwDbgOptClk();
 
 	nul.debuger.init();
+	nul.debug.newLog($j('logs'));
 	nul.debug.applyTables();
-	nul.debug.reset();
 };
-nul.load.debuger.use = {operators:true};
-nul.load.debuger.use = {page:true};
+nul.load.debuger.use = {operators:true, page:true};
 
 nul.debuger = {
 	getSrcText: function() { return nul.debuger.DOM.src.value; },

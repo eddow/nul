@@ -10,7 +10,7 @@
  * Expression flat description building helper 
  * @class Singleton
  */
-nul.txt.flat = merge(/** @lends nul.txt.flat */{
+nul.txt.flat = new JS.Singleton(/** @lends nul.txt.flat */{
 	drawing: [],
 	/**
 	 * Shortcut to make a table of string out of a table of expressions
@@ -183,4 +183,5 @@ nul.txt.flat = merge(/** @lends nul.txt.flat */{
 			return valStr + '; ' + klgStr;
 		}
 	}
-}, nul.txt);
+});
+nul.txt.flat.extend(nul.txt);

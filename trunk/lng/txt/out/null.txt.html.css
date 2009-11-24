@@ -86,20 +86,38 @@ span.failure {
 
 /* Decorqtive tiles */
 
-a.shortStr, a.index, a.locals, a.dependances, a.reference, a.arbitre {
-	display: table-cell;
-	font-size: 4px;
-	cursor: none;
-	height: 3px;
+a._nul_xpr_tile {
+	display: block;
+	cursor: help;
 	position: absolute;
 	z-index: 500;
+	height: 3px;
 	width: 3px;
 	border-width: 1px;
 	border-style: solid;
 	vertical-align: top;
 }
 
-div.shortStr, div.index, div.locals, div.dependances, div.reference, div.arbitre {
+a._nul_xpr_tile div {
+	display: none;
+	font-family: monospace;
+	font-size: 10pt;
+	padding: 0 5px;
+	white-space:nowrap;	
+}
+
+a._nul_xpr_tile:hover {
+	margin-top: -20px;
+	height: 24px;
+	width: auto;
+	z-index: 450;
+}
+
+a._nul_xpr_tile:hover div {
+	display: inline;
+}
+
+/*div.shortStr, div.index, div.locals, div.dependances, div.reference, div.arbitre {
 	cursor: default;
 	font-size: 1em;
 	position: absolute;
@@ -109,7 +127,7 @@ div.shortStr, div.index, div.locals, div.dependances, div.reference, div.arbitre
 	border-width: 1px;
 	border-style: solid;
 	white-space: nowrap;
-}
+}*/
 
 .shortStr {
 	border-color: blue;
@@ -141,8 +159,12 @@ div.shortStr, div.index, div.locals, div.dependances, div.reference, div.arbitre
 	background-color: lightgreen;
 }
 
-div.dependances {
-	top: 0;
+a._nul_xpr_tile.dependances:hover {
+	margin-top: 0;
+	height: auto;
+}
+
+a.dependances div {
 	padding-top: 2.5em;
 }
 

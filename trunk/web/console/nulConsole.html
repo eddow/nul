@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<title>NUL console</title>
+		<link href="../../lng/txt/out/null.txt.html.css" rel="stylesheet" type="text/css"></link>
+		<link href="../../3rd/jquery/smoothness/theme.css" rel="stylesheet" type="text/css"></link>
+		<link href="nulConsole.css" rel="stylesheet" type="text/css"></link>
+		<script type="text/javascript" src="../../3rd/codemirror/codemirror.js"></script>
+		<script type="text/javascript" src="../../3rd/jquery/jquery.js"></script>
+		<script type="text/javascript" src="../../3rd/jquery/ui.all.js"></script>
+		<script type="text/javascript" src="../../3rd/jquery/ui.layout.js"></script>
+		<script type="text/javascript" src="../../3rd/jquery/emw.js"></script>
+		<script type="text/javascript" src="nulConsole.js"></script>
+	</head>
+	<body onload="csl.init();">
+		<ul>
+			<li><a href="#_nul_globalKlgVw">Global knowledge</a></li>
+			<li><a href="#_nul_valuesVw">Values</a></li>
+			<li><a href="#_nul_logsVw">Logs</a></li>
+			<li><a href="#_nul_benchmarkVw">Benchmarks</a></li>
+		</ul>
+		<div id="conToolBar"><!--
+			
+			Reset
+			 
+			--><span><a name="reset" class="command ui-icon ui-icon-refresh" href="#" title="F9: Reset"></a></span><!--
+			 
+			Edition tools
+			
+			--><span class="tabbed toolForEdit"><a name="edit_undo" class="command ui-icon ui-icon-arrowreturnthick-1-w" href="#" title="Ctrl-Z: Undo"></a></span><!--
+			--><span class="tabbed toolForEdit"><a name="edit_redo" class="command ui-icon ui-icon-arrowreturnthick-1-e" href="#" title="Ctrl-Y: Redo"></a></span>
+			<!--
+			
+			Expression tools
+			
+			--><span class="tabbed toolFor_nul_valuesVw"><a name="edit" class="command ui-icon ui-icon-script" href="#" title="F2: Edit value"></a></span><!--
+			--><span class="tabbed toolFor_nul_valuesVw"><a name="eval" class="command ui-icon ui-icon-play" href="#" title="F5: Evaluate"></a></span><!--
+			--><span class="tabbed toolFor_nul_valuesVw"><a name="query" class="command ui-icon ui-icon-transfer-e-w" href="#" title="F6: Query"></a></span><!--
+			--><span class="tabbed toolFor_nul_valuesVw"><a name="known" class="command ui-icon ui-icon-check" href="#" title="F8: Known"></a></span>
+			<!--
+			
+			Expression options
+			
+			--><span class="tabbed toolFor_nul_valuesVw"><a href="#" title="Auto break" id="dbgBreakLimited" class="checkable">
+				<span class="popUp"><input id="dbgBreakLimit" type="text" size="10" value="500" /></span>
+				<span class="checker ui-icon ui-icon-arrowthickstop-1-e"></span>
+			</a></span><span class="tabbed toolFor_nul_valuesVw"><a href="#" title="Logging" class="checkable">
+				<ul id="dbgLogSelect" class="popUp"></ul>
+				<span class="checker ui-icon ui-icon-note"></span>
+			</a></span><!--
+
+			Table clearers
+			
+			--><span class="tabbed toolFor_nul_logsVw"><a name="clearLogs" class="command ui-icon ui-icon-closethick" href="#" title="Clear logs"></a></span><!--
+			--><span class="tabbed toolFor_nul_benchmarkVw"><a name="clearBenchmarks" class="command ui-icon ui-icon-closethick" href="#" title="Clear benchmarks"></a></span>
+		</div>
+		<div id="_nul_console_pages">
+			<div id="_nul_globalKlgVw">
+			</div>
+			<div id="_nul_valuesVw">
+				<div id="valuesViewer">
+				</div>
+			</div>			
+			<table id="_nul_logsVw">
+				<thead><tr><th>#</th><th colspan="2">happend ...</th><th>... with ...</th><th>... from ...</th></tr></thead>
+				<tbody id="logsTBD"></tbody>			
+			</table>
+			<table id="_nul_benchmarkVw">
+			<thead><tr><th>Function</th><th>Time</th></tr></thead>
+			<tbody id="benchmarks"></tbody>
+			</table>
+		</div>
+	</body>
+</html>

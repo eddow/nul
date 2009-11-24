@@ -264,7 +264,7 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 	//TODO C
 	/**
 	 * @param {String} selfRef
-	 * @param {nul.xpr.object[]} alrEqs TODO 1: rename param
+	 * @param {nul.xpr.object[]} alrEqs TODO 2: rename param
 	 * @param {nul.xpr.object} point
 	 * @return {nul.xpr.possible}
 	 */
@@ -285,8 +285,8 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 				} catch(e) { nul.failed(e); }
 
 				try {
-					var klg = this.clone();		//TODO 1: don't clone?
-					var nalrEqs = map(alrEqs);	//TODO 1: don't clone?
+					var klg = this.clone();		//TODO 2: don't clone?
+					var nalrEqs = map(alrEqs);	//TODO 2: don't clone?
 					var eqc = klg.freeEC(klg.eqCls[ec]);
 					klg.unify(eqc.belongs.splice(b, 1)[0], nul.obj.local.self(selfRef));
 					klg.ownEC(eqc);

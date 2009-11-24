@@ -285,6 +285,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.lambda.html">nul.obj.lambda</a></li>
 	
+	<li><a href="../symbols/_nul.obj.list.html">nul.obj.list</a></li>
+	
 	<li><a href="../symbols/_nul.obj.litteral.html">nul.obj.litteral</a></li>
 	
 	<li><a href="../symbols/_nul.obj.litteral.boolean.html">nul.obj.litteral.boolean</a></li>
@@ -307,7 +309,7 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
 	
-	<li><a href="../symbols/_nul.obj.undefined.html">nul.obj.undefined</a></li>
+	<li><a href="../symbols/_nul.obj.undefnd.html">nul.obj.undefnd</a></li>
 	
 	<li><a href="../symbols/_nul.obj.whole.html">nul.obj.whole</a></li>
 	
@@ -322,8 +324,6 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.txt.html.html">nul.txt.html</a></li>
 	
 	<li><a href="../symbols/_nul.txt.html.draw.html">nul.txt.html.draw</a></li>
-	
-	<li><a href="../symbols/_nul.txt.html.js.html">nul.txt.html.js</a></li>
 	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
 	
@@ -495,16 +495,25 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.globalsUse">globalsUse</a></b>(glbNm)
+								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.known">known</a></b>(set, name)
 								</div>
-								<div class="description">Creates the root understing-base with the declared <a href="../symbols/_nul.html#.globals">nul.globals</a></div>
+								<div class="description">Modify the global knowledge : the set contains one and only one element</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.read">read</a></b>(txt)
+								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.nulRead">nulRead</a></b>(txt, glbNm)
+								</div>
+								<div class="description">Compile a text and understand it</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.read">read</a></b>(txt, glbNm)
 								</div>
 								<div class="description">Compile a text and understand it in a fresh execution context</div>
 							</td>
@@ -522,18 +531,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.subRead">subRead</a></b>(txt, glbNm)
-								</div>
-								<div class="description">Compile a text and understand it</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.summary">summary</a></b>(itm)
 								</div>
-								<div class="description">Used to build expression summary items</div>
+								<div class="description">Shortcut to build expression summary items</div>
 							</td>
 						</tr>
 					
@@ -543,6 +543,24 @@ ul.inheritsList
 								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.trys">trys</a></b>(cb, name, obj, args)
 								</div>
 								<div class="description">Make several try/catch; accept some failures (debug purpose)</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.understand">understand</a></b>(cmpl, glbNm)
+								</div>
+								<div class="description">Understand the compiled text in a knowledge named glbNm, using the uber-local</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.<b><a href="../symbols/_nul.html#.xmlRead">xmlRead</a></b>(txt, glbNm)
+								</div>
+								<div class="description">Compile an XML content and understand it</div>
 							</td>
 						</tr>
 					
@@ -808,15 +826,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".globalsUse"> </a>
+					<a name=".known"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					<span class="light">{<a href="../symbols/_nul.understanding.base.set.html">nul.understanding.base.set</a>}</span>
-					<span class="light">nul.</span><b>globalsUse</b>(glbNm)
+					<span class="light">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span>
+					<span class="light">nul.</span><b>known</b>(set, name)
 					
 					</div>
 					<div class="description">
-						Creates the root understing-base with the declared <a href="../symbols/_nul.html#.globals">nul.globals</a>
+						Modify the global knowledge : the set contains one and only one element
 						
 						
 					</div>
@@ -826,6 +844,61 @@ ul.inheritsList
 						
 							<dl class="detailList">
 							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> <b>set</b>
+									
+								</dt>
+								<dd>The set of value to make known</dd>
+							
+								<dt>
+									<b>name</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> The value asserted</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".nulRead"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span>
+					<span class="light">nul.</span><b>nulRead</b>(txt, glbNm)
+					
+					</div>
+					<div class="description">
+						Compile a text and understand it
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>txt</b>
+									
+								</dt>
+								<dd></dd>
 							
 								<dt>
 									<b>glbNm</b>
@@ -842,7 +915,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{<a href="../symbols/_nul.understanding.base.set.html">nul.understanding.base.set</a>}</span> </dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> </dd>
 							
 							</dl>
 						
@@ -855,7 +928,7 @@ ul.inheritsList
 					<div class="fixedFont">&lt;static&gt; 
 					
 					<span class="light">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span>
-					<span class="light">nul.</span><b>read</b>(txt)
+					<span class="light">nul.</span><b>read</b>(txt, glbNm)
 					
 					</div>
 					<div class="description">
@@ -872,6 +945,12 @@ ul.inheritsList
 							
 								<dt>
 									<span class="light fixedFont">{String}</span> <b>txt</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>glbNm</b>
 									
 								</dt>
 								<dd></dd>
@@ -941,55 +1020,6 @@ Gets a distributed list of knowledges that don't contains ior3 anymore
 
 					<hr />
 				
-					<a name=".subRead"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					<span class="light">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span>
-					<span class="light">nul.</span><b>subRead</b>(txt, glbNm)
-					
-					</div>
-					<div class="description">
-						Compile a text and understand it
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>txt</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>glbNm</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
 					<a name=".summary"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -998,7 +1028,7 @@ Gets a distributed list of knowledges that don't contains ior3 anymore
 					
 					</div>
 					<div class="description">
-						Used to build expression summary items
+						Shortcut to build expression summary items
 						
 							<br />
 							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/xpr/null.expression.js">/lng/xpr/null.expression.js</a>.
@@ -1081,6 +1111,104 @@ Gets a distributed list of knowledges that don't contains ior3 anymore
 						
 						
 
+					<hr />
+				
+					<a name=".understand"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span>
+					<span class="light">nul.</span><b>understand</b>(cmpl, glbNm)
+					
+					</div>
+					<div class="description">
+						Understand the compiled text in a knowledge named glbNm, using the uber-local
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.compiled.html">nul.compiled</a>}</span> <b>cmpl</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>glbNm</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a>}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name=".xmlRead"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span>
+					<span class="light">nul.</span><b>xmlRead</b>(txt, glbNm)
+					
+					</div>
+					<div class="description">
+						Compile an XML content and understand it
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{XML}</span> <b>txt</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>glbNm</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
 					
 				
 			
@@ -1095,7 +1223,7 @@ Gets a distributed list of knowledges that don't contains ior3 anymore
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sun Nov 08 2009 13:46:48 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Nov 24 2009 23:11:42 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

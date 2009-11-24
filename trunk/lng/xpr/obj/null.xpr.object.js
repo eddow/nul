@@ -53,7 +53,7 @@ nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
 	}
 });
 
-nul.xpr.object.reself = Class.create(nul.browser.bijectif, /** @lends nul.xpr.object.reself# */{
+nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.object.reself# */{
 	/**
 	 * A browser to change the self-referant locals in an object definition
 	 * @constructs
@@ -61,22 +61,22 @@ nul.xpr.object.reself = Class.create(nul.browser.bijectif, /** @lends nul.xpr.ob
 	 * @param {String} selfRef The self-reference to replace
 	 * @param {nul.xpr.object|String} trgt The replacement value. If a string, will be a self-reference local.
 	 */
-	initialize: function($super, selfRef, trgt) {
+	initialize: function(selfRef, trgt) {
 		this.selfRef = selfRef;
 		if(!trgt.expression) this.newRef = trgt;
 		this.trgt = trgt.expression?trgt:nul.obj.local.self(trgt);
-		$super('SelfRef');
+		this.callSuper('SelfRef');
 	},
 	/**
 	 * Removes or change the self-reference of this expression if it was self-refered
 	 * @param {nul.expression} xpr
 	 */
-	build: function($super, xpr) {
+	build: function(xpr) {
 		if(xpr.selfRef == this.selfRef) {
 			if(this.newRef) xpr.selfRef = this.newRef;
 			else delete xpr.selfRef;
 		}
-		return $super(xpr);
+		return this.callSuper();
 	},
 	/**
 	 * Gets a replacement value if xpr is a concerned self-reference

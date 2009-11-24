@@ -23,7 +23,7 @@ nul.execution = {
 		nul.erroneus = false;
 		nul.execution.name.space = {};
 		
-		nul.debug.reset();
+		nul.debug.newLog();
 		/**
 		 * The knowledge that is shared as a parent knowledge from a reading to another
 		 * @type {nul.xpr.knowledge}
@@ -120,7 +120,7 @@ nul.execution = {
 		 * @param {HTMLTable} tbd
 		 */
 		draw: function(tbd) {
-			$(tbd).clear();
+			$j(tbd).clearRows();
 			var cs = [];
 			for(var c in this.computed) cs.push([c, this.computed[c]]);
 			cs.sort(function(a, b){ return b[1]-a[1]; });

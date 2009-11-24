@@ -6,25 +6,31 @@
  *
  *--------------------------------------------------------------------------*/
 
-html, body {
-	margin: 0; /* Remove body margin/padding */
+#_nul_console {
+	border: 0;
 	padding: 0;
-	overflow: hidden; /* Remove scroll bars on browser window */
-}
-
-#_nul_console{
-	background: #ccf;
-	padding: 8px;
 }
 
 #_nul_content {
 	padding: 8px;
 }
 
-.ui-layout-resizer-south {
-	background: lightgray;
+#_nul_console-resizer {
+	background: white; /*lightgray;*/
+	border-bottom: 1px darkgray solid !important;
 }
 
 .ui-layout-toggler {
 	background: darkgray;
+}
+
+iframe {
+	padding:	0 !important;
+	overflow:	auto !important;
+}
+
+.ui-layout-mask {
+	opacity: 0.2 !important;
+	filter:	 alpha(opacity=20) !important;
+	background-color: #666 !important;
 }

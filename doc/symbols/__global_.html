@@ -285,6 +285,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.lambda.html">nul.obj.lambda</a></li>
 	
+	<li><a href="../symbols/_nul.obj.list.html">nul.obj.list</a></li>
+	
 	<li><a href="../symbols/_nul.obj.litteral.html">nul.obj.litteral</a></li>
 	
 	<li><a href="../symbols/_nul.obj.litteral.boolean.html">nul.obj.litteral.boolean</a></li>
@@ -307,7 +309,7 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
 	
-	<li><a href="../symbols/_nul.obj.undefined.html">nul.obj.undefined</a></li>
+	<li><a href="../symbols/_nul.obj.undefnd.html">nul.obj.undefnd</a></li>
 	
 	<li><a href="../symbols/_nul.obj.whole.html">nul.obj.whole</a></li>
 	
@@ -322,8 +324,6 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.txt.html.html">nul.txt.html</a></li>
 	
 	<li><a href="../symbols/_nul.txt.html.draw.html">nul.txt.html.draw</a></li>
-	
-	<li><a href="../symbols/_nul.txt.html.js.html">nul.txt.html.js</a></li>
 	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
 	
@@ -443,6 +443,24 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#beginDraw">beginDraw</a></b>(xpr)
+								</div>
+								<div class="description">Called when an expression is about to be drawn</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#clpsSstm">clpsSstm</a></b>(table, uc, lcFct)
+								</div>
+								<div class="description">Create a collapse system out of an HTML table.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#cnt">cnt</a></b>(itm, fct)
 								</div>
 								<div class="description">Returns the sum of the returns value (or 1 if not-false and not-number)</div>
@@ -461,15 +479,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/__global_.html#cstmNdx">cstmNdx</a></b>(ndx, ass)
-								</div>
-								<div class="description">Gets weither 'ndx' is a custom index of 'ass'Returns false for all the default properties of the arrays.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#dat">dat</a></b>()
 								</div>
 								<div class="description"></div>
@@ -479,7 +488,34 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#dispatchPair">dispatchPair</a></b>(xpr)
+								</div>
+								<div class="description">Pairs can have several writing depending on their constitution : singleton { 1 }, list (1, 2, 3) or set { 1 [] 2 [] 3 }.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#emptyLocals">emptyLocals</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#endDraw">endDraw</a></b>(xpr)
+								</div>
+								<div class="description">Called for each expression that have been drawn</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#enterContext">enterContext</a></b>(xpr)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -515,6 +551,15 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#isClsNdx">isClsNdx</a></b>(obj, ndx)
+								</div>
+								<div class="description">Gets weither the index is defined in the class definition</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#isEmpty">isEmpty</a></b>(o, b)
 								</div>
 								<div class="description">Is 'o' an empty association ? (beside the values contained in array 'b')</div>
@@ -527,6 +572,15 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#isJsInt">isJsInt</a></b>(n)
 								</div>
 								<div class="description">Determines weither this number is an integer</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#leaveContext">leaveContext</a></b>(xpr)
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -569,6 +623,15 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#newEmpty">newEmpty</a></b>(obj, ndx)
+								</div>
+								<div class="description">Gets weither the index is defined in the class definition</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#newLocal">newLocal</a></b>(name, ndx)
 								</div>
 								<div class="description"></div>
@@ -578,9 +641,27 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#ownNdx">ownNdx</a></b>(itm, fct)
+								</div>
+								<div class="description">Return all the elements that are owned by the object, not his prototype or such</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/__global_.html#reTyped">reTyped</a></b>(v)
 								</div>
 								<div class="description">If a string is '5', get it as the number 5</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#toText">toText</a></b>(xpr)
+								</div>
+								<div class="description">Main function, making a string out of an expression</div>
 							</td>
 						</tr>
 					
@@ -609,6 +690,42 @@ ul.inheritsList
 				
 			
 <!-- ============================== events summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the events documented in the class _global_.">
+					<caption>Event Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Event Attributes</th>
+							<th scope="col">Event Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#event:collapse">collapse</a></b>(tbl, lc)
+								</div>
+								<div class="description">Event managing the 'collapse' command.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/__global_.html#event:uncollapse">uncollapse</a></b>(tbl, lc)
+								</div>
+								<div class="description">Event managing the 'uncollapse' command.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
 			
 
 <!-- ============================== constructor details ==================== -->		
@@ -775,6 +892,103 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="beginDraw"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>beginDraw</b>(xpr)
+					
+					</div>
+					<div class="description">
+						Called when an expression is about to be drawn
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.js">/lng/txt/out/null.txt.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="clpsSstm"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/_nul.clpsSstm.html">nul.clpsSstm</a>}</span>
+					<b>clpsSstm</b>(table, uc, lcFct)
+					
+					</div>
+					<div class="description">
+						Create a collapse system out of an HTML table.
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.js">/lng/txt/out/null.txt.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{HTMLTable}</span> <b>table</b>
+									
+								</dt>
+								<dd>The table element that will collapse rows.</dd>
+							
+								<dt>
+									<span class="light fixedFont">{'up' | 'dn'}</span> <b>uc</b>
+									
+								</dt>
+								<dd>Determine which collapser row (the beginner-up or the ender-dn) is kept visible when the rows are collapsed</dd>
+							
+								<dt>
+									<span class="light fixedFont">{function() {Number}}</span> <b>lcFct</b>
+									
+								</dt>
+								<dd>The function giving the index of the row (the table row number is used if no fct is specified)</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/_nul.clpsSstm.html">nul.clpsSstm</a>}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="cnt"> </a>
 					<div class="fixedFont">
 					
@@ -859,58 +1073,6 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="cstmNdx"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{Boolean}</span>
-					<b>cstmNdx</b>(ndx, ass)
-					
-					</div>
-					<div class="description">
-						Gets weither 'ndx' is a custom index of 'ass'Returns false for all the default properties of the arrays.
-						
-							<br />
-							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//krnl/null.helper.js">/krnl/null.helper.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{String|Number}</span> <b>ndx</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<span class="light fixedFont">{Object}</span> <b>ass</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{Boolean}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
 					<a name="dat"> </a>
 					<div class="fixedFont">
 					
@@ -939,6 +1101,45 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="dispatchPair"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>dispatchPair</b>(xpr)
+					
+					</div>
+					<div class="description">
+						Pairs can have several writing depending on their constitution : singleton { 1 }, list (1, 2, 3) or set { 1 [] 2 [] 3 }.This function call one of the three sub-function.
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.js">/lng/txt/out/null.txt.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="emptyLocals"> </a>
 					<div class="fixedFont">
 					
@@ -957,6 +1158,84 @@ ul.inheritsList
 					
 					
 					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="endDraw"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>endDraw</b>(xpr)
+					
+					</div>
+					<div class="description">
+						Called for each expression that have been drawn
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.js">/lng/txt/out/null.txt.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="enterContext"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>enterContext</b>(xpr)
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.js">/lng/txt/out/null.txt.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -1087,6 +1366,58 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="isClsNdx"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Boolean}</span>
+					<b>isClsNdx</b>(obj, ndx)
+					
+					</div>
+					<div class="description">
+						Gets weither the index is defined in the class definition
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//krnl/null.helper.js">/krnl/null.helper.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>obj</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>ndx</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Boolean}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="isEmpty"> </a>
 					<div class="fixedFont">
 					
@@ -1179,6 +1510,45 @@ ul.inheritsList
 								<dd><span class="light fixedFont">{Boolean}</span> </dd>
 							
 							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="leaveContext"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>leaveContext</b>(xpr)
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.js">/lng/txt/out/null.txt.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
 						
 						
 						
@@ -1361,6 +1731,58 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="newEmpty"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{Boolean}</span>
+					<b>newEmpty</b>(obj, ndx)
+					
+					</div>
+					<div class="description">
+						Gets weither the index is defined in the class definition
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//krnl/null.helper.js">/krnl/null.helper.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>obj</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>ndx</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{Boolean}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="newLocal"> </a>
 					<div class="fixedFont">
 					
@@ -1400,6 +1822,58 @@ ul.inheritsList
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="ownNdx"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>ownNdx</b>(itm, fct)
+					
+					</div>
+					<div class="description">
+						Return all the elements that are owned by the object, not his prototype or such
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//krnl/null.helper.js">/krnl/null.helper.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>itm</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>fct</b>
+									
+								</dt>
+								<dd>function(dst, src, ndx)</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -1446,6 +1920,45 @@ ul.inheritsList
 								<dd><span class="light fixedFont">{String|Number}</span> </dd>
 							
 							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="toText"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>toText</b>(xpr)
+					
+					</div>
+					<div class="description">
+						Main function, making a string out of an expression
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.js">/lng/txt/out/null.txt.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
 						
 						
 						
@@ -1547,6 +2060,101 @@ ul.inheritsList
 			
 <!-- ============================== event details ========================= -->		
 			
+				<div class="sectionTitle">
+					Event Detail
+				</div>
+				
+					<a name="event:collapse"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>collapse</b>(tbl, lc)
+					
+					</div>
+					<div class="description">
+						Event managing the 'collapse' command.
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.js">/lng/txt/out/null.txt.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{HTMLTable}</span> <b>tbl</b>
+									
+								</dt>
+								<dd>The collapsing table or one of its son</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>lc</b>
+									
+								</dt>
+								<dd>The table item to collapse (its collapser begin or its collapser end index)</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="event:uncollapse"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>uncollapse</b>(tbl, lc)
+					
+					</div>
+					<div class="description">
+						Event managing the 'uncollapse' command.
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.js">/lng/txt/out/null.txt.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{HTMLTable}</span> <b>tbl</b>
+									
+								</dt>
+								<dd>The collapsing table or one of its son</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Number}</span> <b>lc</b>
+									
+								</dt>
+								<dd>The table item to collapse (its collapser begin or its collapser end index)</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					
+				
+			
 			
 			<hr />
 		</div>
@@ -1555,7 +2163,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Sun Nov 08 2009 13:46:48 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Nov 24 2009 23:11:42 GMT+0200 (EET)
 		</div>
 	</body>
 </html>
