@@ -146,7 +146,7 @@ nul.operators = [
 	['..','l']
 ];
 
-nul.compiler = Class.create(/** @lends nul.compiler# */{
+nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	/**
 	 * Compilation information
 	 * @constructs
