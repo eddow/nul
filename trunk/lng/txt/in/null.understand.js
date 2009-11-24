@@ -203,7 +203,7 @@ nul.understanding = {
 	}
 };
 
-nul.understanding.base = Class.create(/** @lends nul.understanding.base# */{
+nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 	/**
 	 * Understanding context' informations
 	 * @constructs
@@ -256,7 +256,7 @@ nul.understanding.base = Class.create(/** @lends nul.understanding.base# */{
 	}
 });
 
-nul.understanding.base.set = Class.create(nul.understanding.base, /** @lends nul.understanding.base.set# */{
+nul.understanding.base.set = new JS.Class(nul.understanding.base, /** @lends nul.understanding.base.set# */{
 	/**
 	 * Understanding context' information inside brackets
 	 * @extends nul.understanding.base
@@ -265,8 +265,8 @@ nul.understanding.base.set = Class.create(nul.understanding.base, /** @lends nul
 	 * @param {String} selfName The name to use internally (understanding this value) to give to the created value.
 	 * @param {String} klgName The name to give to the created context if any special (if not, one will be generated)
 	 */
-	initialize: function($super, prntUb, selfName, klgName) {
-		$super(prntUb, klgName);
+	initialize: function(prntUb, selfName, klgName) {
+		this.callSuper(prntUb, klgName);
 		if(selfName) this.setSelfRef = (this.parms[selfName] = nul.obj.local.self(null, selfName)).ndx;
 	},
 	/**

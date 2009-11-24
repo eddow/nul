@@ -8,7 +8,7 @@
 
 //TODO 2: "8x" should be an error, not "8 x" 
 
-nul.tokenizer = Class.create(/** @lends nul.tokenizer */{
+nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	/**
 	 * Text reader helper
 	 * @constructs
