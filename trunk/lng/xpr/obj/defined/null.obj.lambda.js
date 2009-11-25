@@ -21,7 +21,7 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 		/** @type nul.xpr.object */
 		this.image = image;
 		this.alreadyBuilt();
-		return this.callSuper(null, null);
+		return this.callSuper();
 	},
 
 //////////////// nul.obj.defined implementation

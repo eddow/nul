@@ -13,7 +13,7 @@ nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
 	 * @constructs
 	 */
 	initialize: function() {
-		this.callSuper();
+		this.callSuper(null);
 	},
 
 	/**

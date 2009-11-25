@@ -30,7 +30,7 @@ nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 		this.content = content || nul.obj.empty;	//TODO 2: assert content #set
 		nul.obj.use(this.content, 'nul.obj.list');
 		
-		return this.callSuper(null, null, null);
+		return this.callSuper(null);
 	},
 
 //////////////// nul.obj.defined implementation

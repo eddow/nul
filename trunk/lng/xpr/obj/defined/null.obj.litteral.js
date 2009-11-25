@@ -17,7 +17,7 @@ nul.obj.litteral = new JS.Class(nul.obj.defined, /** @lends nul.obj.litteral# */
 		/** @constant */
 		this.value = val;
 		this.alreadyBuilt();
-		this.callSuper(null);
+		this.callSuper();
 	}
 });
 
