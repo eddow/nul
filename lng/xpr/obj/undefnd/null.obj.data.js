@@ -6,21 +6,22 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.data = Class.create(nul.obj.undefnd, /** @lends nul.obj.data# */{
+nul.obj.data = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.data# */{
 	/**
 	 * @extends nul.obj.undefnd
 	 * @constructs
 	 * Refers to a data-source from nul.data...
 	 */
-	initialize: function($super, ds) {
+	initialize: function(ds) {
 		this.source = ds;
 		this.alreadyBuilt();
+		return this.callSuper(null);
 	},
 
 //////////////// nul.expression implementation
 
 	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link dependance} */
-	sum_dependance: function($super) {
+	sum_dependance: function() {
 		return new nul.dependance(this);
 	},
 

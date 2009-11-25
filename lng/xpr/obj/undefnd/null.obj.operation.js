@@ -10,7 +10,7 @@
 //TODO 4: ((a - b) - c) =?> (a - (b + c)) 
 //TODO 4: (a - (b - c)) =?> ((a + c) - b) !!!/0 
 
-nul.obj.operation = Class.create(nul.obj.undefnd, /** @lends nul.obj.operation# */{
+nul.obj.operation = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.operation# */{
 	/**
 	 * Define an operator applied to several objects
 	 * @constructs
@@ -22,6 +22,7 @@ nul.obj.operation = Class.create(nul.obj.undefnd, /** @lends nul.obj.operation# 
 		this.operator = operator;
 		this.operands = ops;
 		this.alreadyBuilt();
+		return this.callSuper(null, null);
 	},
 	
 //////////////// nul.expression implementation
@@ -32,10 +33,10 @@ nul.obj.operation = Class.create(nul.obj.undefnd, /** @lends nul.obj.operation# 
 	components: {'operands': {type: 'nul.xpr.object', bunch: true}}
 });
 
-nul.obj.operation.binary = Class.create(nul.obj.operation, {
+nul.obj.operation.binary = new JS.Class(nul.obj.operation, {
 	//TODO 3
 });
 
-nul.obj.operation.Nary = Class.create(nul.obj.operation, {
+nul.obj.operation.Nary = new JS.Class(nul.obj.operation, {
 	//TODO 3
 });

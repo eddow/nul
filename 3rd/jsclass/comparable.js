@@ -1,1 +1,37 @@
-JS.Comparable=new JS.Module('Comparable',{extend:{ClassMethods:new JS.Module({compare:function(a,b){return a.compareTo(b)}}),included:function(a){a.extend(this.ClassMethods)}},lt:function(a){return this.compareTo(a)<0},lte:function(a){return this.compareTo(a)<1},gt:function(a){return this.compareTo(a)>0},gte:function(a){return this.compareTo(a)>-1},eq:function(a){return this.compareTo(a)===0},between:function(a,b){return this.gte(a)&&this.lte(b)}});
+JS.Comparable = new JS.Module('Comparable', {
+  extend: {
+    ClassMethods: new JS.Module({
+      compare: function(one, another) {
+        return one.compareTo(another);
+      }
+    }),
+    
+    included: function(base) {
+      base.extend(this.ClassMethods);
+    }
+  },
+  
+  lt: function(other) {
+    return this.compareTo(other) < 0;
+  },
+  
+  lte: function(other) {
+    return this.compareTo(other) < 1;
+  },
+  
+  gt: function(other) {
+    return this.compareTo(other) > 0;
+  },
+  
+  gte: function(other) {
+    return this.compareTo(other) > -1;
+  },
+  
+  eq: function(other) {
+    return this.compareTo(other) === 0;
+  },
+  
+  between: function(a, b) {
+    return this.gte(a) && this.lte(b);
+  }
+});

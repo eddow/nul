@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.pair = Class.create(nul.obj.list, /** @lends nul.obj.pair# */{
+nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 	/**
 	 * Pair used to build lists : a head and a tail.
 	 * @extends nul.obj.list
@@ -14,13 +14,13 @@ nul.obj.pair = Class.create(nul.obj.list, /** @lends nul.obj.pair# */{
 	 * @param {nul.xpr.possible} first List head
 	 * @param {nul.xpr.object} second List tail
 	 */
-	initialize: function($super, first, second) {
+	initialize: function(first, second) {
 		nul.xpr.use(first); nul.obj.use(second);
 		/** @type nul.xpr.possible */
 		this.first = nul.xpr.possible.cast(first);
 		/** @type nul.xpr.object */
 		this.second = second;
-		$super();
+		this.callSuper(null, null);
 	},
 	
 //////////////// Summary
@@ -128,22 +128,22 @@ nul.obj.pair = Class.create(nul.obj.list, /** @lends nul.obj.pair# */{
 	isList: nul.summary('isList'),
 	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link isList} */
 	sum_isList: function() {
-		return nul.klg.ncndtnl.is(this.first.knowledge) && (!this.second.isList || this.second.isList());
+		return this.first.knowledge.isA(nul.klg.ncndtnl) && (!this.second.isList || this.second.isList());
 	},
 	/** Build this set so that it is a following of pairs which values are most simplified as possible */
-	built: function($super) {
+	built: function() {
 		if(this.first.distribuable()) {
 			var dList = this.first.distribute();
 			if(1!= dList.length) return nul.obj.pair.list(this.second, dList);
 			this.first = dList[0];
 		}
-		return $super();
+		return this.callSuper();
 	},
 	
 	sum_recursion: function() {
 		if(!this.selfRef) this.selfRef = nul.execution.name.gen('obj.local.self');
 		var rv = [];
-		for(var p=this; nul.obj.pair.is(p); p=p.second)
+		for(var p=this; p.isA(nul.obj.pair); p=p.second)
 			rv.pushs(p.first.knowledge.modifiable().sumRecursion(this.selfRef, [], p.first.value));
 		return nul.obj.pair.list(null, rv);
 	}

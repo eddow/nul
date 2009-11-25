@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.data = Class.create(/** @lends nul.data# */{
+nul.data = new JS.Class(/** @lends nul.data# */{
 	/**
 	 * The data-source provide basic data queries : select, insert, update.
 	 * @constructs
@@ -34,61 +34,60 @@ nul.data = Class.create(/** @lends nul.data# */{
 	 * @param {any} prm Parameter given to the querier
 	 * @return {nul.obj.defined}
 	 */
-	extract: function(prm) { throw 'abstract'; }
-});
-
-Object.extend(nul.data, /** @lends nul.data */{
-	/**
-	 * Query what is needed to have the queried state of the object
-	 * @param {nul.xpr.object} obj
-	 * @return {nul.xpr.object} The same object without dependancies
-	 * @throw {nul.failure}
-	 * @throw {nul.semanticException}
-	 */
-	query: function(obj) {
-		nul.obj.use(obj);
-		var usg = obj.dependance().usages;
-		while(!isEmpty(usg, 'global')) {
-			var chsdCtx = null;
-			for(var d in ownNdx(usg)) {
-				var ctx = nul.dependance.contexts[d];
-				nul.data.context.is(ctx);
-				if(!chsdCtx || ctx.distance < chsdCtx.distance)
-					chsdCtx = ctx;
+	extract: function(prm) { throw 'abstract'; },
+	
+	extend: /** @lends nul.data */{
+		/**
+		 * Query what is needed to have the queried state of the object
+		 * @param {nul.xpr.object} obj
+		 * @return {nul.xpr.object} The same object without dependancies
+		 * @throw {nul.failure}
+		 * @throw {nul.semanticException}
+		 */
+		query: function(obj) {
+			nul.obj.use(obj);
+			var usg = obj.dependance().usages;
+			while(!isEmpty(usg, 'global')) {
+				var chsdCtx = null;
+				for(var d in ownNdx(usg)) {
+					var ctx = nul.dependance.contexts[d];
+					if(nul.debug.assert) assert(ctx.isA(nul.data.context), 'Context queried');
+					if(!chsdCtx || ctx.distance < chsdCtx.distance)
+						chsdCtx = ctx;
+				}
+				//chsdCtx is fixed as minimum distance
+				if(!chsdCtx) throw nul.internalException('Cannot query : ' + Object.keys(usg).join(', '));
+				obj = chsdCtx.query(obj);
+				usg = obj.dependance().usages;
 			}
-			//chsdCtx is fixed as minimum distance
-			if(!chsdCtx) throw nul.internalException('Cannot query : ' + Object.keys(usg).join(', '));
-			nul.data.context.is(chsdCtx);
-			obj = chsdCtx.query(obj);
-			usg = obj.dependance().usages;
-		}
-		return obj;
-	},
-
-	querier: Class.create(nul.browser.bijectif, /** @lends nul.data.querier */{
-		/**
-		 * The browser to replace atomic query-dependant values by their queried value
-		 * @constructs
-		 * @extends nul.browser.bijectif
-		 * @param {nul.data.context} context
-		 */
-		initialize: function($super, context, prm) {
-			this.context = context;
-			this.prm = prm;
-			$super();
+			return obj;
 		},
-		/**
-		 * Gets the expression-specific queried value if the expression is a data from the queried context
-		 */
-		transform: function(xpr) {
-			if('data'== xpr.expression && this.context.name == xpr.source.context.name)
-				return Object.isFunction(xpr.source.extract)?xpr.source.extract(this.prm):xpr.source.extract;
-			return nul.browser.bijectif.unchanged;
-		}
-	})
+
+		querier: new JS.Class(nul.browser.bijectif, /** @lends nul.data.querier */{
+			/**
+			 * The browser to replace atomic query-dependant values by their queried value
+			 * @constructs
+			 * @extends nul.browser.bijectif
+			 * @param {nul.data.context} context
+			 */
+			initialize: function(context, prm) {
+				this.context = context;
+				this.prm = prm;
+				this.callSuper('querier:'+context.name);
+			},
+			/**
+			 * Gets the expression-specific queried value if the expression is a data from the queried context
+			 */
+			transform: function(xpr) {
+				if('data'== xpr.expression && this.context.name == xpr.source.context.name)
+					return Object.isFunction(xpr.source.extract)?xpr.source.extract(this.prm):xpr.source.extract;
+				return nul.browser.bijectif.unchanged;
+			}
+		})
+	}
 });
 
-nul.data.context = Class.create(/** @lends nul.data.context# */{
+nul.data.context = new JS.Class(/** @lends nul.data.context# */{
 	/**
 	 * The data-source provider
 	 * @constructs

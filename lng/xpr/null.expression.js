@@ -13,7 +13,7 @@ nul.summary = function(itm) {
 	return function() { return this.summary(itm); };
 };
 
-nul.expression = Class.create(/** @lends nul.expression# */{
+nul.expression = new JS.Class(/** @lends nul.expression# */{
 	/**
 	 * Expression
 	 * @constructs
@@ -55,7 +55,7 @@ nul.expression = Class.create(/** @lends nul.expression# */{
 	summary: function(itm) {
 		if(!this.summarised) return this['sum_'+itm].apply(this);
 		//this.use();
-		if(Object.isUndefined(this.summarised[itm])) {
+		if('undefined'== typeof this.summarised[itm]) {
 			assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
 			this.summarised[itm] = this['sum_'+itm].apply(this);
 		}
@@ -324,7 +324,7 @@ nul.xpr = {
 nul.xpr.application = function(set, itm, klg) {
 	var lcl = klg.newLocal(nul.understanding.rvName);
 	var rv = klg.hesitate(set.having(new nul.obj.lambda(itm, lcl)));
-	if(nul.obj.lambda.is(rv.expression)) return rv.image;
+	if(rv.expression.isA(nul.obj.lambda)) return rv.image;
 	return lcl;
 };
 

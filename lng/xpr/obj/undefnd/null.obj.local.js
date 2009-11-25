@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.local = Class.create(nul.obj.undefnd, /** @lends nul.obj.local# */{
+nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	/**
 	 * Define an object that is a value of a local
 	 * @constructs
@@ -39,12 +39,13 @@ nul.obj.local = Class.create(nul.obj.undefnd, /** @lends nul.obj.local# */{
 		this.alreadyBuilt({
 			index: this.indexedSub(this.klgRef, this.ndx)
 		});
+		return this.callSuper(null, null, null);
 	},
 
 ////////////////nul.expression implementation
 
 	/** Specific dependance computation for locals */
-	sum_dependance: function($super) { return new nul.dependance(this); },
+	sum_dependance: function() { return new nul.dependance(this); },
 	
 	/** @constant */
 	expression: 'local',
@@ -52,10 +53,10 @@ nul.obj.local = Class.create(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	 * Change the string debug-names used.
 	 * @param {String} dbgName A string to draw as the name of this variable for debug info
 	 */
-	invalidateTexts: function($super, dbgName) {
+	invalidateTexts: function(dbgName) {
 		if(nul.debug.assert) assert(dbgName, 'Local has name if debug enabled'); 
 		this.dbgName = dbgName;
-		$super();
+		this.callSuper();
 	}
 });
 //TODO 3: Surligner le self-ref content dans l'html

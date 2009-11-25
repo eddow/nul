@@ -216,7 +216,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	 * @throw {nul.syntaxException}
 	 */
 	expression: function(oprtrLvl, firstOp) {
-		if(Object.isUndefined(oprtrLvl)) oprtrLvl = 0; 
+		if('undefined'== typeof oprtrLvl) oprtrLvl = 0; 
 		if(nul.operators.length <= oprtrLvl) return firstOp || this.applied();
 		var oprtr = nul.operators[oprtrLvl];
 		if(!firstOp) firstOp = this.expression(1+oprtrLvl);

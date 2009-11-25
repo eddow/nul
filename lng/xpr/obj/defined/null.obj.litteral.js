@@ -6,18 +6,18 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.litteral = Class.create(nul.obj.defined, /** @lends nul.obj.litteral# */ {
+nul.obj.litteral = new JS.Class(nul.obj.defined, /** @lends nul.obj.litteral# */ {
 	/**
 	 * Abstract litteral - hold a javascript litteral value
 	 * @constructs
 	 * @extends nul.obj.defined
 	 * @param {Number|String|Boolean} val Javascript value to hold.
 	 */
-	initialize: function($super, val) {
+	initialize: function(val) {
 		/** @constant */
 		this.value = val;
 		this.alreadyBuilt();
-		$super();
+		this.callSuper(null);
 	}
 });
 
@@ -25,7 +25,7 @@ nul.obj.litteral = Class.create(nul.obj.defined, /** @lends nul.obj.litteral# */
  * @class
  * @extends nul.obj.litteral
 */
-nul.obj.litteral.string = Class.create(nul.obj.litteral, /** @lends nul.obj.litteral.string# */{
+nul.obj.litteral.string = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.string# */{
 
 ////////////////	nul.xpr.defined implementation
 	
@@ -61,7 +61,7 @@ nul.obj.litteral.string = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
  * @class
  * @extends nul.obj.litteral
 */
-nul.obj.litteral.number = Class.create(nul.obj.litteral, /** @lends nul.obj.litteral.number# */{
+nul.obj.litteral.number = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.number# */{
 
 ////////////////	nul.xpr.defined implementation
 	
@@ -92,7 +92,7 @@ nul.obj.litteral.number = Class.create(nul.obj.litteral, /** @lends nul.obj.litt
  * @name nul.obj.litteral.boolean 
  * @extends nul.obj.litteral 
  */
-nul.obj.litteral.boolean = Class.create(nul.obj.litteral, /** @lends nul.obj.litteral.boolean# */{
+nul.obj.litteral.boolean = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.boolean# */{
 	
 ////////////////	nul.xpr.defined implementation
 	

@@ -222,7 +222,7 @@ nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 	 * @throw {nul.understanding.unresolvable}
 	 */
 	resolve: function(identifier) {
-		if(!Object.isUndefined(this.parms[identifier]))
+		if('undefined'!= typeof this.parms[identifier])
 			return this.parms[identifier];
 		if(this.prntUb) return this.prntUb.resolve(identifier);
 		throw nul.understanding.unresolvable;

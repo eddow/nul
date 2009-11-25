@@ -6,14 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# */{
+nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# */{
 	/**
 	 * Represent a bunch of information about locals and absolute values.
 	 * @extends nul.expression
 	 * @constructs
 	 * @param {String} klgName [optional] Knowledge name
 	 */
-	initialize: function($super, klgName, n, x) {
+	initialize: function(klgName, n, x) {
  		/**
  		 * Describe the used localspace
  		 * @type String[]
@@ -44,8 +44,8 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  		 * @type String
  		 */
  		this.name = klgName || nul.execution.name.gen('klg');
-		if(Object.isUndefined(n)) n = 1;
-		if(Object.isUndefined(x)) x = n;
+		if('undefined'== typeof n) n = 1;
+		if('undefined'== typeof x) x = n;
 		if(!n.expression) n = { minMult:n, maxMult: x || n };
 		this.minMult = n.minMult;
 		this.maxMult = n.maxMult;
@@ -204,7 +204,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 			map(choices, function() {
 				var p = this;
 				var klg;
-				if(nul.xpr.possible.is(p)) {
+				if(p.isA(nul.xpr.possible)) {
 					klg = p.knowledge.modifiable();
 					nul.klg.mod(klg);
 					p = p.value;
@@ -228,7 +228,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	merge: function(klg, val) {
  		if(nul.klg.never== klg) nul.fail('Merging failure');
  		this.mul(klg);
- 		if(nul.klg.ncndtnl.is(klg)) return val;
+ 		if(klg.isA(nul.klg.ncndtnl)) return val;
  		
  		this.modify(); nul.klg.use(klg);
 
@@ -297,7 +297,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 */
  	attributes: function(e) {
  		nul.obj.use(e);
- 		if(e.defined) return e.attribute;	//TODO 2 : cas special du defined : il faut une liste
+ 		if(e.isA(nul.obj.defined)) return e.attribute;	//TODO 2 : Special defined case : list needed
 		var ec = this.access[e];
 		if(!ec) return {};
  		return ec.attribs;
@@ -313,7 +313,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  	 */
  	attribute: function(e, anm) {
  		nul.obj.use(e);
- 		if(e.defined) return e.attribute(anm, this);
+ 		if(e.isA(nul.obj.defined)) return e.attribute(anm, this);
 		var ec = this.info(e);
 		if(ec && ec.attribs[anm]) return ec.attribs[anm];
 		var rv = this.newLocal('&rarr;'+anm);
@@ -330,7 +330,7 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 		this.modify();
 		var rv = [];
 //		return rv;
-		acsTbl = map(acsTbl);
+		acsTbl = $o.clone(acsTbl);
 		var used;
 		do {
 			used = false;
@@ -417,8 +417,8 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	/**
 	 * Re-built the access for the new modifiable knowledge.
 	 */
-	modifiable: function($super) {
-		var rv = $super();
+	modifiable: function() {
+		var rv = this.callSuper();
 		rv.eqCls = [];
 		rv.access = {};
 		for(var i in ownNdx(this.eqCls)) rv.accede(this.eqCls[i]);
@@ -428,9 +428,9 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	/**
 	 * Clone taking care to shallow clone access and locals (not refered as components)
 	 */
-	clone: function($super) {
-		var rv = $super(beArrg(arguments, 1));
-		if(rv.access) rv.access = map(rv.access);
+	clone: function() {
+		var rv = this.callSuper(beArrg(arguments));
+		if(rv.access) rv.access = $o.clone(rv.access);
 		rv.locals = this.emptyLocals();
 		rv.concatLocals(this);
 		return rv;
@@ -453,9 +453,9 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	/**
 	 * Reaccede the equivalence classes and build.
 	 */
-	chew: function($super) {
+	chew: function() {
 		this.reAccede();
-		return $super();
+		return this.callSuper();
 	},
 	
 	/**
@@ -497,12 +497,12 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
 	/**
 	 * {@link simplify} and regular build. Return an unconditional global if not conditional.
 	 */
- 	built: function($super) {
+ 	built: function() {
  		this.simplify();
 		var acs = this.access;
 		this.clearAccess();
  		if(
- 				!nul.klg.ncndtnl.is(this) &&	//This is not already an unconditional
+ 				!this.isA(nul.klg.ncndtnl) &&	//This is not already an unconditional
  				!this.eqCls.length &&			//There are no equivalence/belonging/attribute constraints
  				!this.nbrLocals() &&			//There are no locals involved
  				!this.ior3.length &&			//There are no choices to make
@@ -511,13 +511,13 @@ nul.xpr.knowledge = Class.create(nul.expression, /** @lends nul.xpr.knowledge# *
  			return nul.klg.unconditional(this.minMult);
  		//if(this.minMult < this.maxMult) this.undefined = nul.execution.name.gen('klg.undefined');
  		//No need : name differenciate different knowledges already
- 		var rv = $super();
+ 		var rv = this.callSuper();
  		if(rv === this) rv.summarised.access = acs;
  		return rv;
  	}
 });
 
-if(nul.debug) nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
+if(nul.debug) nul.localsMdl = new JS.Module(/** @lends nul.xpr.knowledge# */{
 	/**
 	 * Remove the names of the unused locals.
 	 * Use the local names to textualise locals references.
@@ -553,19 +553,21 @@ if(nul.debug) nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 	 * Register a new local
 	 */
  	newLocal: function(name, ndx) {
- 		if(Object.isUndefined(ndx)) ndx = this.locals.length;
+ 		if('undefined'== typeof ndx) ndx = this.locals.length;
 		this.locals[ndx] = name;
  		return new nul.obj.local(this.name, ndx, name);
  	}
  	
-}); else nul.klg.addMethods( /** @ignore */{
+}); else nul.localsMdl = new JS.Module(/** @ignore */{
 	useLocalNames: function() {},
 	emptyLocals: function() { return 0; },
 	concatLocals: function(klg) { this.locals += klg.locals; },
 	freeLastLocal: function() { --this.locals; },
 	nbrLocals: function() { return this.locals; },
  	newLocal: function(name, ndx) {
- 		if(Object.isUndefined(ndx)) ndx = this.locals++;
+ 		if('undefined'== typeof ndx) ndx = this.locals++;
  		return new nul.obj.local(this.name, ndx);
  	}
 });
+
+nul.xpr.knowledge.include(nul.localsMdl);

@@ -6,17 +6,17 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.hc = Class.create(nul.obj.defined, /** @lends nul.obj.hc# */{
+nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 	/**
 	 * The objects that is defined in javascript, along functions and/or set listing.
 	 * @constructs
 	 * @extends nul.obj.defined
 	 * @param {Object} singleton Sub-class definition. Used when sub-classment is made for a singleton, to avoid new Class.create()()
 	 */
-	initialize: function($super, singleton) {
-		if(singleton) Object.extend(this, singleton);
+	initialize: function(singleton) {
+		if(singleton) this.extend(this, singleton);
 		this.alreadyBuilt();
-		return $super();
+		return this.callSuper(null);
 	},
 	
 	/**
@@ -62,8 +62,8 @@ nul.obj.hc = Class.create(nul.obj.defined, /** @lends nul.obj.hc# */{
 	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
 	 */
 	subHas: function(o, attrs) {
-		if(nul.obj.lambda.is(o) && isEmpty(o.point.dependance().usages)) return this.retrieve(o.point, o.image, attrs);
-		else if((o.defined && !nul.obj.lambda.is(o)) || !isEmpty(attrs)) return this.select(o, attrs);
+		if(o.isA(nul.obj.lambda) && isEmpty(o.point.dependance().usages)) return this.retrieve(o.point, o.image, attrs);
+		else if((o.isA(nul.obj.defined) && !o.isA(nul.obj.lambda)) || !isEmpty(attrs)) return this.select(o, attrs);
 	}
 });
 
@@ -78,9 +78,9 @@ nul.obj.hc.filter = function(objs, exp, att, wrp) {
 	if(!isArray(objs)) objs = [objs];
 	return maf(objs, function(n, orv) {
 		try {
-			if(nul.data.is(orv)) orv = orv.object;
+			if(orv.isA(nul.data)) orv = orv.object;
 			var klg;
-			if(nul.xpr.possible.is(orv)) {
+			if(orv.isA(nul.xpr.possible)) {
 				klg = orv.knowledge.modifiable();
 				nul.klg.mod(klg);
 				orv = orv.value;

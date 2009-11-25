@@ -126,14 +126,14 @@ nul.txt = new JS.Singleton({
 			 * @return {HTML}
 			 */
 			endCollapser: function(opnd, clsd) {
-				if(Object.isUndefined(clsd)) clsd = opnd;
+				if('undefined'== typeof clsd) clsd = opnd;
 				return {
 					toPair: this.toPair,
 					lineCount: this.lineCount(),
 					collapsing: this.collapsing,
 					toString: function() {
 						var plc = this.toPair.pop();
-						if(nul.debug.assert) assert(Object.isUndefined(this.collapsing[plc]), 'Debug collapsers correspondance');
+						if(nul.debug.assert) assert('undefined'== typeof this.collapsing[plc], 'Debug collapsers correspondance');
 						this.collapsing[plc] = this.lineCount;
 						return '<span class="collapser end">' +
 							'<a class="collapser" ' +

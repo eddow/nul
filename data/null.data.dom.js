@@ -13,30 +13,30 @@
  */
 nul.data.dom = new nul.data.context('DOM', 10);
 
-nul.data.dom.url = Class.create(nul.data,/** @lends nul.data.dom.url# */{
+nul.data.dom.url = new JS.Class(nul.data,/** @lends nul.data.dom.url# */{
 	/**
 	 * @constructs
 	 * @extends nul.data
 	 * @param {URL | XMLdocument} doc
 	 */
-	initialize: function($super, doc) {
+	initialize: function(doc) {
 		this.document = doc;
 		this.extract = new nul.data.dom.element($(doc.documentElement));
-		$super(nul.data.dom, doc.documentURI);
+		this.callSuper(nul.data.dom, doc.documentURI);
 	}
 });
 
-nul.data.dom.element = Class.create(nul.obj.hc, /** @lends nul.data.dom.element */{
+nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element */{
 	/**
 	 * A NUL object corresponding to a DOM element (XML or HTML)
 	 * @constructs
 	 * @extends nul.obj.hc
 	 * @param {HTMLElement} element
 	 */
-	initialize: function($super, element) {
+	initialize: function(element) {
 		this.element = $(element);
 		if(!this.element.nulId) this.element.nulId = nul.execution.name.gen('element.nulId');
-		$super();
+		this.callSuper(null);
 		this.tag = this.element.tagName;
 		this.properties = {
 			'': function() { return new nul.obj.litteral.string(this.element.tagName); },

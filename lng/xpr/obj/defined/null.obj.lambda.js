@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.lambda = Class.create(nul.obj.defined, /** @lends nul.obj.lambda# */{
+nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 	/**
 	 * Represents the application of a point to an image.
 	 * @example point &rArr; image
@@ -21,6 +21,7 @@ nul.obj.lambda = Class.create(nul.obj.defined, /** @lends nul.obj.lambda# */{
 		/** @type nul.xpr.object */
 		this.image = image;
 		this.alreadyBuilt();
+		return this.callSuper(null, null);
 	},
 
 //////////////// nul.obj.defined implementation

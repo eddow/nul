@@ -6,17 +6,17 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.data.time = Class.create(nul.obj.node, /** @lends nul.data.time# */{
+nul.data.time = new JS.Class(nul.obj.node, /** @lends nul.data.time# */{
 	/**
 	 * The DateTime object as a node with attributes
 	 * @extends nul.obj.node
 	 * @constructs
 	 * @param {Date} dto
 	 */
-	initialize: function($super, dto) {
+	initialize: function(dto) {
 		if(nul.debug.assert) assert(dto.setFullYear, 'Expected a date as argument');
 		this.dto = dto;
-		$super('DateTime', map(nul.data.time.nul2js, function() { return function(klg, anm) {
+		this.callSuper('DateTime', map(nul.data.time.nul2js, function() { return function(klg, anm) {
 			anm = nul.data.time.nul2js[anm];
 			return new nul.obj.litteral.number(this.dto[anm].apply(this.dto));
 		}; }));
@@ -56,7 +56,7 @@ nul.load.time = function() {
 		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
 		 */
 		subHas: function(obj, att) {
-			if(nul.obj.data.is(obj) && 
+			if(obj.isA(nul.obj.data) && 
 					['now'].include(obj.source.index) &&
 					obj.source.context == nul.data.context.local )
 				return [obj];
@@ -69,8 +69,8 @@ nul.load.time = function() {
 		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
 		 */
 		select: function(obj, att) {
-			if(nul.data.time.is(obj)) return [obj];
-			if(obj.defined) return [];
+			if(obj.isA(nul.data.time)) return [obj];
+			if(obj.isA(nul.obj.defined)) return [];
 			//TODO 3: try to see with the attributes if we can discover the date. If yes, return [built date]
 		},
 		/**

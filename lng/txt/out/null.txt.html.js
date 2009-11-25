@@ -272,7 +272,7 @@ nul.txt.html = new JS.Singleton(/** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		klg: function() {
-			if(nul.klg.ncndtnl.is(this)) return {'':html.op(this.name)};
+			if(this.isA(nul.klg.ncndtnl)) return {'':html.op(this.name)};
 			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
 			var ior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'));
 			var veto = nul.txt.html.all(this.veto).join(html.op('&or;'));

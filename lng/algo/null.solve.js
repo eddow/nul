@@ -97,8 +97,7 @@ nul.solve.ior3 = function(chxs) {
  */
 nul.solve.information = function(dps, jgmnt, jgEC, choice, klg) {
 	//TODO O: Trial - real study should be made
-	nul.klg.mod(klg); nul.klg.use(choice);
-	nul.xpr.are(jgmnt);
+	nul.klg.mod(klg); nul.klg.use(choice); /*nul.xpr.are(jgmnt);*/
 	var jUsage = dps.usage(klg);
 	var cUsage = choice.dependance().usage(klg);
 //1- local enthropy : more locals are shared, more enthropy is shared

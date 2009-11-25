@@ -1,1 +1,44 @@
-JS.Ruby=function(d,b){b.call(new JS.Ruby.ClassBuilder(d))};JS.extend(JS.Ruby,{extendDSL:function(d,b){for(var a in b){if(d[a]||!JS.isFn(b[a]))continue;this.addMethod(d,b,a)}},addMethod:function(b,a,c){b[c]=function(){var d=a[c].apply(a,arguments);JS.Ruby.extendDSL(b,a);return d}},alias:function(c,e){return function(d,b){var a=c[b];if(a!==undefined)this.def(d,a);if(e)JS.Ruby.extendDSL(e,c)}},ClassBuilder:function(c){this.def=c.method('define');this.alias=JS.Ruby.alias(c.prototype);this.self={def:JS.bind(function(d,b){var a={};a[d]=b;c.extend(a);JS.Ruby.extendDSL(this,c)},this),alias:JS.Ruby.alias(c,this)};JS.Ruby.extendDSL(this,c)}});
+JS.Ruby = function(klass, define) {
+  define.call(new JS.Ruby.ClassBuilder(klass));
+};
+
+JS.extend(JS.Ruby, {
+  extendDSL: function(builder, source) {
+    for (var method in source) {
+      if (builder[method] || !JS.isFn(source[method])) continue;
+      this.addMethod(builder, source, method);
+    }
+  },
+  
+  addMethod: function(builder, source, method) {
+    builder[method] = function() {
+      var result = source[method].apply(source, arguments);
+      JS.Ruby.extendDSL(builder, source);
+      return result;
+    };
+  },
+  
+  alias: function(object, builder) {
+    return function(newName, oldName) {
+      var old = object[oldName];
+      if (old !== undefined) this.def(newName, old);
+      if (builder) JS.Ruby.extendDSL(builder, object);
+    };
+  },
+  
+  ClassBuilder: function(klass) {
+    this.def    = klass.method('define');
+    this.alias  = JS.Ruby.alias(klass.prototype);
+    
+    this.self = {
+      def: JS.bind(function(name, method) {
+        var def = {}; def[name] = method;
+        klass.extend(def);
+        JS.Ruby.extendDSL(this, klass);
+      }, this),
+      alias: JS.Ruby.alias(klass, this)
+    };
+    
+    JS.Ruby.extendDSL(this, klass);
+  }
+});

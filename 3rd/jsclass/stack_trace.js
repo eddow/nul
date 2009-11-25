@@ -1,1 +1,151 @@
-JS.StackTrace=new JS.Module('StackTrace',{extend:{included:function(h){var f=h.__mod__||h,b=this,d;f.extend({define:function(a,c){if(!JS.isFn(c))return this.callSuper();var g=b.wrap(c,f,a);return this.callSuper(a,g)}});for(d in f.__fns__)f.define(d,f.__fns__[d],false);f.resolve();if(!f.__nom__)setTimeout(function(){f.__nom__=b.nameOf(h)},1)},nameOf:function(a,c){var g=[],h,f,b,d;if(JS.isType(a,Array)){for(h=0,f=a.length;h<f;h++)g.push(this.nameOf(a[h]));return g}if(a.__nom__)return a.__nom__;b=[{name:null,o:c||this.root}];d=0;while(typeof b==='object'&&d<this.maxDepth){d+=1;b=this.descend(b,a)}if(typeof b=='string'){b=b.replace(/\.prototype\./g,'#');a.__nom__=b;if(a.__meta__)a.__meta__.__nom__=b+'.__meta__'}return a.__nom__},descend:function(a,c){var g=[],h=a.length,f=h,b,d,i;while(f--){d=a[f];if(h>1&&JS.indexOf(this.excluded,d.o)!==-1)continue;if(JS.isType(d.o,Array))continue;i=d.name?d.name+'.':'';for(b in d.o){if(c&&d.o[b]===c)return i+b;g.push({name:i+b,o:d.o[b]})}}return g},root:this,excluded:[],maxDepth:8,logLevel:'full',stack:new JS.Singleton({_0:[],indent:function(){var a='',c=this._0.length;while(c--)a+='|  ';return a},push:function(a,c,g){if(JS.StackTrace.logLevel==='full')window.console&&console.log(this.indent()+a+'(',g,')');this._0.push({name:a,object:c,args:g})},pop:function(a){var c=this._0.pop().name;if(JS.StackTrace.logLevel==='full')window.console&&console.log(this.indent()+c+'() --> ',a);return c},top:function(){return this._0[this._0.length-1]||{}},backtrace:function(){var a=this._0.length,c;while(a--){c=this._0[a];window.console&&console.log(c.name,'in',c.object,'(',c.args,')')}}}),flush:function(){this.stack._0=[]},print:function(){this.stack.backtrace()},wrap:function(g,h,f){var b=JS.StackTrace;var d=function(){var a,c=b.nameOf(h)+'#'+f;b.stack.push(c,this,arguments);if(b.logLevel==='errors'){try{a=g.apply(this,arguments)}catch(e){if(e.logged)throw e;e.logged=true;window.console&&console.error(e,'thrown by',b.stack.top().name+'. Backtrace:');b.print();b.flush();throw e;}}else{a=g.apply(this,arguments)}b.stack.pop(a);return a};d.toString=function(){return g.toString()};return d}}});(function(){var a=JS.StackTrace,c;for(c in a.root){if(c!=='JS')a.excluded.push(a.root[c])}})();
+JS.StackTrace = new JS.Module('StackTrace', {
+  extend: {
+    included: function(base) {
+      var module = base.__mod__ || base,
+          self   = this,
+          method;
+      
+      module.extend({define: function(name, func) {
+        if (!JS.isFn(func)) return this.callSuper();
+        var wrapper = self.wrap(func, module, name);
+        return this.callSuper(name, wrapper);
+      } });
+      
+      for (method in module.__fns__)
+        module.define(method, module.__fns__[method], false);
+      module.resolve();
+      
+      if (!module.__nom__) setTimeout(function() {
+        module.__nom__ = self.nameOf(base);
+      }, 1);
+    },
+    
+    nameOf: function(object, root) {
+      var results = [], i, n, field, l;
+      
+      if (JS.isType(object, Array)) {
+        for (i = 0, n = object.length; i < n; i++)
+          results.push(this.nameOf(object[i]));
+        return results;
+      }
+      
+      if (object.__nom__) return object.__nom__;
+      
+      field = [{name: null, o: root || this.root}];
+      l = 0;
+      while (typeof field === 'object' && l < this.maxDepth) {
+        l += 1;
+        field = this.descend(field, object);
+      }
+      if (typeof field == 'string') {
+        field = field.replace(/\.prototype\./g, '#');
+        object.__nom__ = field;
+        if (object.__meta__) object.__meta__.__nom__ = field + '.__meta__';
+      }
+      return object.__nom__;
+    },
+    
+    descend: function(list, needle) {
+      var results = [],
+          n       = list.length,
+          i       = n,
+          key, item, name;
+      
+      while (i--) {
+        item = list[i];
+        if (n > 1 && JS.indexOf(this.excluded, item.o) !== -1) continue;
+        if (JS.isType(item.o, Array)) continue;
+        name = item.name ? item.name + '.' : '';
+        for (key in item.o) {
+          if (needle && item.o[key] === needle) return name + key;
+          results.push({name: name + key, o: item.o[key]});
+        }
+      }
+      return results;
+    },
+    
+    root:       this,
+    excluded:   [],
+    maxDepth:   8,
+    logLevel:   'full',
+    
+    stack: new JS.Singleton({
+      _list: [],
+      
+      indent: function() {
+        var indent = '',
+            n      = this._list.length;
+        
+        while (n--) indent += '|  ';
+        return indent;
+      },
+      
+      push: function(name, object, args) {
+        if (JS.StackTrace.logLevel === 'full') window.console &&
+            console.log(this.indent() + name + '(', args, ')');
+        this._list.push({name: name, object: object, args: args});
+      },
+      
+      pop: function(result) {
+        var name = this._list.pop().name;
+        if (JS.StackTrace.logLevel === 'full') window.console &&
+            console.log(this.indent() + name + '() --> ', result);
+        return name;
+      },
+      
+      top: function() {
+        return this._list[this._list.length - 1] || {};
+      },
+      
+      backtrace: function() {
+        var i = this._list.length, item;
+        while (i--) {
+          item = this._list[i];
+          window.console && console.log(item.name, 'in', item.object, '(', item.args, ')');
+        }
+      }
+    }),
+    
+    flush: function() {
+      this.stack._list = [];
+    },
+    
+    print: function() {
+      this.stack.backtrace();
+    },
+    
+    wrap: function(func, module, name) {
+      var self = JS.StackTrace;
+      var wrapper = function() {
+        var result, fullName = self.nameOf(module) + '#' + name;
+        self.stack.push(fullName, this, arguments);
+        
+        if (self.logLevel === 'errors') {
+          try { result = func.apply(this, arguments); }
+          catch (e) {
+            if (e.logged) throw e;
+            e.logged = true;
+            window.console && console.error(e, 'thrown by', self.stack.top().name + '. Backtrace:');
+            self.print();
+            self.flush();
+            throw e;
+          }
+        } else {
+          result = func.apply(this, arguments);
+        }
+        
+        self.stack.pop(result);
+        return result;
+      };
+      wrapper.toString = function() { return func.toString() };
+      return wrapper;
+    }
+  }
+});
+
+(function() {
+  var module = JS.StackTrace, key;
+  for (key in module.root) {
+    if (key !== 'JS') module.excluded.push(module.root[key]);
+  }
+})();

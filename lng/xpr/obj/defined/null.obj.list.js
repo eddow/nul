@@ -6,14 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.list = Class.create(nul.obj.defined, /** @lends nul.obj.list */{
+nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
 	/**
 	 * Any expression that act as a list or a set
 	 * @extends nul.obj.defined
 	 * @constructs
 	 */
-	initialize: function($super) {
-		$super();
+	initialize: function() {
+		this.callSuper();
 	},
 	
 	//TODO C
