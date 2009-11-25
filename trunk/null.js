@@ -57,6 +57,7 @@ nul.loading.files = [
 '3rd/jquery/xmlns',
 '3rd/jquery/ui.layout',
 '3rd/jquery/emw',
+'3rd/jquery/treeTable',
 
 'krnl/null.helper',
 'krnl/null.std',
@@ -177,7 +178,8 @@ nul.loading.status = function(type, arg) {
 
 nul.loading.addNexScriptRef = function() {
 	if('undefined'!= typeof $j && !nul.loading.jquery) {
-		$j(document).ready(function () { nul.loading.loaded('document'); });
+		//if($j(document).ready(??)) nul.loading.loaded('document');	//TODO 3: problems chrome css before js
+		/*else*/ $j(document).ready(function () { nul.loading.loaded('document');});
 		nul.loading.jquery = true;
 	}
 	var sf = nul.loading.files.shift();
@@ -208,3 +210,8 @@ function urlOption(opt) {
 	var mh = rx.exec(srch);
 	return mh?(mh[2]||true):false;
 }
+/*
+window.onerror = function(a, b, c) {
+	alert(a+'\n'+b+'\n'+c);
+};
+*/

@@ -28,6 +28,13 @@
 			this.clearRows();
 			this.completeRowsFrom(src);
 		}
+	});
+	$.extend({
+		keys: function(obj) {
+			var a = [];
+			$j.each(obj, function(k) {a.push(k); });
+			return a;
+		}
 		
 	});
 })(jQuery);

@@ -53,7 +53,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 	 */
 	localNeed: function(lcls) {
 		lcls = map(lcls,function() { return 3; });
-		var toNeed = Object.keys(lcls);
+		var toNeed = $j.keys(lcls);
 		///1: calculate influences
 		var max = function(a,b) { return !a?b:!b?a:a>b?a:b; };
 		/**

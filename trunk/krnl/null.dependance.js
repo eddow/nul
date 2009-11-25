@@ -30,7 +30,7 @@ nul.dependance = new JS.Class(/** @lends nul.dependance# */{
 	
 	/** @private */
 	depend: function(klgNm, type, ndx, objs) {
-		if(!isArray(objs)) {
+		if(!$j.isArray(objs)) {
 			objs = [objs];
 			objs.number = 1;
 		}

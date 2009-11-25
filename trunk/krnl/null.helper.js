@@ -7,15 +7,6 @@
  *--------------------------------------------------------------------------*/
 
 /**
- * Gets weither this object is an array [] and not an object {}
- * @param {Object} itm
- * @return {Boolean}
- */
-function isArray(itm) {
-	return itm.constructor == Array;
-}
-
-/**
  * Determines weither this number is an integer
  * @param {Number} n
  * @return {Boolean}
@@ -197,7 +188,7 @@ function reTyped(v) {
 function beArrg(args, ndx) {
 	if(!ndx) ndx = 0;
 	if(ndx >= args.length) return [];
-	if(1+ndx== args.length && isArray(args[ndx])) return map(args[ndx]);
+	if(1+ndx== args.length && $j.isArray(args[ndx])) return map(args[ndx]);
 	return $A(args).slice(ndx);
 }
 
@@ -277,6 +268,10 @@ function merge(dst, src, cb) {
 		return rv;
 	});
 
+[].include || (Array.prototype.include = 
+	function(itm) { return $j.inArray(itm, this); });
+
+
 /** @constant */
 pinf = Number.POSITIVE_INFINITY;
 /** @constant */
@@ -284,15 +279,7 @@ ninf = Number.NEGATIVE_INFINITY;
 
 ////////////////	prototype extension
 
-/** @ignore */
-Class.Methods.is = function(obj) {
-	if(!obj || 'object'!= typeof obj) return false;
-	var c = obj.constructor;
-	while(c && c!= this) c = c.superclass;
-	return c == this;
-};
-
-/** @ignore */
+/*TODO 1: add in jq ext
 Element.addMethods({
 	enable: function(elm, tf) {
 		if('undefined'== typeof tf) tf = true;
@@ -303,29 +290,7 @@ Element.addMethods({
 		elm.enable(!tf);
 	}
 });
-/** @ignore */
-Element.addMethods(['TABLE', 'tbody'], {
-	nbrRows: function(tbl) {
-		return tbl.rows?tbl.rows.length:0;
-	},
-	clear: function(tbl) {
-		while(tbl.nbrRows()) tbl.deleteRow(0);
-	},
-	completeFrom: function(tbl, src) {
-		for(var r = tbl.nbrRows(); r<src.nbrRows(); ++r) {
-			var drw = tbl.insertRow(-1);
-			var srw = src.rows[r];
-			for(var a=0; srw.attributes[a]; ++a) drw.writeAttribute(srw.attributes[a].name, srw.attributes[a].value);
-			for(var c = 0; c < srw.cells.length; ++c)
-				drw.insertCell(-1).innerHTML = srw.cells[c].innerHTML;
-		}
-	},
-	copyFrom: function(tbl, src) {
-		tbl.clear();
-		tbl.completeFrom(src);
-	}
-});
-
+*/
 $o = {
 	clone: function(o) {
 		var rv = {};
