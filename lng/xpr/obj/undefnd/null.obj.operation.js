@@ -22,7 +22,7 @@ nul.obj.operation = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.operation# 
 		this.operator = operator;
 		this.operands = ops;
 		this.alreadyBuilt();
-		return this.callSuper(null, null);
+		return this.callSuper();
 	},
 	
 //////////////// nul.expression implementation

@@ -137,7 +137,7 @@ JS.StackTrace = new JS.Module('StackTrace', {
         self.stack.pop(result);
         return result;
       };
-      wrapper.toString = function() { return func.toString() };
+      wrapper.toString = function() { return func.toString(); };
       return wrapper;
     }
   }

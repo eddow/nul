@@ -566,7 +566,7 @@ JS.Enumerable = new JS.Module('Enumerable', {
     },
     
     isComparable: function(list) {
-      return list.all(function(item) { return JS.isFn(item.compareTo) });
+      return list.all(function(item) { return JS.isFn(item.compareTo); });
     },
     
     areEqual: function(one, another) {
@@ -609,7 +609,7 @@ JS.Enumerable = new JS.Module('Enumerable', {
     var count = 0, object = block;
     
     if (block && !JS.isFn(block))
-      block = function(x) { return JS.Enumerable.areEqual(x, object) };
+      block = function(x) { return JS.Enumerable.areEqual(x, object); };
     
     this.forEach(function() {
       if (!block || block.apply(context || null, arguments))
@@ -808,7 +808,7 @@ JS.Enumerable = new JS.Module('Enumerable', {
   },
   
   member: function(needle) {
-    return this.any(function(item) { return JS.Enumerable.areEqual(item, needle) });
+    return this.any(function(item) { return JS.Enumerable.areEqual(item, needle); });
   },
   
   min: function(block, context) {
@@ -996,26 +996,26 @@ JS.Enumerable.include({
     },
     
     OPS: {
-      '+':    function(a,b) { return a + b },
-      '-':    function(a,b) { return a - b },
-      '*':    function(a,b) { return a * b },
-      '/':    function(a,b) { return a / b },
-      '%':    function(a,b) { return a % b },
-      '^':    function(a,b) { return a ^ b },
-      '&':    function(a,b) { return a & b },
-      '&&':   function(a,b) { return a && b },
-      '|':    function(a,b) { return a | b },
-      '||':   function(a,b) { return a || b },
-      '==':   function(a,b) { return a == b },
-      '!=':   function(a,b) { return a != b },
-      '>':    function(a,b) { return a > b },
-      '>=':   function(a,b) { return a >= b },
-      '<':    function(a,b) { return a < b },
-      '<=':   function(a,b) { return a <= b },
-      '===':  function(a,b) { return a === b },
-      '!==':  function(a,b) { return a !== b },
-      '[]':   function(a,b) { return a[b] },
-      '()':   function(a,b) { return a(b) }
+      '+':    function(a,b) { return a + b; },
+      '-':    function(a,b) { return a - b; },
+      '*':    function(a,b) { return a * b; },
+      '/':    function(a,b) { return a / b; },
+      '%':    function(a,b) { return a % b; },
+      '^':    function(a,b) { return a ^ b; },
+      '&':    function(a,b) { return a & b; },
+      '&&':   function(a,b) { return a && b; },
+      '|':    function(a,b) { return a | b; },
+      '||':   function(a,b) { return a || b; },
+      '==':   function(a,b) { return a == b; },
+      '!=':   function(a,b) { return a != b; },
+      '>':    function(a,b) { return a > b; },
+      '>=':   function(a,b) { return a >= b; },
+      '<':    function(a,b) { return a < b; },
+      '<=':   function(a,b) { return a <= b; },
+      '===':  function(a,b) { return a === b; },
+      '!==':  function(a,b) { return a !== b; },
+      '[]':   function(a,b) { return a[b]; },
+      '()':   function(a,b) { return a(b); }
     },
     
     Enumerator: new JS.Class({
@@ -1327,7 +1327,7 @@ JS.Hash = new JS.Class('Hash', {
   
   hash: function() {
     var hashes = [];
-    this.forEach(function(pair) { hashes.push(pair.hash()) });
+    this.forEach(function(pair) { hashes.push(pair.hash()); });
     return hashes.sort().join('');
   },
   
@@ -1415,7 +1415,7 @@ JS.Hash = new JS.Class('Hash', {
   
   keys: function() {
     var keys = [];
-    this.forEach(function(pair) { keys.push(pair.key) });
+    this.forEach(function(pair) { keys.push(pair.key); });
     return keys;
   },
   
@@ -1495,7 +1495,7 @@ JS.Hash = new JS.Class('Hash', {
   
   values: function() {
     var values = [];
-    this.forEach(function(pair) { values.push(pair.value) });
+    this.forEach(function(pair) { values.push(pair.value); });
     return values;
   },
   
@@ -1612,7 +1612,7 @@ JS.Set = new JS.Class('Set', {
   
   hash: function() {
     var hashes = [];
-    this.forEach(function(object) { hashes.push(JS.Hash.codeFor(object)) });
+    this.forEach(function(object) { hashes.push(JS.Hash.codeFor(object)); });
     return hashes.sort().join('');
   },
   
@@ -1661,7 +1661,7 @@ JS.Set = new JS.Class('Set', {
   },
   
   merge: function(list) {
-    this.klass.forEach(list, function(item) { this.add(item) }, this);
+    this.klass.forEach(list, function(item) { this.add(item); }, this);
   },
   
   product: function(other) {
@@ -2421,7 +2421,7 @@ JS.StackTrace = new JS.Module('StackTrace', {
         self.stack.pop(result);
         return result;
       };
-      wrapper.toString = function() { return func.toString() };
+      wrapper.toString = function() { return func.toString(); };
       return wrapper;
     }
   }

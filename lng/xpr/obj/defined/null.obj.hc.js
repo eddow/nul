@@ -14,9 +14,9 @@ nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 	 * @param {Object} singleton Sub-class definition. Used when sub-classment is made for a singleton, to avoid new Class.create()()
 	 */
 	initialize: function(singleton) {
-		if(singleton) this.extend(this, singleton);
+		if(singleton) this.extend(singleton);
 		this.alreadyBuilt();
-		return this.callSuper(null);
+		return this.callSuper();
 	},
 	
 	/**

@@ -39,7 +39,7 @@ nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 		this.alreadyBuilt({
 			index: this.indexedSub(this.klgRef, this.ndx)
 		});
-		return this.callSuper(null, null, null);
+		return this.callSuper();
 	},
 
 ////////////////nul.expression implementation

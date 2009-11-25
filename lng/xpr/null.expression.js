@@ -324,7 +324,7 @@ nul.xpr = {
 nul.xpr.application = function(set, itm, klg) {
 	var lcl = klg.newLocal(nul.understanding.rvName);
 	var rv = klg.hesitate(set.having(new nul.obj.lambda(itm, lcl)));
-	if(rv.expression.isA(nul.obj.lambda)) return rv.image;
+	if(rv.isA(nul.obj.lambda)) return rv.image;
 	return lcl;
 };
 

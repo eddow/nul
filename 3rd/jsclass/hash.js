@@ -148,7 +148,7 @@ JS.Hash = new JS.Class('Hash', {
   
   hash: function() {
     var hashes = [];
-    this.forEach(function(pair) { hashes.push(pair.hash()) });
+    this.forEach(function(pair) { hashes.push(pair.hash()); });
     return hashes.sort().join('');
   },
   
@@ -236,7 +236,7 @@ JS.Hash = new JS.Class('Hash', {
   
   keys: function() {
     var keys = [];
-    this.forEach(function(pair) { keys.push(pair.key) });
+    this.forEach(function(pair) { keys.push(pair.key); });
     return keys;
   },
   
@@ -316,7 +316,7 @@ JS.Hash = new JS.Class('Hash', {
   
   values: function() {
     var values = [];
-    this.forEach(function(pair) { values.push(pair.value) });
+    this.forEach(function(pair) { values.push(pair.value); });
     return values;
   },
   

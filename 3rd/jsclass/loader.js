@@ -131,7 +131,7 @@ JS = {
    **/
   mask: function(func) {
     var string = func.toString().replace(/callSuper/g, 'super');
-    func.toString = function() { return string };
+    func.toString = function() { return string; };
     return func;
   },
   
@@ -1407,7 +1407,7 @@ JS.Packages(function() { with(this) {
     
     PATH = PATH.replace(/\/?$/g, '/');
     
-    var module = function(name) { return file(PATH + name + '.js') };
+    var module = function(name) { return file(PATH + name + '.js'); };
     
     module('core')          .provides('JS.Module',
                                       'JS.Class',

@@ -20,7 +20,7 @@ nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 		this.first = nul.xpr.possible.cast(first);
 		/** @type nul.xpr.object */
 		this.second = second;
-		this.callSuper(null, null);
+		this.callSuper();
 	},
 	
 //////////////// Summary

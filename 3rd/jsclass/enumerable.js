@@ -10,7 +10,7 @@ JS.Enumerable = new JS.Module('Enumerable', {
     },
     
     isComparable: function(list) {
-      return list.all(function(item) { return JS.isFn(item.compareTo) });
+      return list.all(function(item) { return JS.isFn(item.compareTo); });
     },
     
     areEqual: function(one, another) {
@@ -53,7 +53,7 @@ JS.Enumerable = new JS.Module('Enumerable', {
     var count = 0, object = block;
     
     if (block && !JS.isFn(block))
-      block = function(x) { return JS.Enumerable.areEqual(x, object) };
+      block = function(x) { return JS.Enumerable.areEqual(x, object); };
     
     this.forEach(function() {
       if (!block || block.apply(context || null, arguments))
@@ -252,7 +252,7 @@ JS.Enumerable = new JS.Module('Enumerable', {
   },
   
   member: function(needle) {
-    return this.any(function(item) { return JS.Enumerable.areEqual(item, needle) });
+    return this.any(function(item) { return JS.Enumerable.areEqual(item, needle); });
   },
   
   min: function(block, context) {
@@ -440,26 +440,26 @@ JS.Enumerable.include({
     },
     
     OPS: {
-      '+':    function(a,b) { return a + b },
-      '-':    function(a,b) { return a - b },
-      '*':    function(a,b) { return a * b },
-      '/':    function(a,b) { return a / b },
-      '%':    function(a,b) { return a % b },
-      '^':    function(a,b) { return a ^ b },
-      '&':    function(a,b) { return a & b },
-      '&&':   function(a,b) { return a && b },
-      '|':    function(a,b) { return a | b },
-      '||':   function(a,b) { return a || b },
-      '==':   function(a,b) { return a == b },
-      '!=':   function(a,b) { return a != b },
-      '>':    function(a,b) { return a > b },
-      '>=':   function(a,b) { return a >= b },
-      '<':    function(a,b) { return a < b },
-      '<=':   function(a,b) { return a <= b },
-      '===':  function(a,b) { return a === b },
-      '!==':  function(a,b) { return a !== b },
-      '[]':   function(a,b) { return a[b] },
-      '()':   function(a,b) { return a(b) }
+      '+':    function(a,b) { return a + b; },
+      '-':    function(a,b) { return a - b; },
+      '*':    function(a,b) { return a * b; },
+      '/':    function(a,b) { return a / b; },
+      '%':    function(a,b) { return a % b; },
+      '^':    function(a,b) { return a ^ b; },
+      '&':    function(a,b) { return a & b; },
+      '&&':   function(a,b) { return a && b; },
+      '|':    function(a,b) { return a | b; },
+      '||':   function(a,b) { return a || b; },
+      '==':   function(a,b) { return a == b; },
+      '!=':   function(a,b) { return a != b; },
+      '>':    function(a,b) { return a > b; },
+      '>=':   function(a,b) { return a >= b; },
+      '<':    function(a,b) { return a < b; },
+      '<=':   function(a,b) { return a <= b; },
+      '===':  function(a,b) { return a === b; },
+      '!==':  function(a,b) { return a !== b; },
+      '[]':   function(a,b) { return a[b]; },
+      '()':   function(a,b) { return a(b); }
     },
     
     Enumerator: new JS.Class({

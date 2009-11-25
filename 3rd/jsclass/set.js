@@ -97,7 +97,7 @@ JS.Set = new JS.Class('Set', {
   
   hash: function() {
     var hashes = [];
-    this.forEach(function(object) { hashes.push(JS.Hash.codeFor(object)) });
+    this.forEach(function(object) { hashes.push(JS.Hash.codeFor(object)); });
     return hashes.sort().join('');
   },
   
@@ -146,7 +146,7 @@ JS.Set = new JS.Class('Set', {
   },
   
   merge: function(list) {
-    this.klass.forEach(list, function(item) { this.add(item) }, this);
+    this.klass.forEach(list, function(item) { this.add(item); }, this);
   },
   
   product: function(other) {
