@@ -115,7 +115,7 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	* @param {nul.obj.defined} recursion The object that contains 'this' and makes recursion
 	*/
 	beself: function(recursion) {
-		var fz = this;	//TODO 2
+		var fz = this;	//TODO 2: possible#beself
 		//1 - remove in knowledge : x in y : x is value and y self-ref
 		//TODO O: ne faire cela que si dependance de selfref
 		/*var klg = this.knowledge.modifiable();

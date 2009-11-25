@@ -12,7 +12,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 	 * @constructs
 	 */
 	initialize: function(context, index, singleton) {
-		if(singleton) Object.extend(this, singleton);
+		if(singleton) this.extend(singleton);
 		/**
 		 * @type {nul.data.context}
 		 */
@@ -56,7 +56,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 						chsdCtx = ctx;
 				}
 				//chsdCtx is fixed as minimum distance
-				if(!chsdCtx) throw nul.internalException('Cannot query : ' + Object.keys(usg).join(', '));
+				if(!chsdCtx) throw nul.internalException('Cannot query : ' + $j.keys(usg).join(', '));
 				obj = chsdCtx.query(obj);
 				usg = obj.dependance().usages;
 			}
@@ -80,7 +80,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 			 */
 			transform: function(xpr) {
 				if('data'== xpr.expression && this.context.name == xpr.source.context.name)
-					return Object.isFunction(xpr.source.extract)?xpr.source.extract(this.prm):xpr.source.extract;
+					return $j.isFunction(xpr.source.extract)?xpr.source.extract(this.prm):xpr.source.extract;
 				return nul.browser.bijectif.unchanged;
 			}
 		})
@@ -105,7 +105,7 @@ nul.data.context = new JS.Class(/** @lends nul.data.context# */{
 		 * @type Number
 		 */
 		this.distance = distance || 0;
-		if(singleton) Object.extend(this, singleton);
+		if(singleton) this.extend(singleton);
 	},
 
 	toString: function() { return this.name; },

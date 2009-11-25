@@ -11,7 +11,7 @@
 tableStack = new JS.Class({
 	initialize: function(nm, tbl) {
 		this.nm = nm;
-		this.table = $(tbl);
+		if(tbl) this.table = $j(tbl);
 	},
 	buffer: $j('<tbody></tbody>'),
 	getRowValue: function(tr) {
@@ -118,7 +118,7 @@ nul.debug = {
 		return nul.debug.lc++;
 	},
 	toLogText: function(v) {
-		if(isArray(v)) {
+		if($j.isArray(v)) {
 			var rv = [];
 			for(var i=0; i<v.length; ++i) rv.push(nul.debug.toLogText(v[i]));
 			return rv.join(' ');
@@ -213,12 +213,12 @@ nul.debug = {
 	 * @throws {assertException}
 	 */
 	is: function(cls, nm, cb) {
-		if(Object.isString(cls)) {
+		if('string' == typeof cls) {
 			nm = cls;
 			cls = eval(nm);
 		}
 		cb = cb || nm;
-		if(!Object.isFunction(cb)) cb = null;
+		if('function' != typeof cb) cb = null;
 		return function(obj) {
 			if(nul.debug.assert) assert(
 					obj && 
@@ -237,7 +237,7 @@ nul.debug = {
 	 * @throws {assertException}
 	 */
 	are: function(cls, nm, cb) {
-		if(Object.isString(cls)) {
+		if('string'== typeof cls) {
 			nm = cls;
 			cls = eval(nm);
 		}

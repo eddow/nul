@@ -166,5 +166,4 @@ else
 nul.load.globalKnowledge = nul.execution.createGlobalKlg;
 
 nul.load.executionReady = nul.execution.ready;
-nul.load.executionReady.use = {'nul.globals': true};
-nul.load.executionReady.use = {'globalKnowledge': true};
+nul.load.executionReady.use = {'nul.globals': true, 'globalKnowledge': true};
