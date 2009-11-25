@@ -1,1 +1,55 @@
-JS.Observable=new JS.Module('Observable',{extend:{DEFAULT_METHOD:'update'},addObserver:function(c,b){(this.__observers__=this.__observers__||[]).push({_0:c,_1:b||null})},removeObserver:function(c,b){this.__observers__=this.__observers__||[];b=b||null;var a=this.countObservers();while(a--){if(this.__observers__[a]._0===c&&this.__observers__[a]._1===b){this.__observers__.splice(a,1);return}}},removeObservers:function(){this.__observers__=[]},countObservers:function(){return(this.__observers__=this.__observers__||[]).length},notifyObservers:function(){if(!this.isChanged())return;var c=this.countObservers(),b,a,d;while(c--){b=this.__observers__[c];a=b._0;d=b._1;if(JS.isFn(a))a.apply(d||null,arguments);else a[d||JS.Observable.DEFAULT_METHOD].apply(a,arguments)}},setChanged:function(c){this.__changed__=!(c===false)},isChanged:function(){if(this.__changed__===undefined)this.__changed__=true;return!!this.__changed__}});JS.Observable.include({subscribe:JS.Observable.instanceMethod('addObserver'),unsubscribe:JS.Observable.instanceMethod('removeObserver')},true);
+JS.Observable = new JS.Module('Observable', {
+  extend: {
+    DEFAULT_METHOD: 'update'
+  },
+  
+  addObserver: function(observer, context) {
+    (this.__observers__ = this.__observers__ || []).push({_block: observer, _context: context || null});
+  },
+  
+  removeObserver: function(observer, context) {
+    this.__observers__ = this.__observers__ || [];
+    context = context || null;
+    var i = this.countObservers();
+    while (i--) {
+      if (this.__observers__[i]._block === observer && this.__observers__[i]._context === context) {
+        this.__observers__.splice(i,1);
+        return;
+      }
+    }
+  },
+  
+  removeObservers: function() {
+    this.__observers__ = [];
+  },
+  
+  countObservers: function() {
+    return (this.__observers__ = this.__observers__ || []).length;
+  },
+  
+  notifyObservers: function() {
+    if (!this.isChanged()) return;
+    var i = this.countObservers(), observer, block, context;
+    while (i--) {
+      observer = this.__observers__[i];
+      block    = observer._block;
+      context  = observer._context;
+      if (JS.isFn(block)) block.apply(context || null, arguments);
+      else block[context || JS.Observable.DEFAULT_METHOD].apply(block, arguments);
+    }
+  },
+  
+  setChanged: function(state) {
+    this.__changed__ = !(state === false);
+  },
+  
+  isChanged: function() {
+    if (this.__changed__ === undefined) this.__changed__ = true;
+    return !!this.__changed__;
+  }
+});
+
+JS.Observable.include({
+  subscribe:    JS.Observable.instanceMethod('addObserver'),
+  unsubscribe:  JS.Observable.instanceMethod('removeObserver')
+}, true);

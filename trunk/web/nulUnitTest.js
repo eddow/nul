@@ -110,7 +110,6 @@ function drawTests(tests, cs, lvl) {
 	rw.insertCell(-1).innerHTML = rsltDiv('unk');
 	rw.testGroup = tests;
 	
-//	for(var i=0; tests[i]; ++i)
 	for(var i=0; i<tests.length; ++i)
 	{
 		var t = tests[i];
@@ -190,7 +189,7 @@ function doTest(tn) {
 
 function prgGrpCheck(c, lc) {
 	for(var l = lc; l<clpsSstm.collapsing[lc]; ++l)
-		map(tbody.rows[l].select('input[type=checkbox]'), function() { this.checked = c; });
+		$j(tbody.rows[l]).find('input[type=checkbox]').each(function() { this.checked = c; });
 }
 
 function prgGrpTest(tn) {

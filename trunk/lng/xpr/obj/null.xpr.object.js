@@ -6,14 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
+nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
 	/**
 	 * Object
 	 * @extends nul.expression
 	 * @constructs
 	 */
-	initialize: function($super) {
-		$super();
+	initialize: function() {
+		this.callSuper();
 	},
 
 	/**
@@ -36,8 +36,8 @@ nul.xpr.object = Class.create(nul.expression, /** @lends nul.xpr.object# */{
 ////////////////	Generic summary providers
 	
 	/** @private */
-	sum_dependance: function($super) {
-		var rv = $super();
+	sum_dependance: function() {
+		var rv = this.callSuper();
 		if(this.selfRef) {
 			/*if(nul.debug.assert) assert(
 					rv.usages[nul.obj.local.self.ref] &&

@@ -34,7 +34,7 @@ function isClsNdx(obj, ndx) {
 	if(!obj || 'object'!= typeof obj) return false;
 	if('constructor'== ndx) return true;
 	for(var c = obj.constructor; c; c = c.superclass)
-		if(!Object.isUndefined(c.prototype[ndx]))
+		if('undefined'!= typeof c.prototype[ndx])
 			return c.prototype[ndx] === obj[ndx];
 	return false;
 }
@@ -146,7 +146,7 @@ function map(itm, fct) {
 function maf(itm, fct) {
 	return ownNdx(itm, function(dst, src, ndx) {
 		var trv = mapCb(fct, ndx, itm[ndx]);
-		if(!Object.isUndefined(trv) && null!== trv) {
+		if('undefined'!= typeof trv && null!== trv) {
 			if('number'== typeof ndx) dst.push(trv);
 			else dst[ndx] = trv;
 		}
@@ -210,7 +210,7 @@ function beArrg(args, ndx) {
  */
 function merge(dst, src, cb) {
 	for(var i in ownNdx(src)) dst[i] = cb?cb(dst[i],src[i], i):src[i];
-	if(cb) for(var i in ownNdx(dst)) if(Object.isUndefined(src[i])) dst[i] = cb(dst[i], null, i);
+	if(cb) for(var i in ownNdx(dst)) if('undefined'== typeof src[i]) dst[i] = cb(dst[i], null, i);
 	return dst; 
 }
 
@@ -295,11 +295,11 @@ Class.Methods.is = function(obj) {
 /** @ignore */
 Element.addMethods({
 	enable: function(elm, tf) {
-		if(Object.isUndefined(tf)) tf = true;
+		if('undefined'== typeof tf) tf = true;
 		elm.writeAttribute('disabled',tf?null:'true');
 	},
 	disable: function(elm, tf) {
-		if(Object.isUndefined(tf)) tf = true;
+		if('undefined'== typeof tf) tf = true;
 		elm.enable(!tf);
 	}
 });
@@ -325,3 +325,18 @@ Element.addMethods(['TABLE', 'tbody'], {
 		tbl.completeFrom(src);
 	}
 });
+
+$o = {
+	clone: function(o) {
+		var rv = {};
+		for(a in o) rv[a] = o[a];
+		return rv;
+	}
+};
+
+/*
+window.onerror = function(a,b,c) {
+	alert(a+b+c);
+	console.trace();
+};
+*/

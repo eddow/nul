@@ -8,7 +8,7 @@
  
 //TODO D
 
-tableStack = new JS.Class( {
+tableStack = new JS.Class({
 	initialize: function(nm, tbl) {
 		this.nm = nm;
 		this.table = $(tbl);
@@ -146,7 +146,7 @@ nul.debug = {
 	},
 	begin: function(nlcl) {
 		nul.debug.lc = 0;
-		if(!Object.isUndefined(nlcl)) nul.debug.lcLimit = nlcl;
+		if('undefined'!= typeof nlcl) nul.debug.lcLimit = nlcl;
 		if(true===nul.debug.lcLimit) nul.debug.lcLimit = 500;
 		nul.debug.lcNextLimit = nul.debug.lcLimit;
 	},
@@ -222,7 +222,7 @@ nul.debug = {
 		return function(obj) {
 			if(nul.debug.assert) assert(
 					obj && 
-					cls.is(obj) &&
+					obj.isA(cls) &&
 					(!cb || cb(obj)),
 				'Expected '+(nm||'a specific object'));
 			return obj;
@@ -242,7 +242,7 @@ nul.debug = {
 			cls = eval(nm);
 		}
 		cb = cb || nm;
-		if(!Object.isFunction(cb)) cb = null;
+		if(!'function'== typeof cb) cb = null;
 		return function(objs) {
 			if(nul.debug.assert) map(objs, function(i, obj) { assert(
 					obj && 
@@ -292,6 +292,7 @@ if(nul.debug.assert) Function.prototype.asserted = nul.debug.asserted;
 else Function.prototype.asserted = function() {};
 
 function assert(cnd, str) {
+	//if(console) console.assert(cnd, str); /*try { console.assert(cnd, str); } catch(err) { throw nul.internalException('Assertion failed : '+str); }*/ else
 	if(!cnd)
 		throw nul.internalException('Assertion failed : '+str);
 }

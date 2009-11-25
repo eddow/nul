@@ -79,7 +79,7 @@ nul.browser.cached = new JS.Class(nul.browser, /** @lends nul.browser.cached# */
 	initialize: function(desc) {
 		this.name = 'browseCache' + nul.execution.name.gen('browser.cached');
 		this.cachedExpressions = [];
-		this.callSuper();
+		this.callSuper(null);
 	},
 	
 	/**

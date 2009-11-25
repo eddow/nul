@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
+nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	/**
 	 * A value associated with a knowledge : A value that can be unified to several different defined object, along some conditions.
 	 * @extends nul.expression
@@ -88,8 +88,8 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	
 //////////////// nul.expression summaries
 
-	sum_dependance: function($super) {
-		var rv = $super();
+	sum_dependance: function() {
+		var rv = this.callSuper();
 		this.usage = rv.use(this.knowledge);
 		return rv;
 	},
@@ -140,7 +140,7 @@ nul.xpr.possible = Class.create(nul.expression, /** @lends nul.xpr.possible# */{
 	}
 });
 
-nul.xpr.failure = nul.xpr.possible.prototype.failure = new (Class.create(nul.xpr.possible, /** @lends nul.xpr.failure# */{
+nul.xpr.failure = nul.xpr.possible.prototype.failure = new JS.Singleton(nul.xpr.possible, /** @lends nul.xpr.failure# */{
 	/**
 	 * Specific possible that never give any value.
 	 * @extends nul.xpr.possible
@@ -154,7 +154,7 @@ nul.xpr.failure = nul.xpr.possible.prototype.failure = new (Class.create(nul.xpr
 	components: {},
 	distribuable: function() { return true; },
 	distribute: function() { return []; }
-}))();
+});
 
 /**
  * Have a possible for sure. Made with nul.klg.always if an object is given

@@ -21,10 +21,10 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 			deltaLclNdx: dstKlg.nbrLocals(),
 			prime: true
 		};
-		this.callSuper('StepUp');
+		this.callSuper('StepUp', null);
 	},
 	enterKlg: function(klg) {
-		if(klg && !nul.klg.ncndtnl.is(klg) && !this.table[klg.name]) {
+		if(klg && !klg.isA(nul.klg.ncndtnl) && !this.table[klg.name]) {
 			if(nul.debug.assert) assert(!this.forbid[klg.name], 'Knowledge already used before entering');
 			this.table[klg.name] = { klgRef: nul.execution.name.gen('klg') };
 			for(var v in ownNdx(this.veto)) this.enterKlg(this.veto[v]);
@@ -38,12 +38,12 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 		if('klg'== xpr.expression) this.enterKlg(xpr);
 		return this.callSuper();
 	},
- 	forceBuild: function(xpr) { return 'klg'== xpr.expression && !nul.klg.ncndtnl.is(xpr); },
+ 	forceBuild: function(xpr) { return 'klg'== xpr.expression && !xpr.isA(nul.klg.ncndtnl); },
 	/**
 	 * If a self-ref was planned, make it in the newly built expression.
 	 */
 	build: function(xpr) {
-		if('klg'== xpr.expression && !nul.klg.ncndtnl.is(xpr)) {
+		if('klg'== xpr.expression && !xpr.isA(nul.klg.ncndtnl)) {
 			if(nul.debug.assert) assert(this.table[xpr.name], 'Only leave entered knowledge');
 			xpr.name = this.table[xpr.name].klgRef;
 		}

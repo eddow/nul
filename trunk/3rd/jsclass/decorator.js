@@ -1,1 +1,50 @@
-JS.Decorator=new JS.Class('Decorator',{initialize:function(a,c){var b=new JS.Class(),f={},e,d;for(e in a.prototype){d=a.prototype[e];if(JS.isFn(d)&&d!==a)d=this.klass.delegate(e);f[e]=d}b.include(new JS.Module(f),false);b.include(this.klass.InstanceMethods,false);b.include(c,true);return b},extend:{delegate:function(a){return function(){return this.component[a].apply(this.component,arguments)}},InstanceMethods:new JS.Module({initialize:function(a){this.component=a;this.klass=this.constructor=a.klass;var c,b;for(c in a){if(this[c])continue;b=a[c];if(JS.isFn(b))b=JS.Decorator.delegate(c);this[c]=b}},extend:function(a){this.component.extend(a);var c,b;for(c in a){b=a[c];if(JS.isFn(b))b=JS.Decorator.delegate(c);this[c]=b}}})}});
+JS.Decorator = new JS.Class('Decorator', {
+  initialize: function(decoree, methods) {
+    var decorator  = new JS.Class(),
+        delegators = {},
+        method, func;
+    
+    for (method in decoree.prototype) {
+      func = decoree.prototype[method];
+      if (JS.isFn(func) && func !== decoree) func = this.klass.delegate(method);
+      delegators[method] = func;
+    }
+    
+    decorator.include(new JS.Module(delegators), false);
+    decorator.include(this.klass.InstanceMethods, false);
+    decorator.include(methods, true);
+    return decorator;
+  },
+  
+  extend: {
+    delegate: function(name) {
+      return function() {
+        return this.component[name].apply(this.component, arguments);
+      };
+    },
+    
+    InstanceMethods: new JS.Module({
+      initialize: function(component) {
+        this.component = component;
+        this.klass = this.constructor = component.klass;
+        var method, func;
+        for (method in component) {
+          if (this[method]) continue;
+          func = component[method];
+          if (JS.isFn(func)) func = JS.Decorator.delegate(method);
+          this[method] = func;
+        }
+      },
+      
+      extend: function(source) {
+        this.component.extend(source);
+        var method, func;
+        for (method in source) {
+          func = source[method];
+          if (JS.isFn(func)) func = JS.Decorator.delegate(method);
+          this[method] = func;
+        }
+      }
+    })
+  }
+});

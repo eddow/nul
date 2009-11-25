@@ -1,1 +1,1481 @@
-JS={extend:function(a,b){b=b||{};for(var c in b){if(a[c]===b[c])continue;a[c]=b[c]}return a},makeFunction:function(){return function(){return this.initialize?(this.initialize.apply(this,arguments)||this):this}},makeBridge:function(a){var b=function(){};b.prototype=a.prototype;return new b},bind:function(){var a=JS.array(arguments),b=a.shift(),c=a.shift()||null;return function(){return b.apply(c,a.concat(JS.array(arguments)))}},callsSuper:function(a){return a.SUPER===undefined?a.SUPER=/\bcallSuper\b/.test(a.toString()):a.SUPER},mask:function(a){var b=a.toString().replace(/callSuper/g,'super');a.toString=function(){return b};return a},array:function(a){if(!a)return[];if(a.toArray)return a.toArray();var b=a.length,c=[];while(b--)c[b]=a[b];return c},indexOf:function(a,b){for(var c=0,d=a.length;c<d;c++){if(a[c]===b)return c}return-1},isFn:function(a){return a instanceof Function},isType:function(a,b){if(!a||!b)return false;return(b instanceof Function&&a instanceof b)||(typeof b==='string'&&typeof a===b)||(a.isA&&a.isA(b))},ignore:function(a,b){return/^(include|extend)$/.test(a)&&typeof b==='object'}};JS.Module=JS.makeFunction();JS.extend(JS.Module.prototype,{END_WITHOUT_DOT:/([^\.])$/,initialize:function(a,b,c){this.__mod__=this;this.__inc__=[];this.__fns__={};this.__dep__=[];this.__mct__={};if(typeof a==='string'){this.__nom__=this.displayName=a}else{this.__nom__=this.displayName='';c=b;b=a}c=c||{};this.__res__=c._6||null;if(b)this.include(b,false);if(JS.Module.__chainq__)JS.Module.__chainq__.push(this)},setName:function(a){this.__nom__=this.displayName=a||'';for(var b in this.__mod__.__fns__)this.__name__(b);if(a&&this.__meta__)this.__meta__.setName(a+'.')},__name__:function(a){if(!this.__nom__)return;var b=this.__mod__.__fns__[a]||{};a=this.__nom__.replace(this.END_WITHOUT_DOT,'$1#')+a;if(JS.isFn(b.setName))return b.setName(a);if(JS.isFn(b))b.displayName=a},define:function(a,b,c,d){var f=(d||{})._1||this;this.__fns__[a]=b;this.__name__(a);if(JS.Module._1&&f&&JS.isFn(b))JS.Module._1(a,f);if(c!==false)this.resolve()},instanceMethod:function(a){var b=this.lookup(a).pop();return JS.isFn(b)?b:null},instanceMethods:function(a,b){var c=this.__mod__,b=b||[],d=c.ancestors(),f=d.length,e;for(e in c.__fns__){if(c.__fns__.hasOwnProperty(e)&&JS.isFn(c.__fns__[e])&&JS.indexOf(b,e)===-1)b.push(e)}if(a===false)return b;while(f--)d[f].instanceMethods(false,b);return b},include:function(a,b,c){b=(b!==false);if(!a)return b?this.resolve():this.uncache();c=c||{};if(a.__mod__)a=a.__mod__;var d=a.include,f=a.extend,e=c._h||this,g,h,i,j;if(a.__inc__&&a.__fns__){this.__inc__.push(a);a.__dep__.push(this);if(c._7)a.extended&&a.extended(c._7);else a.included&&a.included(e)}else{if(c._i){for(h in a){if(JS.ignore(h,a[h]))continue;this.define(h,a[h],false,{_1:e||c._7||this})}}else{if(typeof d==='object'||JS.isType(d,JS.Module)){g=[].concat(d);for(i=0,j=g.length;i<j;i++)e.include(g[i],b,c)}if(typeof f==='object'||JS.isType(f,JS.Module)){g=[].concat(f);for(i=0,j=g.length;i<j;i++)e.extend(g[i],false);e.extend()}c._i=true;return e.include(a,b,c)}}b?this.resolve():this.uncache()},includes:function(a){var b=this.__mod__,c=b.__inc__.length;if(Object===a||b===a||b.__res__===a.prototype)return true;while(c--){if(b.__inc__[c].includes(a))return true}return false},match:function(a){return a.isA&&a.isA(this)},ancestors:function(a){var b=this.__mod__,c=(a===undefined),d=(b.__res__||{}).klass,f=(d&&b.__res__===d.prototype)?d:b,e,g;if(c&&b.__anc__)return b.__anc__.slice();a=a||[];for(e=0,g=b.__inc__.length;e<g;e++)b.__inc__[e].ancestors(a);if(JS.indexOf(a,f)===-1)a.push(f);if(c)b.__anc__=a.slice();return a},lookup:function(a){var b=this.__mod__,c=b.__mct__;if(c[a])return c[a].slice();var d=b.ancestors(),f=[],e,g,h;for(e=0,g=d.length;e<g;e++){h=d[e].__mod__.__fns__[a];if(h)f.push(h)}c[a]=f.slice();return f},make:function(a,b){if(!JS.isFn(b)||!JS.callsSuper(b))return b;var c=this;return function(){return c.chain(this,a,arguments)}},chain:JS.mask(function(c,d,f){var e=this.lookup(d),g=e.length-1,h=c.callSuper,i=JS.array(f),j;c.callSuper=function(){var a=arguments.length;while(a--)i[a]=arguments[a];g-=1;var b=e[g].apply(c,i);g+=1;return b};j=e.pop().apply(c,i);h?c.callSuper=h:delete c.callSuper;return j}),resolve:function(a){var b=this.__mod__,a=a||b,c=a.__res__,d,f,e,g;if(a===b){b.uncache(false);d=b.__dep__.length;while(d--)b.__dep__[d].resolve()}if(!c)return;for(d=0,f=b.__inc__.length;d<f;d++)b.__inc__[d].resolve(a);for(e in b.__fns__){g=a.make(e,b.__fns__[e]);if(c[e]!==g)c[e]=g}},uncache:function(a){var b=this.__mod__,c=b.__dep__.length;b.__anc__=null;b.__mct__={};if(a===false)return;while(c--)b.__dep__[c].uncache()}});JS.Class=JS.makeFunction();JS.extend(JS.Class.prototype=JS.makeBridge(JS.Module),{initialize:function(a,b,c){if(typeof a==='string'){this.__nom__=this.displayName=a}else{this.__nom__=this.displayName='';c=b;b=a}var d=JS.extend(JS.makeFunction(),this);d.klass=d.constructor=this.klass;if(!JS.isFn(b)){c=b;b=Object}d.inherit(b);d.include(c,false);d.resolve();do{b.inherited&&b.inherited(d)}while(b=b.superclass);return d},inherit:function(a){this.superclass=a;if(this.__eigen__&&a.__eigen__)this.extend(a.__eigen__(),true);this.subclasses=[];(a.subclasses||[]).push(this);var b=this.prototype=JS.makeBridge(a);b.klass=b.constructor=this;this.__mod__=new JS.Module(this.__nom__,{},{_6:this.prototype});this.include(JS.Kernel,false);if(a!==Object)this.include(a.__mod__||new JS.Module(a.prototype,{_6:a.prototype}),false)},include:function(a,b,c){if(!a)return;var d=this.__mod__,c=c||{};c._h=this;return d.include(a,b,c)},define:function(a,b,c,d){var f=this.__mod__;d=d||{};d._1=this;f.define(a,b,c,d)}});JS.Module=new JS.Class('Module',JS.Module.prototype);JS.Class=new JS.Class('Class',JS.Module,JS.Class.prototype);JS.Module.klass=JS.Module.constructor=JS.Class.klass=JS.Class.constructor=JS.Class;JS.extend(JS.Module,{_d:[],__chainq__:[],methodAdded:function(a,b){this._d.push([a,b])},_1:function(a,b){var c=this._d,d=c.length;while(d--)c[d][0].call(c[d][1]||null,a,b)}});JS.Kernel=JS.extend(new JS.Module('Kernel',{__eigen__:function(){if(this.__meta__)return this.__meta__;var a=this.__nom__,b=this.klass.__nom__,c=a||(b?'#<'+b+'>':''),d=this.__meta__=new JS.Module(c?c+'.':'',{},{_6:this});d.include(this.klass.__mod__,false);return d},equals:function(a){return this===a},extend:function(a,b){return this.__eigen__().include(a,b,{_7:this})},hash:function(){return this.__hashcode__=this.__hashcode__||JS.Kernel.getHashCode()},isA:function(a){return this.__eigen__().includes(a)},method:function(a){var b=this,c=b.__mcache__=b.__mcache__||{};if((c[a]||{}).fn===b[a])return c[a].bd;return(c[a]={fn:b[a],bd:JS.bind(b[a],b)}).bd},methods:function(){return this.__eigen__().instanceMethods(true)},tap:function(a,b){a.call(b||null,this);return this}}),{__hashIndex__:0,getHashCode:function(){this.__hashIndex__+=1;return(Math.floor(new Date().getTime()/1000)+this.__hashIndex__).toString(16)}});JS.Module.include(JS.Kernel);JS.extend(JS.Module,JS.Kernel.__fns__);JS.Class.include(JS.Kernel);JS.extend(JS.Class,JS.Kernel.__fns__);JS.Interface=new JS.Class({initialize:function(d){this.test=function(a,b){var c=d.length;while(c--){if(!JS.isFn(a[d[c]]))return b?d[c]:false}return true}},extend:{ensure:function(){var a=JS.array(arguments),b=a.shift(),c,d;while(c=a.shift()){d=c.test(b,true);if(d!==true)throw new Error('object does not implement '+d+'()');}}}});JS.Singleton=new JS.Class({initialize:function(a,b,c){return new(new JS.Class(a,b,c))}});JS.Package=new JS.Class('Package',{initialize:function(a){this._2=a;this._0=[];this._3=[];this._4=[];this._5=[];this._8=false},addDependency:function(a){if(JS.indexOf(this._0,a)===-1)this._0.push(a)},addSoftDependency:function(a){if(JS.indexOf(this._3,a)===-1)this._3.push(a)},_9:function(a,b){var c=a[b];if(typeof c==='string')c=a[b]=this.klass.getByName(c);return c},addName:function(a){if(JS.indexOf(this._4,a)!==-1)return;this._4.push(a);this.klass.getFromCache(a).pkg=this},depsComplete:function(a){a=a||this._0;var b=a.length,c;while(b--){if(!this._9(a,b).isComplete())return false}return true},isComplete:function(){return this.isLoaded()&&this.depsComplete(this._0)&&this.depsComplete(this._3)},isLoaded:function(a){if(this._j)return true;var b=this._4,c=b.length,d;while(c--){d=this.klass.getObject(b[c]);if(d!==undefined)continue;if(a)throw new Error('Expected package at '+this._2+' to define '+b[c]);else return false}return this._j=true},readyToLoad:function(){return!this.isLoaded()&&this.depsComplete()},expand:function(a){var b=a||[],c,d;d=this._0.length;while(d--)this._9(this._0,d).expand(b);if(JS.indexOf(b,this)===-1)b.push(this);d=this._3.length;while(d--)this._9(this._3,d).expand(b);return b},onload:function(a){this._e=a},load:function(c,d){if(this._2===undefined)throw new Error('No load path specified for '+this._4.join(', '));var f=this,e,g;e=function(){f._8=false;c.call(d||null)};if(this.isLoaded())return setTimeout(e,1);this._5.push(e);if(this._8)return;g=function(){if(JS.isFn(f._e))f._e();f.isLoaded(true);for(var a=0,b=f._5.length;a<b;a++)f._5[a]();f._5=[]};this._8=true;JS.isFn(this._2)?this._2(g):this.klass.Loader.loadFile(this._2,g)},toString:function(){return'Package:'+this._4[0]},extend:{_f:{},_g:{},_a:this,getByPath:function(a){var b=a.toString();return this._f[b]||(this._f[b]=new this(a))},getFromCache:function(a){return this._g[a]=this._g[a]||{}},getByName:function(a){var b=this.getFromCache(a);if(b.pkg)return b.pkg;var c=new this();c.addName(a);return c},getObject:function(a){var b=this.getFromCache(a);if(b.obj!==undefined)return b.obj;var c=this._a,d=a.split('.'),f;while(f=d.shift())c=c&&c[f];return this.getFromCache(a).obj=c},expand:function(a){var b=[],c,d;for(c=0,d=a.length;c<d;c++)a[c].expand(b);return b},load:function(a,b,c){var d=[],f=[],e=a.length,g;while(e--){g=a[e];if(g.isComplete())b-=1;else(g.readyToLoad()?d:f).push(g)}if(b===0)return c();e=d.length;while(e--)d[e].load(function(){this.load(f,--b,c)},this)}}});JS.Package.extend({DomLoader:{usable:function(){return!!JS.Package.getObject('window.document.getElementsByTagName')},__FILE__:function(){var a=document.getElementsByTagName('script');return a[a.length-1].src},loadFile:function(c,d){var f=this,e=document.createElement('script');e.type='text/javascript';e.src=c;e.onload=e.onreadystatechange=function(){var a=e.readyState,b=e.status;if(!a||a==='loaded'||a==='complete'||(a===4&&b===200)){d();e.onload=e.onreadystatechange=f._k;e=null}};window.console&&console.info('Loading '+c);document.getElementsByTagName('head')[0].appendChild(e)},_k:function(){}},ServerLoader:{usable:function(){return JS.isFn(JS.Package.getObject('load'))&&JS.isFn(JS.Package.getObject('version'))},setup:function(){var b=this;load=(function(a){return function(){b._l=arguments[0];return a.apply(JS.Package._a,arguments)}})(load)},__FILE__:function(){return this._l},loadFile:function(a,b){load(a);b()}}});(function(){var a=[JS.Package.DomLoader,JS.Package.ServerLoader],b=a.length,c,d;for(c=0;c<b;c++){d=a[c];if(d.usable()){JS.Package.Loader=d;if(d.setup)d.setup();break}}})();JS.Package.extend({DSL:{__FILE__:function(){return JS.Package.Loader.__FILE__()},pkg:function(a,b){var c=b?JS.Package.getByPath(b):JS.Package.getByName(a);c.addName(a);return new JS.Package.Description(c)},file:function(a){var b=JS.Package.getByPath(a);return new JS.Package.Description(b)},load:function(a,b){JS.Package.Loader.loadFile(a,b)}},Description:new JS.Class({initialize:function(a){this._b=a},_c:function(a,b){var c=b.length,a=this._b[a],d;for(d=0;d<c;d++)a.call(this._b,b[d]);return this},provides:function(){return this._c('addName',arguments)},requires:function(){return this._c('addDependency',arguments)},uses:function(){return this._c('addSoftDependency',arguments)},setup:function(a){this._b.onload(a);return this}})});JS.Package.DSL.loader=JS.Package.DSL.file;JS.Packages=function(a){a.call(JS.Package.DSL)};JS.require=function(){var a=JS.array(arguments),b=[];while(typeof a[0]==='string')b.push(JS.Package.getByName(a.shift()));b=JS.Package.expand(b);var c=false,d=function(){if(c)return;c=true;a[0]&&a[0].call(a[1]||null)};JS.Package.load(b,b.length,d)};require=JS.require;JS.Packages(function(){with(this){var b=JS.Package._a.JSCLASS_PATH||__FILE__().replace(/[^\/]*$/g,'');b=b.replace(/\/?$/g,'/');var c=function(a){return file(b+a+'.js')};c('core').provides('JS.Module','JS.Class','JS.Kernel','JS.Singleton','JS.Interface');c('comparable').provides('JS.Comparable').requires('JS.Module');c('constant_scope').provides('JS.ConstantScope').requires('JS.Module');c('forwardable').provides('JS.Forwardable').requires('JS.Module');c('enumerable').provides('JS.Enumerable').requires('JS.Module','JS.Class');c('observable').provides('JS.Observable').requires('JS.Module');c('hash').provides('JS.Hash').requires('JS.Class','JS.Enumerable','JS.Comparable');c('set').provides('JS.Set','JS.HashSet','JS.SortedSet').requires('JS.Class','JS.Enumerable').uses('JS.Hash');c('linked_list').provides('JS.LinkedList','JS.LinkedList.Doubly','JS.LinkedList.Doubly.Circular').requires('JS.Class','JS.Enumerable');c('command').provides('JS.Command','JS.Command.Stack').requires('JS.Class','JS.Enumerable','JS.Observable');c('decorator').provides('JS.Decorator').requires('JS.Module','JS.Class');c('method_chain').provides('JS.MethodChain').requires('JS.Module','JS.Kernel');c('proxy').provides('JS.Proxy','JS.Proxy.Virtual').requires('JS.Module','JS.Class');c('ruby').provides('JS.Ruby').requires('JS.Class');c('stack_trace').provides('JS.StackTrace').requires('JS.Module','JS.Singleton');c('state').provides('JS.State').requires('JS.Module','JS.Class')}});
+/**
+ * JS.Class: Ruby-style JavaScript
+ * Copyright (c) 2007-2009 James Coglan
+ * 
+ * http://jsclass.jcoglan.com
+ * http://github.com/jcoglan/js.class
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * 
+ * Parts of this software are derived from the following open-source projects:
+ * 
+ *     - The Prototype framework, (c) 2005-2009 Sam Stephenson
+ *     - Alex Arnell's Inheritance library, (c) 2006, Alex Arnell
+ *     - Base, (c) 2006-9, Dean Edwards
+ */
+
+/**
+ * == core ==
+ **/
+
+/** section: core
+ * JS
+ * 
+ * The `JS` object is used as a namespace by the rest of the JS.Class framework, and hosts
+ * various utility methods used throughout. None of these methods should be taken as being
+ * public API, they are all 'plumbing' and may be removed or changed at any time.
+ **/
+JS = {
+  /**
+   * JS.extend(target, extensions) -> Object
+   * - target (Object): object to be extended
+   * - extensions (Object): object containing key/value pairs to add to target
+   *
+   * Adds the properties of the second argument to the first, and returns the first. Will not
+   * needlessly overwrite fields with identical values; if an object has inherited a property
+   * we should not add the property to the object itself.
+   **/
+  extend: function(target, extensions) {
+    extensions = extensions || {};
+    for (var prop in extensions) {
+      if (target[prop] === extensions[prop]) continue;
+      target[prop] = extensions[prop];
+    }
+    return target;
+  },
+  
+  /**
+   * JS.makeFunction() -> Function
+   *
+   * Returns a function for use as a constructor. These functions are used as the basis for
+   * classes. The constructor calls the object's `initialize()` method if it exists.
+   **/
+  makeFunction: function() {
+    return function() {
+      return this.initialize
+          ? (this.initialize.apply(this, arguments) || this)
+          : this;
+    };
+  },
+  
+  /**
+   * JS.makeBridge(klass) -> Object
+   * - klass (JS.Class): class from which you want to inherit
+   *
+   * Takes a class and returns an instance of it, without calling the class's constructor.
+   * Used for forging prototype links between objects using JavaScript's inheritance model.
+   **/
+  makeBridge: function(klass) {
+    var bridge = function() {};
+    bridge.prototype = klass.prototype;
+    return new bridge;
+  },
+  
+  /**
+   * JS.bind(object, func) -> Function
+   * - object (Object): object to bind the function to
+   * - func (Function): function that the bound function should call
+   *
+   * Takes a function and an object, and returns a new function that calls the original
+   * function with `this` set to refer to the `object`. Used to implement `JS.Kernel#method`,
+   * amongst other things.
+   **/
+  bind: function() {
+    var args   = JS.array(arguments),
+        method = args.shift(),
+        object = args.shift() || null;
+    
+    return function() {
+      return method.apply(object, args.concat(JS.array(arguments)));
+    };
+  },
+  
+  /**
+   * JS.callsSuper(func) -> Boolean
+   * - func (Function): function to test for super() calls
+   *
+   * Takes a function and returns `true` iff the function makes a call to `callSuper()`.
+   * Result is cached on the function itself since functions are immutable and decompiling
+   * them is expensive. We use this to determine whether to wrap the function when it's
+   * added to a class; wrapping impedes performance and should be avoided where possible.
+   **/
+  callsSuper: function(func) {
+    return func.SUPER === undefined
+        ? func.SUPER = /\bcallSuper\b/.test(func.toString())
+        : func.SUPER;
+  },
+  
+  /**
+   * JS.mask(func) -> Function
+   * - func (Function): function to obfuscate
+   *
+   * Disguises a function so that we cannot tell if it uses `callSuper()`. Sometimes we don't
+   * want such functions to be wrapped by the inheritance system. Modifies the function's
+   * `toString()` method and returns the function.
+   **/
+  mask: function(func) {
+    var string = func.toString().replace(/callSuper/g, 'super');
+    func.toString = function() { return string };
+    return func;
+  },
+  
+  /**
+   * JS.array(iterable) -> Array
+   * - iterable (Object): object you want to cast to an array
+   *
+   * Takes any iterable object (something with a `length` property) and returns a native
+   * JavaScript `Array` containing the same elements.
+   **/
+  array: function(iterable) {
+    if (!iterable) return [];
+    if (iterable.toArray) return iterable.toArray();
+    
+    var length  = iterable.length,
+        results = [];
+    
+    while (length--) results[length] = iterable[length];
+    return results;
+  },
+  
+  /**
+   * JS.indexOf(haystack, needle) -> Number
+   * - haystack (Array): array to search
+   * - needle (Object): object to search for
+   *
+   * Returns the index of the `needle` in the `haystack`, which is typically an `Array` or an
+   * array-like object. Returns -1 if no matching element is found. We need this as older
+   * IE versions don't implement `Array#indexOf`.
+   **/
+  indexOf: function(haystack, needle) {
+    for (var i = 0, n = haystack.length; i < n; i++) {
+      if (haystack[i] === needle) return i;
+    }
+    return -1;
+  },
+  
+  /**
+   * JS.isFn(object) -> Boolean
+   * - object (Object): object to test
+   *
+   * Returns `true` iff the argument is a `Function`.
+   **/
+  isFn: function(object) {
+    return object instanceof Function;
+  },
+  
+  /**
+   * JS.isType(object, type) -> Boolean
+   * - object (Object): object whose type we wish to check
+   * - type (JS.Module): type to match against
+   * 
+   * Returns `true` iff `object` is of the given `type`.
+   **/
+  isType: function(object, type) {
+    if (!object || !type) return false;
+    return (type instanceof Function && object instanceof type) ||
+           (typeof type === 'string' && typeof object === type) ||
+           (object.isA && object.isA(type));
+  },
+  
+  /**
+   * JS.ignore(key, object) -> Boolean
+   * - key (String): name of field being added to an object
+   * - object (Object): value of the given field
+   *
+   * Used to determine whether a key-value pair should be added to a class or module. Pairs
+   * may be ignored if they have some special function, like `include` or `extend`.
+   **/
+  ignore: function(key, object) {
+    return /^(include|extend)$/.test(key) && typeof object === 'object';
+  }
+};
+
+
+/** section: core
+ * class JS.Module
+ * includes JS.Kernel
+ * 
+ * `Module` is the core class in JS.Class. A module is simply an object that stores methods,
+ * and is responsible for handling method lookups, inheritance relationships and the like.
+ * All of Ruby's inheritance semantics are handled using modules in JS.Class.
+ * 
+ * The basic object/module/class model in Ruby is expressed in the diagram at
+ * http://ruby-doc.org/core/classes/Class.html -- `Class` inherits from `Module`, which
+ * inherits from `Object` (as do all custom classes). `Kernel` is a `Module` which is mixed
+ * into `Object` to provide methods common to all objects.
+ * 
+ * In JS.Class, there is no `Object` class, but we do have `Module`, `Class` and `Kernel`.
+ * All top-level (parentless) classes include the `JS.Kernel` module, so all classes in effect
+ * inherit from `Kernel`. All classes are instances of `JS.Class`, and all modules instances
+ * of `JS.Module`. `Module` is a top-level class, from which `Class` inherits.
+ * 
+ * The following diagram shows this relationship; vertical lines indicate parent/child
+ * class relationships, horizontal lines indicate module inclusions. (`C`) means a class,
+ * (`M`) a module.
+ * 
+ * 
+ *      ==============      ==============      ===================      ==============
+ *      | M | Kernel |----->| C | Module |      | C | ParentClass |<-----| M | Kernel |
+ *      ==============      ==============      ===================      ==============
+ *                                ^                     ^
+ *                                |                     |
+ *                                |                     |
+ *                          =============       ==================
+ *                          | C | Class |       | C | ChildClass |
+ *                          =============       ==================
+ * 
+ * 
+ * All objects have a metamodule attached to them; this handles storage of singleton
+ * methods as metaclasses do in Ruby. This is handled by mixing the object's class into
+ * the object's metamodule.
+ * 
+ * 
+ *                class
+ *          =================
+ *          | C | SomeClass |------------------------------------------------
+ *          =================                                               |
+ *                  |                                                       |
+ *                  V                                                       |
+ *          ====================      =================================     |
+ *          | <SomeClass:0xb7> |<>----| M | <Module:<SomeClass:0xb7>> |<-----
+ *          ====================      =================================
+ *                instance                       metamodule
+ * 
+ * 
+ * Similarly, inheritance of class methods is handled by mixing the parent class's
+ * metamodule into the child class's metamodule, like so:
+ * 
+ * 
+ *            ===================      ============================
+ *            | C | ParentClass |<>----| M | <Module:ParentClass> |------
+ *            ===================      ============================     |
+ *                    ^                                                 |
+ *                    |                                                 |
+ *                    |                                                 |
+ *            ===================      ===========================      |
+ *            | C | ChildClass  |<>----| M | <Module:ChildClass> |<------
+ *            ===================      ===========================
+ * 
+ * 
+ * The parent-child relationships are also implemented using module inclusion, with some
+ * extra checks and optimisations. Also, bear in mind that although `Class` appears to be a
+ * subclass of `Module`, this particular parent-child relationship is faked using manual
+ * delegation; every class has a hidden module attached to it that handles all the method
+ * storage and lookup responsibilities.
+ **/
+JS.Module = JS.makeFunction();
+JS.extend(JS.Module.prototype, {
+  END_WITHOUT_DOT: /([^\.])$/,
+  
+  /**
+   * new JS.Module(name, methods, options)
+   * - name (String): the name of the module, used for debugging
+   * - methods (Object): list of methods for the class
+   * - options (Object): configuration options
+   * 
+   * The `name` argument is optional and may be omitted; `name` is not used to assign
+   * the class to a variable, it is only uses as metadata. The `options` object is used
+   * to specify the target object that the module is storing methods for.
+   * 
+   *     var Runnable = new JS.Module('Runnable', {
+   *         run: function(args) {
+   *             // ...
+   *         }
+   *     });
+   **/
+  initialize: function(name, methods, options) {
+    this.__mod__ = this;      // Mirror property found in Class. Think of this as toModule()
+    this.__inc__ = [];        // List of modules included in this module
+    this.__fns__ = {};        // Object storing methods belonging to this module
+    this.__dep__ = [];        // List modules and classes that depend on this module
+    this.__mct__ = {};        // Cache table for method call lookups
+    
+    if (typeof name === 'string') {
+      this.__nom__ = this.displayName = name;
+    } else {
+      this.__nom__ = this.displayName = '';
+      options = methods;
+      methods = name;
+    }
+    
+    options = options || {};
+    
+    // Object to resolve methods onto
+    this.__res__ = options._resolve || null;
+    
+    if (methods) this.include(methods, false);
+    
+    if (JS.Module.__chainq__) JS.Module.__chainq__.push(this);
+  },
+  
+  /**
+   * JS.Module#setName(name) -> undefined
+   * - name (String): the name for the module
+   * 
+   * Sets the `displayName` of the module to the given value. Should be the fully-qualified
+   * name, including names of the containing modules.
+   **/
+  setName: function(name) {
+    this.__nom__ = this.displayName = name || '';
+    for (var key in this.__mod__.__fns__)
+      this.__name__(key);
+    if (name && this.__meta__) this.__meta__.setName(name + '.');
+  },
+  
+  /**
+   * JS.Module#__name__(name) -> undefined
+   * - name (String): the name of the method to assign a `displayName` to
+   * 
+   * Assigns the `displayName` property to the named method using Ruby conventions for naming
+   * instance and singleton methods. If the named field points to another `Module`, the name
+   * change is applied recursively.
+   **/
+  __name__: function(name) {
+    if (!this.__nom__) return;
+    var object = this.__mod__.__fns__[name] || {};
+    name = this.__nom__.replace(this.END_WITHOUT_DOT, '$1#') + name;
+    if (JS.isFn(object.setName)) return object.setName(name);
+    if (JS.isFn(object)) object.displayName = name;
+  },
+  
+  /**
+   * JS.Module#define(name, func[, resolve = true[, options = {}]]) -> undefined
+   * - name (String): the name of the method
+   * - func (Function): a function implementing the method
+   * - resolve (Boolean): sets whether to refresh method tables afterward
+   * - options (Object): execution options
+   * 
+   * Adds an instance method to the module with the given `name`. The `options` parameter is
+   * for internal use to make sure callbacks fire on the correct objects, e.g. a class
+   * uses a hidden module to store its methods, but callbacks should fire on the class,
+   * not the module.
+   **/
+  define: function(name, func, resolve, options) {
+    var notify = (options || {})._notify || this;
+    this.__fns__[name] = func;
+    this.__name__(name);
+    if (JS.Module._notify && notify && JS.isFn(func))
+        JS.Module._notify(name, notify);
+    if (resolve !== false) this.resolve();
+  },
+  
+  /**
+   * JS.Module#instanceMethod(name) -> Function
+   * - name (String): the name of the method
+   * 
+   * Returns the named instance method from the module as an unbound function.
+   **/
+  instanceMethod: function(name) {
+    var method = this.lookup(name).pop();
+    return JS.isFn(method) ? method : null;
+  },
+  
+  /**
+   * JS.Module#instanceMethods([includeSuper = true[, results]]) -> Array
+   * - includeSuper (Boolean): whether to include ancestor methods
+   * - results (Array): list of found method names (internal use)
+   * 
+   * Returns an array of all the method names from the module. Pass `false` to ignore methods
+   * inherited from ancestors.
+   **/
+  instanceMethods: function(includeSuper, results) {
+    var self      = this.__mod__,
+        results   = results || [],
+        ancestors = self.ancestors(),
+        n         = ancestors.length,
+        name;
+    
+    for (name in self.__fns__) {
+      if (self.__fns__.hasOwnProperty(name) &&
+          JS.isFn(self.__fns__[name]) &&
+          JS.indexOf(results, name) === -1)
+        results.push(name);
+    }
+    if (includeSuper === false) return results;
+    
+    while (n--) ancestors[n].instanceMethods(false, results);
+    return results;
+  },
+  
+  /**
+   * JS.Module#include(module[, resolve = true[, options = {}]]) -> undefined
+   * - module (JS.Module): the module to mix in
+   * - resolve (Boolean): sets whether to refresh method tables afterward
+   * - options (Object): flags to control execution
+   * 
+   * Mixes `module` into the receiver or, if `module` is plain old object (rather than a
+   * `JS.Module`) adds methods directly into the receiver. The `options` and `resolve` arguments
+   * are mostly for internal use; `options` specifies objects that callbacks should fire on,
+   * and `resolve` tells the module whether to resolve methods onto its target after adding
+   * the methods.
+   **/
+  include: function(module, resolve, options) {
+    resolve = (resolve !== false);
+    if (!module) return resolve ? this.resolve() : this.uncache();
+    options = options || {};
+    
+    if (module.__mod__) module = module.__mod__;
+    
+    var inc      = module.include,
+        ext      = module.extend,
+        includer = options._included || this,
+        modules, method, i, n;
+    
+    if (module.__inc__ && module.__fns__) {
+      // module is a Module instance: make links and fire callbacks
+      
+      this.__inc__.push(module);
+      module.__dep__.push(this);
+      if (options._extended) module.extended && module.extended(options._extended);
+      else module.included && module.included(includer);
+      
+    } else {
+      // module is a normal object: add methods directly to this module
+      
+      if (options._recall) {
+        // Second call: add all the methods
+        for (method in module) {
+          if (JS.ignore(method, module[method])) continue;
+          this.define(method, module[method], false, {_notify: includer || options._extended || this});
+        }
+      } else {
+        // First call: handle include and extend blocks
+        
+        // Handle inclusions
+        if (typeof inc === 'object' || JS.isType(inc, JS.Module)) {
+          modules = [].concat(inc);
+          for (i = 0, n = modules.length; i < n; i++)
+            includer.include(modules[i], resolve, options);
+        }
+        
+        // Handle extensions
+        if (typeof ext === 'object' || JS.isType(ext, JS.Module)) {
+          modules = [].concat(ext);
+          for (i = 0, n = modules.length; i < n; i++)
+            includer.extend(modules[i], false);
+          includer.extend();
+        }
+        
+        // Make a second call to include(). This allows mixins to modify the
+        // include() method and affect the addition of methods to this module
+        options._recall = true;
+        return includer.include(module, resolve, options);
+      }
+    }
+    resolve ? this.resolve() : this.uncache();
+  },
+  
+  /**
+   * JS.Module#includes(module) -> Boolean
+   * - module (JS.Module): a module to check for inclusion
+   * 
+   * Returns `true` iff the receiver includes (i.e. inherits from) the given `module`, or
+   * if the receiver and given `module` are the same object. Recurses over the receiver's
+   * inheritance tree, could get expensive.
+   **/
+  includes: function(module) {
+    var self = this.__mod__,
+        i    = self.__inc__.length;
+    
+    if (Object === module || self === module || self.__res__ === module.prototype)
+      return true;
+    
+    while (i--) {
+      if (self.__inc__[i].includes(module))
+        return true;
+    }
+    return false;
+  },
+  
+  /**
+   * JS.Module#match(object) -> Boolean
+   * - object (Object): object to type-check
+   * 
+   * Returns `true` if the receiver is in the inheritance chain of `object`.
+   **/
+  match: function(object) {
+    return object.isA && object.isA(this);
+  },
+  
+  /**
+   * JS.Module#ancestors([results]) -> Array
+   * - results (Array): list of found ancestors (internal use)
+   * 
+   * Returns an array of the module's ancestor modules/classes, with the most distant
+   * first and the receiver last. This is the opposite order to that given by Ruby, but
+   * this order makes it easier to eliminate duplicates and preserve Ruby's inheritance
+   * semantics with respect to the diamond problem. The `results` parameter is for internal
+   * use; we recurse over the tree passing the same array around rather than generating
+   * lots of arrays and concatenating.
+   **/
+  ancestors: function(results) {
+    var self     = this.__mod__,
+        cachable = (results === undefined),
+        klass    = (self.__res__||{}).klass,
+        result   = (klass && self.__res__ === klass.prototype) ? klass : self,
+        i, n;
+    
+    if (cachable && self.__anc__) return self.__anc__.slice();
+    results = results || [];
+    
+    // Recurse over inclusions first
+    for (i = 0, n = self.__inc__.length; i < n; i++)
+      self.__inc__[i].ancestors(results);
+    
+    // If this module is not already in the list, add it
+    if (JS.indexOf(results, result) === -1) results.push(result);
+    
+    if (cachable) self.__anc__ = results.slice();
+    return results;
+  },
+  
+  /**
+   * JS.Module#lookup(name) -> Array
+   * - name (String): the name of the method to search for
+   * 
+   * Returns an array of all the methods in the module's inheritance tree with the given
+   * `name`. Methods are returned in the same order as the modules in `JS.Module#ancestors`,
+   * so the last method in the list will be called first, the penultimate on the first
+   * `callSuper()`, and so on back through the list.
+   **/
+  lookup: function(name) {
+    var self  = this.__mod__,
+        cache = self.__mct__;
+    
+    if (cache[name]) return cache[name].slice();
+    
+    var ancestors = self.ancestors(),
+        results   = [],
+        i, n, method;
+    
+    for (i = 0, n = ancestors.length; i < n; i++) {
+      method = ancestors[i].__mod__.__fns__[name];
+      if (method) results.push(method);
+    }
+    cache[name] = results.slice();
+    return results;
+  },
+  
+  /**
+   * JS.Module#make(name, func) -> Function
+   * - name (String): the name of the method being produced
+   * - func (Function): a function implementing the method
+   * 
+   * Returns a version of the function ready to be added to a prototype object. Functions
+   * that use `callSuper()` must be wrapped to support that behaviour, other functions can
+   * be used raw.
+   **/
+  make: function(name, func) {
+    if (!JS.isFn(func) || !JS.callsSuper(func)) return func;
+    var module = this;
+    return function() {
+      return module.chain(this, name, arguments);
+    };
+  },
+  
+  /**
+   * JS.Module#chain(self, name, args) -> Object
+   * - self (Object): the receiver of the call
+   * - name (String): the name of the method being called
+   * - args (Array): list of arguments to begin the call
+   * 
+   * Performs calls to functions that use `callSuper()`. Ancestor methods are looked up
+   * dynamically at call-time; this allows `callSuper()` to be late-bound as in Ruby at the
+   * cost of a little performance. Arguments to the call are stored so they can be passed
+   * up the call stack automatically without the developer needing to pass them by hand.
+   **/
+  chain: JS.mask( function(self, name, args) {
+    var callees      = this.lookup(name),     // List of method implementations
+        stackIndex   = callees.length - 1,    // Current position in the call stack
+        currentSuper = self.callSuper,        // Current super method attached to the receiver
+        params       = JS.array(args),        // Copy of argument list
+        result;
+    
+    // Set up the callSuper() method
+    self.callSuper = function() {
+    
+      // Overwrite arguments specified explicitly
+      var i = arguments.length;
+      while (i--) params[i] = arguments[i];
+      
+      // Step up the stack, call and step back down
+      stackIndex -= 1;
+      var returnValue = callees[stackIndex].apply(self, params);
+      stackIndex += 1;
+      
+      return returnValue;
+    };
+    
+    // Call the last method in the stack
+    result = callees.pop().apply(self, params);
+    
+    // Remove or reassign callSuper() method
+    currentSuper ? self.callSuper = currentSuper : delete self.callSuper;
+    
+    return result;
+  } ),
+  
+  /**
+   * JS.Module#resolve([target = this]) -> undefined
+   * - target (Object): the object to reflect methods onto
+   * 
+   * Copies methods from the module onto the `target` object, wrapping methods where
+   * necessary. The target will typically be a native JavaScript prototype object used
+   * to represent a class. Recurses over this module's ancestors to make sure all applicable
+   * methods exist.
+   **/
+  resolve: function(target) {
+    var self     = this.__mod__,
+        target   = target || self,
+        resolved = target.__res__, i, n, key, made;
+    
+    // Resolve all dependent modules if the target is this module
+    if (target === self) {
+      self.uncache(false);
+      i = self.__dep__.length;
+      while (i--) self.__dep__[i].resolve();
+    }
+    
+    if (!resolved) return;
+    
+    // Recurse over this module's ancestors
+    for (i = 0, n = self.__inc__.length; i < n; i++)
+      self.__inc__[i].resolve(target);
+    
+    // Wrap and copy methods to the target
+    for (key in self.__fns__) {
+      made = target.make(key, self.__fns__[key]);
+      if (resolved[key] !== made) resolved[key] = made;
+    }
+  },
+  
+  /**
+   * JS.Module#uncache([recursive = true]) -> undefined
+   * - recursive (Boolean): whether to clear the cache of all dependent modules
+   * 
+   * Clears the ancestor and method table cahces for the module. This is used to invalidate
+   * caches when modules are modified, to avoid some of the bugs that exist in Ruby.
+   **/
+  uncache: function(recursive) {
+    var self = this.__mod__,
+        i    = self.__dep__.length;
+    
+    self.__anc__ = null;
+    self.__mct__ = {};
+    if (recursive === false) return;
+    while (i--) self.__dep__[i].uncache();
+  }
+});
+
+
+/** section: core
+ * class JS.Class < JS.Module
+ * 
+ * `Class` is a subclass of `JS.Module`; classes not only store methods but also spawn
+ * new objects. In addition, classes have an extra type of inheritance on top of mixins,
+ * in that each class can have a single parent class from which it will inherit both
+ * instance and singleton methods.
+ * 
+ * Refer to `JS.Module` for details of how inheritance is implemented in JS.Class. Though
+ * `Class` is supposed to appear to be a subclass of `Module`, this relationship is
+ * implemented by letting each `Class` hold a reference to an anonymous `Module` and
+ * using manual delegation where necessary.
+ **/
+JS.Class = JS.makeFunction();
+JS.extend(JS.Class.prototype = JS.makeBridge(JS.Module), {
+  
+  /**
+   * new JS.Class(name, parent, methods)
+   * - name (String): the name of the class, used for debugging
+   * - parent (JS.Class): the parent class to inherit from
+   * - methods (Object): list of methods for the class
+   * 
+   * The `name` and `parent` arguments are both optional and may be omitted. `name`
+   * is not used to assign the class to a variable, it is only uses as metadata.
+   * The default parent class is `Object`, and all classes include the JS.Kernel
+   * module.
+   **/
+  initialize: function(name, parent, methods) {
+    if (typeof name === 'string') {
+      this.__nom__ = this.displayName = name;
+    } else {
+      this.__nom__ = this.displayName = '';
+      methods = parent;
+      parent = name;
+    }
+    var klass = JS.extend(JS.makeFunction(), this);
+    klass.klass = klass.constructor = this.klass;
+    
+    if (!JS.isFn(parent)) {
+      methods = parent;
+      parent = Object;
+    }
+    
+    // Set up parent-child relationship, then add methods. Setting up a parent
+    // class in JavaScript wipes the existing prototype object.
+    klass.inherit(parent);
+    klass.include(methods, false);
+    klass.resolve();
+    
+    // Fire inherited() callback on ancestors
+    do {
+      parent.inherited && parent.inherited(klass);
+    } while (parent = parent.superclass);
+    
+    return klass;
+  },
+  
+  /**
+   * JS.Class#inherit(klass) -> undefined
+   * - klass (JS.Class): the class to inherit from
+   * 
+   * Sets up the parent-child relationship to the parent class. This is a destructive action
+   * in that the existing prototype will be discarded; always call this before adding any
+   * methods to the class.
+   **/
+  inherit: function(klass) {
+    this.superclass = klass;
+    
+    // Mix the parent's metamodule into this class's metamodule
+    if (this.__eigen__ && klass.__eigen__) this.extend(klass.__eigen__(), true);
+    
+    this.subclasses = [];
+    (klass.subclasses || []).push(this);
+    
+    // Bootstrap JavaScript's prototypal inheritance model
+    var p = this.prototype = JS.makeBridge(klass);
+    p.klass = p.constructor = this;
+    
+    // Set up a module to store methods and delegate calls to
+    // -- Class does not really subclass Module, instead each
+    // Class has a Module that it delegates to
+    this.__mod__ = new JS.Module(this.__nom__, {}, {_resolve: this.prototype});
+    this.include(JS.Kernel, false);
+    
+    if (klass !== Object) this.include(klass.__mod__ || new JS.Module(klass.prototype,
+        {_resolve: klass.prototype}), false);
+  },
+  
+  /**
+   * JS.Class#include(module[, resolve = true[, options = {}]]) -> undefined
+   * - module (JS.Module): the module to mix in
+   * - resolve (Boolean): sets whether to refresh method tables afterward
+   * - options (Object): flags to control execution
+   * 
+   * Mixes a `module` into the class if it's a `JS.Module` instance, or adds instance
+   * methods to the class itself if given a plain old object. Overrides `JS.Module#include`
+   * to make sure callbacks fire on the class rather than its delegating module.
+   **/
+  include: function(module, resolve, options) {
+    if (!module) return;
+    
+    var mod     = this.__mod__,
+        options = options || {};
+    
+    options._included = this;
+    return mod.include(module, resolve, options);
+  },
+  
+  /**
+   * JS.Class#define(name, func[, resolve = true[, options = {}]]) -> undefined
+   * - name (String): the name of the method
+   * - func (Function): a function to implement the method
+   * - resolve (Boolean): sets whether to refresh method tables afterward
+   * - options (Object): options for internal use
+   * 
+   * Adds an instance method to the class with the given `name`. The `options` parameter is
+   * for internal use to make sure callbacks fire on the correct objects, e.g. a class
+   * uses a hidden module to store its methods, but callbacks should fire on the class,
+   * not the module.
+   **/
+  define: function(name, func, resolve, options) {
+    var module = this.__mod__;
+    options = options || {};
+    options._notify = this;
+    module.define(name, func, resolve, options);
+  }
+});
+
+
+// This file bootstraps the framework by redefining Module and Class using their
+// own prototypes and mixing in methods from Kernel, making these classes appear
+// to be instances of themselves.
+
+JS.Module = new JS.Class('Module', JS.Module.prototype);
+JS.Class = new JS.Class('Class', JS.Module, JS.Class.prototype);
+JS.Module.klass = JS.Module.constructor =
+JS.Class.klass = JS.Class.constructor = JS.Class;
+
+JS.extend(JS.Module, {
+  _observers: [],
+  
+  __chainq__: [],
+  
+  methodAdded: function(block, context) {
+    this._observers.push([block, context]);
+  },
+  
+  _notify: function(name, object) {
+    var obs = this._observers, i = obs.length;
+    while (i--) obs[i][0].call(obs[i][1] || null, name, object);
+  }
+});
+
+
+/** section: core
+ * mixin JS.Kernel
+ * 
+ * `Kernel` is the base module; all classes include the `Kernel`, so its methods become
+ * available to all objects instantiated by JS.Class. As in Ruby, the core `Object`
+ * methods are implemented here rather than in the base `Object` class. JS.Class does
+ * not in fact have an `Object` class and does not modify the builtin JavaScript `Object`
+ * class either.
+ **/
+JS.Kernel = JS.extend(new JS.Module('Kernel', {
+  /**
+   * JS.Kernel#__eigen__() -> JS.Module
+   * 
+   * Returns the object's metamodule, analogous to calling `(class << self; self; end)`
+   * in Ruby. Ruby's metaclasses are `Class`es, not just `Module`s, but so far I've not found
+   * a compelling reason to enforce this. You cannot instantiate or subclass metaclasses
+   * in Ruby, they only really exist to store methods so a module will suffice.
+   **/
+  __eigen__: function() {
+    if (this.__meta__) return this.__meta__;
+    
+    var me     = this.__nom__,
+        klass  = this.klass.__nom__,
+        name   = me || (klass ? '#<' + klass + '>' : ''),
+        module = this.__meta__ = new JS.Module(name ? name + '.' : '', {}, {_resolve: this});
+    
+    module.include(this.klass.__mod__, false);
+    return module;
+  },
+  
+  /**
+   * JS.Kernel#equals(object) -> Boolean
+   * - object (Object): object to compare to the receiver
+   * 
+   * Returns `true` iff `object` is the same object as the receiver. Override to provide a
+   * more meaningful comparison for use in sets, hashtables etc.
+   **/
+  equals: function(object) {
+    return this === object;
+  },
+  
+  /**
+   * JS.Kernel#extend(module[, resolve = true]) -> undefined
+   * - module (JS.Module): module with which to extend the object
+   * - resolve (Boolean): whether to refresh method tables afterward
+   * 
+   * Extends the object using the methods from `module`. If `module` is an instance of
+   * `JS.Module`, it becomes part of the object's inheritance chain and any methods added
+   * directly to the object will take precedence. Pass `false` as a second argument
+   * to prevent the method resolution process from firing.
+   **/
+  extend: function(module, resolve) {
+    return this.__eigen__().include(module, resolve, {_extended: this});
+  },
+  
+  /**
+   * JS.Kernel#hash() -> String
+   * 
+   * Returns a hexadecimal hashcode for the object for use in hashtables. By default,
+   * this is a random number guaranteed to be unique to the object. If you override
+   * this method, make sure that `a.equals(b)` implies `a.hash() === b.hash()`.
+   **/
+  hash: function() {
+    return this.__hashcode__ = this.__hashcode__ || JS.Kernel.getHashCode();
+  },
+  
+  /**
+   * JS.Kernel#isA(type) -> Boolean
+   * - type (JS.Module): module or class to check the object's type against
+   * 
+   * Returns `true` iff the object is an instance of `type` or one of its
+   * subclasses, or if the object's class includes the module `type`.
+   **/
+  isA: function(moduleOrClass) {
+    return this.__eigen__().includes(moduleOrClass);
+  },
+  
+  /**
+   * JS.Kernel#method(name) -> Function
+   * - name (String): the name of the required method
+   * 
+   * Returns the named method from the object as a bound function.
+   **/
+  method: function(name) {
+    var self  = this,
+        cache = self.__mcache__ = self.__mcache__ || {};
+    
+    if ((cache[name] || {}).fn === self[name]) return cache[name].bd;
+    return (cache[name] = {fn: self[name], bd: JS.bind(self[name], self)}).bd;
+  },
+  
+  /**
+   * JS.Kernel#methods() -> Array
+   * 
+   * Returns a list of all the method names defined on the object.
+   **/
+  methods: function() {
+    return this.__eigen__().instanceMethods(true);
+  },
+  
+  /**
+   * JS.Kernel#tap(block[, context]) -> this
+   * - block (Function): block of code to execute
+   * - context (Object): sets the binding of `this` within `block`
+   * 
+   * Executes the given function passing the object as a parameter, and returns the
+   * object rather than the result of the function. Designed to 'tap into' a method
+   * chain to inspect intermediate values. From the Ruby docs:
+   * 
+   *     list                   .tap(function(x) { console.log("original: ", x) })
+   *         .toArray()         .tap(function(x) { console.log("array: ", x) })
+   *         .select(condition) .tap(function(x) { console.log("evens: ", x) })
+   *         .map(square)       .tap(function(x) { console.log("squares: ", x) })
+   **/
+  tap: function(block, context) {
+    block.call(context || null, this);
+    return this;
+  }
+}),
+
+{
+  __hashIndex__: 0,
+  
+  getHashCode: function() {
+    this.__hashIndex__ += 1;
+    return (Math.floor(new Date().getTime() / 1000) + this.__hashIndex__).toString(16);
+  }
+});
+
+JS.Module.include(JS.Kernel);
+JS.extend(JS.Module, JS.Kernel.__fns__);
+JS.Class.include(JS.Kernel);
+JS.extend(JS.Class, JS.Kernel.__fns__);
+
+
+/** section: core
+ * class JS.Interface
+ * 
+ * `Interface` is a class used to encapsulate sets of methods and check whether objects
+ * implement them. Think of interfaces as a means of duck-typing rather than as they are
+ * used in Java.
+ **/
+JS.Interface = new JS.Class({
+  /**
+   * new JS.Interface(methods)
+   * - methods (Array): a list of method names
+   * 
+   * An `Interface` is instantiated using a list of method names; these methods are the
+   * API the interface can be used to check for.
+   * 
+   *     var HistoryInterface = new JS.Interface([
+   *         'getInitialState',
+   *         'changeState'
+   *     ]);
+   **/
+  initialize: function(methods) {
+    this.test = function(object, returnName) {
+      var n = methods.length;
+      while (n--) {
+        if (!JS.isFn(object[methods[n]]))
+          return returnName ? methods[n] : false;
+      }
+      return true;
+    };
+  },
+  
+  /**
+   * JS.Interface#test(object[, returnName = false]) -> Boolean | String
+   * - object (Object): object whose API we wish to check
+   * - returnName (Boolean): if true, return the first name found to be missing
+   * 
+   * Checks whether `object` implements the interface, returning `true` or `false`. If
+   * the second argument is `true`, returns the name of the first method found to be
+   * missing from the object's API.
+   **/
+  
+  extend: {
+    /**
+     * JS.Interface.ensure(object, iface1[, iface2]) -> undefined
+     * - object (Object): object whose API we wish to check
+     * - iface (JS.Interface): interface the object should implement
+     * 
+     * Throws an `Error` unless `object` implements the required interface(s).
+     **/
+    ensure: function() {
+      var args = JS.array(arguments), object = args.shift(), face, result;
+      while (face = args.shift()) {
+        result = face.test(object, true);
+        if (result !== true) throw new Error('object does not implement ' + result + '()');
+      }
+    }
+  }
+});
+
+
+/** section: core
+ * class JS.Singleton
+ * 
+ * `Singleton` is a class used to construct custom objects with all the inheritance features
+ * of `JS.Class`, the methods from `JS.Kernel`, etc. It constructs an anonymous class from the
+ * objects you provide and returns an instance of this class.
+ **/
+JS.Singleton = new JS.Class({
+  /**
+   * new JS.Singleton(name, parent, methods)
+   * - name (String): the name of the singleton, used for debugging
+   * - parent (JS.Class): the parent class to inherit from
+   * - methods (Object): list of methods for the singleton
+   * 
+   * `Singleton`s are instantiated the same way as instances of `JS.Class`, the only difference
+   * being that `Singleton` returns an instance of the newly created class, rather than the
+   * class itself.
+   **/
+  initialize: function(name, parent, methods) {
+    return new (new JS.Class(name, parent, methods));
+  }
+});
+
+
+JS.Package = new JS.Class('Package', {
+  initialize: function(loader) {
+    this._loader  = loader;
+    this._deps    = [];
+    this._uses    = [];
+    this._names   = [];
+    this._waiters = [];
+    this._loading = false;
+  },
+  
+  addDependency: function(pkg) {
+    if (JS.indexOf(this._deps, pkg) === -1) this._deps.push(pkg);
+  },
+  
+  addSoftDependency: function(pkg) {
+    if (JS.indexOf(this._uses, pkg) === -1) this._uses.push(pkg);
+  },
+  
+  _getPackage: function(list, index) {
+    var pkg = list[index];
+    if (typeof pkg === 'string') pkg = list[index] = this.klass.getByName(pkg);
+    return pkg;
+  },
+  
+  addName: function(name) {
+    if (JS.indexOf(this._names, name) !== -1) return;
+    this._names.push(name);
+    this.klass.getFromCache(name).pkg = this;
+  },
+  
+  depsComplete: function(deps) {
+    deps = deps || this._deps;
+    var n = deps.length, dep;
+    while (n--) {
+      if (!this._getPackage(deps, n).isComplete()) return false;
+    }
+    return true;
+  },
+  
+  isComplete: function() {
+    return this.isLoaded() &&
+           this.depsComplete(this._deps) &&
+           this.depsComplete(this._uses);
+  },
+  
+  isLoaded: function(withExceptions) {
+    if (this._isLoaded) return true;
+    
+    var names = this._names,
+        n     = names.length,
+        object;
+    
+    while (n--) {
+      object = this.klass.getObject(names[n]);
+      if (object !== undefined) continue;
+      if (withExceptions)
+        throw new Error('Expected package at ' + this._loader + ' to define ' + names[n]);
+      else
+        return false;
+    }
+    return this._isLoaded = true;
+  },
+  
+  readyToLoad: function() {
+    return !this.isLoaded() && this.depsComplete();
+  },
+  
+  expand: function(list) {
+    var deps = list || [], dep, n;
+    
+    n = this._deps.length;
+    while (n--) this._getPackage(this._deps, n).expand(deps);
+    
+    if (JS.indexOf(deps, this) === -1) deps.push(this);
+    
+    n = this._uses.length;
+    while (n--) this._getPackage(this._uses, n).expand(deps);
+    
+    return deps;
+  },
+  
+  onload: function(block) {
+    this._onload = block;
+  },
+  
+  load: function(callback, context) {
+    if (this._loader === undefined)
+      throw new Error('No load path specified for ' + this._names.join(', '));
+    
+    var self = this, handler, fireCallbacks;
+    
+    handler = function() {
+      self._loading = false;
+      callback.call(context || null);
+    };
+    
+    if (this.isLoaded()) return setTimeout(handler, 1);
+    
+    this._waiters.push(handler);
+    if (this._loading) return;
+    
+    fireCallbacks = function() {
+      if (JS.isFn(self._onload)) self._onload();
+      self.isLoaded(true);
+      for (var i = 0, n = self._waiters.length; i < n; i++) self._waiters[i]();
+      self._waiters = [];
+    };
+    
+    this._loading = true;
+    
+    JS.isFn(this._loader)
+        ? this._loader(fireCallbacks)
+        : this.klass.Loader.loadFile(this._loader, fireCallbacks);
+  },
+  
+  toString: function() {
+    return 'Package:' + this._names[0];
+  },
+  
+  extend: {
+    _store:   {},
+    _cache:   {},
+    _env:     this,
+    
+    getByPath: function(loader) {
+      var path = loader.toString();
+      return this._store[path] || (this._store[path] = new this(loader));
+    },
+    
+    getFromCache: function(name) {
+      return this._cache[name] = this._cache[name] || {};
+    },
+    
+    getByName: function(name) {
+      var cached = this.getFromCache(name);
+      if (cached.pkg) return cached.pkg;
+      
+      var placeholder = new this();
+      placeholder.addName(name);
+      return placeholder;
+    },
+    
+    getObject: function(name) {
+      var cached = this.getFromCache(name);
+      if (cached.obj !== undefined) return cached.obj;
+      
+      var object = this._env,
+          parts  = name.split('.'), part;
+      
+      while (part = parts.shift()) object = object && object[part];
+      
+      return this.getFromCache(name).obj = object;
+    },
+    
+    expand: function(list) {
+      var packages = [], i, n;
+      for (i = 0, n = list.length; i < n; i++)
+        list[i].expand(packages);
+      return packages;
+    },
+    
+    load: function(list, counter, callback) {
+      var ready    = [],
+          deferred = [],
+          n        = list.length,
+          pkg;
+      
+      while (n--) {
+        pkg = list[n];
+        if (pkg.isComplete())
+          counter -= 1;
+        else
+          (pkg.readyToLoad() ? ready : deferred).push(pkg);
+      }
+      
+      if (counter === 0) return callback();
+      
+      n = ready.length;
+      while (n--) ready[n].load(function() {
+        this.load(deferred, --counter, callback);
+      }, this);
+    }
+  }
+});
+
+
+JS.Package.extend({
+  DomLoader: {
+    usable: function() {
+      return !!JS.Package.getObject('window.document.getElementsByTagName');
+    },
+    
+    __FILE__: function() {
+      var scripts = document.getElementsByTagName('script');
+      return scripts[scripts.length - 1].src;
+    },
+    
+    loadFile: function(path, fireCallbacks) {
+      var self = this,
+          tag = document.createElement('script');
+      
+      tag.type = 'text/javascript';
+      tag.src = path;
+      
+      tag.onload = tag.onreadystatechange = function() {
+        var state = tag.readyState, status = tag.status;
+        if ( !state || state === 'loaded' || state === 'complete' || (state === 4 && status === 200) ) {
+          fireCallbacks();
+          tag.onload = tag.onreadystatechange = self._K;
+          tag = null;
+        }
+      };
+      window.console && console.info('Loading ' + path);
+      document.getElementsByTagName('head')[0].appendChild(tag);
+    },
+    
+    _K: function() {}
+  },
+  
+  ServerLoader: {
+    usable: function() {
+      return JS.isFn(JS.Package.getObject('load')) &&
+             JS.isFn(JS.Package.getObject('version'));
+    },
+    
+    setup: function() {
+      var self = this;
+      load = (function(origLoad) {
+        return function() {
+          self._currentPath = arguments[0];
+          return origLoad.apply(JS.Package._env, arguments);
+        };
+      })(load);
+    },
+    
+    __FILE__: function() {
+      return this._currentPath;
+    },
+    
+    loadFile: function(path, fireCallbacks) {
+      load(path);
+      fireCallbacks();
+    }
+  }
+});
+
+(function() {
+  var candidates = [  JS.Package.DomLoader,
+                      JS.Package.ServerLoader ],
+      
+      n = candidates.length,
+      i, candidate;
+  
+  for (i = 0; i < n; i++) {
+    candidate = candidates[i];
+    if (candidate.usable()) {
+      JS.Package.Loader = candidate;
+      if (candidate.setup) candidate.setup();
+      break;
+    }
+  }
+})();
+
+
+JS.Package.extend({
+  DSL: {
+    __FILE__: function() {
+      return JS.Package.Loader.__FILE__();
+    },
+    
+    pkg: function(name, path) {
+      var pkg = path
+          ? JS.Package.getByPath(path)
+          : JS.Package.getByName(name);
+      pkg.addName(name);
+      return new JS.Package.Description(pkg);
+    },
+    
+    file: function(path) {
+      var pkg = JS.Package.getByPath(path);
+      return new JS.Package.Description(pkg);
+    },
+    
+    load: function(path, fireCallbacks) {
+      JS.Package.Loader.loadFile(path, fireCallbacks);
+    }
+  },
+  
+  Description: new JS.Class({
+    initialize: function(pkg) {
+      this._pkg = pkg;
+    },
+    
+    _batch: function(method, args) {
+      var n = args.length, method = this._pkg[method], i;
+      for (i = 0; i < n; i++) method.call(this._pkg, args[i]);
+      return this;
+    },
+    
+    provides: function() {
+      return this._batch('addName', arguments);
+    },
+    
+    requires: function() {
+      return this._batch('addDependency', arguments);
+    },
+    
+    uses: function() {
+      return this._batch('addSoftDependency', arguments);
+    },
+    
+    setup: function(block) {
+      this._pkg.onload(block);
+      return this;
+    }
+  })
+});
+
+JS.Package.DSL.loader = JS.Package.DSL.file;
+
+JS.Packages = function(declaration) {
+  declaration.call(JS.Package.DSL);
+};
+ 
+JS.require = function() {
+  var args         = JS.array(arguments),
+      requirements = [];
+  
+  while (typeof args[0] === 'string') requirements.push(JS.Package.getByName(args.shift()));
+  requirements = JS.Package.expand(requirements);
+  
+  var fired = false, handler = function() {
+    if (fired) return;
+    fired = true;
+    args[0] && args[0].call(args[1] || null);
+  };
+  
+  JS.Package.load(requirements, requirements.length, handler);
+};
+
+require = JS.require;
+
+
+JS.Packages(function() { with(this) {
+    
+    var PATH = JS.Package._env.JSCLASS_PATH ||
+               __FILE__().replace(/[^\/]*$/g, '');
+    
+    PATH = PATH.replace(/\/?$/g, '/');
+    
+    var module = function(name) { return file(PATH + name + '.js') };
+    
+    module('core')          .provides('JS.Module',
+                                      'JS.Class',
+                                      'JS.Kernel',
+                                      'JS.Singleton',
+                                      'JS.Interface');
+    
+    module('comparable')    .provides('JS.Comparable')
+                            .requires('JS.Module');
+    
+    module('constant_scope').provides('JS.ConstantScope')
+                            .requires('JS.Module');
+    
+    module('forwardable')   .provides('JS.Forwardable')
+                            .requires('JS.Module');
+    
+    module('enumerable')    .provides('JS.Enumerable')
+                            .requires('JS.Module',
+                                      'JS.Class');
+    
+    module('observable')    .provides('JS.Observable')
+                            .requires('JS.Module');
+    
+    module('hash')          .provides('JS.Hash')
+                            .requires('JS.Class',
+                                      'JS.Enumerable',
+                                      'JS.Comparable');
+    
+    module('set')           .provides('JS.Set',
+                                      'JS.HashSet',
+                                      'JS.SortedSet')
+                            .requires('JS.Class',
+                                      'JS.Enumerable')
+                            .uses(    'JS.Hash');
+    
+    module('linked_list')   .provides('JS.LinkedList',
+                                      'JS.LinkedList.Doubly',
+                                      'JS.LinkedList.Doubly.Circular')
+                            .requires('JS.Class',
+                                      'JS.Enumerable');
+    
+    module('command')       .provides('JS.Command',
+                                      'JS.Command.Stack')
+                            .requires('JS.Class',
+                                      'JS.Enumerable',
+                                      'JS.Observable');
+    
+    module('decorator')     .provides('JS.Decorator')
+                            .requires('JS.Module',
+                                      'JS.Class');
+    
+    module('method_chain')  .provides('JS.MethodChain')
+                            .requires('JS.Module',
+                                      'JS.Kernel');
+    
+    module('proxy')         .provides('JS.Proxy',
+                                      'JS.Proxy.Virtual')
+                            .requires('JS.Module',
+                                      'JS.Class');
+    
+    module('ruby')          .provides('JS.Ruby')
+                            .requires('JS.Class');
+    
+    module('stack_trace')   .provides('JS.StackTrace')
+                            .requires('JS.Module',
+                                      'JS.Singleton');
+    
+    module('state')         .provides('JS.State')
+                            .requires('JS.Module',
+                                      'JS.Class');
+}});

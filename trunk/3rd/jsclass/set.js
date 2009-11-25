@@ -1,1 +1,332 @@
-JS.Set=new JS.Class('Set',{extend:{forEach:function(a,b,c){if(!a||!b)return;if(a.forEach)return a.forEach(b,c);for(var d=0,e=a.length;d<e;d++){if(a[d]!==undefined)b.call(c||null,a[d],d)}}},include:JS.Enumerable||{},initialize:function(a,b,c){this.clear();if(b)this.klass.forEach(a,function(item){this.add(b.call(c||null,item))},this);else this.merge(a)},forEach:function(a,b){if(!a)return this.enumFor('forEach');a=JS.Enumerable.toFn(a);this.klass.forEach(this._0,a,b);return this},add:function(a){if(this.contains(a))return false;this._0.push(a);this.length=this.size=this._0.length;return true},classify:function(c,d){if(!c)return this.enumFor('classify');c=JS.Enumerable.toFn(c);var e=new JS.Hash();this.forEach(function(a){var b=c.call(d||null,a);if(!e.hasKey(b))e.store(b,new this.klass);e.get(b).add(a)},this);return e},clear:function(){this._0=[];this.length=this.size=0},complement:function(b){var c=new this.klass;this.klass.forEach(b,function(a){if(!this.contains(a))c.add(a)},this);return c},contains:function(a){return this._1(a)!==-1},difference:function(b){b=JS.isType(b,JS.Set)?b:new JS.Set(b);var c=new this.klass;this.forEach(function(a){if(!b.contains(a))c.add(a)});return c},divide:function(a,b){if(!a)return this.enumFor('divide');a=JS.Enumerable.toFn(a);var c=this.classify(a,b),d=new this.klass;c.forEachValue(d.method('add'));return d},equals:function(b){if(this.length!==b.length||!JS.isType(b,JS.Set))return false;var c=true;this.forEach(function(a){if(!c)return;if(!b.contains(a))c=false});return c},hash:function(){var b=[];this.forEach(function(a){b.push(JS.Hash.codeFor(a))});return b.sort().join('')},flatten:function(b){var c=new this.klass;c._0=this._0;if(!b){b=this;b.clear()}c.forEach(function(a){if(JS.isType(a,JS.Set))a.flatten(b);else b.add(a)});return b},intersection:function(b){var c=new this.klass;this.klass.forEach(b,function(a){if(this.contains(a))c.add(a)},this);return c},isEmpty:function(){return this._0.length===0},isProperSubset:function(a){return this._0.length<a._0.length&&this.isSubset(a)},isProperSuperset:function(a){return this._0.length>a._0.length&&this.isSuperset(a)},isSubset:function(b){var c=true;this.forEach(function(a){if(!c)return;if(!b.contains(a))c=false});return c},isSuperset:function(a){return a.isSubset(this)},merge:function(b){this.klass.forEach(b,function(a){this.add(a)},this)},product:function(c){var d=new JS.Set;this.forEach(function(b){this.klass.forEach(c,function(a){d.add([b,a])})},this);return d},rebuild:function(){var a=this._0;this.clear();this.merge(a)},remove:function(a){var b=this._1(a);if(b===-1)return;this._0.splice(b,1);this.length=this.size=this._0.length},removeIf:function(a,b){if(!a)return this.enumFor('removeIf');a=JS.Enumerable.toFn(a);var c=this._0,d=c.length;while(d--){if(a.call(b||null,c[d]))this.remove(c[d])}return this},replace:function(a){this.clear();this.merge(a)},subtract:function(b){this.klass.forEach(b,function(a){this.remove(a)},this)},union:function(a){var b=new this.klass;b.merge(this);b.merge(a);return b},xor:function(b){var c=new JS.Set(b);this.forEach(function(a){c[c.contains(a)?'remove':'add'](a)});return c},_1:function(a){var b=this._0.length,c=JS.Enumerable.areEqual;while(b--){if(c(a,this._0[b]))return b}return-1}});JS.Set.include({n:JS.Set.instanceMethod('intersection'),u:JS.Set.instanceMethod('union'),x:JS.Set.instanceMethod('product')},false);JS.SortedSet=new JS.Class('SortedSet',JS.Set,{extend:{compare:function(a,b){return JS.isType(a,Object)?a.compareTo(b):(a<b?-1:(a>b?1:0))}},add:function(a){var b=this._1(a,true);if(b===null)return;this._0.splice(b,0,a);this.length=this.size=this._0.length},_1:function(a,b){var c=this._0,d=c.length,e=0,f=d,g=this.klass.compare,h=JS.Enumerable.areEqual,i;if(d===0)return b?0:-1;if(g(a,c[0])<1){f=0;e=0}if(g(a,c[d-1])>0){f=0;e=d}while(!h(a,c[e])&&f>0.5){f=f/2;e+=(g(a,c[e])>0?1:-1)*Math.round(f);if(e>0&&g(a,c[e-1])>0&&g(a,c[e])<1)f=0}while(c[e]&&!h(a,c[e])&&g(a,c[e])===0)e+=1;i=h(a,c[e]);return b?(i?null:e):(i?e:-1)}});JS.HashSet=new JS.Class('HashSet',JS.Set,{forEach:function(a,b){if(!a)return this.enumFor('forEach');a=JS.Enumerable.toFn(a);this._0.forEachKey(a,b);return this},add:function(a){if(this.contains(a))return false;this._0.store(a,true);this.length=this.size=this._0.length;return true},clear:function(){this._0=new JS.Hash();this.size=this.length=0},contains:function(a){return this._0.hasKey(a)},rebuild:function(){this._0.rehash();this.length=this.size=this._0.length},remove:function(a){this._0.remove(a);this.length=this.size=this._0.length},removeIf:function(b,c){if(!b)return this.enumFor('removeIf');b=JS.Enumerable.toFn(b);this._0.removeIf(function(a){return b.call(c||null,a.key)});this.length=this.size=this._0.length;return this}});JS.Enumerable.include({toSet:function(a,b,c){a=a||JS.Set;return new a(this,b,c)}},true);
+JS.Set = new JS.Class('Set', {
+  extend: {
+    forEach: function(list, block, context) {
+      if (!list || !block) return;
+      if (list.forEach) return list.forEach(block, context);
+      for (var i = 0, n = list.length; i < n; i++) {
+        if (list[i] !== undefined)
+          block.call(context || null, list[i], i);
+      }
+    }
+  },
+  
+  include: JS.Enumerable || {},
+  
+  initialize: function(list, block, context) {
+    this.clear();
+    if (block) this.klass.forEach(list, function(item) {
+      this.add(block.call(context || null, item));
+    }, this);
+    else this.merge(list);
+  },
+  
+  forEach: function(block, context) {
+    if (!block) return this.enumFor('forEach');
+    block = JS.Enumerable.toFn(block);
+    
+    this.klass.forEach(this._members, block, context);
+    return this;
+  },
+  
+  add: function(item) {
+    if (this.contains(item)) return false;
+    this._members.push(item);
+    this.length = this.size = this._members.length;
+    return true;
+  },
+  
+  classify: function(block, context) {
+    if (!block) return this.enumFor('classify');
+    block = JS.Enumerable.toFn(block);
+    
+    var classes = new JS.Hash();
+    this.forEach(function(item) {
+      var value = block.call(context || null, item);
+      if (!classes.hasKey(value)) classes.store(value, new this.klass);
+      classes.get(value).add(item);
+    }, this);
+    return classes;
+  },
+  
+  clear: function() {
+    this._members = [];
+    this.length = this.size = 0;
+  },
+  
+  complement: function(other) {
+    var set = new this.klass;
+    this.klass.forEach(other, function(item) {
+      if (!this.contains(item)) set.add(item);
+    }, this);
+    return set;
+  },
+  
+  contains: function(item) {
+    return this._indexOf(item) !== -1;
+  },
+  
+  difference: function(other) {
+    other = JS.isType(other, JS.Set) ? other : new JS.Set(other);
+    var set = new this.klass;
+    this.forEach(function(item) {
+      if (!other.contains(item)) set.add(item);
+    });
+    return set;
+  },
+  
+  divide: function(block, context) {
+    if (!block) return this.enumFor('divide');
+    block = JS.Enumerable.toFn(block);
+    
+    var classes = this.classify(block, context),
+        sets    = new this.klass;
+    
+    classes.forEachValue(sets.method('add'));
+    return sets;
+  },
+  
+  equals: function(other) {
+    if (this.length !== other.length || !JS.isType(other, JS.Set)) return false;
+    var result = true;
+    this.forEach(function(item) {
+      if (!result) return;
+      if (!other.contains(item)) result = false;
+    });
+    return result;
+  },
+  
+  hash: function() {
+    var hashes = [];
+    this.forEach(function(object) { hashes.push(JS.Hash.codeFor(object)) });
+    return hashes.sort().join('');
+  },
+  
+  flatten: function(set) {
+    var copy = new this.klass;
+    copy._members = this._members;
+    if (!set) { set = this; set.clear(); }
+    copy.forEach(function(item) {
+      if (JS.isType(item, JS.Set)) item.flatten(set);
+      else set.add(item);
+    });
+    return set;
+  },
+  
+  intersection: function(other) {
+    var set = new this.klass;
+    this.klass.forEach(other, function(item) {
+      if (this.contains(item)) set.add(item);
+    }, this);
+    return set;
+  },
+  
+  isEmpty: function() {
+    return this._members.length === 0;
+  },
+  
+  isProperSubset: function(other) {
+    return this._members.length < other._members.length && this.isSubset(other);
+  },
+  
+  isProperSuperset: function(other) {
+    return this._members.length > other._members.length && this.isSuperset(other);
+  },
+  
+  isSubset: function(other) {
+    var result = true;
+    this.forEach(function(item) {
+      if (!result) return;
+      if (!other.contains(item)) result = false;
+    });
+    return result;
+  },
+  
+  isSuperset: function(other) {
+    return other.isSubset(this);
+  },
+  
+  merge: function(list) {
+    this.klass.forEach(list, function(item) { this.add(item) }, this);
+  },
+  
+  product: function(other) {
+    var pairs = new JS.Set;
+    this.forEach(function(item) {
+      this.klass.forEach(other, function(partner) {
+        pairs.add([item, partner]);
+      });
+    }, this);
+    return pairs;
+  },
+  
+  rebuild: function() {
+    var members = this._members;
+    this.clear();
+    this.merge(members);
+  },
+  
+  remove: function(item) {
+    var index = this._indexOf(item);
+    if (index === -1) return;
+    this._members.splice(index, 1);
+    this.length = this.size = this._members.length;
+  },
+  
+  removeIf: function(block, context) {
+    if (!block) return this.enumFor('removeIf');
+    block = JS.Enumerable.toFn(block);
+    
+    var members = this._members,
+        i       = members.length;
+    
+    while (i--) {
+      if (block.call(context || null, members[i]))
+        this.remove(members[i]);
+    }
+    return this;
+  },
+  
+  replace: function(other) {
+    this.clear();
+    this.merge(other);
+  },
+  
+  subtract: function(list) {
+    this.klass.forEach(list, function(item) {
+      this.remove(item);
+    }, this);
+  },
+  
+  union: function(other) {
+    var set = new this.klass;
+    set.merge(this);
+    set.merge(other);
+    return set;
+  },
+  
+  xor: function(other) {
+    var set = new JS.Set(other);
+    this.forEach(function(item) {
+      set[set.contains(item) ? 'remove' : 'add'](item);
+    });
+    return set;
+  },
+  
+  _indexOf: function(item) {
+    var i     = this._members.length,
+        equal = JS.Enumerable.areEqual;
+    
+    while (i--) {
+      if (equal(item, this._members[i])) return i;
+    }
+    return -1;
+  }
+});
+
+JS.Set.include({
+  n:  JS.Set.instanceMethod('intersection'),
+  u:  JS.Set.instanceMethod('union'),
+  x:  JS.Set.instanceMethod('product')
+}, false);
+
+JS.SortedSet = new JS.Class('SortedSet', JS.Set, {
+  extend: {
+    compare: function(one, another) {
+      return JS.isType(one, Object)
+          ? one.compareTo(another)
+          : (one < another ? -1 : (one > another ? 1 : 0));
+    }
+  },
+  
+  add: function(item) {
+    var point = this._indexOf(item, true);
+    if (point === null) return;
+    this._members.splice(point, 0, item);
+    this.length = this.size = this._members.length;
+  },
+  
+  _indexOf: function(item, insertionPoint) {
+    var items   = this._members,
+        n       = items.length,
+        i       = 0,
+        d       = n,
+        compare = this.klass.compare,
+        equal   = JS.Enumerable.areEqual,
+        found;
+    
+    if (n === 0) return insertionPoint ? 0 : -1;
+    
+    if (compare(item, items[0]) < 1)   { d = 0; i = 0; }
+    if (compare(item, items[n-1]) > 0) { d = 0; i = n; }
+    
+    while (!equal(item, items[i]) && d > 0.5) {
+      d = d / 2;
+      i += (compare(item, items[i]) > 0 ? 1 : -1) * Math.round(d);
+      if (i > 0 && compare(item, items[i-1]) > 0 && compare(item, items[i]) < 1) d = 0;
+    }
+    
+    // The pointer will end up at the start of any homogenous section. Step
+    // through the section until we find the needle or until the section ends.
+    while (items[i] && !equal(item, items[i]) &&
+        compare(item, items[i]) === 0) i += 1;
+    
+    found = equal(item, items[i]);
+    return insertionPoint
+        ? (found ? null : i)
+        : (found ? i : -1);
+  }
+});
+
+JS.HashSet = new JS.Class('HashSet', JS.Set, {
+  forEach: function(block, context) {
+    if (!block) return this.enumFor('forEach');
+    block = JS.Enumerable.toFn(block);
+    
+    this._members.forEachKey(block, context);
+    return this;
+  },
+  
+  add: function(item) {
+    if (this.contains(item)) return false;
+    this._members.store(item, true);
+    this.length = this.size = this._members.length;
+    return true;
+  },
+  
+  clear: function() {
+    this._members = new JS.Hash();
+    this.size = this.length = 0;
+  },
+  
+  contains: function(item) {
+    return this._members.hasKey(item);
+  },
+  
+  rebuild: function() {
+    this._members.rehash();
+    this.length = this.size = this._members.length;
+  },
+  
+  remove: function(item) {
+    this._members.remove(item);
+    this.length = this.size = this._members.length;
+  },
+  
+  removeIf: function(block, context) {
+    if (!block) return this.enumFor('removeIf');
+    block = JS.Enumerable.toFn(block);
+    
+    this._members.removeIf(function(pair) {
+      return block.call(context || null, pair.key);
+    });
+    this.length = this.size = this._members.length;
+    return this;
+  }
+});
+
+JS.Enumerable.include({
+  toSet: function(klass, block, context) {
+    klass = klass || JS.Set;
+    return new klass(this, block, context);
+  }
+}, true);

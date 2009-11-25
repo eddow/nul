@@ -20,7 +20,7 @@ nul.klg = {
 	//TODO C
 	unconditionals: {},
 	//TODO C
-	ncndtnl: Class.create(nul.xpr.knowledge, /** @lends nul.klg.ncndtnl# */{
+	ncndtnl: new JS.Class(nul.xpr.knowledge, /** @lends nul.klg.ncndtnl# */{
 		/**
 		 * Unconditional knowledge : only characterised by a min/max existence, no real knowledge, condition
 		 * @extends nul.xpr.knowledge
@@ -111,4 +111,4 @@ nul.klg.has = function(o, val) {
 	return [klg.wrap(klg.unify(o, val))];
 };
 
-nul.xpr.knowledge.addMethods({failure: nul.klg.never});
+nul.xpr.knowledge.include({failure: nul.klg.never});

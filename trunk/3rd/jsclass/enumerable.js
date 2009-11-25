@@ -1,1 +1,505 @@
-JS.Enumerable=new JS.Module('Enumerable',{extend:{forEach:function(a,b){if(!a)return new JS.Enumerator(this,'forEach');for(var c=0,d=this.length;c<d;c++){if(this[c]!==undefined)a.call(b||null,this[c])}return this},isComparable:function(b){return b.all(function(a){return JS.isFn(a.compareTo)})},areEqual:function(a,b){return a.equals?a.equals(b):(a===b)},Collection:new JS.Class({initialize:function(b){this.length=0;var c=Array.prototype.push;JS.Enumerable.forEach.call(b,function(a){c.call(this,a)},this)}})},all:function(b,c){b=JS.Enumerable.toFn(b);var d=true;this.forEach(function(a){d=d&&(b?b.apply(c||null,arguments):a)});return!!d},any:function(b,c){b=JS.Enumerable.toFn(b);var d=false;this.forEach(function(a){d=d||(b?b.apply(c||null,arguments):a)});return!!d},count:function(a,b){if(JS.isFn(this.size))return this.size();var c=0,d=a;if(a&&!JS.isFn(a))a=function(x){return JS.Enumerable.areEqual(x,d)};this.forEach(function(){if(!a||a.apply(b||null,arguments))c+=1});return c},cycle:function(a,b,c){if(!b)return this.enumFor('cycle',a);b=JS.Enumerable.toFn(b);while(a--)this.forEach(b,c)},drop:function(c){var d=[];this.forEachWithIndex(function(a,b){if(b>=c)d.push(a)});return d},dropWhile:function(b,c){if(!b)return this.enumFor('dropWhile');b=JS.Enumerable.toFn(b);var d=[],e=true;this.forEach(function(a){if(e)e=e&&b.apply(c||null,arguments);if(!e)d.push(a)});return d},forEachCons:function(a,b,c){if(!b)return this.enumFor('forEachCons',a);b=JS.Enumerable.toFn(b);var d=this.toArray(),e=d.length,f=e-a,g;for(g=0;g<=f;g++)b.call(c||null,d.slice(g,g+a));return this},forEachSlice:function(a,b,c){if(!b)return this.enumFor('forEachSlice',a);b=JS.Enumerable.toFn(b);var d=this.toArray(),e=d.length,f=Math.ceil(e/a),g;for(g=0;g<f;g++)b.call(c||null,d.slice(g*a,(g+1)*a));return this},forEachWithIndex:function(c,d,e){if(JS.isFn(c)){e=d;d=c;c=0}c=c||0;if(!d)return this.enumFor('forEachWithIndex',c);d=JS.Enumerable.toFn(d);return this.forEach(function(a){var b=d.call(e||null,a,c);c+=1;return b})},forEachWithObject:function(b,c,d){if(!c)return this.enumFor('forEachWithObject',b);c=JS.Enumerable.toFn(c);this.forEach(function(){var a=[b].concat(JS.array(arguments));c.apply(d||null,a)});return b},find:function(b,c){if(!b)return this.enumFor('find');b=JS.Enumerable.toFn(b);var d={},e=d;this.forEach(function(a){if(d!==e)return;d=b.apply(c||null,arguments)?a:d});return d===e?null:d},findIndex:function(c,d){if(c===undefined)return this.enumFor('findIndex');var e=null,f=JS.isFn(c);this.forEachWithIndex(function(a,b){if(e!==null)return;if(JS.Enumerable.areEqual(c,a)||(f&&c.apply(d||null,arguments)))e=b});return e},first:function(a){var b=this.toArray();return(a===undefined)?b[0]:b.slice(0,a)},grep:function(c,d,e){d=JS.Enumerable.toFn(d);var f=[];this.forEach(function(a){var b=JS.isFn(c.match)?c.match(a):c(a);if(!b)return;if(d)a=d.apply(e||null,arguments);f.push(a)});return f},groupBy:function(c,d){if(!c)return this.enumFor('groupBy');c=JS.Enumerable.toFn(c);var e=new JS.Hash();this.forEach(function(a){var b=c.apply(d||null,arguments);if(!e.hasKey(b))e.store(b,[]);e.get(b).push(a)});return e},inject:function(c,d,e){var f=JS.array(arguments),g=0,h={};switch(f.length){case 1:c=h;d=f[0];break;case 2:if(JS.isFn(c)){c=h;d=f[0];e=f[1]}}d=JS.Enumerable.toFn(d);this.forEach(function(a){if(!g++&&c===h)return c=a;var b=[c].concat(JS.array(arguments));c=d.apply(e||null,b)});return c},map:function(a,b){if(!a)return this.enumFor('map');a=JS.Enumerable.toFn(a);var c=[];this.forEach(function(){c.push(a.apply(b||null,arguments))});return c},max:function(a,b){return this.minmax(a,b)[1]},maxBy:function(a,b){if(!a)return this.enumFor('maxBy');return this.minmaxBy(a,b)[1]},member:function(b){return this.any(function(a){return JS.Enumerable.areEqual(a,b)})},min:function(a,b){return this.minmax(a,b)[0]},minBy:function(a,b){if(!a)return this.enumFor('minBy');return this.minmaxBy(a,b)[0]},minmax:function(a,b){var c=this.sort(a,b);return[c[0],c[c.length-1]]},minmaxBy:function(a,b){if(!a)return this.enumFor('minmaxBy');var c=this.sortBy(a,b);return[c[0],c[c.length-1]]},none:function(a,b){return!this.any(a,b)},one:function(b,c){b=JS.Enumerable.toFn(b);var d=0;this.forEach(function(a){if(b?b.apply(c||null,arguments):a)d+=1});return d===1},partition:function(b,c){if(!b)return this.enumFor('partition');b=JS.Enumerable.toFn(b);var d=[],e=[];this.forEach(function(a){(b.apply(c||null,arguments)?d:e).push(a)});return[d,e]},reject:function(b,c){if(!b)return this.enumFor('reject');b=JS.Enumerable.toFn(b);var d=[];this.forEach(function(a){if(!b.apply(c||null,arguments))d.push(a)});return d},reverseForEach:function(a,b){if(!a)return this.enumFor('reverseForEach');a=JS.Enumerable.toFn(a);var c=this.toArray(),d=c.length;while(d--)a.call(b||null,c[d]);return this},select:function(b,c){if(!b)return this.enumFor('select');b=JS.Enumerable.toFn(b);var d=[];this.forEach(function(a){if(b.apply(c||null,arguments))d.push(a)});return d},sort:function(c,d){var e=JS.Enumerable.isComparable(this),f=this.toArray();c=c||(e?function(a,b){return a.compareTo(b)}:null);return c?f.sort(function(a,b){return c.call(d||null,a,b)}):f.sort()},sortBy:function(c,d){if(!c)return this.enumFor('sortBy');c=JS.Enumerable.toFn(c);var e=JS.Enumerable,f=new e.Collection(this.map(c,d)),g=e.isComparable(f);return new e.Collection(f.zip(this).sort(function(a,b){a=a[0];b=b[0];return g?a.compareTo(b):(a<b?-1:(a>b?1:0))})).map(function(a){return a[1]})},take:function(c){var d=[];this.forEachWithIndex(function(a,b){if(b<c)d.push(a)});return d},takeWhile:function(b,c){if(!b)return this.enumFor('takeWhile');b=JS.Enumerable.toFn(b);var d=[],e=true;this.forEach(function(a){if(e)e=e&&b.apply(c||null,arguments);if(e)d.push(a)});return d},toArray:function(){return this.drop(0)},zip:function(){var d=JS.Enumerable,e=[],f=0,g=arguments.length,h,i;if(JS.isFn(arguments[g-1])){h=arguments[g-1];i={}}if(JS.isFn(arguments[g-2])){h=arguments[g-2];i=arguments[g-1]}d.forEach.call(arguments,function(a){if(a===h||a===i)return;if(a.toArray)a=a.toArray();if(JS.isType(a,Array))e.push(a)});var j=this.map(function(b){var c=[b];d.forEach.call(e,function(a){c.push(a[f]===undefined?null:a[f])});return++f&&c});if(!h)return j;d.forEach.call(j,h,i)}});JS.Enumerable.include({forEach:JS.Enumerable.forEach,collect:JS.Enumerable.instanceMethod('map'),detect:JS.Enumerable.instanceMethod('find'),entries:JS.Enumerable.instanceMethod('toArray'),every:JS.Enumerable.instanceMethod('all'),findAll:JS.Enumerable.instanceMethod('select'),filter:JS.Enumerable.instanceMethod('select'),some:JS.Enumerable.instanceMethod('any'),extend:{toFn:function(a){if(!a)return a;if(a.toFunction)return a.toFunction();if(this.OPS[a])return this.OPS[a];if(JS.isType(a,'string')||JS.isType(a,String))return function(){var b=JS.array(arguments),c=b.shift(),d=c[a];return JS.isFn(d)?d.apply(c,b):d};return a},OPS:{'+':function(a,b){return a+b},'-':function(a,b){return a-b},'*':function(a,b){return a*b},'/':function(a,b){return a/b},'%':function(a,b){return a%b},'^':function(a,b){return a^b},'&':function(a,b){return a&b},'&&':function(a,b){return a&&b},'|':function(a,b){return a|b},'||':function(a,b){return a||b},'==':function(a,b){return a==b},'!=':function(a,b){return a!=b},'>':function(a,b){return a>b},'>=':function(a,b){return a>=b},'<':function(a,b){return a<b},'<=':function(a,b){return a<=b},'===':function(a,b){return a===b},'!==':function(a,b){return a!==b},'[]':function(a,b){return a[b]},'()':function(a,b){return a(b)}},Enumerator:new JS.Class({include:JS.Enumerable,extend:{DEFAULT_METHOD:'forEach'},initialize:function(a,b,c){this._0=a;this._1=b||this.klass.DEFAULT_METHOD;this._2=(c||[]).slice()},forEach:function(a,b){if(!a)return this;var c=this._2.slice();c.push(a);if(b)c.push(b);return this._0[this._1].apply(this._0,c)},cons:JS.Enumerable.instanceMethod('forEachCons'),reverse:JS.Enumerable.instanceMethod('reverseForEach'),slice:JS.Enumerable.instanceMethod('forEachSlice'),withIndex:JS.Enumerable.instanceMethod('forEachWithIndex'),withObject:JS.Enumerable.instanceMethod('forEachWithObject')})}},false);JS.Enumerable.Collection.include(JS.Enumerable,true);JS.Kernel.include({enumFor:function(a){var b=JS.array(arguments),a=b.shift();return new JS.Enumerable.Enumerator(this,a,b)}},false);JS.Kernel.define('toEnum',JS.Kernel.instanceMethod('enumFor'),true);
+JS.Enumerable = new JS.Module('Enumerable', {
+  extend: {
+    forEach: function(block, context) {
+      if (!block) return new JS.Enumerator(this, 'forEach');
+      for (var i = 0, n = this.length; i < n; i++) {
+        if (this[i] !== undefined)
+          block.call(context || null, this[i]);
+      }
+      return this;
+    },
+    
+    isComparable: function(list) {
+      return list.all(function(item) { return JS.isFn(item.compareTo) });
+    },
+    
+    areEqual: function(one, another) {
+      return one.equals
+          ? one.equals(another)
+          : (one === another);
+    },
+    
+    Collection: new JS.Class({
+      initialize: function(array) {
+        this.length = 0;
+        var push = Array.prototype.push;
+        JS.Enumerable.forEach.call(array, function(item) {
+          push.call(this, item);
+        }, this);
+      }
+    })
+  },
+  
+  all: function(block, context) {
+    block = JS.Enumerable.toFn(block);
+    var truth = true;
+    this.forEach(function(item) {
+      truth = truth && (block ? block.apply(context || null, arguments) : item);
+    });
+    return !!truth;
+  },
+  
+  any: function(block, context) {
+    block = JS.Enumerable.toFn(block);
+    var truth = false;
+    this.forEach(function(item) {
+      truth = truth || (block ? block.apply(context || null, arguments) : item);
+    });
+    return !!truth;
+  },
+  
+  count: function(block, context) {
+    if (JS.isFn(this.size)) return this.size();
+    var count = 0, object = block;
+    
+    if (block && !JS.isFn(block))
+      block = function(x) { return JS.Enumerable.areEqual(x, object) };
+    
+    this.forEach(function() {
+      if (!block || block.apply(context || null, arguments))
+        count += 1;
+    });
+    return count;
+  },
+  
+  cycle: function(n, block, context) {
+    if (!block) return this.enumFor('cycle', n);
+    block = JS.Enumerable.toFn(block);
+    while (n--) this.forEach(block, context);
+  },
+  
+  drop: function(n) {
+    var entries = [];
+    this.forEachWithIndex(function(item, i) {
+      if (i >= n) entries.push(item);
+    });
+    return entries;
+  },
+  
+  dropWhile: function(block, context) {
+    if (!block) return this.enumFor('dropWhile');
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = [],
+        drop    = true;
+    
+    this.forEach(function(item) {
+      if (drop) drop = drop && block.apply(context || null, arguments);
+      if (!drop) entries.push(item);
+    });
+    return entries;
+  },
+  
+  forEachCons: function(n, block, context) {
+    if (!block) return this.enumFor('forEachCons', n);
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = this.toArray(),
+        size    = entries.length,
+        limit   = size - n,
+        i;
+    
+    for (i = 0; i <= limit; i++)
+      block.call(context || null, entries.slice(i, i+n));
+    
+    return this;
+  },
+  
+  forEachSlice: function(n, block, context) {
+    if (!block) return this.enumFor('forEachSlice', n);
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = this.toArray(),
+        size    = entries.length,
+        m       = Math.ceil(size/n),
+        i;
+    
+    for (i = 0; i < m; i++)
+      block.call(context || null, entries.slice(i*n, (i+1)*n));
+    
+    return this;
+  },
+  
+  forEachWithIndex: function(offset, block, context) {
+    if (JS.isFn(offset)) {
+      context = block;
+      block   = offset;
+      offset  = 0;
+    }
+    offset = offset || 0;
+    
+    if (!block) return this.enumFor('forEachWithIndex', offset);
+    block = JS.Enumerable.toFn(block);
+    
+    return this.forEach(function(item) {
+      var result = block.call(context || null, item, offset);
+      offset += 1;
+      return result;
+    });
+  },
+  
+  forEachWithObject: function(object, block, context) {
+    if (!block) return this.enumFor('forEachWithObject', object);
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function() {
+      var args = [object].concat(JS.array(arguments));
+      block.apply(context || null, args);
+    });
+    return object;
+  },
+  
+  find: function(block, context) {
+    if (!block) return this.enumFor('find');
+    block = JS.Enumerable.toFn(block);
+    
+    var needle = {}, K = needle;
+    this.forEach(function(item) {
+      if (needle !== K) return;
+      needle = block.apply(context || null, arguments) ? item : needle;
+    });
+    return needle === K ? null : needle;
+  },
+  
+  findIndex: function(needle, context) {
+    if (needle === undefined) return this.enumFor('findIndex');
+    
+    var index = null,
+        block = JS.isFn(needle);
+    
+    this.forEachWithIndex(function(item, i) {
+      if (index !== null) return;
+      if (JS.Enumerable.areEqual(needle, item) || (block && needle.apply(context || null, arguments)))
+        index = i;
+    });
+    return index;
+  },
+  
+  first: function(n) {
+    var entries = this.toArray();
+    return (n === undefined) ? entries[0] : entries.slice(0,n);
+  },
+  
+  grep: function(pattern, block, context) {
+    block = JS.Enumerable.toFn(block);
+    var results = [];
+    this.forEach(function(item) {
+      var match = JS.isFn(pattern.match) ? pattern.match(item) : pattern(item);
+      if (!match) return;
+      if (block) item = block.apply(context || null, arguments);
+      results.push(item);
+    });
+    return results;
+  },
+  
+  groupBy: function(block, context) {
+    if (!block) return this.enumFor('groupBy');
+    block = JS.Enumerable.toFn(block);
+    
+    var hash = new JS.Hash();
+    this.forEach(function(item) {
+      var value = block.apply(context || null, arguments);
+      if (!hash.hasKey(value)) hash.store(value, []);
+      hash.get(value).push(item);
+    });
+    return hash;
+  },
+  
+  inject: function(memo, block, context) {
+    var args    = JS.array(arguments),
+        counter = 0,
+        K       = {};
+    
+    switch (args.length) {
+      case 1:   memo      = K;
+                block     = args[0];
+                break;
+      
+      case 2:   if (JS.isFn(memo)) {
+                  memo    = K;
+                  block   = args[0];
+                  context = args[1];
+                }
+    }
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(item) {
+      if (!counter++ && memo === K) return memo = item;
+      var args = [memo].concat(JS.array(arguments));
+      memo = block.apply(context || null, args);
+    });
+    return memo;
+  },
+  
+  map: function(block, context) {
+    if (!block) return this.enumFor('map');
+    block = JS.Enumerable.toFn(block);
+    
+    var map = [];
+    this.forEach(function() {
+      map.push(block.apply(context || null, arguments));
+    });
+    return map;
+  },
+  
+  max: function(block, context) {
+    return this.minmax(block, context)[1];
+  },
+  
+  maxBy: function(block, context) {
+    if (!block) return this.enumFor('maxBy');
+    return this.minmaxBy(block, context)[1];
+  },
+  
+  member: function(needle) {
+    return this.any(function(item) { return JS.Enumerable.areEqual(item, needle) });
+  },
+  
+  min: function(block, context) {
+    return this.minmax(block, context)[0];
+  },
+  
+  minBy: function(block, context) {
+    if (!block) return this.enumFor('minBy');
+    return this.minmaxBy(block, context)[0];
+  },
+  
+  minmax: function(block, context) {
+    var list = this.sort(block, context);
+    return [list[0], list[list.length - 1]];
+  },
+  
+  minmaxBy: function(block, context) {
+    if (!block) return this.enumFor('minmaxBy');
+    var list = this.sortBy(block, context);
+    return [list[0], list[list.length - 1]];
+  },
+  
+  none: function(block, context) {
+    return !this.any(block, context);
+  },
+  
+  one: function(block, context) {
+    block = JS.Enumerable.toFn(block);
+    var count = 0;
+    this.forEach(function(item) {
+      if (block ? block.apply(context || null, arguments) : item) count += 1;
+    });
+    return count === 1;
+  },
+  
+  partition: function(block, context) {
+    if (!block) return this.enumFor('partition');
+    block = JS.Enumerable.toFn(block);
+    
+    var ayes = [], noes = [];
+    this.forEach(function(item) {
+      (block.apply(context || null, arguments) ? ayes : noes).push(item);
+    });
+    return [ayes, noes];
+  },
+  
+  reject: function(block, context) {
+    if (!block) return this.enumFor('reject');
+    block = JS.Enumerable.toFn(block);
+    
+    var map = [];
+    this.forEach(function(item) {
+      if (!block.apply(context || null, arguments)) map.push(item);
+    });
+    return map;
+  },
+  
+  reverseForEach: function(block, context) {
+    if (!block) return this.enumFor('reverseForEach');
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = this.toArray(),
+        n       = entries.length;
+    
+    while (n--) block.call(context || null, entries[n]);
+    return this;
+  },
+  
+  select: function(block, context) {
+    if (!block) return this.enumFor('select');
+    block = JS.Enumerable.toFn(block);
+    
+    var map = [];
+    this.forEach(function(item) {
+      if (block.apply(context || null, arguments)) map.push(item);
+    });
+    return map;
+  },
+  
+  sort: function(block, context) {
+    var comparable = JS.Enumerable.isComparable(this),
+        entries    = this.toArray();
+    
+    block = block || (comparable
+        ? function(a,b) { return a.compareTo(b); }
+        : null);
+    return block
+        ? entries.sort(function(a,b) { return block.call(context || null, a, b); })
+        : entries.sort();
+  },
+  
+  sortBy: function(block, context) {
+    if (!block) return this.enumFor('sortBy');
+    block = JS.Enumerable.toFn(block);
+    
+    var util       = JS.Enumerable,
+        map        = new util.Collection(this.map(block, context)),
+        comparable = util.isComparable(map);
+    
+    return new util.Collection(map.zip(this).sort(function(a, b) {
+      a = a[0]; b = b[0];
+      return comparable ? a.compareTo(b) : (a < b ? -1 : (a > b ? 1 : 0));
+    })).map(function(item) { return item[1]; });
+  },
+  
+  take: function(n) {
+    var entries = [];
+    this.forEachWithIndex(function(item, i) {
+      if (i < n) entries.push(item);
+    });
+    return entries;
+  },
+  
+  takeWhile: function(block, context) {
+    if (!block) return this.enumFor('takeWhile');
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = [],
+        take    = true;
+    this.forEach(function(item) {
+      if (take) take = take && block.apply(context || null, arguments);
+      if (take) entries.push(item);
+    });
+    return entries;
+  },
+  
+  toArray: function() {
+    return this.drop(0);
+  },
+  
+  zip: function() {
+    var util    = JS.Enumerable,
+        args    = [],
+        counter = 0,
+        n       = arguments.length,
+        block, context;
+    
+    if (JS.isFn(arguments[n-1])) {
+      block = arguments[n-1]; context = {};
+    }
+    if (JS.isFn(arguments[n-2])) {
+      block = arguments[n-2]; context = arguments[n-1];
+    }
+    util.forEach.call(arguments, function(arg) {
+      if (arg === block || arg === context) return;
+      if (arg.toArray) arg = arg.toArray();
+      if (JS.isType(arg, Array)) args.push(arg);
+    });
+    var results = this.map(function(item) {
+      var zip = [item];
+      util.forEach.call(args, function(arg) {
+        zip.push(arg[counter] === undefined ? null : arg[counter]);
+      });
+      return ++counter && zip;
+    });
+    if (!block) return results;
+    util.forEach.call(results, block, context);
+  }
+});
+  
+// http://developer.mozilla.org/en/docs/index.php?title=Core_JavaScript_1.5_Reference:Global_Objects:Array&oldid=58326
+JS.Enumerable.include({
+  forEach:    JS.Enumerable.forEach,
+  collect:    JS.Enumerable.instanceMethod('map'),
+  detect:     JS.Enumerable.instanceMethod('find'),
+  entries:    JS.Enumerable.instanceMethod('toArray'),
+  every:      JS.Enumerable.instanceMethod('all'),
+  findAll:    JS.Enumerable.instanceMethod('select'),
+  filter:     JS.Enumerable.instanceMethod('select'),
+  some:       JS.Enumerable.instanceMethod('any'),
+  
+  extend: {
+    toFn: function(object) {
+      if (!object) return object;
+      if (object.toFunction) return object.toFunction();
+      if (this.OPS[object]) return this.OPS[object];
+      if (JS.isType(object, 'string') || JS.isType(object, String))
+        return function() {
+          var args   = JS.array(arguments),
+              target = args.shift(),
+              method = target[object];
+          return JS.isFn(method) ? method.apply(target, args) : method;
+        };
+      return object;
+    },
+    
+    OPS: {
+      '+':    function(a,b) { return a + b },
+      '-':    function(a,b) { return a - b },
+      '*':    function(a,b) { return a * b },
+      '/':    function(a,b) { return a / b },
+      '%':    function(a,b) { return a % b },
+      '^':    function(a,b) { return a ^ b },
+      '&':    function(a,b) { return a & b },
+      '&&':   function(a,b) { return a && b },
+      '|':    function(a,b) { return a | b },
+      '||':   function(a,b) { return a || b },
+      '==':   function(a,b) { return a == b },
+      '!=':   function(a,b) { return a != b },
+      '>':    function(a,b) { return a > b },
+      '>=':   function(a,b) { return a >= b },
+      '<':    function(a,b) { return a < b },
+      '<=':   function(a,b) { return a <= b },
+      '===':  function(a,b) { return a === b },
+      '!==':  function(a,b) { return a !== b },
+      '[]':   function(a,b) { return a[b] },
+      '()':   function(a,b) { return a(b) }
+    },
+    
+    Enumerator: new JS.Class({
+      include: JS.Enumerable,
+      
+      extend: {
+        DEFAULT_METHOD: 'forEach'
+      },
+      
+      initialize: function(object, method, args) {
+        this._object = object;
+        this._method = method || this.klass.DEFAULT_METHOD;
+        this._args   = (args || []).slice();
+      },
+      
+      forEach: function(block, context) {
+        if (!block) return this;
+        var args = this._args.slice();
+        args.push(block);
+        if (context) args.push(context);
+        return this._object[this._method].apply(this._object, args);
+      },
+      
+      cons:       JS.Enumerable.instanceMethod('forEachCons'),
+      reverse:    JS.Enumerable.instanceMethod('reverseForEach'),
+      slice:      JS.Enumerable.instanceMethod('forEachSlice'),
+      withIndex:  JS.Enumerable.instanceMethod('forEachWithIndex'),
+      withObject: JS.Enumerable.instanceMethod('forEachWithObject')
+    })
+  }
+}, false);
+
+JS.Enumerable.Collection.include(JS.Enumerable, true);
+
+JS.Kernel.include({
+  enumFor: function(method) {
+    var args   = JS.array(arguments),
+        method = args.shift();
+    return new JS.Enumerable.Enumerator(this, method, args);
+  }
+}, false);
+
+JS.Kernel.define('toEnum', JS.Kernel.instanceMethod('enumFor'), true);

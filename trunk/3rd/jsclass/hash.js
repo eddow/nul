@@ -1,1 +1,334 @@
-JS.Hash=new JS.Class('Hash',{include:JS.Enumerable||{},extend:{Pair:new JS.Class({include:JS.Comparable||{},setKey:function(a){this[0]=this.key=a},hasKey:function(a){var b=this.key;return b.equals?b.equals(a):b===a},setValue:function(a){this[1]=this.value=a},hasValue:function(a){var b=this.value;return b.equals?b.equals(a):b===a},compareTo:function(a){return this.key.compareTo?this.key.compareTo(a.key):(this.key<a.key?-1:(this.key>a.key?1:0))},hash:function(){var a=JS.Hash.codeFor(this.key),b=JS.Hash.codeFor(this.value);return[a,b].sort().join('')}}),codeFor:function(a){if(typeof a!=='object')return String(a);return JS.isFn(a.hash)?a.hash():a.toString()}},initialize:function(a){this.clear();if(!JS.isType(a,Array))return this.setDefault(a);for(var b=0,c=a.length;b<c;b+=2)this.store(a[b],a[b+1])},forEach:function(a,b){if(!a)return this.enumFor('forEach');a=JS.Enumerable.toFn(a);var c,d,e;for(c in this._0){if(!this._0.hasOwnProperty(c))continue;d=this._0[c];e=d.length;while(e--)a.call(b||null,d[e])}return this},_3:function(a,b){var c=this.klass.codeFor(a),d=this._0[c];if(!d&&b)d=this._0[c]=[];return d},_4:function(a,b){var c=a.length,d=!!this._1;while(c--){if(d?(a[c].key===b):a[c].hasKey(b))return c}return-1},assoc:function(a,b){var c,d,e;c=this._3(a,b);if(!c)return null;d=this._4(c,a);if(d>-1)return c[d];if(!b)return null;this.size+=1;this.length+=1;e=new this.klass.Pair;e.setKey(a);c.push(e);return e},rassoc:function(a){var b=this.key(a);return b?this.assoc(b):null},clear:function(){this._0={};this.length=this.size=0},compareByIdentity:function(){this._1=true},comparesByIdentity:function(){return!!this._1},setDefault:function(a){this._2=a;return this},getDefault:function(a){return JS.isFn(this._2)?this._2(this,a):(this._2||null)},equals:function(c){if(!JS.isType(c,JS.Hash)||this.length!==c.length)return false;var d=true;this.forEach(function(a){if(!d)return;var b=c.assoc(a.key);if(b===null||!b.hasValue(a.value))d=false});return d},hash:function(){var b=[];this.forEach(function(a){b.push(a.hash())});return b.sort().join('')},fetch:function(a,b){var c=this.assoc(a);if(c)return c.value;if(b===undefined)throw new Error('key not found');if(JS.isFn(b))return b(a);return b},forEachKey:function(b,c){if(!b)return this.enumFor('forEachKey');b=JS.Enumerable.toFn(b);this.forEach(function(a){b.call(c||null,a.key)});return this},forEachPair:function(b,c){if(!b)return this.enumFor('forEachPair');b=JS.Enumerable.toFn(b);this.forEach(function(a){b.call(c||null,a.key,a.value)});return this},forEachValue:function(b,c){if(!b)return this.enumFor('forEachValue');b=JS.Enumerable.toFn(b);this.forEach(function(a){b.call(c||null,a.value)});return this},get:function(a){var b=this.assoc(a);return b?b.value:this.getDefault(a)},hasKey:function(a){return!!this.assoc(a)},hasValue:function(b){var c=false,d=!!this._1;this.forEach(function(a){if((b.equals&&!d)?b.equals(a.value):b===a.value)c=true});return c},invert:function(){var b=new this.klass;this.forEach(function(a){b.store(a.value,a.key)});return b},isEmpty:function(){for(var a in this._0){if(this._0.hasOwnProperty(a)&&this._0[a].length>0)return false}return true},key:function(b){var c=null;this.forEach(function(a){if(b.equals?b.equals(a.value):(b===a.value))c=a.key});return c},keys:function(){var b=[];this.forEach(function(a){b.push(a.key)});return b},merge:function(a,b,c){var d=new this.klass;d.update(this);d.update(a,b,c);return d},rehash:function(){var a=new this.klass;a._0=this._0;this.clear();this.update(a)},remove:function(a,b){if(b===undefined)b=null;var c,d,e;c=this._3(a);if(!c)return JS.isFn(b)?this.fetch(a,b):this.getDefault(a);d=this._4(c,a);if(d<0)return JS.isFn(b)?this.fetch(a,b):this.getDefault(a);e=c[d].value;c.splice(d,1);this.size-=1;this.length-=1;if(c.length===0)delete this._0[this.klass.codeFor(a)];return e},removeIf:function(b,c){if(!b)return this.enumFor('removeIf');b=JS.Enumerable.toFn(b);this.forEach(function(a){if(b.call(c||null,a))this.remove(a.key)},this);return this},replace:function(a){this.clear();this.update(a)},shift:function(){var a=this.keys();if(a.length===0)return this.getDefault();var b=this.assoc(a[0]);this.remove(b.key);return b},store:function(a,b){this.assoc(a,true).setValue(b);return b},update:function(d,e,f){var g=JS.isFn(e);d.forEach(function(a){var b=a.key,c=a.value;if(g&&this.hasKey(b))c=e.call(f||null,b,this.get(b),c);this.store(b,c)},this)},values:function(){var b=[];this.forEach(function(a){b.push(a.value)});return b},valuesAt:function(){var a=arguments.length,b=[];while(a--)b.push(this.get(arguments[a]));return b}});JS.Hash.include({includes:JS.Hash.instanceMethod('hasKey'),index:JS.Hash.instanceMethod('key'),put:JS.Hash.instanceMethod('store')},true);
+JS.Hash = new JS.Class('Hash', {
+  include: JS.Enumerable || {},
+  
+  extend: {
+    Pair: new JS.Class({
+      include: JS.Comparable || {},
+      
+      setKey: function(key) {
+        this[0] = this.key = key;
+      },
+      
+      hasKey: function(key) {
+        var my = this.key;
+        return my.equals ? my.equals(key) : my === key;
+      },
+      
+      setValue: function(value) {
+        this[1] = this.value = value;
+      },
+      
+      hasValue: function(value) {
+        var my = this.value;
+        return my.equals ? my.equals(value) : my === value;
+      },
+      
+      compareTo: function(other) {
+        return this.key.compareTo
+            ? this.key.compareTo(other.key)
+            : (this.key < other.key ? -1 : (this.key > other.key ? 1 : 0));
+      },
+      
+      hash: function() {
+        var key   = JS.Hash.codeFor(this.key),
+            value = JS.Hash.codeFor(this.value);
+        
+        return [key, value].sort().join('');
+      }
+    }),
+    
+    codeFor: function(object) {
+      if (typeof object !== 'object') return String(object);
+      return JS.isFn(object.hash)
+          ? object.hash()
+          : object.toString();
+    }
+  },
+  
+  initialize: function(object) {
+    this.clear();
+    if (!JS.isType(object, Array)) return this.setDefault(object);
+    for (var i = 0, n = object.length; i < n; i += 2)
+      this.store(object[i], object[i+1]);
+  },
+  
+  forEach: function(block, context) {
+    if (!block) return this.enumFor('forEach');
+    block = JS.Enumerable.toFn(block);
+    
+    var hash, bucket, i;
+    
+    for (hash in this._buckets) {
+      if (!this._buckets.hasOwnProperty(hash)) continue;
+      bucket = this._buckets[hash];
+      i = bucket.length;
+      while (i--) block.call(context || null, bucket[i]);
+    }
+    return this;
+  },
+  
+  _bucketForKey: function(key, createIfAbsent) {
+    var hash   = this.klass.codeFor(key),
+        bucket = this._buckets[hash];
+    
+    if (!bucket && createIfAbsent)
+      bucket = this._buckets[hash] = [];
+    
+    return bucket;
+  },
+  
+  _indexInBucket: function(bucket, key) {
+    var i     = bucket.length,
+        ident = !!this._compareByIdentity;
+        
+    while (i--) {
+      if (ident ? (bucket[i].key === key) : bucket[i].hasKey(key))
+        return i;
+    }
+    return -1;
+  },
+  
+  assoc: function(key, createIfAbsent) {
+    var bucket, index, pair;
+    
+    bucket = this._bucketForKey(key, createIfAbsent);
+    if (!bucket) return null;
+    
+    index = this._indexInBucket(bucket, key);
+    if (index > -1) return bucket[index];
+    if (!createIfAbsent) return null;
+    
+    this.size += 1; this.length += 1;
+    pair = new this.klass.Pair;
+    pair.setKey(key);
+    bucket.push(pair);
+    return pair;
+  },
+  
+  rassoc: function(value) {
+    var key = this.key(value);
+    return key ? this.assoc(key) : null;
+  },
+  
+  clear: function() {
+    this._buckets = {};
+    this.length = this.size = 0;
+  },
+  
+  compareByIdentity: function() {
+    this._compareByIdentity = true;
+  },
+  
+  comparesByIdentity: function() {
+    return !!this._compareByIdentity;
+  },
+  
+  setDefault: function(value) {
+    this._default = value;
+    return this;
+  },
+  
+  getDefault: function(key) {
+    return JS.isFn(this._default)
+        ? this._default(this, key)
+        : (this._default || null);
+  },
+  
+  equals: function(other) {
+    if (!JS.isType(other, JS.Hash) || this.length !== other.length)
+      return false;
+    var result = true;
+    this.forEach(function(pair) {
+      if (!result) return;
+      var otherPair = other.assoc(pair.key);
+      if (otherPair === null || !otherPair.hasValue(pair.value)) result = false;
+    });
+    return result;
+  },
+  
+  hash: function() {
+    var hashes = [];
+    this.forEach(function(pair) { hashes.push(pair.hash()) });
+    return hashes.sort().join('');
+  },
+  
+  fetch: function(key, defaultValue) {
+    var pair = this.assoc(key);
+    if (pair) return pair.value;
+    
+    if (defaultValue === undefined) throw new Error('key not found');
+    if (JS.isFn(defaultValue)) return defaultValue(key);
+    return defaultValue;
+  },
+  
+  forEachKey: function(block, context) {
+    if (!block) return this.enumFor('forEachKey');
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(pair) {
+      block.call(context || null, pair.key);
+    });
+    return this;
+  },
+  
+  forEachPair: function(block, context) {
+    if (!block) return this.enumFor('forEachPair');
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(pair) {
+      block.call(context || null, pair.key, pair.value);
+    });
+    return this;
+  },
+  
+  forEachValue: function(block, context) {
+    if (!block) return this.enumFor('forEachValue');
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(pair) {
+      block.call(context || null, pair.value);
+    });
+    return this;
+  },
+  
+  get: function(key) {
+    var pair = this.assoc(key);
+    return pair ? pair.value : this.getDefault(key);
+  },
+  
+  hasKey: function(key) {
+    return !!this.assoc(key);
+  },
+  
+  hasValue: function(value) {
+    var has = false, ident = !!this._compareByIdentity;
+    this.forEach(function(pair) {
+      if ((value.equals && !ident) ? value.equals(pair.value) : value === pair.value)
+        has = true;
+    });
+    return has;
+  },
+  
+  invert: function() {
+    var hash = new this.klass;
+    this.forEach(function(pair) {
+      hash.store(pair.value, pair.key);
+    });
+    return hash;
+  },
+  
+  isEmpty: function() {
+    for (var hash in this._buckets) {
+      if (this._buckets.hasOwnProperty(hash) && this._buckets[hash].length > 0)
+        return false;
+    }
+    return true;
+  },
+  
+  key: function(value) {
+    var result = null;
+    this.forEach(function(pair) {
+      if (value.equals ? value.equals(pair.value) : (value === pair.value))
+        result = pair.key;
+    });
+    return result;
+  },
+  
+  keys: function() {
+    var keys = [];
+    this.forEach(function(pair) { keys.push(pair.key) });
+    return keys;
+  },
+  
+  merge: function(hash, block, context) {
+    var newHash = new this.klass;
+    newHash.update(this);
+    newHash.update(hash, block, context);
+    return newHash;
+  },
+  
+  rehash: function() {
+    var temp = new this.klass;
+    temp._buckets = this._buckets;
+    this.clear();
+    this.update(temp);
+  },
+  
+  remove: function(key, block) {
+    if (block === undefined) block = null;
+    var bucket, index, result;
+    
+    bucket = this._bucketForKey(key);
+    if (!bucket) return JS.isFn(block) ? this.fetch(key, block) : this.getDefault(key);
+    
+    index = this._indexInBucket(bucket, key);
+    if (index < 0) return JS.isFn(block) ? this.fetch(key, block) : this.getDefault(key);
+    
+    result = bucket[index].value;
+    bucket.splice(index, 1);
+    this.size -= 1;
+    this.length -= 1;
+    
+    if (bucket.length === 0)
+      delete this._buckets[this.klass.codeFor(key)];
+    
+    return result;
+  },
+  
+  removeIf: function(block, context) {
+    if (!block) return this.enumFor('removeIf');
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(pair) {
+      if (block.call(context || null, pair))
+        this.remove(pair.key);
+    }, this);
+    return this;
+  },
+  
+  replace: function(hash) {
+    this.clear();
+    this.update(hash);
+  },
+  
+  shift: function() {
+    var keys = this.keys();
+    if (keys.length === 0) return this.getDefault();
+    var pair = this.assoc(keys[0]);
+    this.remove(pair.key);
+    return pair;
+  },
+  
+  store: function(key, value) {
+    this.assoc(key, true).setValue(value);
+    return value;
+  },
+  
+  update: function(hash, block, context) {
+    var blockGiven = JS.isFn(block);
+    hash.forEach(function(pair) {
+      var key = pair.key, value = pair.value;
+      if (blockGiven && this.hasKey(key))
+        value = block.call(context || null, key, this.get(key), value);
+      this.store(key, value);
+    }, this);
+  },
+  
+  values: function() {
+    var values = [];
+    this.forEach(function(pair) { values.push(pair.value) });
+    return values;
+  },
+  
+  valuesAt: function() {
+    var i = arguments.length, results = [];
+    while (i--) results.push(this.get(arguments[i]));
+    return results;
+  }
+});
+
+JS.Hash.include({
+  includes: JS.Hash.instanceMethod('hasKey'),
+  index:    JS.Hash.instanceMethod('key'),
+  put:      JS.Hash.instanceMethod('store')
+}, true);

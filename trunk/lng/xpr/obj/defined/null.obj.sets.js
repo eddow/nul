@@ -7,15 +7,15 @@
  *--------------------------------------------------------------------------*/
 
 //TODO 3: express these as descendant from nul.obj.hc
-nul.obj.hcSet = Class.create(nul.obj.list, /** @lends nul.obj.hcSet */{
+nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
 	/**
 	 * A set hard-coded in javascript
 	 * @extends nul.obj.defined
 	 * @constructs
 	 */
-	initialize: function($super) {
+	initialize: function() {
 		this.alreadyBuilt();
-		return $super();
+		return this.callSuper();
 	},
 	
 	/**
@@ -23,7 +23,7 @@ nul.obj.hcSet = Class.create(nul.obj.list, /** @lends nul.obj.hcSet */{
 	 */
 	subHas: function(o, att, typeAttr) {
 		nul.obj.use(o);
-		if(o.defined) return [];
+		if(o.isA(nul.obj.defined)) return [];
 		if(!att[''] || 'string'!= att[''].expression || typeAttr != att[''].value) {
 			var klg = new nul.xpr.knowledge();
 			klg.attributed(o, '', new nul.obj.litteral.string(typeAttr));
@@ -48,7 +48,7 @@ nul.obj.hcSet = Class.create(nul.obj.list, /** @lends nul.obj.hcSet */{
  * @class Singleton
  * @extends nul.obj.hcSet
  */
-nul.obj.empty = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.empty# */{
+nul.obj.empty = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.empty# */{
 	listed: function() { return []; },
 	
 	intersect: function(o) {
@@ -63,72 +63,53 @@ nul.obj.empty = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.empty# */{
 	/** @constant */
 	length: 0
 	
-}))();
-
-
-/**
- * Wholistic set : anything
- * @class Singleton
- * @extends nul.obj.hcSet
- */
-nul.obj.whole = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.whole# */{
-	listed: function() { return []; },
-	
-	intersect: function(o) {
-		return o;
-	},
-	subHas: function(o) { return [o]; },
-	
-	/** @constant */
-	expression: 'any'
-	
-}))();
+});
 
 /**
  * Set of number litterals
  * @class Singleton
  * @extends nul.obj.hcSet
  */
-nul.obj.number = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.number# */{
-	intersect: function($super, o, klg) {
+nul.obj.number = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.number# */{
+	intersect: function(o, klg) {
 		if('range'== o.expression) return o;
-		return $super(o, klg);
+		return this.callSuper(o, klg);
 	},
-	subHas: function($super, o, att) {
+	subHas: function(o, att) {
 		if('number'== o.expression) return isFinite(o.value)?[o]:[];
-		if(att.text && att.text.defined) {
+		if(att.text && att.text.isA(nul.obj.defined)) {
 			if('string'!= att.text.expression) return [];	//The attribute text is not a string
 			var nbr = parseInt(att.text.value);
 			if(nbr.toString() != att.text.value) return [];	//The attribute text is not a good numeric string
 			return nul.klg.has(o, new nul.obj.litteral.number(nbr));
 		}
-		return $super(o, att, '#number');
+		return this.callSuper(o, att, '#number');
 	},
 	/** @constant */
 	expression: '&#x211a;'
-}))();
+});
 
 /**
  * Set of string litterals
  * @class Singleton
  * @extends nul.obj.hcSet
  */
-nul.obj.string = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.string# */{
-	subHas: function($super, o, att) {
+nul.obj.string = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.string# */{
+	subHas: function(o, att) {
 		if('string'== o.expression) return [o];
-		return $super(o, att, '#text');
+		return this.callSuper(o, att, '#text');
 	},
 	expression: 'text'
 
-}))();
+});
 
 /**
  * Set of boolean litterals
  * @class Singleton
  * @extends nul.obj.hcSet
  */
-nul.obj.bool = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.bool# */{
-	subHas: function($super, o, att) {
+nul.obj.bool = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.bool# */{
+	subHas: function(o, att) {
 		var kt = new nul.xpr.knowledge();
 		var kf = new nul.xpr.knowledge();
 		return [kt.wrap(kt.unify(nul.obj.litteral.make(true), o)),
@@ -141,9 +122,9 @@ nul.obj.bool = new (Class.create(nul.obj.hcSet, /** @lends nul.obj.bool# */{
 
 	/** @constant */
 	length: 2
-}))();
+});
 
-nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
+nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 	//TODO 4: solve or XML make them define as extension ?
 	/**
 	 * A range of integer numbers
@@ -152,33 +133,33 @@ nul.obj.range = Class.create(nul.obj.hcSet, /** @lends nul.obj.range# */{
 	 * @param {Number} lwr Lower bound of the set (or nothing for no bound)
 	 * @param {Number} upr Upper bound of the set (or nothing for no bound)
 	 */
-	initialize: function($super, lwr, upr) {
-		var specBnd = function(s, inf) { return Object.isUndefined(s)?inf:('string'== typeof s)?parseInt(s):s; };
+	initialize: function(lwr, upr) {
+		var specBnd = function(s, inf) { return ('undefined'== typeof s)?inf:('string'== typeof s)?parseInt(s):s; };
 		this.lower = specBnd(lwr, ninf);
 		this.upper = specBnd(upr, pinf);
 		//if(ninf== this.lower || pinf== this.upper) this.length = pinf;
 		//else if(pinf== this.lower) this.length = 0;
 		//else this.length = this.upper-this.lower+1;
 		
-		$super();
+		this.callSuper();
 	},
 	//TODO C
-	intersect: function($super, o, klg) {
+	intersect: function(o, klg) {
 		if('range'== o.expression) {
 			var lwr = this.lower<o.lower?o.lower:this.lower;
 			var upr = this.upper>o.upper?o.upper:this.upper;
 			if(lwr > upr) return [];
 			return new nul.obj.range(lwr, upr);
 		}
-		return $super(o, klg);
+		return this.callSuper();
 	},
 	//TODO C
-	subHas: function($super, o, att) {
-		if(this.lower==this.upper && !o.defined) {
+	subHas: function(o, att) {
+		if(this.lower==this.upper && !o.isA(nul.obj.defined)) {
 			//TODO 3: return "o=nbr[this.bound]"
 		}
-		var nbr = (o.defined)?nul.obj.number.subHas(o, att):false;
-		if(!nbr) return $super(o, att, '#number');		//dunno if number
+		var nbr = (o.isA(nul.obj.defined))?nul.obj.number.subHas(o, att):false;
+		if(!nbr) return this.callSuper(o, att, '#number');		//dunno if number
 		if(!nbr.length) return [];						//failure to be a number
 		o = nbr[0];	//it's a number !
 		if(!isJsInt(o.value)) return [];
@@ -219,4 +200,3 @@ nul.globals.Z = new nul.obj.range();
 nul.globals.N = new nul.obj.range(0);
 nul.globals.text = nul.obj.string;
 nul.globals.bool = nul.obj.bool;
-nul.globals.any = nul.obj.whole;

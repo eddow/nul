@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
+nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	/**
  	 * Remove any information about locals that are not refered anymore
  	 * @param {nul.xpr.object} value
@@ -269,7 +269,7 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 	 * @return {nul.xpr.possible}
 	 */
 	sumRecursion: function(selfRef, alrEqs, point) {
-		this.modify(); nul.obj.use(point); nul.obj.are(alrEqs);
+		this.modify(); nul.obj.use(point);/* nul.obj.are(alrEqs);*/
 		var rv = [];
 		var blgSpec = false;
 		for(var ec=0; this.eqCls[ec]; ++ec) {
@@ -298,4 +298,4 @@ nul.xpr.knowledge.addMethods(/** @lends nul.xpr.knowledge# */{
 		if(blgSpec) return rv;
 		return [this.wrap(new nul.obj.lambda(point, nul.obj.pair.list(null, alrEqs)))];
 	}
-});
+}));

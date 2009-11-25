@@ -6,14 +6,14 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.undefnd = Class.create(nul.xpr.object, /** @lends nul.obj.undefnd# */{
+nul.obj.undefnd = new JS.Class(nul.xpr.object, /** @lends nul.obj.undefnd# */{
 	/**
 	 * Undefined object
 	 * @extends nul.xpr.object
 	 * @constructs
 	 */
-	initialize: function($super) {
-		$super();
+	initialize: function() {
+		this.callSuper();
 	},
 	defined: false
 });

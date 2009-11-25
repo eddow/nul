@@ -1,1 +1,48 @@
-JS.ConstantScope=new JS.Module('ConstantScope',{extend:{included:function(a){a.__consts__=new JS.Module();a.extend(this.ClassMethods);a.include(a.__consts__);a.extend(a.__consts__);a.include(a.__mod__.__fns__);a.extend(a.__eigen__().__fns__)},ClassMethods:new JS.Module({extend:function(){var a=JS.ConstantScope.extract(arguments[0],this);this.__consts__.include(a);this.callSuper()},include:function(){var a=JS.ConstantScope.extract(arguments[0],this);this.__consts__.include(a);this.callSuper()}}),extract:function(a,e){if(!a)return null;if(JS.isType(a,JS.Module))return null;var d={},b,c;for(b in a){if(!/^[A-Z]/.test(b))continue;c=a[b];d[b]=c;delete a[b];if(JS.isType(c,JS.Module)){c.include(this);c.__consts__.include(e.__consts__)}}return d}}});
+JS.ConstantScope = new JS.Module('ConstantScope', {
+  extend: {
+    included: function(base) {
+      base.__consts__ = new JS.Module();
+      base.extend(this.ClassMethods);
+      
+      base.include(base.__consts__);
+      base.extend(base.__consts__);
+      
+      base.include(base.__mod__.__fns__);
+      base.extend(base.__eigen__().__fns__);
+    },
+    
+    ClassMethods: new JS.Module({
+      extend: function() {
+        var constants = JS.ConstantScope.extract(arguments[0], this);
+        this.__consts__.include(constants);
+        this.callSuper();
+      },
+      
+      include: function() {
+        var constants = JS.ConstantScope.extract(arguments[0], this);
+        this.__consts__.include(constants);
+        this.callSuper();
+      }
+    }),
+    
+    extract: function(inclusions, base) {
+      if (!inclusions) return null;
+      if (JS.isType(inclusions, JS.Module)) return null;
+      var constants = {}, key, object;
+      for (key in inclusions) {
+        
+        if (!/^[A-Z]/.test(key)) continue;
+        
+        object = inclusions[key];
+        constants[key] = object;
+        delete inclusions[key];
+        
+        if (JS.isType(object, JS.Module)) {
+          object.include(this);
+          object.__consts__.include(base.__consts__);
+        }
+      }
+      return constants;
+    }
+  }
+});

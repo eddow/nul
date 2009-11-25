@@ -6,17 +6,16 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
+nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
 	 * Defined object : are defined its composition, its attributes, ...
 	 * @extends nul.xpr.object
 	 * @constructs
 	 */
-	initialize: function($super) {
+	initialize: function() {
 		this.cachedProperties = {};
-		$super();
+		this.callSuper();
 	},
-	defined : true,
 	
 //////////////// public
 
@@ -134,7 +133,7 @@ nul.obj.defined = Class.create(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * @param {nul.xpr.knowledge} klg
 	 * @return {nul.xpr.possible[]}
 	 */
-	having: function($super, o, attr) {
-		return this.has(o, attr||{}) || $super(o, attr);
+	having: function(o, attr) {
+		return this.has(o, attr||{}) || this.callSuper();
 	}
 });

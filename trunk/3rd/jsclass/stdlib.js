@@ -1,16 +1,2481 @@
-JS.MethodChain=function(c){var d=[],e=c||{};this.____=function(a,b){d.push({func:a,args:b})};this.fire=function(a){return JS.MethodChain.fire(d,a||e)}};JS.MethodChain.fire=function(a,b){var c,d,e,f;loop:for(e=0,f=a.length;e<f;e++){c=a[e];if(b instanceof JS.MethodChain){b.____(c.func,c.args);continue}switch(typeof c.func){case'string':d=b[c.func];break;case'function':d=c.func;break;case'object':b=c.func;continue loop;break}b=(typeof d==='function')?d.apply(b,c.args):d}return b};JS.MethodChain.prototype={_:function(){var a=arguments[0],b,c,d;switch(typeof a){case'object':case'function':b=[];for(c=1,d=arguments.length;c<d;c++)b.push(arguments[c]);this.____(a,b)}return this},toFunction:function(){var b=this;return function(a){return b.fire(a)}}};JS.MethodChain.reserved=(function(){var a=[],b;for(b in new JS.MethodChain)a.push(b);return new RegExp('^(?:'+a.join('|')+')$')})();JS.MethodChain.addMethod=function(a){if(this.reserved.test(a))return;var b=this.prototype[a]=function(){this.____(a,arguments);return this};b.displayName='MethodChain#'+a};JS.MethodChain.displayName='MethodChain';JS.MethodChain.addMethods=function(a){var b=[],c,d;for(c in a)Number(c)!==c&&b.push(c);if(a instanceof Array){d=a.length;while(d--)typeof a[d]==='string'&&b.push(a[d])}d=b.length;while(d--)this.addMethod(b[d]);a.__fns__&&this.addMethods(a.__fns__);a.prototype&&this.addMethods(a.prototype)};it=its=function(){return new JS.MethodChain};JS.Module.methodAdded(function(a){JS.MethodChain.addMethod(a)});JS.Kernel.include({wait:function(a){var b=new JS.MethodChain;typeof a==='number'&&setTimeout(b.fire.bind(b,this),a*1000);this.forEach&&typeof a==='function'&&this.forEach(function(){setTimeout(b.fire.bind(b,arguments[0]),a.apply(this,arguments)*1000)});return b},_:function(){var a=arguments[0],b=[],c,d;for(c=1,d=arguments.length;c<d;c++)b.push(arguments[c]);return(typeof a==='object'&&a)||(typeof a==='function'&&a.apply(this,b))||this}},true);(function(){var a=JS.Module.__chainq__,b=a.length;while(b--)JS.MethodChain.addMethods(a[b]);JS.Module.__chainq__=null})();JS.MethodChain.addMethods(["abbr","abs","accept","acceptCharset","accesskey","acos","action","addEventListener","adjacentNode","align","alignWithTop","alink","alt","anchor","appendChild","appendedNode","apply","archive","arguments","arity","asin","atan","atan2","attrNode","attributes","axis","background","bgcolor","big","blink","blur","bold","border","call","caller","ceil","cellpadding","cellspacing","char","charAt","charCodeAt","charoff","charset","checked","childNodes","cite","className","classid","clear","click","clientHeight","clientLeft","clientTop","clientWidth","cloneNode","code","codebase","codetype","color","cols","colspan","compact","concat","content","coords","cos","data","datetime","declare","deep","defer","dir","disabled","dispatchEvent","enctype","event","every","exec","exp","face","filter","firstChild","fixed","floor","focus","fontcolor","fontsize","forEach","frame","frameborder","fromCharCode","getAttribute","getAttributeNS","getAttributeNode","getAttributeNodeNS","getDate","getDay","getElementsByTagName","getElementsByTagNameNS","getFullYear","getHours","getMilliseconds","getMinutes","getMonth","getSeconds","getTime","getTimezoneOffset","getUTCDate","getUTCDay","getUTCFullYear","getUTCHours","getUTCMilliseconds","getUTCMinutes","getUTCMonth","getUTCSeconds","getYear","global","handler","hasAttribute","hasAttributeNS","hasAttributes","hasChildNodes","hasOwnProperty","headers","height","href","hreflang","hspace","htmlFor","httpEquiv","id","ignoreCase","index","indexOf","innerHTML","input","insertBefore","insertedNode","isPrototypeOf","ismap","italics","join","label","lang","language","lastChild","lastIndex","lastIndexOf","length","link","listener","localName","log","longdesc","map","marginheight","marginwidth","match","max","maxlength","media","method","min","multiline","multiple","name","namespace","namespaceURI","nextSibling","node","nodeName","nodeType","nodeValue","nohref","noresize","normalize","noshade","now","nowrap","object","offsetHeight","offsetLeft","offsetParent","offsetTop","offsetWidth","onblur","onchange","onclick","ondblclick","onfocus","onkeydown","onkeypress","onkeyup","onload","onmousedown","onmousemove","onmouseout","onmouseover","onmouseup","onreset","onselect","onsubmit","onunload","ownerDocument","parentNode","parse","pop","pow","prefix","previousSibling","profile","prompt","propertyIsEnumerable","push","random","readonly","reduce","reduceRight","rel","removeAttribute","removeAttributeNS","removeAttributeNode","removeChild","removeEventListener","removedNode","replace","replaceChild","replacedNode","rev","reverse","round","rows","rowspan","rules","scheme","scope","scrollHeight","scrollIntoView","scrollLeft","scrollTop","scrollWidth","scrolling","search","selected","setAttribute","setAttributeNS","setAttributeNode","setAttributeNodeNS","setDate","setFullYear","setHours","setMilliseconds","setMinutes","setMonth","setSeconds","setTime","setUTCDate","setUTCFullYear","setUTCHours","setUTCMilliseconds","setUTCMinutes","setUTCMonth","setUTCSeconds","setYear","shape","shift","sin","size","slice","small","some","sort","source","span","splice","split","sqrt","src","standby","start","strike","style","sub","substr","substring","summary","sup","tabIndex","tabindex","tagName","tan","target","test","text","textContent","title","toArray","toFunction","toGMTString","toLocaleDateString","toLocaleFormat","toLocaleString","toLocaleTimeString","toLowerCase","toSource","toString","toUTCString","toUpperCase","type","unshift","unwatch","useCapture","usemap","valign","value","valueOf","valuetype","version","vlink","vspace","watch","width"]);
-JS.Package=new JS.Class('Package',{initialize:function(a){this._1=a;this._0=[];this._2=[];this._3=[];this._4=[];this._5=false},addDependency:function(a){if(JS.indexOf(this._0,a)===-1)this._0.push(a)},addSoftDependency:function(a){if(JS.indexOf(this._2,a)===-1)this._2.push(a)},_6:function(a,b){var c=a[b];if(typeof c==='string')c=a[b]=this.klass.getByName(c);return c},addName:function(a){if(JS.indexOf(this._3,a)!==-1)return;this._3.push(a);this.klass.getFromCache(a).pkg=this},depsComplete:function(a){a=a||this._0;var b=a.length,c;while(b--){if(!this._6(a,b).isComplete())return false}return true},isComplete:function(){return this.isLoaded()&&this.depsComplete(this._0)&&this.depsComplete(this._2)},isLoaded:function(a){if(this._d)return true;var b=this._3,c=b.length,d;while(c--){d=this.klass.getObject(b[c]);if(d!==undefined)continue;if(a)throw new Error('Expected package at '+this._1+' to define '+b[c]);else return false}return this._d=true},readyToLoad:function(){return!this.isLoaded()&&this.depsComplete()},expand:function(a){var b=a||[],c,d;d=this._0.length;while(d--)this._6(this._0,d).expand(b);if(JS.indexOf(b,this)===-1)b.push(this);d=this._2.length;while(d--)this._6(this._2,d).expand(b);return b},onload:function(a){this._9=a},load:function(c,d){if(this._1===undefined)throw new Error('No load path specified for '+this._3.join(', '));var f=this,e,g;e=function(){f._5=false;c.call(d||null)};if(this.isLoaded())return setTimeout(e,1);this._4.push(e);if(this._5)return;g=function(){if(JS.isFn(f._9))f._9();f.isLoaded(true);for(var a=0,b=f._4.length;a<b;a++)f._4[a]();f._4=[]};this._5=true;JS.isFn(this._1)?this._1(g):this.klass.Loader.loadFile(this._1,g)},toString:function(){return'Package:'+this._3[0]},extend:{_a:{},_b:{},_c:this,getByPath:function(a){var b=a.toString();return this._a[b]||(this._a[b]=new this(a))},getFromCache:function(a){return this._b[a]=this._b[a]||{}},getByName:function(a){var b=this.getFromCache(a);if(b.pkg)return b.pkg;var c=new this();c.addName(a);return c},getObject:function(a){var b=this.getFromCache(a);if(b.obj!==undefined)return b.obj;var c=this._c,d=a.split('.'),f;while(f=d.shift())c=c&&c[f];return this.getFromCache(a).obj=c},expand:function(a){var b=[],c,d;for(c=0,d=a.length;c<d;c++)a[c].expand(b);return b},load:function(a,b,c){var d=[],f=[],e=a.length,g;while(e--){g=a[e];if(g.isComplete())b-=1;else(g.readyToLoad()?d:f).push(g)}if(b===0)return c();e=d.length;while(e--)d[e].load(function(){this.load(f,--b,c)},this)}}});JS.Package.extend({DomLoader:{usable:function(){return!!JS.Package.getObject('window.document.getElementsByTagName')},__FILE__:function(){var a=document.getElementsByTagName('script');return a[a.length-1].src},loadFile:function(c,d){var f=this,e=document.createElement('script');e.type='text/javascript';e.src=c;e.onload=e.onreadystatechange=function(){var a=e.readyState,b=e.status;if(!a||a==='loaded'||a==='complete'||(a===4&&b===200)){d();e.onload=e.onreadystatechange=f._e;e=null}};window.console&&console.info('Loading '+c);document.getElementsByTagName('head')[0].appendChild(e)},_e:function(){}},ServerLoader:{usable:function(){return JS.isFn(JS.Package.getObject('load'))&&JS.isFn(JS.Package.getObject('version'))},setup:function(){var b=this;load=(function(a){return function(){b._f=arguments[0];return a.apply(JS.Package._c,arguments)}})(load)},__FILE__:function(){return this._f},loadFile:function(a,b){load(a);b()}}});(function(){var a=[JS.Package.DomLoader,JS.Package.ServerLoader],b=a.length,c,d;for(c=0;c<b;c++){d=a[c];if(d.usable()){JS.Package.Loader=d;if(d.setup)d.setup();break}}})();JS.Package.extend({DSL:{__FILE__:function(){return JS.Package.Loader.__FILE__()},pkg:function(a,b){var c=b?JS.Package.getByPath(b):JS.Package.getByName(a);c.addName(a);return new JS.Package.Description(c)},file:function(a){var b=JS.Package.getByPath(a);return new JS.Package.Description(b)},load:function(a,b){JS.Package.Loader.loadFile(a,b)}},Description:new JS.Class({initialize:function(a){this._7=a},_8:function(a,b){var c=b.length,a=this._7[a],d;for(d=0;d<c;d++)a.call(this._7,b[d]);return this},provides:function(){return this._8('addName',arguments)},requires:function(){return this._8('addDependency',arguments)},uses:function(){return this._8('addSoftDependency',arguments)},setup:function(a){this._7.onload(a);return this}})});JS.Package.DSL.loader=JS.Package.DSL.file;JS.Packages=function(a){a.call(JS.Package.DSL)};JS.require=function(){var a=JS.array(arguments),b=[];while(typeof a[0]==='string')b.push(JS.Package.getByName(a.shift()));b=JS.Package.expand(b);var c=false,d=function(){if(c)return;c=true;a[0]&&a[0].call(a[1]||null)};JS.Package.load(b,b.length,d)};require=JS.require;
-JS.Comparable=new JS.Module('Comparable',{extend:{ClassMethods:new JS.Module({compare:function(a,b){return a.compareTo(b)}}),included:function(a){a.extend(this.ClassMethods)}},lt:function(a){return this.compareTo(a)<0},lte:function(a){return this.compareTo(a)<1},gt:function(a){return this.compareTo(a)>0},gte:function(a){return this.compareTo(a)>-1},eq:function(a){return this.compareTo(a)===0},between:function(a,b){return this.gte(a)&&this.lte(b)}});
-JS.Enumerable=new JS.Module('Enumerable',{extend:{forEach:function(a,b){if(!a)return new JS.Enumerator(this,'forEach');for(var c=0,d=this.length;c<d;c++){if(this[c]!==undefined)a.call(b||null,this[c])}return this},isComparable:function(b){return b.all(function(a){return JS.isFn(a.compareTo)})},areEqual:function(a,b){return a.equals?a.equals(b):(a===b)},Collection:new JS.Class({initialize:function(b){this.length=0;var c=Array.prototype.push;JS.Enumerable.forEach.call(b,function(a){c.call(this,a)},this)}})},all:function(b,c){b=JS.Enumerable.toFn(b);var d=true;this.forEach(function(a){d=d&&(b?b.apply(c||null,arguments):a)});return!!d},any:function(b,c){b=JS.Enumerable.toFn(b);var d=false;this.forEach(function(a){d=d||(b?b.apply(c||null,arguments):a)});return!!d},count:function(a,b){if(JS.isFn(this.size))return this.size();var c=0,d=a;if(a&&!JS.isFn(a))a=function(x){return JS.Enumerable.areEqual(x,d)};this.forEach(function(){if(!a||a.apply(b||null,arguments))c+=1});return c},cycle:function(a,b,c){if(!b)return this.enumFor('cycle',a);b=JS.Enumerable.toFn(b);while(a--)this.forEach(b,c)},drop:function(c){var d=[];this.forEachWithIndex(function(a,b){if(b>=c)d.push(a)});return d},dropWhile:function(b,c){if(!b)return this.enumFor('dropWhile');b=JS.Enumerable.toFn(b);var d=[],e=true;this.forEach(function(a){if(e)e=e&&b.apply(c||null,arguments);if(!e)d.push(a)});return d},forEachCons:function(a,b,c){if(!b)return this.enumFor('forEachCons',a);b=JS.Enumerable.toFn(b);var d=this.toArray(),e=d.length,f=e-a,g;for(g=0;g<=f;g++)b.call(c||null,d.slice(g,g+a));return this},forEachSlice:function(a,b,c){if(!b)return this.enumFor('forEachSlice',a);b=JS.Enumerable.toFn(b);var d=this.toArray(),e=d.length,f=Math.ceil(e/a),g;for(g=0;g<f;g++)b.call(c||null,d.slice(g*a,(g+1)*a));return this},forEachWithIndex:function(c,d,e){if(JS.isFn(c)){e=d;d=c;c=0}c=c||0;if(!d)return this.enumFor('forEachWithIndex',c);d=JS.Enumerable.toFn(d);return this.forEach(function(a){var b=d.call(e||null,a,c);c+=1;return b})},forEachWithObject:function(b,c,d){if(!c)return this.enumFor('forEachWithObject',b);c=JS.Enumerable.toFn(c);this.forEach(function(){var a=[b].concat(JS.array(arguments));c.apply(d||null,a)});return b},find:function(b,c){if(!b)return this.enumFor('find');b=JS.Enumerable.toFn(b);var d={},e=d;this.forEach(function(a){if(d!==e)return;d=b.apply(c||null,arguments)?a:d});return d===e?null:d},findIndex:function(c,d){if(c===undefined)return this.enumFor('findIndex');var e=null,f=JS.isFn(c);this.forEachWithIndex(function(a,b){if(e!==null)return;if(JS.Enumerable.areEqual(c,a)||(f&&c.apply(d||null,arguments)))e=b});return e},first:function(a){var b=this.toArray();return(a===undefined)?b[0]:b.slice(0,a)},grep:function(c,d,e){d=JS.Enumerable.toFn(d);var f=[];this.forEach(function(a){var b=JS.isFn(c.match)?c.match(a):c(a);if(!b)return;if(d)a=d.apply(e||null,arguments);f.push(a)});return f},groupBy:function(c,d){if(!c)return this.enumFor('groupBy');c=JS.Enumerable.toFn(c);var e=new JS.Hash();this.forEach(function(a){var b=c.apply(d||null,arguments);if(!e.hasKey(b))e.store(b,[]);e.get(b).push(a)});return e},inject:function(c,d,e){var f=JS.array(arguments),g=0,h={};switch(f.length){case 1:c=h;d=f[0];break;case 2:if(JS.isFn(c)){c=h;d=f[0];e=f[1]}}d=JS.Enumerable.toFn(d);this.forEach(function(a){if(!g++&&c===h)return c=a;var b=[c].concat(JS.array(arguments));c=d.apply(e||null,b)});return c},map:function(a,b){if(!a)return this.enumFor('map');a=JS.Enumerable.toFn(a);var c=[];this.forEach(function(){c.push(a.apply(b||null,arguments))});return c},max:function(a,b){return this.minmax(a,b)[1]},maxBy:function(a,b){if(!a)return this.enumFor('maxBy');return this.minmaxBy(a,b)[1]},member:function(b){return this.any(function(a){return JS.Enumerable.areEqual(a,b)})},min:function(a,b){return this.minmax(a,b)[0]},minBy:function(a,b){if(!a)return this.enumFor('minBy');return this.minmaxBy(a,b)[0]},minmax:function(a,b){var c=this.sort(a,b);return[c[0],c[c.length-1]]},minmaxBy:function(a,b){if(!a)return this.enumFor('minmaxBy');var c=this.sortBy(a,b);return[c[0],c[c.length-1]]},none:function(a,b){return!this.any(a,b)},one:function(b,c){b=JS.Enumerable.toFn(b);var d=0;this.forEach(function(a){if(b?b.apply(c||null,arguments):a)d+=1});return d===1},partition:function(b,c){if(!b)return this.enumFor('partition');b=JS.Enumerable.toFn(b);var d=[],e=[];this.forEach(function(a){(b.apply(c||null,arguments)?d:e).push(a)});return[d,e]},reject:function(b,c){if(!b)return this.enumFor('reject');b=JS.Enumerable.toFn(b);var d=[];this.forEach(function(a){if(!b.apply(c||null,arguments))d.push(a)});return d},reverseForEach:function(a,b){if(!a)return this.enumFor('reverseForEach');a=JS.Enumerable.toFn(a);var c=this.toArray(),d=c.length;while(d--)a.call(b||null,c[d]);return this},select:function(b,c){if(!b)return this.enumFor('select');b=JS.Enumerable.toFn(b);var d=[];this.forEach(function(a){if(b.apply(c||null,arguments))d.push(a)});return d},sort:function(c,d){var e=JS.Enumerable.isComparable(this),f=this.toArray();c=c||(e?function(a,b){return a.compareTo(b)}:null);return c?f.sort(function(a,b){return c.call(d||null,a,b)}):f.sort()},sortBy:function(c,d){if(!c)return this.enumFor('sortBy');c=JS.Enumerable.toFn(c);var e=JS.Enumerable,f=new e.Collection(this.map(c,d)),g=e.isComparable(f);return new e.Collection(f.zip(this).sort(function(a,b){a=a[0];b=b[0];return g?a.compareTo(b):(a<b?-1:(a>b?1:0))})).map(function(a){return a[1]})},take:function(c){var d=[];this.forEachWithIndex(function(a,b){if(b<c)d.push(a)});return d},takeWhile:function(b,c){if(!b)return this.enumFor('takeWhile');b=JS.Enumerable.toFn(b);var d=[],e=true;this.forEach(function(a){if(e)e=e&&b.apply(c||null,arguments);if(e)d.push(a)});return d},toArray:function(){return this.drop(0)},zip:function(){var d=JS.Enumerable,e=[],f=0,g=arguments.length,h,i;if(JS.isFn(arguments[g-1])){h=arguments[g-1];i={}}if(JS.isFn(arguments[g-2])){h=arguments[g-2];i=arguments[g-1]}d.forEach.call(arguments,function(a){if(a===h||a===i)return;if(a.toArray)a=a.toArray();if(JS.isType(a,Array))e.push(a)});var j=this.map(function(b){var c=[b];d.forEach.call(e,function(a){c.push(a[f]===undefined?null:a[f])});return++f&&c});if(!h)return j;d.forEach.call(j,h,i)}});JS.Enumerable.include({forEach:JS.Enumerable.forEach,collect:JS.Enumerable.instanceMethod('map'),detect:JS.Enumerable.instanceMethod('find'),entries:JS.Enumerable.instanceMethod('toArray'),every:JS.Enumerable.instanceMethod('all'),findAll:JS.Enumerable.instanceMethod('select'),filter:JS.Enumerable.instanceMethod('select'),some:JS.Enumerable.instanceMethod('any'),extend:{toFn:function(a){if(!a)return a;if(a.toFunction)return a.toFunction();if(this.OPS[a])return this.OPS[a];if(JS.isType(a,'string')||JS.isType(a,String))return function(){var b=JS.array(arguments),c=b.shift(),d=c[a];return JS.isFn(d)?d.apply(c,b):d};return a},OPS:{'+':function(a,b){return a+b},'-':function(a,b){return a-b},'*':function(a,b){return a*b},'/':function(a,b){return a/b},'%':function(a,b){return a%b},'^':function(a,b){return a^b},'&':function(a,b){return a&b},'&&':function(a,b){return a&&b},'|':function(a,b){return a|b},'||':function(a,b){return a||b},'==':function(a,b){return a==b},'!=':function(a,b){return a!=b},'>':function(a,b){return a>b},'>=':function(a,b){return a>=b},'<':function(a,b){return a<b},'<=':function(a,b){return a<=b},'===':function(a,b){return a===b},'!==':function(a,b){return a!==b},'[]':function(a,b){return a[b]},'()':function(a,b){return a(b)}},Enumerator:new JS.Class({include:JS.Enumerable,extend:{DEFAULT_METHOD:'forEach'},initialize:function(a,b,c){this._0=a;this._1=b||this.klass.DEFAULT_METHOD;this._2=(c||[]).slice()},forEach:function(a,b){if(!a)return this;var c=this._2.slice();c.push(a);if(b)c.push(b);return this._0[this._1].apply(this._0,c)},cons:JS.Enumerable.instanceMethod('forEachCons'),reverse:JS.Enumerable.instanceMethod('reverseForEach'),slice:JS.Enumerable.instanceMethod('forEachSlice'),withIndex:JS.Enumerable.instanceMethod('forEachWithIndex'),withObject:JS.Enumerable.instanceMethod('forEachWithObject')})}},false);JS.Enumerable.Collection.include(JS.Enumerable,true);JS.Kernel.include({enumFor:function(a){var b=JS.array(arguments),a=b.shift();return new JS.Enumerable.Enumerator(this,a,b)}},false);JS.Kernel.define('toEnum',JS.Kernel.instanceMethod('enumFor'),true);
-JS.LinkedList=new JS.Class('LinkedList',{include:JS.Enumerable||{},initialize:function(a,b){this.length=0;this.first=this.last=null;if(!a)return;for(var c=0,d=a.length;c<d;c++)this.push(b?new this.klass.Node(a[c]):a[c])},forEach:function(a,b){if(!a)return this.enumFor('forEach');a=JS.Enumerable.toFn(a);var c=this.first,d,e,f;for(e=0,f=this.length;e<f;e++){d=c.next;a.call(b||null,c,e);if(c===this.last)break;c=d}return this},at:function(a){if(a<0||a>=this.length)return undefined;var b=this.first;while(a--)b=b.next;return b},pop:function(){return this.length?this.remove(this.last):undefined},shift:function(){return this.length?this.remove(this.first):undefined},insertAfter:function(){},push:function(){},remove:function(){},extend:{Node:new JS.Class({initialize:function(a){this.data=a;this.prev=this.next=this.list=null}})}});JS.LinkedList.Doubly=new JS.Class('LinkedList.Doubly',JS.LinkedList,{insertAt:function(a,b){if(a<0||a>=this.length)return;this.insertBefore(this.at(a),b)},unshift:function(a){this.length>0?this.insertBefore(this.first,a):this.push(a)},insertBefore:function(){}});JS.LinkedList.insertTemplate=function(c,d,e){return function(a,b){if(a.list!==this)return;b[c]=a;b[d]=a[d];a[d]=(a[d][c]=b);if(b[c]===this[e])this[e]=b;b.list=this;this.length++}};JS.LinkedList.Doubly.Circular=new JS.Class('LinkedList.Doubly.Circular',JS.LinkedList.Doubly,{insertAfter:JS.LinkedList.insertTemplate('prev','next','last'),insertBefore:JS.LinkedList.insertTemplate('next','prev','first'),push:function(a){if(this.length)return this.insertAfter(this.last,a);this.first=this.last=a.prev=a.next=a;a.list=this;this.length=1},remove:function(a){if(a.list!==this||this.length===0)return null;if(this.length>1){a.prev.next=a.next;a.next.prev=a.prev;if(a===this.first)this.first=a.next;if(a===this.last)this.last=a.prev}else{this.first=this.last=null}a.prev=a.next=a.list=null;this.length--;return a}});
-JS.Hash=new JS.Class('Hash',{include:JS.Enumerable||{},extend:{Pair:new JS.Class({include:JS.Comparable||{},setKey:function(a){this[0]=this.key=a},hasKey:function(a){var b=this.key;return b.equals?b.equals(a):b===a},setValue:function(a){this[1]=this.value=a},hasValue:function(a){var b=this.value;return b.equals?b.equals(a):b===a},compareTo:function(a){return this.key.compareTo?this.key.compareTo(a.key):(this.key<a.key?-1:(this.key>a.key?1:0))},hash:function(){var a=JS.Hash.codeFor(this.key),b=JS.Hash.codeFor(this.value);return[a,b].sort().join('')}}),codeFor:function(a){if(typeof a!=='object')return String(a);return JS.isFn(a.hash)?a.hash():a.toString()}},initialize:function(a){this.clear();if(!JS.isType(a,Array))return this.setDefault(a);for(var b=0,c=a.length;b<c;b+=2)this.store(a[b],a[b+1])},forEach:function(a,b){if(!a)return this.enumFor('forEach');a=JS.Enumerable.toFn(a);var c,d,e;for(c in this._0){if(!this._0.hasOwnProperty(c))continue;d=this._0[c];e=d.length;while(e--)a.call(b||null,d[e])}return this},_3:function(a,b){var c=this.klass.codeFor(a),d=this._0[c];if(!d&&b)d=this._0[c]=[];return d},_4:function(a,b){var c=a.length,d=!!this._1;while(c--){if(d?(a[c].key===b):a[c].hasKey(b))return c}return-1},assoc:function(a,b){var c,d,e;c=this._3(a,b);if(!c)return null;d=this._4(c,a);if(d>-1)return c[d];if(!b)return null;this.size+=1;this.length+=1;e=new this.klass.Pair;e.setKey(a);c.push(e);return e},rassoc:function(a){var b=this.key(a);return b?this.assoc(b):null},clear:function(){this._0={};this.length=this.size=0},compareByIdentity:function(){this._1=true},comparesByIdentity:function(){return!!this._1},setDefault:function(a){this._2=a;return this},getDefault:function(a){return JS.isFn(this._2)?this._2(this,a):(this._2||null)},equals:function(c){if(!JS.isType(c,JS.Hash)||this.length!==c.length)return false;var d=true;this.forEach(function(a){if(!d)return;var b=c.assoc(a.key);if(b===null||!b.hasValue(a.value))d=false});return d},hash:function(){var b=[];this.forEach(function(a){b.push(a.hash())});return b.sort().join('')},fetch:function(a,b){var c=this.assoc(a);if(c)return c.value;if(b===undefined)throw new Error('key not found');if(JS.isFn(b))return b(a);return b},forEachKey:function(b,c){if(!b)return this.enumFor('forEachKey');b=JS.Enumerable.toFn(b);this.forEach(function(a){b.call(c||null,a.key)});return this},forEachPair:function(b,c){if(!b)return this.enumFor('forEachPair');b=JS.Enumerable.toFn(b);this.forEach(function(a){b.call(c||null,a.key,a.value)});return this},forEachValue:function(b,c){if(!b)return this.enumFor('forEachValue');b=JS.Enumerable.toFn(b);this.forEach(function(a){b.call(c||null,a.value)});return this},get:function(a){var b=this.assoc(a);return b?b.value:this.getDefault(a)},hasKey:function(a){return!!this.assoc(a)},hasValue:function(b){var c=false,d=!!this._1;this.forEach(function(a){if((b.equals&&!d)?b.equals(a.value):b===a.value)c=true});return c},invert:function(){var b=new this.klass;this.forEach(function(a){b.store(a.value,a.key)});return b},isEmpty:function(){for(var a in this._0){if(this._0.hasOwnProperty(a)&&this._0[a].length>0)return false}return true},key:function(b){var c=null;this.forEach(function(a){if(b.equals?b.equals(a.value):(b===a.value))c=a.key});return c},keys:function(){var b=[];this.forEach(function(a){b.push(a.key)});return b},merge:function(a,b,c){var d=new this.klass;d.update(this);d.update(a,b,c);return d},rehash:function(){var a=new this.klass;a._0=this._0;this.clear();this.update(a)},remove:function(a,b){if(b===undefined)b=null;var c,d,e;c=this._3(a);if(!c)return JS.isFn(b)?this.fetch(a,b):this.getDefault(a);d=this._4(c,a);if(d<0)return JS.isFn(b)?this.fetch(a,b):this.getDefault(a);e=c[d].value;c.splice(d,1);this.size-=1;this.length-=1;if(c.length===0)delete this._0[this.klass.codeFor(a)];return e},removeIf:function(b,c){if(!b)return this.enumFor('removeIf');b=JS.Enumerable.toFn(b);this.forEach(function(a){if(b.call(c||null,a))this.remove(a.key)},this);return this},replace:function(a){this.clear();this.update(a)},shift:function(){var a=this.keys();if(a.length===0)return this.getDefault();var b=this.assoc(a[0]);this.remove(b.key);return b},store:function(a,b){this.assoc(a,true).setValue(b);return b},update:function(d,e,f){var g=JS.isFn(e);d.forEach(function(a){var b=a.key,c=a.value;if(g&&this.hasKey(b))c=e.call(f||null,b,this.get(b),c);this.store(b,c)},this)},values:function(){var b=[];this.forEach(function(a){b.push(a.value)});return b},valuesAt:function(){var a=arguments.length,b=[];while(a--)b.push(this.get(arguments[a]));return b}});JS.Hash.include({includes:JS.Hash.instanceMethod('hasKey'),index:JS.Hash.instanceMethod('key'),put:JS.Hash.instanceMethod('store')},true);
-JS.Set=new JS.Class('Set',{extend:{forEach:function(a,b,c){if(!a||!b)return;if(a.forEach)return a.forEach(b,c);for(var d=0,e=a.length;d<e;d++){if(a[d]!==undefined)b.call(c||null,a[d],d)}}},include:JS.Enumerable||{},initialize:function(a,b,c){this.clear();if(b)this.klass.forEach(a,function(item){this.add(b.call(c||null,item))},this);else this.merge(a)},forEach:function(a,b){if(!a)return this.enumFor('forEach');a=JS.Enumerable.toFn(a);this.klass.forEach(this._0,a,b);return this},add:function(a){if(this.contains(a))return false;this._0.push(a);this.length=this.size=this._0.length;return true},classify:function(c,d){if(!c)return this.enumFor('classify');c=JS.Enumerable.toFn(c);var e=new JS.Hash();this.forEach(function(a){var b=c.call(d||null,a);if(!e.hasKey(b))e.store(b,new this.klass);e.get(b).add(a)},this);return e},clear:function(){this._0=[];this.length=this.size=0},complement:function(b){var c=new this.klass;this.klass.forEach(b,function(a){if(!this.contains(a))c.add(a)},this);return c},contains:function(a){return this._1(a)!==-1},difference:function(b){b=JS.isType(b,JS.Set)?b:new JS.Set(b);var c=new this.klass;this.forEach(function(a){if(!b.contains(a))c.add(a)});return c},divide:function(a,b){if(!a)return this.enumFor('divide');a=JS.Enumerable.toFn(a);var c=this.classify(a,b),d=new this.klass;c.forEachValue(d.method('add'));return d},equals:function(b){if(this.length!==b.length||!JS.isType(b,JS.Set))return false;var c=true;this.forEach(function(a){if(!c)return;if(!b.contains(a))c=false});return c},hash:function(){var b=[];this.forEach(function(a){b.push(JS.Hash.codeFor(a))});return b.sort().join('')},flatten:function(b){var c=new this.klass;c._0=this._0;if(!b){b=this;b.clear()}c.forEach(function(a){if(JS.isType(a,JS.Set))a.flatten(b);else b.add(a)});return b},intersection:function(b){var c=new this.klass;this.klass.forEach(b,function(a){if(this.contains(a))c.add(a)},this);return c},isEmpty:function(){return this._0.length===0},isProperSubset:function(a){return this._0.length<a._0.length&&this.isSubset(a)},isProperSuperset:function(a){return this._0.length>a._0.length&&this.isSuperset(a)},isSubset:function(b){var c=true;this.forEach(function(a){if(!c)return;if(!b.contains(a))c=false});return c},isSuperset:function(a){return a.isSubset(this)},merge:function(b){this.klass.forEach(b,function(a){this.add(a)},this)},product:function(c){var d=new JS.Set;this.forEach(function(b){this.klass.forEach(c,function(a){d.add([b,a])})},this);return d},rebuild:function(){var a=this._0;this.clear();this.merge(a)},remove:function(a){var b=this._1(a);if(b===-1)return;this._0.splice(b,1);this.length=this.size=this._0.length},removeIf:function(a,b){if(!a)return this.enumFor('removeIf');a=JS.Enumerable.toFn(a);var c=this._0,d=c.length;while(d--){if(a.call(b||null,c[d]))this.remove(c[d])}return this},replace:function(a){this.clear();this.merge(a)},subtract:function(b){this.klass.forEach(b,function(a){this.remove(a)},this)},union:function(a){var b=new this.klass;b.merge(this);b.merge(a);return b},xor:function(b){var c=new JS.Set(b);this.forEach(function(a){c[c.contains(a)?'remove':'add'](a)});return c},_1:function(a){var b=this._0.length,c=JS.Enumerable.areEqual;while(b--){if(c(a,this._0[b]))return b}return-1}});JS.Set.include({n:JS.Set.instanceMethod('intersection'),u:JS.Set.instanceMethod('union'),x:JS.Set.instanceMethod('product')},false);JS.SortedSet=new JS.Class('SortedSet',JS.Set,{extend:{compare:function(a,b){return JS.isType(a,Object)?a.compareTo(b):(a<b?-1:(a>b?1:0))}},add:function(a){var b=this._1(a,true);if(b===null)return;this._0.splice(b,0,a);this.length=this.size=this._0.length},_1:function(a,b){var c=this._0,d=c.length,e=0,f=d,g=this.klass.compare,h=JS.Enumerable.areEqual,i;if(d===0)return b?0:-1;if(g(a,c[0])<1){f=0;e=0}if(g(a,c[d-1])>0){f=0;e=d}while(!h(a,c[e])&&f>0.5){f=f/2;e+=(g(a,c[e])>0?1:-1)*Math.round(f);if(e>0&&g(a,c[e-1])>0&&g(a,c[e])<1)f=0}while(c[e]&&!h(a,c[e])&&g(a,c[e])===0)e+=1;i=h(a,c[e]);return b?(i?null:e):(i?e:-1)}});JS.HashSet=new JS.Class('HashSet',JS.Set,{forEach:function(a,b){if(!a)return this.enumFor('forEach');a=JS.Enumerable.toFn(a);this._0.forEachKey(a,b);return this},add:function(a){if(this.contains(a))return false;this._0.store(a,true);this.length=this.size=this._0.length;return true},clear:function(){this._0=new JS.Hash();this.size=this.length=0},contains:function(a){return this._0.hasKey(a)},rebuild:function(){this._0.rehash();this.length=this.size=this._0.length},remove:function(a){this._0.remove(a);this.length=this.size=this._0.length},removeIf:function(b,c){if(!b)return this.enumFor('removeIf');b=JS.Enumerable.toFn(b);this._0.removeIf(function(a){return b.call(c||null,a.key)});this.length=this.size=this._0.length;return this}});JS.Enumerable.include({toSet:function(a,b,c){a=a||JS.Set;return new a(this,b,c)}},true);
-JS.Observable=new JS.Module('Observable',{extend:{DEFAULT_METHOD:'update'},addObserver:function(c,b){(this.__observers__=this.__observers__||[]).push({_0:c,_1:b||null})},removeObserver:function(c,b){this.__observers__=this.__observers__||[];b=b||null;var a=this.countObservers();while(a--){if(this.__observers__[a]._0===c&&this.__observers__[a]._1===b){this.__observers__.splice(a,1);return}}},removeObservers:function(){this.__observers__=[]},countObservers:function(){return(this.__observers__=this.__observers__||[]).length},notifyObservers:function(){if(!this.isChanged())return;var c=this.countObservers(),b,a,d;while(c--){b=this.__observers__[c];a=b._0;d=b._1;if(JS.isFn(a))a.apply(d||null,arguments);else a[d||JS.Observable.DEFAULT_METHOD].apply(a,arguments)}},setChanged:function(c){this.__changed__=!(c===false)},isChanged:function(){if(this.__changed__===undefined)this.__changed__=true;return!!this.__changed__}});JS.Observable.include({subscribe:JS.Observable.instanceMethod('addObserver'),unsubscribe:JS.Observable.instanceMethod('removeObserver')},true);
-JS.Forwardable=new JS.Module('Forwardable',{defineDelegator:function(b,e,d,f){d=d||e;this.define(d,function(){var a=this[b],c=a[e];return JS.isFn(c)?c.apply(a,arguments):c},f!==false)},defineDelegators:function(){var a=JS.array(arguments),c=a.shift(),b=a.length;while(b--)this.defineDelegator(c,a[b],a[b],false);this.resolve()}});
-JS.ConstantScope=new JS.Module('ConstantScope',{extend:{included:function(a){a.__consts__=new JS.Module();a.extend(this.ClassMethods);a.include(a.__consts__);a.extend(a.__consts__);a.include(a.__mod__.__fns__);a.extend(a.__eigen__().__fns__)},ClassMethods:new JS.Module({extend:function(){var a=JS.ConstantScope.extract(arguments[0],this);this.__consts__.include(a);this.callSuper()},include:function(){var a=JS.ConstantScope.extract(arguments[0],this);this.__consts__.include(a);this.callSuper()}}),extract:function(a,e){if(!a)return null;if(JS.isType(a,JS.Module))return null;var d={},b,c;for(b in a){if(!/^[A-Z]/.test(b))continue;c=a[b];d[b]=c;delete a[b];if(JS.isType(c,JS.Module)){c.include(this);c.__consts__.include(e.__consts__)}}return d}}});
-JS.Decorator=new JS.Class('Decorator',{initialize:function(a,c){var b=new JS.Class(),f={},e,d;for(e in a.prototype){d=a.prototype[e];if(JS.isFn(d)&&d!==a)d=this.klass.delegate(e);f[e]=d}b.include(new JS.Module(f),false);b.include(this.klass.InstanceMethods,false);b.include(c,true);return b},extend:{delegate:function(a){return function(){return this.component[a].apply(this.component,arguments)}},InstanceMethods:new JS.Module({initialize:function(a){this.component=a;this.klass=this.constructor=a.klass;var c,b;for(c in a){if(this[c])continue;b=a[c];if(JS.isFn(b))b=JS.Decorator.delegate(c);this[c]=b}},extend:function(a){this.component.extend(a);var c,b;for(c in a){b=a[c];if(JS.isFn(b))b=JS.Decorator.delegate(c);this[c]=b}}})}});
-if(JS.Proxy===undefined)JS.Proxy={};JS.Proxy.Virtual=new JS.Class('Proxy.Virtual',{initialize:function(a){var g=function(){},e=new JS.Class(),h={},f,d;g.prototype=a.prototype;for(f in a.prototype){d=a.prototype[f];if(JS.isFn(d)&&d!==a)d=this.klass.forward(f);h[f]=d}e.include({initialize:function(){var c=arguments,b=null;this.__getSubject__=function(){b=new g;a.apply(b,c);return(this.__getSubject__=function(){return b})()}},klass:a,constructor:a},false);e.include(new JS.Module(h),false);e.include(this.klass.InstanceMethods,true);return e},extend:{forward:function(b){return function(){var c=this.__getSubject__();return c[b].apply(c,arguments)}},InstanceMethods:new JS.Module({extend:function(c){this.__getSubject__().extend(c);var b,a;for(b in c){a=c[b];if(JS.isFn(a))a=JS.Proxy.Virtual.forward(b);this[b]=a}}})}});
-JS.Command=new JS.Class('Command',{initialize:function(a){if(JS.isFn(a))a={execute:a};this._2=a;this._0=this._2.stack||null},execute:function(a){if(this._0)this._0._3();var b=this._2.execute;if(b)b.apply(this);if(this._0&&a!==false)this._0.push(this)},undo:function(){var exec=this._2.undo;if(exec)exec.apply(this)},extend:{Stack:new JS.Class({include:[JS.Observable||{},JS.Enumerable||{}],initialize:function(a){a=a||{};this._1=a.redo||null;this.clear()},forEach:function(a,b){if(!a)return this.enumFor('forEach');a=JS.Enumerable.toFn(a);for(var c=0,d=this._0.length;c<d;c++){if(this._0[c]!==undefined)a.call(b||null,this._0[c],c)}return this},clear:function(){this._0=[];this.length=this.pointer=0},_3:function(){if(this.pointer===0&&this._1&&this._1.execute)this._1.execute()},push:function(a){this._0.splice(this.pointer,this.length);this._0.push(a);this.length=this.pointer=this._0.length;if(this.notifyObservers)this.notifyObservers(this)},stepTo:function(a){if(a<0||a>this.length)return;var b,c;switch(true){case a>this.pointer:for(b=this.pointer,c=a;b<c;b++)this._0[b].execute(false);break;case a<this.pointer:if(this._1&&this._1.execute){this._1.execute();for(b=0,c=a;b<c;b++)this._0[b].execute(false)}else{for(b=0,c=this.pointer-a;b<c;b++)this._0[this.pointer-b-1].undo()}break}this.pointer=a;if(this.notifyObservers)this.notifyObservers(this)},undo:function(){this.stepTo(this.pointer-1)},redo:function(){this.stepTo(this.pointer+1)}})}});
-JS.State=new JS.Module('State',{__getState__:function(a){return(typeof a==='object'&&a)||(typeof a==='string'&&((this.states||{})[a]||{}))||{}},setState:function(a){this.__state__=this.__getState__(a);JS.State.addMethods(this.__state__,this.klass)},inState:function(){var a=arguments.length;while(a--){if(this.__state__===this.__getState__(arguments[a]))return true}return false},extend:{stub:function(){return this},buildStubs:function(a,b,c){var d,e;for(d in c){b[d]={};for(e in c[d])a[e]=this.stub}},findStates:function(a,b){var c=a.length,d=[];while(c--){if(a[c].hasOwnProperty(b))d.push(a[c][b])}return d},buildCollection:function(a,b){var c={},d={},e=a.lookup('states'),h,g,j,i,k,f,l;this.buildStubs(c,d,b);for(f=0,l=e.length;f<l;f++)this.buildStubs(c,d,e[f]);for(h in d){g=new JS.Class(b[h]);k=this.findStates(e,h);f=k.length;while(f--)g.include(k[f].klass);j={};for(i in c){if(!g.prototype[i])j[i]=c[i]}g.include(j);d[h]=new g}if(a.__res__)this.addMethods(c,a.__res__.klass);return d},addMethods:function(a,b){if(!b)return;var c={},d=b.prototype,e;for(e in a){if(d[e])continue;d[e]=b.__mod__.__fns__[e]=this.wrapped(e)}},wrapped:function(b){return function(){var a=(this.__state__||{})[b];return a?a.apply(this,arguments):this}}}});JS.Module.include({define:(function(c){return function(a,b){if(a==='states'&&typeof b==='object')arguments[1]=JS.State.buildCollection(this,b);return c.apply(this,arguments)}})(JS.Module.prototype.define)},true);
-JS.StackTrace=new JS.Module('StackTrace',{extend:{included:function(h){var f=h.__mod__||h,b=this,d;f.extend({define:function(a,c){if(!JS.isFn(c))return this.callSuper();var g=b.wrap(c,f,a);return this.callSuper(a,g)}});for(d in f.__fns__)f.define(d,f.__fns__[d],false);f.resolve();if(!f.__nom__)setTimeout(function(){f.__nom__=b.nameOf(h)},1)},nameOf:function(a,c){var g=[],h,f,b,d;if(JS.isType(a,Array)){for(h=0,f=a.length;h<f;h++)g.push(this.nameOf(a[h]));return g}if(a.__nom__)return a.__nom__;b=[{name:null,o:c||this.root}];d=0;while(typeof b==='object'&&d<this.maxDepth){d+=1;b=this.descend(b,a)}if(typeof b=='string'){b=b.replace(/\.prototype\./g,'#');a.__nom__=b;if(a.__meta__)a.__meta__.__nom__=b+'.__meta__'}return a.__nom__},descend:function(a,c){var g=[],h=a.length,f=h,b,d,i;while(f--){d=a[f];if(h>1&&JS.indexOf(this.excluded,d.o)!==-1)continue;if(JS.isType(d.o,Array))continue;i=d.name?d.name+'.':'';for(b in d.o){if(c&&d.o[b]===c)return i+b;g.push({name:i+b,o:d.o[b]})}}return g},root:this,excluded:[],maxDepth:8,logLevel:'full',stack:new JS.Singleton({_0:[],indent:function(){var a='',c=this._0.length;while(c--)a+='|  ';return a},push:function(a,c,g){if(JS.StackTrace.logLevel==='full')window.console&&console.log(this.indent()+a+'(',g,')');this._0.push({name:a,object:c,args:g})},pop:function(a){var c=this._0.pop().name;if(JS.StackTrace.logLevel==='full')window.console&&console.log(this.indent()+c+'() --> ',a);return c},top:function(){return this._0[this._0.length-1]||{}},backtrace:function(){var a=this._0.length,c;while(a--){c=this._0[a];window.console&&console.log(c.name,'in',c.object,'(',c.args,')')}}}),flush:function(){this.stack._0=[]},print:function(){this.stack.backtrace()},wrap:function(g,h,f){var b=JS.StackTrace;var d=function(){var a,c=b.nameOf(h)+'#'+f;b.stack.push(c,this,arguments);if(b.logLevel==='errors'){try{a=g.apply(this,arguments)}catch(e){if(e.logged)throw e;e.logged=true;window.console&&console.error(e,'thrown by',b.stack.top().name+'. Backtrace:');b.print();b.flush();throw e;}}else{a=g.apply(this,arguments)}b.stack.pop(a);return a};d.toString=function(){return g.toString()};return d}}});(function(){var a=JS.StackTrace,c;for(c in a.root){if(c!=='JS')a.excluded.push(a.root[c])}})();
-JS.Ruby=function(d,b){b.call(new JS.Ruby.ClassBuilder(d))};JS.extend(JS.Ruby,{extendDSL:function(d,b){for(var a in b){if(d[a]||!JS.isFn(b[a]))continue;this.addMethod(d,b,a)}},addMethod:function(b,a,c){b[c]=function(){var d=a[c].apply(a,arguments);JS.Ruby.extendDSL(b,a);return d}},alias:function(c,e){return function(d,b){var a=c[b];if(a!==undefined)this.def(d,a);if(e)JS.Ruby.extendDSL(e,c)}},ClassBuilder:function(c){this.def=c.method('define');this.alias=JS.Ruby.alias(c.prototype);this.self={def:JS.bind(function(d,b){var a={};a[d]=b;c.extend(a);JS.Ruby.extendDSL(this,c)},this),alias:JS.Ruby.alias(c,this)};JS.Ruby.extendDSL(this,c)}});
+JS.MethodChain = function(base) {
+  var queue      = [],
+      baseObject = base || {};
+  
+  this.____ = function(method, args) {
+    queue.push({func: method, args: args});
+  };
+  
+  this.fire = function(base) {
+    return JS.MethodChain.fire(queue, base || baseObject);
+  };
+};
+
+JS.MethodChain.fire = function(queue, object) {
+  var method, property, i, n;
+  loop: for (i = 0, n = queue.length; i < n; i++) {
+    method = queue[i];
+    if (object instanceof JS.MethodChain) {
+      object.____(method.func, method.args);
+      continue;
+    }
+    switch (typeof method.func) {
+      case 'string':    property = object[method.func];       break;
+      case 'function':  property = method.func;               break;
+      case 'object':    object = method.func; continue loop;  break;
+    }
+    object = (typeof property === 'function')
+        ? property.apply(object, method.args)
+        : property;
+  }
+  return object;
+};
+
+JS.MethodChain.prototype = {
+  _: function() {
+    var base = arguments[0],
+        args, i, n;
+    
+    switch (typeof base) {
+      case 'object': case 'function':
+        args = [];
+        for (i = 1, n = arguments.length; i < n; i++) args.push(arguments[i]);
+        this.____(base, args);
+    }
+    return this;
+  },
+  
+  toFunction: function() {
+    var chain = this;
+    return function(object) { return chain.fire(object); };
+  }
+};
+
+JS.MethodChain.reserved = (function() {
+  var names = [], key;
+  for (key in new JS.MethodChain) names.push(key);
+  return new RegExp('^(?:' + names.join('|') + ')$');
+})();
+
+JS.MethodChain.addMethod = function(name) {
+  if (this.reserved.test(name)) return;
+  var func = this.prototype[name] = function() {
+    this.____(name, arguments);
+    return this;
+  };
+  func.displayName = 'MethodChain#' + name;
+};
+
+JS.MethodChain.displayName = 'MethodChain';
+
+JS.MethodChain.addMethods = function(object) {
+  var methods = [], property, i;
+  
+  for (property in object)
+    Number(property) !== property && methods.push(property);
+  
+  if (object instanceof Array) {
+    i = object.length;
+    while (i--)
+      typeof object[i] === 'string' && methods.push(object[i]);
+  }
+  i = methods.length;
+  while (i--) this.addMethod(methods[i]);
+  
+  object.__fns__ && this.addMethods(object.__fns__);
+  object.prototype && this.addMethods(object.prototype);
+};
+
+it = its = function() { return new JS.MethodChain; };
+
+JS.Module.methodAdded(function(name) {
+  JS.MethodChain.addMethod(name);
+});
+
+JS.Kernel.include({
+  wait: function(time) {
+    var chain = new JS.MethodChain;
+    
+    typeof time === 'number' &&
+      setTimeout(chain.fire.bind(chain, this), time * 1000);
+    
+    this.forEach && typeof time === 'function' &&
+      this.forEach(function() {
+        setTimeout(chain.fire.bind(chain, arguments[0]), time.apply(this, arguments) * 1000);
+      });
+    
+    return chain;
+  },
+  
+  _: function() {
+    var base = arguments[0],
+        args = [],
+        i, n;
+    
+    for (i = 1, n = arguments.length; i < n; i++) args.push(arguments[i]);
+    return  (typeof base === 'object' && base) ||
+            (typeof base === 'function' && base.apply(this, args)) ||
+            this;
+  }
+}, true);
+
+(function() {
+  var queue = JS.Module.__chainq__,
+      n     = queue.length;
+  
+  while (n--) JS.MethodChain.addMethods(queue[n]);
+  JS.Module.__chainq__ = null;
+})();
+
+JS.MethodChain.addMethods([
+  "abbr", "abs", "accept", "acceptCharset", "accesskey", "acos", "action", "addEventListener", 
+  "adjacentNode", "align", "alignWithTop", "alink", "alt", "anchor", "appendChild", "appendedNode", 
+  "apply", "archive", "arguments", "arity", "asin", "atan", "atan2", "attrNode", "attributes", 
+  "axis", "background", "bgcolor", "big", "blink", "blur", "bold", "border", "call", "caller", 
+  "ceil", "cellpadding", "cellspacing", "char", "charAt", "charCodeAt", "charoff", "charset", 
+  "checked", "childNodes", "cite", "className", "classid", "clear", "click", "clientHeight", 
+  "clientLeft", "clientTop", "clientWidth", "cloneNode", "code", "codebase", "codetype", "color", 
+  "cols", "colspan", "compact", "concat", "content", "coords", "cos", "data", "datetime", "declare", 
+  "deep", "defer", "dir", "disabled", "dispatchEvent", "enctype", "event", "every", "exec", "exp", 
+  "face", "filter", "firstChild", "fixed", "floor", "focus", "fontcolor", "fontsize", "forEach", 
+  "frame", "frameborder", "fromCharCode", "getAttribute", "getAttributeNS", "getAttributeNode", 
+  "getAttributeNodeNS", "getDate", "getDay", "getElementsByTagName", "getElementsByTagNameNS", 
+  "getFullYear", "getHours", "getMilliseconds", "getMinutes", "getMonth", "getSeconds", "getTime", 
+  "getTimezoneOffset", "getUTCDate", "getUTCDay", "getUTCFullYear", "getUTCHours", 
+  "getUTCMilliseconds", "getUTCMinutes", "getUTCMonth", "getUTCSeconds", "getYear", "global", 
+  "handler", "hasAttribute", "hasAttributeNS", "hasAttributes", "hasChildNodes", "hasOwnProperty", 
+  "headers", "height", "href", "hreflang", "hspace", "htmlFor", "httpEquiv", "id", "ignoreCase", 
+  "index", "indexOf", "innerHTML", "input", "insertBefore", "insertedNode", "isPrototypeOf", "ismap", 
+  "italics", "join", "label", "lang", "language", "lastChild", "lastIndex", "lastIndexOf", "length", 
+  "link", "listener", "localName", "log", "longdesc", "map", "marginheight", "marginwidth", "match", 
+  "max", "maxlength", "media", "method", "min", "multiline", "multiple", "name", "namespace", 
+  "namespaceURI", "nextSibling", "node", "nodeName", "nodeType", "nodeValue", "nohref", "noresize", 
+  "normalize", "noshade", "now", "nowrap", "object", "offsetHeight", "offsetLeft", "offsetParent", 
+  "offsetTop", "offsetWidth", "onblur", "onchange", "onclick", "ondblclick", "onfocus", "onkeydown", 
+  "onkeypress", "onkeyup", "onload", "onmousedown", "onmousemove", "onmouseout", "onmouseover", 
+  "onmouseup", "onreset", "onselect", "onsubmit", "onunload", "ownerDocument", "parentNode", "parse", 
+  "pop", "pow", "prefix", "previousSibling", "profile", "prompt", "propertyIsEnumerable", "push", 
+  "random", "readonly", "reduce", "reduceRight", "rel", "removeAttribute", "removeAttributeNS", 
+  "removeAttributeNode", "removeChild", "removeEventListener", "removedNode", "replace", 
+  "replaceChild", "replacedNode", "rev", "reverse", "round", "rows", "rowspan", "rules", "scheme", 
+  "scope", "scrollHeight", "scrollIntoView", "scrollLeft", "scrollTop", "scrollWidth", "scrolling", 
+  "search", "selected", "setAttribute", "setAttributeNS", "setAttributeNode", "setAttributeNodeNS", 
+  "setDate", "setFullYear", "setHours", "setMilliseconds", "setMinutes", "setMonth", "setSeconds", 
+  "setTime", "setUTCDate", "setUTCFullYear", "setUTCHours", "setUTCMilliseconds", "setUTCMinutes", 
+  "setUTCMonth", "setUTCSeconds", "setYear", "shape", "shift", "sin", "size", "slice", "small", 
+  "some", "sort", "source", "span", "splice", "split", "sqrt", "src", "standby", "start", "strike", 
+  "style", "sub", "substr", "substring", "summary", "sup", "tabIndex", "tabindex", "tagName", "tan", 
+  "target", "test", "text", "textContent", "title", "toArray", "toFunction", "toGMTString", 
+  "toLocaleDateString", "toLocaleFormat", "toLocaleString", "toLocaleTimeString", "toLowerCase", 
+  "toSource", "toString", "toUTCString", "toUpperCase", "type", "unshift", "unwatch", "useCapture", 
+  "usemap", "valign", "value", "valueOf", "valuetype", "version", "vlink", "vspace", "watch", "width"
+]);
+
+
+JS.Package = new JS.Class('Package', {
+  initialize: function(loader) {
+    this._loader  = loader;
+    this._deps    = [];
+    this._uses    = [];
+    this._names   = [];
+    this._waiters = [];
+    this._loading = false;
+  },
+  
+  addDependency: function(pkg) {
+    if (JS.indexOf(this._deps, pkg) === -1) this._deps.push(pkg);
+  },
+  
+  addSoftDependency: function(pkg) {
+    if (JS.indexOf(this._uses, pkg) === -1) this._uses.push(pkg);
+  },
+  
+  _getPackage: function(list, index) {
+    var pkg = list[index];
+    if (typeof pkg === 'string') pkg = list[index] = this.klass.getByName(pkg);
+    return pkg;
+  },
+  
+  addName: function(name) {
+    if (JS.indexOf(this._names, name) !== -1) return;
+    this._names.push(name);
+    this.klass.getFromCache(name).pkg = this;
+  },
+  
+  depsComplete: function(deps) {
+    deps = deps || this._deps;
+    var n = deps.length, dep;
+    while (n--) {
+      if (!this._getPackage(deps, n).isComplete()) return false;
+    }
+    return true;
+  },
+  
+  isComplete: function() {
+    return this.isLoaded() &&
+           this.depsComplete(this._deps) &&
+           this.depsComplete(this._uses);
+  },
+  
+  isLoaded: function(withExceptions) {
+    if (this._isLoaded) return true;
+    
+    var names = this._names,
+        n     = names.length,
+        object;
+    
+    while (n--) {
+      object = this.klass.getObject(names[n]);
+      if (object !== undefined) continue;
+      if (withExceptions)
+        throw new Error('Expected package at ' + this._loader + ' to define ' + names[n]);
+      else
+        return false;
+    }
+    return this._isLoaded = true;
+  },
+  
+  readyToLoad: function() {
+    return !this.isLoaded() && this.depsComplete();
+  },
+  
+  expand: function(list) {
+    var deps = list || [], dep, n;
+    
+    n = this._deps.length;
+    while (n--) this._getPackage(this._deps, n).expand(deps);
+    
+    if (JS.indexOf(deps, this) === -1) deps.push(this);
+    
+    n = this._uses.length;
+    while (n--) this._getPackage(this._uses, n).expand(deps);
+    
+    return deps;
+  },
+  
+  onload: function(block) {
+    this._onload = block;
+  },
+  
+  load: function(callback, context) {
+    if (this._loader === undefined)
+      throw new Error('No load path specified for ' + this._names.join(', '));
+    
+    var self = this, handler, fireCallbacks;
+    
+    handler = function() {
+      self._loading = false;
+      callback.call(context || null);
+    };
+    
+    if (this.isLoaded()) return setTimeout(handler, 1);
+    
+    this._waiters.push(handler);
+    if (this._loading) return;
+    
+    fireCallbacks = function() {
+      if (JS.isFn(self._onload)) self._onload();
+      self.isLoaded(true);
+      for (var i = 0, n = self._waiters.length; i < n; i++) self._waiters[i]();
+      self._waiters = [];
+    };
+    
+    this._loading = true;
+    
+    JS.isFn(this._loader)
+        ? this._loader(fireCallbacks)
+        : this.klass.Loader.loadFile(this._loader, fireCallbacks);
+  },
+  
+  toString: function() {
+    return 'Package:' + this._names[0];
+  },
+  
+  extend: {
+    _store:   {},
+    _cache:   {},
+    _env:     this,
+    
+    getByPath: function(loader) {
+      var path = loader.toString();
+      return this._store[path] || (this._store[path] = new this(loader));
+    },
+    
+    getFromCache: function(name) {
+      return this._cache[name] = this._cache[name] || {};
+    },
+    
+    getByName: function(name) {
+      var cached = this.getFromCache(name);
+      if (cached.pkg) return cached.pkg;
+      
+      var placeholder = new this();
+      placeholder.addName(name);
+      return placeholder;
+    },
+    
+    getObject: function(name) {
+      var cached = this.getFromCache(name);
+      if (cached.obj !== undefined) return cached.obj;
+      
+      var object = this._env,
+          parts  = name.split('.'), part;
+      
+      while (part = parts.shift()) object = object && object[part];
+      
+      return this.getFromCache(name).obj = object;
+    },
+    
+    expand: function(list) {
+      var packages = [], i, n;
+      for (i = 0, n = list.length; i < n; i++)
+        list[i].expand(packages);
+      return packages;
+    },
+    
+    load: function(list, counter, callback) {
+      var ready    = [],
+          deferred = [],
+          n        = list.length,
+          pkg;
+      
+      while (n--) {
+        pkg = list[n];
+        if (pkg.isComplete())
+          counter -= 1;
+        else
+          (pkg.readyToLoad() ? ready : deferred).push(pkg);
+      }
+      
+      if (counter === 0) return callback();
+      
+      n = ready.length;
+      while (n--) ready[n].load(function() {
+        this.load(deferred, --counter, callback);
+      }, this);
+    }
+  }
+});
+
+
+JS.Package.extend({
+  DomLoader: {
+    usable: function() {
+      return !!JS.Package.getObject('window.document.getElementsByTagName');
+    },
+    
+    __FILE__: function() {
+      var scripts = document.getElementsByTagName('script');
+      return scripts[scripts.length - 1].src;
+    },
+    
+    loadFile: function(path, fireCallbacks) {
+      var self = this,
+          tag = document.createElement('script');
+      
+      tag.type = 'text/javascript';
+      tag.src = path;
+      
+      tag.onload = tag.onreadystatechange = function() {
+        var state = tag.readyState, status = tag.status;
+        if ( !state || state === 'loaded' || state === 'complete' || (state === 4 && status === 200) ) {
+          fireCallbacks();
+          tag.onload = tag.onreadystatechange = self._K;
+          tag = null;
+        }
+      };
+      window.console && console.info('Loading ' + path);
+      document.getElementsByTagName('head')[0].appendChild(tag);
+    },
+    
+    _K: function() {}
+  },
+  
+  ServerLoader: {
+    usable: function() {
+      return JS.isFn(JS.Package.getObject('load')) &&
+             JS.isFn(JS.Package.getObject('version'));
+    },
+    
+    setup: function() {
+      var self = this;
+      load = (function(origLoad) {
+        return function() {
+          self._currentPath = arguments[0];
+          return origLoad.apply(JS.Package._env, arguments);
+        };
+      })(load);
+    },
+    
+    __FILE__: function() {
+      return this._currentPath;
+    },
+    
+    loadFile: function(path, fireCallbacks) {
+      load(path);
+      fireCallbacks();
+    }
+  }
+});
+
+(function() {
+  var candidates = [  JS.Package.DomLoader,
+                      JS.Package.ServerLoader ],
+      
+      n = candidates.length,
+      i, candidate;
+  
+  for (i = 0; i < n; i++) {
+    candidate = candidates[i];
+    if (candidate.usable()) {
+      JS.Package.Loader = candidate;
+      if (candidate.setup) candidate.setup();
+      break;
+    }
+  }
+})();
+
+
+JS.Package.extend({
+  DSL: {
+    __FILE__: function() {
+      return JS.Package.Loader.__FILE__();
+    },
+    
+    pkg: function(name, path) {
+      var pkg = path
+          ? JS.Package.getByPath(path)
+          : JS.Package.getByName(name);
+      pkg.addName(name);
+      return new JS.Package.Description(pkg);
+    },
+    
+    file: function(path) {
+      var pkg = JS.Package.getByPath(path);
+      return new JS.Package.Description(pkg);
+    },
+    
+    load: function(path, fireCallbacks) {
+      JS.Package.Loader.loadFile(path, fireCallbacks);
+    }
+  },
+  
+  Description: new JS.Class({
+    initialize: function(pkg) {
+      this._pkg = pkg;
+    },
+    
+    _batch: function(method, args) {
+      var n = args.length, method = this._pkg[method], i;
+      for (i = 0; i < n; i++) method.call(this._pkg, args[i]);
+      return this;
+    },
+    
+    provides: function() {
+      return this._batch('addName', arguments);
+    },
+    
+    requires: function() {
+      return this._batch('addDependency', arguments);
+    },
+    
+    uses: function() {
+      return this._batch('addSoftDependency', arguments);
+    },
+    
+    setup: function(block) {
+      this._pkg.onload(block);
+      return this;
+    }
+  })
+});
+
+JS.Package.DSL.loader = JS.Package.DSL.file;
+
+JS.Packages = function(declaration) {
+  declaration.call(JS.Package.DSL);
+};
+ 
+JS.require = function() {
+  var args         = JS.array(arguments),
+      requirements = [];
+  
+  while (typeof args[0] === 'string') requirements.push(JS.Package.getByName(args.shift()));
+  requirements = JS.Package.expand(requirements);
+  
+  var fired = false, handler = function() {
+    if (fired) return;
+    fired = true;
+    args[0] && args[0].call(args[1] || null);
+  };
+  
+  JS.Package.load(requirements, requirements.length, handler);
+};
+
+require = JS.require;
+
+
+JS.Comparable = new JS.Module('Comparable', {
+  extend: {
+    ClassMethods: new JS.Module({
+      compare: function(one, another) {
+        return one.compareTo(another);
+      }
+    }),
+    
+    included: function(base) {
+      base.extend(this.ClassMethods);
+    }
+  },
+  
+  lt: function(other) {
+    return this.compareTo(other) < 0;
+  },
+  
+  lte: function(other) {
+    return this.compareTo(other) < 1;
+  },
+  
+  gt: function(other) {
+    return this.compareTo(other) > 0;
+  },
+  
+  gte: function(other) {
+    return this.compareTo(other) > -1;
+  },
+  
+  eq: function(other) {
+    return this.compareTo(other) === 0;
+  },
+  
+  between: function(a, b) {
+    return this.gte(a) && this.lte(b);
+  }
+});
+
+
+JS.Enumerable = new JS.Module('Enumerable', {
+  extend: {
+    forEach: function(block, context) {
+      if (!block) return new JS.Enumerator(this, 'forEach');
+      for (var i = 0, n = this.length; i < n; i++) {
+        if (this[i] !== undefined)
+          block.call(context || null, this[i]);
+      }
+      return this;
+    },
+    
+    isComparable: function(list) {
+      return list.all(function(item) { return JS.isFn(item.compareTo) });
+    },
+    
+    areEqual: function(one, another) {
+      return one.equals
+          ? one.equals(another)
+          : (one === another);
+    },
+    
+    Collection: new JS.Class({
+      initialize: function(array) {
+        this.length = 0;
+        var push = Array.prototype.push;
+        JS.Enumerable.forEach.call(array, function(item) {
+          push.call(this, item);
+        }, this);
+      }
+    })
+  },
+  
+  all: function(block, context) {
+    block = JS.Enumerable.toFn(block);
+    var truth = true;
+    this.forEach(function(item) {
+      truth = truth && (block ? block.apply(context || null, arguments) : item);
+    });
+    return !!truth;
+  },
+  
+  any: function(block, context) {
+    block = JS.Enumerable.toFn(block);
+    var truth = false;
+    this.forEach(function(item) {
+      truth = truth || (block ? block.apply(context || null, arguments) : item);
+    });
+    return !!truth;
+  },
+  
+  count: function(block, context) {
+    if (JS.isFn(this.size)) return this.size();
+    var count = 0, object = block;
+    
+    if (block && !JS.isFn(block))
+      block = function(x) { return JS.Enumerable.areEqual(x, object) };
+    
+    this.forEach(function() {
+      if (!block || block.apply(context || null, arguments))
+        count += 1;
+    });
+    return count;
+  },
+  
+  cycle: function(n, block, context) {
+    if (!block) return this.enumFor('cycle', n);
+    block = JS.Enumerable.toFn(block);
+    while (n--) this.forEach(block, context);
+  },
+  
+  drop: function(n) {
+    var entries = [];
+    this.forEachWithIndex(function(item, i) {
+      if (i >= n) entries.push(item);
+    });
+    return entries;
+  },
+  
+  dropWhile: function(block, context) {
+    if (!block) return this.enumFor('dropWhile');
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = [],
+        drop    = true;
+    
+    this.forEach(function(item) {
+      if (drop) drop = drop && block.apply(context || null, arguments);
+      if (!drop) entries.push(item);
+    });
+    return entries;
+  },
+  
+  forEachCons: function(n, block, context) {
+    if (!block) return this.enumFor('forEachCons', n);
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = this.toArray(),
+        size    = entries.length,
+        limit   = size - n,
+        i;
+    
+    for (i = 0; i <= limit; i++)
+      block.call(context || null, entries.slice(i, i+n));
+    
+    return this;
+  },
+  
+  forEachSlice: function(n, block, context) {
+    if (!block) return this.enumFor('forEachSlice', n);
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = this.toArray(),
+        size    = entries.length,
+        m       = Math.ceil(size/n),
+        i;
+    
+    for (i = 0; i < m; i++)
+      block.call(context || null, entries.slice(i*n, (i+1)*n));
+    
+    return this;
+  },
+  
+  forEachWithIndex: function(offset, block, context) {
+    if (JS.isFn(offset)) {
+      context = block;
+      block   = offset;
+      offset  = 0;
+    }
+    offset = offset || 0;
+    
+    if (!block) return this.enumFor('forEachWithIndex', offset);
+    block = JS.Enumerable.toFn(block);
+    
+    return this.forEach(function(item) {
+      var result = block.call(context || null, item, offset);
+      offset += 1;
+      return result;
+    });
+  },
+  
+  forEachWithObject: function(object, block, context) {
+    if (!block) return this.enumFor('forEachWithObject', object);
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function() {
+      var args = [object].concat(JS.array(arguments));
+      block.apply(context || null, args);
+    });
+    return object;
+  },
+  
+  find: function(block, context) {
+    if (!block) return this.enumFor('find');
+    block = JS.Enumerable.toFn(block);
+    
+    var needle = {}, K = needle;
+    this.forEach(function(item) {
+      if (needle !== K) return;
+      needle = block.apply(context || null, arguments) ? item : needle;
+    });
+    return needle === K ? null : needle;
+  },
+  
+  findIndex: function(needle, context) {
+    if (needle === undefined) return this.enumFor('findIndex');
+    
+    var index = null,
+        block = JS.isFn(needle);
+    
+    this.forEachWithIndex(function(item, i) {
+      if (index !== null) return;
+      if (JS.Enumerable.areEqual(needle, item) || (block && needle.apply(context || null, arguments)))
+        index = i;
+    });
+    return index;
+  },
+  
+  first: function(n) {
+    var entries = this.toArray();
+    return (n === undefined) ? entries[0] : entries.slice(0,n);
+  },
+  
+  grep: function(pattern, block, context) {
+    block = JS.Enumerable.toFn(block);
+    var results = [];
+    this.forEach(function(item) {
+      var match = JS.isFn(pattern.match) ? pattern.match(item) : pattern(item);
+      if (!match) return;
+      if (block) item = block.apply(context || null, arguments);
+      results.push(item);
+    });
+    return results;
+  },
+  
+  groupBy: function(block, context) {
+    if (!block) return this.enumFor('groupBy');
+    block = JS.Enumerable.toFn(block);
+    
+    var hash = new JS.Hash();
+    this.forEach(function(item) {
+      var value = block.apply(context || null, arguments);
+      if (!hash.hasKey(value)) hash.store(value, []);
+      hash.get(value).push(item);
+    });
+    return hash;
+  },
+  
+  inject: function(memo, block, context) {
+    var args    = JS.array(arguments),
+        counter = 0,
+        K       = {};
+    
+    switch (args.length) {
+      case 1:   memo      = K;
+                block     = args[0];
+                break;
+      
+      case 2:   if (JS.isFn(memo)) {
+                  memo    = K;
+                  block   = args[0];
+                  context = args[1];
+                }
+    }
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(item) {
+      if (!counter++ && memo === K) return memo = item;
+      var args = [memo].concat(JS.array(arguments));
+      memo = block.apply(context || null, args);
+    });
+    return memo;
+  },
+  
+  map: function(block, context) {
+    if (!block) return this.enumFor('map');
+    block = JS.Enumerable.toFn(block);
+    
+    var map = [];
+    this.forEach(function() {
+      map.push(block.apply(context || null, arguments));
+    });
+    return map;
+  },
+  
+  max: function(block, context) {
+    return this.minmax(block, context)[1];
+  },
+  
+  maxBy: function(block, context) {
+    if (!block) return this.enumFor('maxBy');
+    return this.minmaxBy(block, context)[1];
+  },
+  
+  member: function(needle) {
+    return this.any(function(item) { return JS.Enumerable.areEqual(item, needle) });
+  },
+  
+  min: function(block, context) {
+    return this.minmax(block, context)[0];
+  },
+  
+  minBy: function(block, context) {
+    if (!block) return this.enumFor('minBy');
+    return this.minmaxBy(block, context)[0];
+  },
+  
+  minmax: function(block, context) {
+    var list = this.sort(block, context);
+    return [list[0], list[list.length - 1]];
+  },
+  
+  minmaxBy: function(block, context) {
+    if (!block) return this.enumFor('minmaxBy');
+    var list = this.sortBy(block, context);
+    return [list[0], list[list.length - 1]];
+  },
+  
+  none: function(block, context) {
+    return !this.any(block, context);
+  },
+  
+  one: function(block, context) {
+    block = JS.Enumerable.toFn(block);
+    var count = 0;
+    this.forEach(function(item) {
+      if (block ? block.apply(context || null, arguments) : item) count += 1;
+    });
+    return count === 1;
+  },
+  
+  partition: function(block, context) {
+    if (!block) return this.enumFor('partition');
+    block = JS.Enumerable.toFn(block);
+    
+    var ayes = [], noes = [];
+    this.forEach(function(item) {
+      (block.apply(context || null, arguments) ? ayes : noes).push(item);
+    });
+    return [ayes, noes];
+  },
+  
+  reject: function(block, context) {
+    if (!block) return this.enumFor('reject');
+    block = JS.Enumerable.toFn(block);
+    
+    var map = [];
+    this.forEach(function(item) {
+      if (!block.apply(context || null, arguments)) map.push(item);
+    });
+    return map;
+  },
+  
+  reverseForEach: function(block, context) {
+    if (!block) return this.enumFor('reverseForEach');
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = this.toArray(),
+        n       = entries.length;
+    
+    while (n--) block.call(context || null, entries[n]);
+    return this;
+  },
+  
+  select: function(block, context) {
+    if (!block) return this.enumFor('select');
+    block = JS.Enumerable.toFn(block);
+    
+    var map = [];
+    this.forEach(function(item) {
+      if (block.apply(context || null, arguments)) map.push(item);
+    });
+    return map;
+  },
+  
+  sort: function(block, context) {
+    var comparable = JS.Enumerable.isComparable(this),
+        entries    = this.toArray();
+    
+    block = block || (comparable
+        ? function(a,b) { return a.compareTo(b); }
+        : null);
+    return block
+        ? entries.sort(function(a,b) { return block.call(context || null, a, b); })
+        : entries.sort();
+  },
+  
+  sortBy: function(block, context) {
+    if (!block) return this.enumFor('sortBy');
+    block = JS.Enumerable.toFn(block);
+    
+    var util       = JS.Enumerable,
+        map        = new util.Collection(this.map(block, context)),
+        comparable = util.isComparable(map);
+    
+    return new util.Collection(map.zip(this).sort(function(a, b) {
+      a = a[0]; b = b[0];
+      return comparable ? a.compareTo(b) : (a < b ? -1 : (a > b ? 1 : 0));
+    })).map(function(item) { return item[1]; });
+  },
+  
+  take: function(n) {
+    var entries = [];
+    this.forEachWithIndex(function(item, i) {
+      if (i < n) entries.push(item);
+    });
+    return entries;
+  },
+  
+  takeWhile: function(block, context) {
+    if (!block) return this.enumFor('takeWhile');
+    block = JS.Enumerable.toFn(block);
+    
+    var entries = [],
+        take    = true;
+    this.forEach(function(item) {
+      if (take) take = take && block.apply(context || null, arguments);
+      if (take) entries.push(item);
+    });
+    return entries;
+  },
+  
+  toArray: function() {
+    return this.drop(0);
+  },
+  
+  zip: function() {
+    var util    = JS.Enumerable,
+        args    = [],
+        counter = 0,
+        n       = arguments.length,
+        block, context;
+    
+    if (JS.isFn(arguments[n-1])) {
+      block = arguments[n-1]; context = {};
+    }
+    if (JS.isFn(arguments[n-2])) {
+      block = arguments[n-2]; context = arguments[n-1];
+    }
+    util.forEach.call(arguments, function(arg) {
+      if (arg === block || arg === context) return;
+      if (arg.toArray) arg = arg.toArray();
+      if (JS.isType(arg, Array)) args.push(arg);
+    });
+    var results = this.map(function(item) {
+      var zip = [item];
+      util.forEach.call(args, function(arg) {
+        zip.push(arg[counter] === undefined ? null : arg[counter]);
+      });
+      return ++counter && zip;
+    });
+    if (!block) return results;
+    util.forEach.call(results, block, context);
+  }
+});
+  
+// http://developer.mozilla.org/en/docs/index.php?title=Core_JavaScript_1.5_Reference:Global_Objects:Array&oldid=58326
+JS.Enumerable.include({
+  forEach:    JS.Enumerable.forEach,
+  collect:    JS.Enumerable.instanceMethod('map'),
+  detect:     JS.Enumerable.instanceMethod('find'),
+  entries:    JS.Enumerable.instanceMethod('toArray'),
+  every:      JS.Enumerable.instanceMethod('all'),
+  findAll:    JS.Enumerable.instanceMethod('select'),
+  filter:     JS.Enumerable.instanceMethod('select'),
+  some:       JS.Enumerable.instanceMethod('any'),
+  
+  extend: {
+    toFn: function(object) {
+      if (!object) return object;
+      if (object.toFunction) return object.toFunction();
+      if (this.OPS[object]) return this.OPS[object];
+      if (JS.isType(object, 'string') || JS.isType(object, String))
+        return function() {
+          var args   = JS.array(arguments),
+              target = args.shift(),
+              method = target[object];
+          return JS.isFn(method) ? method.apply(target, args) : method;
+        };
+      return object;
+    },
+    
+    OPS: {
+      '+':    function(a,b) { return a + b },
+      '-':    function(a,b) { return a - b },
+      '*':    function(a,b) { return a * b },
+      '/':    function(a,b) { return a / b },
+      '%':    function(a,b) { return a % b },
+      '^':    function(a,b) { return a ^ b },
+      '&':    function(a,b) { return a & b },
+      '&&':   function(a,b) { return a && b },
+      '|':    function(a,b) { return a | b },
+      '||':   function(a,b) { return a || b },
+      '==':   function(a,b) { return a == b },
+      '!=':   function(a,b) { return a != b },
+      '>':    function(a,b) { return a > b },
+      '>=':   function(a,b) { return a >= b },
+      '<':    function(a,b) { return a < b },
+      '<=':   function(a,b) { return a <= b },
+      '===':  function(a,b) { return a === b },
+      '!==':  function(a,b) { return a !== b },
+      '[]':   function(a,b) { return a[b] },
+      '()':   function(a,b) { return a(b) }
+    },
+    
+    Enumerator: new JS.Class({
+      include: JS.Enumerable,
+      
+      extend: {
+        DEFAULT_METHOD: 'forEach'
+      },
+      
+      initialize: function(object, method, args) {
+        this._object = object;
+        this._method = method || this.klass.DEFAULT_METHOD;
+        this._args   = (args || []).slice();
+      },
+      
+      forEach: function(block, context) {
+        if (!block) return this;
+        var args = this._args.slice();
+        args.push(block);
+        if (context) args.push(context);
+        return this._object[this._method].apply(this._object, args);
+      },
+      
+      cons:       JS.Enumerable.instanceMethod('forEachCons'),
+      reverse:    JS.Enumerable.instanceMethod('reverseForEach'),
+      slice:      JS.Enumerable.instanceMethod('forEachSlice'),
+      withIndex:  JS.Enumerable.instanceMethod('forEachWithIndex'),
+      withObject: JS.Enumerable.instanceMethod('forEachWithObject')
+    })
+  }
+}, false);
+
+JS.Enumerable.Collection.include(JS.Enumerable, true);
+
+JS.Kernel.include({
+  enumFor: function(method) {
+    var args   = JS.array(arguments),
+        method = args.shift();
+    return new JS.Enumerable.Enumerator(this, method, args);
+  }
+}, false);
+
+JS.Kernel.define('toEnum', JS.Kernel.instanceMethod('enumFor'), true);
+
+
+JS.LinkedList = new JS.Class('LinkedList', {
+  include: JS.Enumerable || {},
+  
+  initialize: function(array, useNodes) {
+    this.length = 0;
+    this.first = this.last = null;
+    if (!array) return;
+    for (var i = 0, n = array.length; i < n; i++)
+      this.push( useNodes ? new this.klass.Node(array[i]) : array[i] );
+  },
+  
+  forEach: function(block, context) {
+    if (!block) return this.enumFor('forEach');
+    block = JS.Enumerable.toFn(block);
+    
+    var node   = this.first,
+        next, i, n;
+    
+    for (i = 0, n = this.length; i < n; i++) {
+      next = node.next;
+      block.call(context || null, node, i);
+      if (node === this.last) break;
+      node = next;
+    }
+    return this;
+  },
+  
+  at: function(n) {
+    if (n < 0 || n >= this.length) return undefined;
+    var node = this.first;
+    while (n--) node = node.next;
+    return node;
+  },
+  
+  pop: function() {
+    return this.length ? this.remove(this.last) : undefined;
+  },
+  
+  shift: function() {
+    return this.length ? this.remove(this.first) : undefined;
+  },
+  
+  // stubs - should be implemented by concrete list types
+  insertAfter:  function() {},
+  push:         function() {},
+  remove:       function() {},
+  
+  extend: {
+    Node: new JS.Class({
+      initialize: function(data) {
+        this.data = data;
+        this.prev = this.next = this.list = null;
+      }
+    })
+  }
+});
+
+JS.LinkedList.Doubly = new JS.Class('LinkedList.Doubly', JS.LinkedList, {
+  insertAt: function(n, newNode) {
+    if (n < 0 || n >= this.length) return;
+    this.insertBefore(this.at(n), newNode);
+  },
+  
+  unshift: function(newNode) {
+    this.length > 0
+        ? this.insertBefore(this.first, newNode)
+        : this.push(newNode);
+  },
+  
+  insertBefore: function() {}
+});
+
+JS.LinkedList.insertTemplate = function(prev, next, pos) {
+  return function(node, newNode) {
+    if (node.list !== this) return;
+    newNode[prev] = node;
+    newNode[next] = node[next];
+    node[next] = (node[next][prev] = newNode);
+    if (newNode[prev] === this[pos]) this[pos] = newNode;
+    newNode.list = this;
+    this.length++;
+  };
+};
+
+JS.LinkedList.Doubly.Circular = new JS.Class('LinkedList.Doubly.Circular', JS.LinkedList.Doubly, {
+  insertAfter: JS.LinkedList.insertTemplate('prev', 'next', 'last'),
+  insertBefore: JS.LinkedList.insertTemplate('next', 'prev', 'first'),
+  
+  push: function(newNode) {
+    if (this.length)
+      return this.insertAfter(this.last, newNode);
+    
+    this.first = this.last =
+        newNode.prev = newNode.next = newNode;
+    
+    newNode.list = this;
+    this.length = 1;
+  },
+  
+  remove: function(removed) {
+    if (removed.list !== this || this.length === 0) return null;
+    if (this.length > 1) {
+      removed.prev.next = removed.next;
+      removed.next.prev = removed.prev;
+      if (removed === this.first) this.first = removed.next;
+      if (removed === this.last) this.last = removed.prev;
+    } else {
+      this.first = this.last = null;
+    }
+    removed.prev = removed.next = removed.list = null;
+    this.length--;
+    return removed;
+  }
+});
+
+
+JS.Hash = new JS.Class('Hash', {
+  include: JS.Enumerable || {},
+  
+  extend: {
+    Pair: new JS.Class({
+      include: JS.Comparable || {},
+      
+      setKey: function(key) {
+        this[0] = this.key = key;
+      },
+      
+      hasKey: function(key) {
+        var my = this.key;
+        return my.equals ? my.equals(key) : my === key;
+      },
+      
+      setValue: function(value) {
+        this[1] = this.value = value;
+      },
+      
+      hasValue: function(value) {
+        var my = this.value;
+        return my.equals ? my.equals(value) : my === value;
+      },
+      
+      compareTo: function(other) {
+        return this.key.compareTo
+            ? this.key.compareTo(other.key)
+            : (this.key < other.key ? -1 : (this.key > other.key ? 1 : 0));
+      },
+      
+      hash: function() {
+        var key   = JS.Hash.codeFor(this.key),
+            value = JS.Hash.codeFor(this.value);
+        
+        return [key, value].sort().join('');
+      }
+    }),
+    
+    codeFor: function(object) {
+      if (typeof object !== 'object') return String(object);
+      return JS.isFn(object.hash)
+          ? object.hash()
+          : object.toString();
+    }
+  },
+  
+  initialize: function(object) {
+    this.clear();
+    if (!JS.isType(object, Array)) return this.setDefault(object);
+    for (var i = 0, n = object.length; i < n; i += 2)
+      this.store(object[i], object[i+1]);
+  },
+  
+  forEach: function(block, context) {
+    if (!block) return this.enumFor('forEach');
+    block = JS.Enumerable.toFn(block);
+    
+    var hash, bucket, i;
+    
+    for (hash in this._buckets) {
+      if (!this._buckets.hasOwnProperty(hash)) continue;
+      bucket = this._buckets[hash];
+      i = bucket.length;
+      while (i--) block.call(context || null, bucket[i]);
+    }
+    return this;
+  },
+  
+  _bucketForKey: function(key, createIfAbsent) {
+    var hash   = this.klass.codeFor(key),
+        bucket = this._buckets[hash];
+    
+    if (!bucket && createIfAbsent)
+      bucket = this._buckets[hash] = [];
+    
+    return bucket;
+  },
+  
+  _indexInBucket: function(bucket, key) {
+    var i     = bucket.length,
+        ident = !!this._compareByIdentity;
+        
+    while (i--) {
+      if (ident ? (bucket[i].key === key) : bucket[i].hasKey(key))
+        return i;
+    }
+    return -1;
+  },
+  
+  assoc: function(key, createIfAbsent) {
+    var bucket, index, pair;
+    
+    bucket = this._bucketForKey(key, createIfAbsent);
+    if (!bucket) return null;
+    
+    index = this._indexInBucket(bucket, key);
+    if (index > -1) return bucket[index];
+    if (!createIfAbsent) return null;
+    
+    this.size += 1; this.length += 1;
+    pair = new this.klass.Pair;
+    pair.setKey(key);
+    bucket.push(pair);
+    return pair;
+  },
+  
+  rassoc: function(value) {
+    var key = this.key(value);
+    return key ? this.assoc(key) : null;
+  },
+  
+  clear: function() {
+    this._buckets = {};
+    this.length = this.size = 0;
+  },
+  
+  compareByIdentity: function() {
+    this._compareByIdentity = true;
+  },
+  
+  comparesByIdentity: function() {
+    return !!this._compareByIdentity;
+  },
+  
+  setDefault: function(value) {
+    this._default = value;
+    return this;
+  },
+  
+  getDefault: function(key) {
+    return JS.isFn(this._default)
+        ? this._default(this, key)
+        : (this._default || null);
+  },
+  
+  equals: function(other) {
+    if (!JS.isType(other, JS.Hash) || this.length !== other.length)
+      return false;
+    var result = true;
+    this.forEach(function(pair) {
+      if (!result) return;
+      var otherPair = other.assoc(pair.key);
+      if (otherPair === null || !otherPair.hasValue(pair.value)) result = false;
+    });
+    return result;
+  },
+  
+  hash: function() {
+    var hashes = [];
+    this.forEach(function(pair) { hashes.push(pair.hash()) });
+    return hashes.sort().join('');
+  },
+  
+  fetch: function(key, defaultValue) {
+    var pair = this.assoc(key);
+    if (pair) return pair.value;
+    
+    if (defaultValue === undefined) throw new Error('key not found');
+    if (JS.isFn(defaultValue)) return defaultValue(key);
+    return defaultValue;
+  },
+  
+  forEachKey: function(block, context) {
+    if (!block) return this.enumFor('forEachKey');
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(pair) {
+      block.call(context || null, pair.key);
+    });
+    return this;
+  },
+  
+  forEachPair: function(block, context) {
+    if (!block) return this.enumFor('forEachPair');
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(pair) {
+      block.call(context || null, pair.key, pair.value);
+    });
+    return this;
+  },
+  
+  forEachValue: function(block, context) {
+    if (!block) return this.enumFor('forEachValue');
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(pair) {
+      block.call(context || null, pair.value);
+    });
+    return this;
+  },
+  
+  get: function(key) {
+    var pair = this.assoc(key);
+    return pair ? pair.value : this.getDefault(key);
+  },
+  
+  hasKey: function(key) {
+    return !!this.assoc(key);
+  },
+  
+  hasValue: function(value) {
+    var has = false, ident = !!this._compareByIdentity;
+    this.forEach(function(pair) {
+      if ((value.equals && !ident) ? value.equals(pair.value) : value === pair.value)
+        has = true;
+    });
+    return has;
+  },
+  
+  invert: function() {
+    var hash = new this.klass;
+    this.forEach(function(pair) {
+      hash.store(pair.value, pair.key);
+    });
+    return hash;
+  },
+  
+  isEmpty: function() {
+    for (var hash in this._buckets) {
+      if (this._buckets.hasOwnProperty(hash) && this._buckets[hash].length > 0)
+        return false;
+    }
+    return true;
+  },
+  
+  key: function(value) {
+    var result = null;
+    this.forEach(function(pair) {
+      if (value.equals ? value.equals(pair.value) : (value === pair.value))
+        result = pair.key;
+    });
+    return result;
+  },
+  
+  keys: function() {
+    var keys = [];
+    this.forEach(function(pair) { keys.push(pair.key) });
+    return keys;
+  },
+  
+  merge: function(hash, block, context) {
+    var newHash = new this.klass;
+    newHash.update(this);
+    newHash.update(hash, block, context);
+    return newHash;
+  },
+  
+  rehash: function() {
+    var temp = new this.klass;
+    temp._buckets = this._buckets;
+    this.clear();
+    this.update(temp);
+  },
+  
+  remove: function(key, block) {
+    if (block === undefined) block = null;
+    var bucket, index, result;
+    
+    bucket = this._bucketForKey(key);
+    if (!bucket) return JS.isFn(block) ? this.fetch(key, block) : this.getDefault(key);
+    
+    index = this._indexInBucket(bucket, key);
+    if (index < 0) return JS.isFn(block) ? this.fetch(key, block) : this.getDefault(key);
+    
+    result = bucket[index].value;
+    bucket.splice(index, 1);
+    this.size -= 1;
+    this.length -= 1;
+    
+    if (bucket.length === 0)
+      delete this._buckets[this.klass.codeFor(key)];
+    
+    return result;
+  },
+  
+  removeIf: function(block, context) {
+    if (!block) return this.enumFor('removeIf');
+    block = JS.Enumerable.toFn(block);
+    
+    this.forEach(function(pair) {
+      if (block.call(context || null, pair))
+        this.remove(pair.key);
+    }, this);
+    return this;
+  },
+  
+  replace: function(hash) {
+    this.clear();
+    this.update(hash);
+  },
+  
+  shift: function() {
+    var keys = this.keys();
+    if (keys.length === 0) return this.getDefault();
+    var pair = this.assoc(keys[0]);
+    this.remove(pair.key);
+    return pair;
+  },
+  
+  store: function(key, value) {
+    this.assoc(key, true).setValue(value);
+    return value;
+  },
+  
+  update: function(hash, block, context) {
+    var blockGiven = JS.isFn(block);
+    hash.forEach(function(pair) {
+      var key = pair.key, value = pair.value;
+      if (blockGiven && this.hasKey(key))
+        value = block.call(context || null, key, this.get(key), value);
+      this.store(key, value);
+    }, this);
+  },
+  
+  values: function() {
+    var values = [];
+    this.forEach(function(pair) { values.push(pair.value) });
+    return values;
+  },
+  
+  valuesAt: function() {
+    var i = arguments.length, results = [];
+    while (i--) results.push(this.get(arguments[i]));
+    return results;
+  }
+});
+
+JS.Hash.include({
+  includes: JS.Hash.instanceMethod('hasKey'),
+  index:    JS.Hash.instanceMethod('key'),
+  put:      JS.Hash.instanceMethod('store')
+}, true);
+
+
+JS.Set = new JS.Class('Set', {
+  extend: {
+    forEach: function(list, block, context) {
+      if (!list || !block) return;
+      if (list.forEach) return list.forEach(block, context);
+      for (var i = 0, n = list.length; i < n; i++) {
+        if (list[i] !== undefined)
+          block.call(context || null, list[i], i);
+      }
+    }
+  },
+  
+  include: JS.Enumerable || {},
+  
+  initialize: function(list, block, context) {
+    this.clear();
+    if (block) this.klass.forEach(list, function(item) {
+      this.add(block.call(context || null, item));
+    }, this);
+    else this.merge(list);
+  },
+  
+  forEach: function(block, context) {
+    if (!block) return this.enumFor('forEach');
+    block = JS.Enumerable.toFn(block);
+    
+    this.klass.forEach(this._members, block, context);
+    return this;
+  },
+  
+  add: function(item) {
+    if (this.contains(item)) return false;
+    this._members.push(item);
+    this.length = this.size = this._members.length;
+    return true;
+  },
+  
+  classify: function(block, context) {
+    if (!block) return this.enumFor('classify');
+    block = JS.Enumerable.toFn(block);
+    
+    var classes = new JS.Hash();
+    this.forEach(function(item) {
+      var value = block.call(context || null, item);
+      if (!classes.hasKey(value)) classes.store(value, new this.klass);
+      classes.get(value).add(item);
+    }, this);
+    return classes;
+  },
+  
+  clear: function() {
+    this._members = [];
+    this.length = this.size = 0;
+  },
+  
+  complement: function(other) {
+    var set = new this.klass;
+    this.klass.forEach(other, function(item) {
+      if (!this.contains(item)) set.add(item);
+    }, this);
+    return set;
+  },
+  
+  contains: function(item) {
+    return this._indexOf(item) !== -1;
+  },
+  
+  difference: function(other) {
+    other = JS.isType(other, JS.Set) ? other : new JS.Set(other);
+    var set = new this.klass;
+    this.forEach(function(item) {
+      if (!other.contains(item)) set.add(item);
+    });
+    return set;
+  },
+  
+  divide: function(block, context) {
+    if (!block) return this.enumFor('divide');
+    block = JS.Enumerable.toFn(block);
+    
+    var classes = this.classify(block, context),
+        sets    = new this.klass;
+    
+    classes.forEachValue(sets.method('add'));
+    return sets;
+  },
+  
+  equals: function(other) {
+    if (this.length !== other.length || !JS.isType(other, JS.Set)) return false;
+    var result = true;
+    this.forEach(function(item) {
+      if (!result) return;
+      if (!other.contains(item)) result = false;
+    });
+    return result;
+  },
+  
+  hash: function() {
+    var hashes = [];
+    this.forEach(function(object) { hashes.push(JS.Hash.codeFor(object)) });
+    return hashes.sort().join('');
+  },
+  
+  flatten: function(set) {
+    var copy = new this.klass;
+    copy._members = this._members;
+    if (!set) { set = this; set.clear(); }
+    copy.forEach(function(item) {
+      if (JS.isType(item, JS.Set)) item.flatten(set);
+      else set.add(item);
+    });
+    return set;
+  },
+  
+  intersection: function(other) {
+    var set = new this.klass;
+    this.klass.forEach(other, function(item) {
+      if (this.contains(item)) set.add(item);
+    }, this);
+    return set;
+  },
+  
+  isEmpty: function() {
+    return this._members.length === 0;
+  },
+  
+  isProperSubset: function(other) {
+    return this._members.length < other._members.length && this.isSubset(other);
+  },
+  
+  isProperSuperset: function(other) {
+    return this._members.length > other._members.length && this.isSuperset(other);
+  },
+  
+  isSubset: function(other) {
+    var result = true;
+    this.forEach(function(item) {
+      if (!result) return;
+      if (!other.contains(item)) result = false;
+    });
+    return result;
+  },
+  
+  isSuperset: function(other) {
+    return other.isSubset(this);
+  },
+  
+  merge: function(list) {
+    this.klass.forEach(list, function(item) { this.add(item) }, this);
+  },
+  
+  product: function(other) {
+    var pairs = new JS.Set;
+    this.forEach(function(item) {
+      this.klass.forEach(other, function(partner) {
+        pairs.add([item, partner]);
+      });
+    }, this);
+    return pairs;
+  },
+  
+  rebuild: function() {
+    var members = this._members;
+    this.clear();
+    this.merge(members);
+  },
+  
+  remove: function(item) {
+    var index = this._indexOf(item);
+    if (index === -1) return;
+    this._members.splice(index, 1);
+    this.length = this.size = this._members.length;
+  },
+  
+  removeIf: function(block, context) {
+    if (!block) return this.enumFor('removeIf');
+    block = JS.Enumerable.toFn(block);
+    
+    var members = this._members,
+        i       = members.length;
+    
+    while (i--) {
+      if (block.call(context || null, members[i]))
+        this.remove(members[i]);
+    }
+    return this;
+  },
+  
+  replace: function(other) {
+    this.clear();
+    this.merge(other);
+  },
+  
+  subtract: function(list) {
+    this.klass.forEach(list, function(item) {
+      this.remove(item);
+    }, this);
+  },
+  
+  union: function(other) {
+    var set = new this.klass;
+    set.merge(this);
+    set.merge(other);
+    return set;
+  },
+  
+  xor: function(other) {
+    var set = new JS.Set(other);
+    this.forEach(function(item) {
+      set[set.contains(item) ? 'remove' : 'add'](item);
+    });
+    return set;
+  },
+  
+  _indexOf: function(item) {
+    var i     = this._members.length,
+        equal = JS.Enumerable.areEqual;
+    
+    while (i--) {
+      if (equal(item, this._members[i])) return i;
+    }
+    return -1;
+  }
+});
+
+JS.Set.include({
+  n:  JS.Set.instanceMethod('intersection'),
+  u:  JS.Set.instanceMethod('union'),
+  x:  JS.Set.instanceMethod('product')
+}, false);
+
+JS.SortedSet = new JS.Class('SortedSet', JS.Set, {
+  extend: {
+    compare: function(one, another) {
+      return JS.isType(one, Object)
+          ? one.compareTo(another)
+          : (one < another ? -1 : (one > another ? 1 : 0));
+    }
+  },
+  
+  add: function(item) {
+    var point = this._indexOf(item, true);
+    if (point === null) return;
+    this._members.splice(point, 0, item);
+    this.length = this.size = this._members.length;
+  },
+  
+  _indexOf: function(item, insertionPoint) {
+    var items   = this._members,
+        n       = items.length,
+        i       = 0,
+        d       = n,
+        compare = this.klass.compare,
+        equal   = JS.Enumerable.areEqual,
+        found;
+    
+    if (n === 0) return insertionPoint ? 0 : -1;
+    
+    if (compare(item, items[0]) < 1)   { d = 0; i = 0; }
+    if (compare(item, items[n-1]) > 0) { d = 0; i = n; }
+    
+    while (!equal(item, items[i]) && d > 0.5) {
+      d = d / 2;
+      i += (compare(item, items[i]) > 0 ? 1 : -1) * Math.round(d);
+      if (i > 0 && compare(item, items[i-1]) > 0 && compare(item, items[i]) < 1) d = 0;
+    }
+    
+    // The pointer will end up at the start of any homogenous section. Step
+    // through the section until we find the needle or until the section ends.
+    while (items[i] && !equal(item, items[i]) &&
+        compare(item, items[i]) === 0) i += 1;
+    
+    found = equal(item, items[i]);
+    return insertionPoint
+        ? (found ? null : i)
+        : (found ? i : -1);
+  }
+});
+
+JS.HashSet = new JS.Class('HashSet', JS.Set, {
+  forEach: function(block, context) {
+    if (!block) return this.enumFor('forEach');
+    block = JS.Enumerable.toFn(block);
+    
+    this._members.forEachKey(block, context);
+    return this;
+  },
+  
+  add: function(item) {
+    if (this.contains(item)) return false;
+    this._members.store(item, true);
+    this.length = this.size = this._members.length;
+    return true;
+  },
+  
+  clear: function() {
+    this._members = new JS.Hash();
+    this.size = this.length = 0;
+  },
+  
+  contains: function(item) {
+    return this._members.hasKey(item);
+  },
+  
+  rebuild: function() {
+    this._members.rehash();
+    this.length = this.size = this._members.length;
+  },
+  
+  remove: function(item) {
+    this._members.remove(item);
+    this.length = this.size = this._members.length;
+  },
+  
+  removeIf: function(block, context) {
+    if (!block) return this.enumFor('removeIf');
+    block = JS.Enumerable.toFn(block);
+    
+    this._members.removeIf(function(pair) {
+      return block.call(context || null, pair.key);
+    });
+    this.length = this.size = this._members.length;
+    return this;
+  }
+});
+
+JS.Enumerable.include({
+  toSet: function(klass, block, context) {
+    klass = klass || JS.Set;
+    return new klass(this, block, context);
+  }
+}, true);
+
+
+JS.Observable = new JS.Module('Observable', {
+  extend: {
+    DEFAULT_METHOD: 'update'
+  },
+  
+  addObserver: function(observer, context) {
+    (this.__observers__ = this.__observers__ || []).push({_block: observer, _context: context || null});
+  },
+  
+  removeObserver: function(observer, context) {
+    this.__observers__ = this.__observers__ || [];
+    context = context || null;
+    var i = this.countObservers();
+    while (i--) {
+      if (this.__observers__[i]._block === observer && this.__observers__[i]._context === context) {
+        this.__observers__.splice(i,1);
+        return;
+      }
+    }
+  },
+  
+  removeObservers: function() {
+    this.__observers__ = [];
+  },
+  
+  countObservers: function() {
+    return (this.__observers__ = this.__observers__ || []).length;
+  },
+  
+  notifyObservers: function() {
+    if (!this.isChanged()) return;
+    var i = this.countObservers(), observer, block, context;
+    while (i--) {
+      observer = this.__observers__[i];
+      block    = observer._block;
+      context  = observer._context;
+      if (JS.isFn(block)) block.apply(context || null, arguments);
+      else block[context || JS.Observable.DEFAULT_METHOD].apply(block, arguments);
+    }
+  },
+  
+  setChanged: function(state) {
+    this.__changed__ = !(state === false);
+  },
+  
+  isChanged: function() {
+    if (this.__changed__ === undefined) this.__changed__ = true;
+    return !!this.__changed__;
+  }
+});
+
+JS.Observable.include({
+  subscribe:    JS.Observable.instanceMethod('addObserver'),
+  unsubscribe:  JS.Observable.instanceMethod('removeObserver')
+}, true);
+
+
+JS.Forwardable = new JS.Module('Forwardable', {
+  defineDelegator: function(subject, method, alias, resolve) {
+    alias = alias || method;
+    this.define(alias, function() {
+      var object   = this[subject],
+          property = object[method];
+      
+      return JS.isFn(property)
+          ? property.apply(object, arguments)
+          : property;
+    }, resolve !== false);
+  },
+  
+  defineDelegators: function() {
+    var methods = JS.array(arguments),
+        subject = methods.shift(),
+        i       = methods.length;
+    
+    while (i--) this.defineDelegator(subject, methods[i], methods[i], false);
+    this.resolve();
+  }
+});
+
+
+JS.ConstantScope = new JS.Module('ConstantScope', {
+  extend: {
+    included: function(base) {
+      base.__consts__ = new JS.Module();
+      base.extend(this.ClassMethods);
+      
+      base.include(base.__consts__);
+      base.extend(base.__consts__);
+      
+      base.include(base.__mod__.__fns__);
+      base.extend(base.__eigen__().__fns__);
+    },
+    
+    ClassMethods: new JS.Module({
+      extend: function() {
+        var constants = JS.ConstantScope.extract(arguments[0], this);
+        this.__consts__.include(constants);
+        this.callSuper();
+      },
+      
+      include: function() {
+        var constants = JS.ConstantScope.extract(arguments[0], this);
+        this.__consts__.include(constants);
+        this.callSuper();
+      }
+    }),
+    
+    extract: function(inclusions, base) {
+      if (!inclusions) return null;
+      if (JS.isType(inclusions, JS.Module)) return null;
+      var constants = {}, key, object;
+      for (key in inclusions) {
+        
+        if (!/^[A-Z]/.test(key)) continue;
+        
+        object = inclusions[key];
+        constants[key] = object;
+        delete inclusions[key];
+        
+        if (JS.isType(object, JS.Module)) {
+          object.include(this);
+          object.__consts__.include(base.__consts__);
+        }
+      }
+      return constants;
+    }
+  }
+});
+
+
+JS.Decorator = new JS.Class('Decorator', {
+  initialize: function(decoree, methods) {
+    var decorator  = new JS.Class(),
+        delegators = {},
+        method, func;
+    
+    for (method in decoree.prototype) {
+      func = decoree.prototype[method];
+      if (JS.isFn(func) && func !== decoree) func = this.klass.delegate(method);
+      delegators[method] = func;
+    }
+    
+    decorator.include(new JS.Module(delegators), false);
+    decorator.include(this.klass.InstanceMethods, false);
+    decorator.include(methods, true);
+    return decorator;
+  },
+  
+  extend: {
+    delegate: function(name) {
+      return function() {
+        return this.component[name].apply(this.component, arguments);
+      };
+    },
+    
+    InstanceMethods: new JS.Module({
+      initialize: function(component) {
+        this.component = component;
+        this.klass = this.constructor = component.klass;
+        var method, func;
+        for (method in component) {
+          if (this[method]) continue;
+          func = component[method];
+          if (JS.isFn(func)) func = JS.Decorator.delegate(method);
+          this[method] = func;
+        }
+      },
+      
+      extend: function(source) {
+        this.component.extend(source);
+        var method, func;
+        for (method in source) {
+          func = source[method];
+          if (JS.isFn(func)) func = JS.Decorator.delegate(method);
+          this[method] = func;
+        }
+      }
+    })
+  }
+});
+
+
+if (JS.Proxy === undefined) JS.Proxy = {};
+
+JS.Proxy.Virtual = new JS.Class('Proxy.Virtual', {
+  initialize: function(klass) {
+    var bridge     = function() {},
+        proxy      = new JS.Class(),
+        delegators = {},
+        method, func;
+    
+    bridge.prototype = klass.prototype;
+    
+    for (method in klass.prototype) {
+      func = klass.prototype[method];
+      if (JS.isFn(func) && func !== klass) func = this.klass.forward(method);
+      delegators[method] = func;
+    }
+    
+    proxy.include({
+      initialize: function() {
+        var args    = arguments,
+            subject = null;
+        
+        this.__getSubject__ = function() {
+          subject = new bridge;
+          klass.apply(subject, args);
+          return (this.__getSubject__ = function() { return subject; })();
+        };
+      },
+      klass: klass,
+      constructor: klass
+    }, false);
+    
+    proxy.include(new JS.Module(delegators), false);
+    proxy.include(this.klass.InstanceMethods, true);
+    return proxy;
+  },
+  
+  extend: {
+    forward: function(name) {
+      return function() {
+        var subject = this.__getSubject__();
+        return subject[name].apply(subject, arguments);
+      };
+    },
+    
+    InstanceMethods: new JS.Module({
+      extend: function(source) {
+        this.__getSubject__().extend(source);
+        var method, func;
+        for (method in source) {
+          func = source[method];
+          if (JS.isFn(func)) func = JS.Proxy.Virtual.forward(method);
+          this[method] = func;
+        }
+      }
+    })
+  }
+});
+
+
+JS.Command = new JS.Class('Command', {
+  initialize: function(functions) {
+    if (JS.isFn(functions))
+      functions = {execute: functions};
+    this._functions = functions;
+    this._stack = this._functions.stack || null;
+  },
+  
+  execute: function(push) {
+    if (this._stack) this._stack._restart();
+    var exec = this._functions.execute;
+    if (exec) exec.apply(this);
+    if (this._stack && push !== false) this._stack.push(this);
+  },
+  
+  undo: function() {
+    var exec = this._functions.undo;
+    if (exec) exec.apply(this);
+  },
+  
+  extend: {
+    Stack: new JS.Class({
+      include: [JS.Observable || {}, JS.Enumerable || {}],
+      
+      initialize: function(options) {
+        options = options || {};
+        this._redo = options.redo || null;
+        this.clear();
+      },
+      
+      forEach: function(block, context) {
+        if (!block) return this.enumFor('forEach');
+        block = JS.Enumerable.toFn(block);
+        
+        for (var i = 0, n = this._stack.length; i < n; i++) {
+          if (this._stack[i] !== undefined)
+            block.call(context || null, this._stack[i], i);
+        }
+        return this;
+      },
+      
+      clear: function() {
+        this._stack = [];
+        this.length = this.pointer = 0;
+      },
+      
+      _restart: function() {
+        if (this.pointer === 0 && this._redo && this._redo.execute)
+          this._redo.execute();
+      },
+      
+      push: function(command) {
+        this._stack.splice(this.pointer, this.length);
+        this._stack.push(command);
+        this.length = this.pointer = this._stack.length;
+        if (this.notifyObservers) this.notifyObservers(this);
+      },
+      
+      stepTo: function(position) {
+        if (position < 0 || position > this.length) return;
+        var i, n;
+        
+        switch (true) {
+          case position > this.pointer :
+            for (i = this.pointer, n = position; i < n; i++)
+              this._stack[i].execute(false);
+            break;
+          
+          case position < this.pointer :
+            if (this._redo && this._redo.execute) {
+              this._redo.execute();
+              for (i = 0, n = position; i < n; i++)
+                this._stack[i].execute(false);
+            } else {
+              for (i = 0, n = this.pointer - position; i < n; i++)
+                this._stack[this.pointer - i - 1].undo();
+            }
+            break;
+        }
+        this.pointer = position;
+        if (this.notifyObservers) this.notifyObservers(this);
+      },
+      
+      undo: function() {
+        this.stepTo(this.pointer - 1);
+      },
+      
+      redo: function() {
+        this.stepTo(this.pointer + 1);
+      }
+    })
+  }
+});
+
+
+JS.State = new JS.Module('State', {
+  __getState__: function(state) {
+    return  (typeof state === 'object' && state) ||
+            (typeof state === 'string' && ((this.states || {})[state] || {})) ||
+            {};
+  },
+  
+  setState: function(state) {
+    this.__state__ = this.__getState__(state);
+    JS.State.addMethods(this.__state__, this.klass);
+  },
+  
+  inState: function() {
+    var i = arguments.length;
+    while (i--) {
+      if (this.__state__ === this.__getState__(arguments[i])) return true;
+    }
+    return false;
+  },
+  
+  extend: {
+    stub: function() { return this; },
+    
+    buildStubs: function(stubs, collection, states) {
+      var state, method;
+      for (state in states) {
+        collection[state] = {};
+        for (method in states[state]) stubs[method] = this.stub;
+    } },
+    
+    findStates: function(collections, name) {
+      var i = collections.length, results = [];
+      while (i--) {
+        if (collections[i].hasOwnProperty(name))
+          results.push(collections[i][name]);
+      }
+      return results;
+    },
+    
+    buildCollection: function(module, states) {
+      var stubs       = {},
+          collection  = {},
+          superstates = module.lookup('states'),
+          state, klass, methods, name, mixins, i, n;
+      
+      this.buildStubs(stubs, collection, states);
+      
+      for (i = 0, n = superstates.length; i < n;  i++)
+        this.buildStubs(stubs, collection, superstates[i]);
+      
+      for (state in collection) {
+        klass  = new JS.Class(states[state]);
+        mixins = this.findStates(superstates, state);
+        
+        i = mixins.length;
+        while (i--) klass.include(mixins[i].klass);
+        
+        methods = {};
+        for (name in stubs) { if (!klass.prototype[name]) methods[name] = stubs[name]; }
+        klass.include(methods);
+        collection[state] = new klass;
+      }
+      if (module.__res__) this.addMethods(stubs, module.__res__.klass);
+      return collection;
+    },
+    
+    addMethods: function(state, klass) {
+      if (!klass) return;
+      
+      var methods = {},
+          p       = klass.prototype,
+          method;
+      
+      for (method in state) {
+        if (p[method]) continue;
+        p[method] = klass.__mod__.__fns__[method] = this.wrapped(method);
+      }
+    },
+    
+    wrapped: function(method) {
+      return function() {
+        var func = (this.__state__ || {})[method];
+        return func ? func.apply(this, arguments): this;
+      };
+    }
+  }
+});
+
+JS.Module.include({define: (function(wrapped) {
+  return function(name, block) {
+    if (name === 'states' && typeof block === 'object')
+      arguments[1] = JS.State.buildCollection(this, block);
+    return wrapped.apply(this, arguments);
+  };
+})(JS.Module.prototype.define)}, true);
+
+
+JS.StackTrace = new JS.Module('StackTrace', {
+  extend: {
+    included: function(base) {
+      var module = base.__mod__ || base,
+          self   = this,
+          method;
+      
+      module.extend({define: function(name, func) {
+        if (!JS.isFn(func)) return this.callSuper();
+        var wrapper = self.wrap(func, module, name);
+        return this.callSuper(name, wrapper);
+      } });
+      
+      for (method in module.__fns__)
+        module.define(method, module.__fns__[method], false);
+      module.resolve();
+      
+      if (!module.__nom__) setTimeout(function() {
+        module.__nom__ = self.nameOf(base);
+      }, 1);
+    },
+    
+    nameOf: function(object, root) {
+      var results = [], i, n, field, l;
+      
+      if (JS.isType(object, Array)) {
+        for (i = 0, n = object.length; i < n; i++)
+          results.push(this.nameOf(object[i]));
+        return results;
+      }
+      
+      if (object.__nom__) return object.__nom__;
+      
+      field = [{name: null, o: root || this.root}];
+      l = 0;
+      while (typeof field === 'object' && l < this.maxDepth) {
+        l += 1;
+        field = this.descend(field, object);
+      }
+      if (typeof field == 'string') {
+        field = field.replace(/\.prototype\./g, '#');
+        object.__nom__ = field;
+        if (object.__meta__) object.__meta__.__nom__ = field + '.__meta__';
+      }
+      return object.__nom__;
+    },
+    
+    descend: function(list, needle) {
+      var results = [],
+          n       = list.length,
+          i       = n,
+          key, item, name;
+      
+      while (i--) {
+        item = list[i];
+        if (n > 1 && JS.indexOf(this.excluded, item.o) !== -1) continue;
+        if (JS.isType(item.o, Array)) continue;
+        name = item.name ? item.name + '.' : '';
+        for (key in item.o) {
+          if (needle && item.o[key] === needle) return name + key;
+          results.push({name: name + key, o: item.o[key]});
+        }
+      }
+      return results;
+    },
+    
+    root:       this,
+    excluded:   [],
+    maxDepth:   8,
+    logLevel:   'full',
+    
+    stack: new JS.Singleton({
+      _list: [],
+      
+      indent: function() {
+        var indent = '',
+            n      = this._list.length;
+        
+        while (n--) indent += '|  ';
+        return indent;
+      },
+      
+      push: function(name, object, args) {
+        if (JS.StackTrace.logLevel === 'full') window.console &&
+            console.log(this.indent() + name + '(', args, ')');
+        this._list.push({name: name, object: object, args: args});
+      },
+      
+      pop: function(result) {
+        var name = this._list.pop().name;
+        if (JS.StackTrace.logLevel === 'full') window.console &&
+            console.log(this.indent() + name + '() --> ', result);
+        return name;
+      },
+      
+      top: function() {
+        return this._list[this._list.length - 1] || {};
+      },
+      
+      backtrace: function() {
+        var i = this._list.length, item;
+        while (i--) {
+          item = this._list[i];
+          window.console && console.log(item.name, 'in', item.object, '(', item.args, ')');
+        }
+      }
+    }),
+    
+    flush: function() {
+      this.stack._list = [];
+    },
+    
+    print: function() {
+      this.stack.backtrace();
+    },
+    
+    wrap: function(func, module, name) {
+      var self = JS.StackTrace;
+      var wrapper = function() {
+        var result, fullName = self.nameOf(module) + '#' + name;
+        self.stack.push(fullName, this, arguments);
+        
+        if (self.logLevel === 'errors') {
+          try { result = func.apply(this, arguments); }
+          catch (e) {
+            if (e.logged) throw e;
+            e.logged = true;
+            window.console && console.error(e, 'thrown by', self.stack.top().name + '. Backtrace:');
+            self.print();
+            self.flush();
+            throw e;
+          }
+        } else {
+          result = func.apply(this, arguments);
+        }
+        
+        self.stack.pop(result);
+        return result;
+      };
+      wrapper.toString = function() { return func.toString() };
+      return wrapper;
+    }
+  }
+});
+
+(function() {
+  var module = JS.StackTrace, key;
+  for (key in module.root) {
+    if (key !== 'JS') module.excluded.push(module.root[key]);
+  }
+})();
+
+
+JS.Ruby = function(klass, define) {
+  define.call(new JS.Ruby.ClassBuilder(klass));
+};
+
+JS.extend(JS.Ruby, {
+  extendDSL: function(builder, source) {
+    for (var method in source) {
+      if (builder[method] || !JS.isFn(source[method])) continue;
+      this.addMethod(builder, source, method);
+    }
+  },
+  
+  addMethod: function(builder, source, method) {
+    builder[method] = function() {
+      var result = source[method].apply(source, arguments);
+      JS.Ruby.extendDSL(builder, source);
+      return result;
+    };
+  },
+  
+  alias: function(object, builder) {
+    return function(newName, oldName) {
+      var old = object[oldName];
+      if (old !== undefined) this.def(newName, old);
+      if (builder) JS.Ruby.extendDSL(builder, object);
+    };
+  },
+  
+  ClassBuilder: function(klass) {
+    this.def    = klass.method('define');
+    this.alias  = JS.Ruby.alias(klass.prototype);
+    
+    this.self = {
+      def: JS.bind(function(name, method) {
+        var def = {}; def[name] = method;
+        klass.extend(def);
+        JS.Ruby.extendDSL(this, klass);
+      }, this),
+      alias: JS.Ruby.alias(klass, this)
+    };
+    
+    JS.Ruby.extendDSL(this, klass);
+  }
+});

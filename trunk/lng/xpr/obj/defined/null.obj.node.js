@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
+nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 	/**
 	 * XML node : tag, attributes and list content. There are no restrictions on content and/or attributes.
 	 * @extends nul.obj.defined
@@ -15,13 +15,13 @@ nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
 	 * @param {nul.xpr.object[String]} attributes The named attributes
 	 * @param {nul.xpr.object[]} content The list of contained elements
 	 */
-	initialize: function($super, tag, attributes, content) {
+	initialize: function(tag, attributes, content) {
 		this.tag = tag;
 		var dupProp = null;
 		this.attributes = attributes || {};
 		for(var anm in this.attributes)
 			if('function'== typeof this.attributes[anm]) {
-				if(!dupProp) dupProp = map(this.properties);
+				if(!dupProp) dupProp = $o.clone(this.properties);
 				dupProp[anm] = this.attributes[anm];
 				delete this.attributes[anm];
 			}
@@ -30,7 +30,7 @@ nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
 		this.content = content || nul.obj.empty;	//TODO 2: assert content #set
 		nul.obj.use(this.content, 'nul.obj.list');
 		
-		$super();
+		return this.callSuper(null, null, null);
 	},
 
 //////////////// nul.obj.defined implementation
@@ -62,7 +62,7 @@ nul.obj.node = Class.create(nul.obj.hc, /** @lends nul.obj.node# */{
 		var rv = doc.createElement(this.tag);
 		for(var a in this.attributes) {
 			//TODO 3: check a as attribute name
-			if(!nul.obj.litteral.string.is(this.attributes[a]))
+			if(!this.attributes[a].isA(nul.obj.litteral.string))
 				throw nul.semanticException('XML', this.attributes[a] + ' doesnt fit for XML attribute');
 			rv.setAttribute(a, this.attributes[a].value);
 		}
@@ -121,13 +121,13 @@ nul.obj.node.relativise = function(tpl, objs) {
 	nul.obj.is(tpl, 'nul.obj.defined');
 	return maf(objs, function(n, obj) {
 		var klg;
-		if(nul.xpr.possible.is(obj)) {
+		if(obj.isA(nul.xpr.possible)) {
 			klg = obj.knowledge;
 			obj = obj.value;
 		} else klg = nul.klg.always;
 		nul.obj.is(obj, 'nul.obj.defined');
 		if(tpl.tag == obj.tag) {
-			var rAtt = map(obj.attributes);
+			var rAtt = $o.clone(obj.attributes);
 			klg = klg.modifiable();
 			merge(rAtt, obj.properties, function(a, b, n) { return a || obj.attribute(n); });
 			merge(rAtt, tpl.attributes, function(a, b, n) { return a || b; });

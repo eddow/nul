@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
+nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 //TODO 4: rename local when we have a non-anonymous name
 	/**
 	 * Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes 
@@ -19,7 +19,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
  		if(obj && 'eqCls'== obj.expression) {
 			this.equivls = map(obj.equivls);	//Equal values
 			this.belongs = map(obj.belongs);	//Sets the values belong to
-			this.attribs = map(obj.attribs);	//Sets the attributes owned
+			this.attribs = $o.clone(obj.attribs);	//Sets the attributes owned
  		} else {
 			this.equivls = obj?[obj]:[];
 			if(obj) this.represent(obj);
@@ -39,7 +39,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	 */
 	orderEqs: function(v, klg) {
 		//if(nul.obj.local.is(v) && nul.obj.local.self.ref == v.klgRef) return -2;
-		if(v.defined) return -1;
+		if(v.isA(nul.obj.defined)) return -1;
 		var d = v.dependance();
 		var rv = 0;
 		if('local'!= this.expression || klg.name!= this.klgRef) rv += 1;
@@ -73,7 +73,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
  		this.modify(); nul.obj.use(o);
 		//Add an object to the equivalence class
 		nul.obj.use(o);
-		if(o.defined) {
+		if(o.isA(nul.obj.defined)) {
 			if(this.eqvlDefined())
 				nul.trys(function() {
 					nul.klg.mod(klg);
@@ -121,10 +121,10 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	 */
 	isIn: function(s, klg) {
  		this.modify(); s.use();
- 		if(s.defined) {
+ 		if(s.isA(nul.obj.defined)) {
  			while(true) {
  				var ntr = null, sn;
-	 			for(sn=0; this.belongs[sn] && this.belongs[sn].defined; ++sn) {
+	 			for(sn=0; this.belongs[sn] && this.belongs[sn].isA(nul.obj.defined); ++sn) {
 	 				var ntr = this.intersect(klg, s, this.belongs[sn]);
 	 				if(ntr) break;
 	 			}
@@ -200,7 +200,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 			klg.access[unf] = this;
 			this.equivls.unshift(unf);
 		}
-		for(var sn=0; this.belongs[sn] && this.belongs[sn].defined;) {
+		for(var sn=0; this.belongs[sn] && this.belongs[sn].isA(nul.obj.defined);) {
 			var attrs = this.attribs;
 			if('lambda'== unf.expression) attrs = klg.attributes(unf.image);
 			var chx = this.belongs[sn].has(unf, attrs);
@@ -260,7 +260,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 		var eqc = this;
 		var destSelect = function(cn, ndx) {
 			return excl!= cn+':'+ndx && excl!= cn+':*' &&
-				(!only || only==cn+':'+ndx || only==cn+':*' || (Object.isUndefined(ndx) && cn==only.substr(0, cn.length)));
+				(!only || only==cn+':'+ndx || only==cn+':*' || ('undefined'== typeof ndx && cn==only.substr(0, cn.length)));
 		};
 		var subInfluence = function(cn, infl) {
 			if(destSelect(cn))
@@ -306,12 +306,12 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * Is the equivalences defined or is there only undefined objects unified ?
 	 * @return {Boolean}
 	 */
-	eqvlDefined: function() { return this.equivls.length && this.equivls[0].defined; },
+	eqvlDefined: function() { return this.equivls.length && this.equivls[0].isA(nul.obj.defined); },
 	/**
 	 * Is the belonging sets defined or is there only undefined sets whose the class belongs to ?
 	 * @return {Boolean}
 	 */
-	blngDefined: function() { return this.belongs.length && this.belongs[0].defined; },
+	blngDefined: function() { return this.belongs.length && this.belongs[0].isA(nul.obj.defined); },
 
 	/**
 	 * Determines weither this class defines elements of obj
@@ -335,7 +335,7 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 		'attribs' : {type: 'nul.xpr.object', bunch: true}
 	},
 
-	placed: function($super, prnt) {
+	placed: function(prnt) {
 		nul.klg.mod(prnt);
 		if(!this.equivls.length && isEmpty(this.attribs,'') && 1== this.belongs.length && this.blngDefined()) {
 			if('&phi;'== this.belongs[0].expression) nul.fail("&phi; is empty");
@@ -345,6 +345,6 @@ nul.klg.eqClass = Class.create(nul.expression, /** @lends nul.klg.eqClass# */{
 		if(!this.belongs.length && (!this.equivls.length || 
 			(1== this.equivls.length && isEmpty(this.attribs))))
 				return;
-		return $super(prnt);
+		return this.callSuper();
 	}
 });
