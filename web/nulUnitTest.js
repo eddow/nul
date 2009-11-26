@@ -13,10 +13,13 @@
 //↵  &crarr;
 //⇒  &rArr;
 Array.prototype.named = function(nm) { this.name = nm; return this; };
-var parent_id;
+function nutn(nm, arr) {
+	arr.name = nm;
+	return arr;
+}
 
-tests = [
-	[
+tests = nutn('Unit testing', [
+	nutn('Simples', [
 		{xpr: '{ a, a } (1, 1)',
 		rslt: '{(1, 1)}'},
 		{xpr: '{ a, a } (1, 2)',
@@ -33,8 +36,8 @@ tests = [
 		rslt: '{(5, _[g|@0]) &#9633; (_[g|@1], 5)}'},
 		{xpr: '<{ nul.obj.litteral.make(34) }>',
 		rslt: '{34}'}
-	].named('Simples'),
-	[
+	]),
+	nutn('Complexs', [
 		{xpr: 'b["j"]'+
 			'; f = ("j"=>"l", "l"=>"a", "p"=>"l")'+
 			'; b = { x => y != x; f[x] = f[y] }',
@@ -49,16 +52,16 @@ tests = [
 		rslt:'{{(_[@k|@0], _[@k|@3]); ((_[@k|@0]) &isin; &#x211a; &and; (_[@k|@3]) &isin; text)}}'},
 		{xpr:'{:ap ({}, s) => s [] ((a,.. r), s) => (a,.. ap[r,s])}[(1,2,3), (4,5,6)]',
 		rslt:'{(1, 2, 3, 4, 5, 6)}'}
-	].named('Complexs'),
-	[
+	]),
+	nutn('Attributes', [
 		{xpr: '( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")',
 		rslt: '{u[g|@0]; (([e: "o", f: "u", n: 1]u[g|@0]))}'},
 		{xpr: 'a; .Q (a.nbr)',
 		rslt: '{a[g|@0]; (([nbr: &rarr;nbr[g|@1]]a[g|@0]) &and; (&rarr;nbr[g|@1]) &isin; &#x211a;)}'},
 		{xpr: '(cmplx c).pair ; c.real = 5 ; c.img = 3 ; cmplx = {_ ::real(Q r) ::img(Q i) ::pair(i,r)}',
 		rslt: '{(3, 5)}'}
-	].named('Attributes'),
-	[
+	]),
+	nutn('Data', [
 	 	{xpr: '.document["#sandBox b"](.text _)',
 	 	rslt: '{"yh"}'},
 	 	{xpr: '.xml["xml/test.xml"].ab',
@@ -67,12 +70,12 @@ tests = [
 		rslt: '{2005}'},
 	 	{xpr: '.time.now.year',
 		rslt: '{'+(new Date().getFullYear())+'}'}
-	].named('Data'),
-	[
+	]),
+	nutn('Nodes', [
 	 	{xpr: '<n><a q="1" w="2" /><a q="3" e="4" /></n> [<a q="5" w="6" e="7" r="8" />]',
 	 	rslt: '{&crarr;[g|@1]; (([q: "1", w: "2", # : 0, e: "7", r: "8"]&crarr;[g|@1])) &#9633; &crarr;[g|@1]; (([q: "3", e: "4", # : 0, w: "6", r: "8"]&crarr;[g|@1]))}'}
-	].named('Nodes')	
-].named('Unit testing');
+	])	
+]);
 
 function rsltDiv(rslt) {
 	var rslts = {
@@ -91,104 +94,49 @@ function rsltDiv(rslt) {
 		rslt.chr+'</div>';
 }
 
-function createRow(tp, name, tn, rslt) {
+function createRow(name, pn, tn, rslt) {
 	var rv = $j('<tr></tr>');
-	rv.append('<'+tp+'>'+name+'</'+tp+'>');
-	if(rslt) rv.append('<td><input type="checkbox" checked="checked" '+
-			'onclick="prgGrpCgheck"(this.checked,'+'" />'+tn+
-			'<input type="button" value="1" onclick="prgTest('+tn+')" /></td><td>'+
-			rsltDiv('unk')+'</td><td>'+
-			rslt+'</td>');
-	else rv.append('<td><input type="checkbox" checked="checked" '+
-			'onclick="prgGrpCheck(this.checked,'+tn+')" />'+
-			'<input type="button" value="*" onclick="prgGrpTest('+tn+')" /></td></tr>');
+	if(!rslt) rv.attr('id', "node-"+tn);
+	rv.append('<td>'+name+'</td>');
+	if('undefined'!= typeof pn) rv.addClass('child-of-node-'+pn);
+	rv.append('<td>'+'<input type="checkbox" checked="checked" onclick="prgGrpCgheck"(this.checked,'+tn+')" />'+'</td>');
+	rv.append('<td>'+'<input type="button" value="1" onclick="prgTest('+tn+')" />' +'</td>');
+	rv.append('<td>'+rsltDiv('unk')+'</td>');
+
+	if(rslt) rv.append('<td>'+rslt+'</td>');
+	else rv.append('<td />');
+	
 	return rv;
 }
 
-function drawTests(tests, tbody) {
-	
-	
-	var row;
-	var tn = tbody.nbrRows();
-	row = createRow('th', tests.name, tn, 0);
-	/*row = $j('<tr><th>'+tests.name+'</th><td>'+
-			'<input type="checkbox" checked="checked" '+
-			'onclick="prgGrpCheck(this.checked,'+tn+')" />'+
-			'<input type="button" value="*" onclick="prgGrpTest('+tn+')" /></td></tr>');*/
-	tbody.append(row);
+function drawTests(tests, tbody, ppn) {
+	var pn = tbody.nbrRows();
+	tbody.append(createRow(tests.name, ppn, pn));
 	for(var i=0;i<tests.length;i++)
 	{
 		var t = tests[i];
-		if($j.isArray(t)) drawTests(t,tbody);
-		else
-		{
-			row = createRow('td', t.xpr, tn, t.rslt);
-			/*row = $j('<tr><td>'+t.xpr+'</td><td>'+
-					'<input type="checkbox" checked="checked" id="t'+tn+'" />'+
-					'<input type="button" value="1" onclick="prgTest('+tn+')" />'+'</td><td>'+
-					rsltDiv('unk')+'</td><td>'+
-					t.rslt+'</td></tr>');*/	
-			tbody.append(row);			
-		}
+		if($j.isArray(t)) drawTests(t, tbody, pn);
+		else tbody.append(createRow(t.xpr, pn, tbody.nbrRows(), t.rslt));
 	}
 	
-	/*function preCollapsed(c) {
-		var rv = $(tbody.insertRow(-1));
-		if(0<lvl) {
-			for(var i=0; i<lvl-1; ++i) rv.className = 'collapsed '+rv.className;
-			if(c) rv.addClassName(c);
-			else rv.className = 'collapsed '+rv.className;
-		}
-		return rv;
-	}
-	var rw = preCollapsed('unsubcollapsing');
-	rw.insertCell(-1).innerHTML = '<h'+(lvl+1)+'>'+cs.collapser('')+tests.name+'</hh'+(lvl+1)+'>';
-
-	rw.insertCell(-1).innerHTML = 
-		'<input type="checkbox" checked="checked" '+
-			'onclick="prgGrpCheck(this.checked,'+tbody.rows.length+')" />'+
-		'<input type="button" value="*" onclick="prgGrpTest('+tbody.rows.length+')" />';
-	rw.insertCell(-1).innerHTML = rsltDiv('unk');
-	rw.testGroup = tests;
-	
-	for(var i=0; i<tests.length; ++i)
-	{
-		var t = tests[i];
-		if($j.isArray(t)) drawTests(t, cs, 1+lvl);
-		else {
-			var tn = tbody.rows.length;
-			rw = preCollapsed();
-			rw.test = t;
-			//Expression
-			rw.insertCell(-1).innerHTML = t.desc || escapeHTML(t.xpr);
-			//Test?
-			rw.insertCell(-1).innerHTML = 
-				'<input type="checkbox" checked="checked" id="t'+tn+'" />'+
-				'<input type="button" value="1" onclick="prgTest('+tn+')" />';
-			//Result
-			rw.insertCell(-1).innerHTML = rsltDiv('unk');
-			rw.insertCell(-1).innerHTML = t.rslt;
-
-			preCollapsed().insertCell(-1);
-		}
-	}
-	cs.endCollapser('','').toString();
-	preCollapsed('uncollapsing');*/
 }
 
 nul.load.unitTest = function() {
 	if(!nul.debug.perf) $j('perfTbl').hide();
-	//clpsSstm = nul.txt.clpsSstm(tbody = $('tests'),'up');
-	drawTests(tests, $j('#tests'));
+	drawTests(tests, $j('#tests tbody'));
+	
+	$j("#tests").treeTable({indent: 16});
+
 	if(urlOption('auto')) prgGrpTest(1);
 };
-
+//////////from here
 function setResult(tn, rslt, comm) {
-	var rw = tbody.rows[tn];
-	rw.cells[2].innerHTML = rsltDiv(rslt);
-	if(comm) for(var j=0; 3>j; ++j) rw.cells[j].rowSpan=2;
+	var rw = $j('#tests tbody').children()[tn];
+	tbody.find('td:first-child + td + td').html(rsltDiv(rslt));
+	//rw.cells[2].innerHTML = rsltDiv(rslt);
+	//if(comm) for(var j=0; 3>j; ++j) rw.cells[j].rowSpan=2;
 	//rw.cells[3].rowSpan=comm?1:2;
-	tbody.rows[1+tn].cells[0].innerHTML = comm || '';
+	//tbody.rows[1+tn].cells[0].innerHTML = comm || '';
 	return rslt;
 }
 
@@ -227,6 +175,8 @@ function doTest(tn) {
 	if(isResult(test.rslt, v)) return setResult(tn, 'succ', v);
 	return setResult(tn, 'fail', v);
 }
+
+//////
 
 function prgGrpCheck(c, lc) {
 	for(var l = lc; l<clpsSstm.collapsing[lc]; ++l)
@@ -277,4 +227,3 @@ function doTests(tn) {
 	for(var i=0; i<tstsBats.length; ++i) if(tstsBats[i] && tstsBats[i].rslt<tRslt) tstsBats[i].rslt = tRslt;  
 	prgTests(1+tn);
 }
-
