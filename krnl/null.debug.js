@@ -131,10 +131,7 @@ nul.debug = {
 			v = beArrg(arguments);
 			for(var vi = 0; vi<v.length; ++vi) v[vi] = nul.debug.toLogText(v[vi]);
 			v.unshift(nul.debug.logCount());
-			var lg = nul.debug.logs.log(v);
-			for(var i=0; i<nul.debug.lcs.toPair.length; ++i) lg.className = 'collapsed '+lg.className;
-			if(endC) lg.addClassName('uncollapsing');
-			return lg.addClassName(tp+' log');
+			return nul.debug.logs.log(v).addClass(tp+' log');
 		} : nul.debug.logCount;
 	},
 	warnRecursion: function(v)
@@ -172,7 +169,7 @@ nul.debug = {
 	described: function(name, dscr) {
 		var ftc = this.perform(name);
 		return function() {
-			var cargs = $A(arguments);
+			var cargs = $j.makeArray(arguments);
 			var d, abrt = false, lgd = false, rv;
 			try {
 				d = dscr.apply(this, cargs);

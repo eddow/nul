@@ -189,7 +189,7 @@ function beArrg(args, ndx) {
 	if(!ndx) ndx = 0;
 	if(ndx >= args.length) return [];
 	if(1+ndx== args.length && $j.isArray(args[ndx])) return map(args[ndx]);
-	return $A(args).slice(ndx);
+	return $j.makeArray(args).slice(ndx);
 }
 
 /**
@@ -269,7 +269,7 @@ function merge(dst, src, cb) {
 	});
 
 [].include || (Array.prototype.include = 
-	function(itm) { return $j.inArray(itm, this); });
+	function(itm) { return -1< $j.inArray(itm, this); });
 
 
 /** @constant */

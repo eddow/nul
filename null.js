@@ -44,12 +44,13 @@ nul.loading.styles = [
 'web/null.page',
 'lng/txt/out/null.txt.html',
 'lng/txt/out/null.txt.clpsSstm',
-'3rd/jquery/smoothness/theme',
+'3rd/jquery/theme/ui',
+'3rd/jquery/theme/treeTable',
 'web/console/null.console'
 ];
 
 nul.loading.files = [
-'3rd/prototype',
+//'3rd/prototype',
 '3rd/jsclass/core',		//must be first
 
 '3rd/jquery/jquery',

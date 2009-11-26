@@ -2,7 +2,7 @@
 	<head>
 		<title>NUL console</title>
 		<link href="../../lng/txt/out/null.txt.html.css" rel="stylesheet" type="text/css"></link>
-		<link href="../../3rd/jquery/smoothness/theme.css" rel="stylesheet" type="text/css"></link>
+		<link href="../../3rd/jquery/theme/ui.css" rel="stylesheet" type="text/css"></link>
 		<link href="nulConsole.css" rel="stylesheet" type="text/css"></link>
 		<script type="text/javascript" src="../../3rd/codemirror/codemirror.js"></script>
 		<script type="text/javascript" src="../../3rd/jquery/jquery.js"></script>
@@ -15,8 +15,7 @@
 		<ul>
 			<li><a href="#_nul_globalKlgVw">Global knowledge</a></li>
 			<li><a href="#_nul_valuesVw">Values</a></li>
-			<li><a href="#_nul_logsVw">Logs</a></li>
-			<li><a href="#_nul_benchmarkVw">Benchmarks</a></li>
+			<li><a href="#_nul_postsVw">Logs</a></li>
 		</ul>
 		<div id="conToolBar"><!--
 			
@@ -50,8 +49,7 @@
 
 			Table clearers
 			
-			--><span class="tabbed toolFor_nul_logsVw"><a name="clearLogs" class="command ui-icon ui-icon-closethick" href="#" title="Clear logs"></a></span><!--
-			--><span class="tabbed toolFor_nul_benchmarkVw"><a name="clearBenchmarks" class="command ui-icon ui-icon-closethick" href="#" title="Clear benchmarks"></a></span>
+			--><span class="tabbed toolFor_nul_postsVw"><a name="clearPosts" class="command ui-icon ui-icon-closethick" href="#" title="Clear post-data"></a></span>
 		</div>
 		<div id="_nul_console_pages">
 			<div id="_nul_globalKlgVw">
@@ -60,14 +58,15 @@
 				<div id="valuesViewer">
 				</div>
 			</div>			
-			<table id="_nul_logsVw">
-				<thead><tr><th>#</th><th colspan="2">happend ...</th><th>... with ...</th><th>... from ...</th></tr></thead>
-				<tbody id="logsTBD"></tbody>			
-			</table>
-			<table id="_nul_benchmarkVw">
-			<thead><tr><th>Function</th><th>Time</th></tr></thead>
-			<tbody id="benchmarks"></tbody>
-			</table>
+			<div id="_nul_postsVw">
+				<table id="_nul_logsVw" class="ui-layout-center">
+					<thead><tr><th>#</th><th colspan="2">happend ...</th><th>... with ...</th><th>... from ...</th></tr></thead>
+					<tbody id="logsTBD"></tbody>			
+				</table>
+				<table id="_nul_benchmarkVw" class="ui-layout-east">
+					<thead><tr><th>Time</th><th>Function</th></tr></thead>
+				</table>
+			</div>
 		</div>
 	</body>
 </html>
