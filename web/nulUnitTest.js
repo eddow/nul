@@ -130,13 +130,18 @@ nul.load.unitTest = function() {
 	if(urlOption('auto')) prgGrpTest(1);
 };
 //////////from here
+function findCells(cn) {
+	/*switch(cn)
+		case 0:
+			return*/ 
+}
+
 function setResult(tn, rslt, comm) {
 	var rw = $j('#tests tbody').children()[tn];
-	tbody.find('td:first-child + td + td').html(rsltDiv(rslt));
-	//rw.cells[2].innerHTML = rsltDiv(rslt);
-	//if(comm) for(var j=0; 3>j; ++j) rw.cells[j].rowSpan=2;
-	//rw.cells[3].rowSpan=comm?1:2;
-	//tbody.rows[1+tn].cells[0].innerHTML = comm || '';
+	tbody.find('td:first-child + td + td').html(rsltDiv(rslt));	//rw.cells[2].innerHTML = rsltDiv(rslt);
+	if(comm) for(var j=0; 3>j; ++j) tbody.find(findCells(j)).attr(rowSpan, 2);//if(comm) for(var j=0; 3>j; ++j) rw.cells[j].rowSpan=2;
+	tbody.find('td:first-child + td + td + td').attr(rowSpan, comm?1:2);//rw.cells[3].rowSpan=comm?1:2;
+	tbody.find(findCells(1+tn)).html(comm || '');//tbody.rows[1+tn].cells[0].innerHTML = comm || '';
 	return rslt;
 }
 
