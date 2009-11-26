@@ -32,7 +32,7 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 #_nul_benchmarkVw th {
 	text-align: left;
 	font-weight: normal;
-	background: #CCCCCC url(images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
+	background: #CCCCCC url(../../3rd/jquery/theme/images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
 }
 
 #_nul_console_pages > .ui-tabs-panel {

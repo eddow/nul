@@ -3,7 +3,7 @@
  * This file contains styles that are used to display the tree table. Each tree
  * table is assigned the +treeTable+ class.
  * ========================================================================= */
-/*TODO 1: Fix pictures*/
+
 /* jquery.treeTable.collapsible
  * ------------------------------------------------------------------------- */
 .treeTable tr td .expander {
@@ -15,11 +15,17 @@
 }
 
 .treeTable tr.collapsed td .expander {
-  background-image: url(../images/toggle-expand-dark.png);
+	width: 16px; height: 16px; 
+	/*background-image: url(images/toggle-expand-dark.png);*/
+	background-image: url(images/ui-icons_222222_256x240.png);
+	background-position: -32px -16px;
 }
 
 .treeTable tr.expanded td .expander {
-  background-image: url(../images/toggle-collapse-dark.png);
+	width: 16px; height: 16px; 
+	/*background-image: url(images/toggle-expand-dark.png);*/
+	background-image: url(images/ui-icons_222222_256x240.png);
+	background-position: -48px -16px;
 }
 
 /* jquery.treeTable.sortable
