@@ -13,6 +13,7 @@
 //↵  &crarr;
 //⇒  &rArr;
 Array.prototype.named = function(nm) { this.name = nm; return this; };
+var parent_id;
 
 tests = [
 	[
@@ -90,8 +91,48 @@ function rsltDiv(rslt) {
 		rslt.chr+'</div>';
 }
 
-function drawTests(tests, cs, lvl) {
-	function preCollapsed(c) {
+function createRow(tp, name, tn, rslt) {
+	var rv = $j('<tr></tr>');
+	rv.append('<'+tp+'>'+name+'</'+tp+'>');
+	if(rslt) rv.append('<td><input type="checkbox" checked="checked" '+
+			'onclick="prgGrpCgheck"(this.checked,'+'" />'+tn+
+			'<input type="button" value="1" onclick="prgTest('+tn+')" /></td><td>'+
+			rsltDiv('unk')+'</td><td>'+
+			rslt+'</td>');
+	else rv.append('<td><input type="checkbox" checked="checked" '+
+			'onclick="prgGrpCheck(this.checked,'+tn+')" />'+
+			'<input type="button" value="*" onclick="prgGrpTest('+tn+')" /></td></tr>');
+	return rv;
+}
+
+function drawTests(tests, tbody) {
+	
+	
+	var row;
+	var tn = tbody.nbrRows();
+	row = createRow('th', tests.name, tn, 0);
+	/*row = $j('<tr><th>'+tests.name+'</th><td>'+
+			'<input type="checkbox" checked="checked" '+
+			'onclick="prgGrpCheck(this.checked,'+tn+')" />'+
+			'<input type="button" value="*" onclick="prgGrpTest('+tn+')" /></td></tr>');*/
+	tbody.append(row);
+	for(var i=0;i<tests.length;i++)
+	{
+		var t = tests[i];
+		if($j.isArray(t)) drawTests(t,tbody);
+		else
+		{
+			row = createRow('td', t.xpr, tn, t.rslt);
+			/*row = $j('<tr><td>'+t.xpr+'</td><td>'+
+					'<input type="checkbox" checked="checked" id="t'+tn+'" />'+
+					'<input type="button" value="1" onclick="prgTest('+tn+')" />'+'</td><td>'+
+					rsltDiv('unk')+'</td><td>'+
+					t.rslt+'</td></tr>');*/	
+			tbody.append(row);			
+		}
+	}
+	
+	/*function preCollapsed(c) {
 		var rv = $(tbody.insertRow(-1));
 		if(0<lvl) {
 			for(var i=0; i<lvl-1; ++i) rv.className = 'collapsed '+rv.className;
@@ -113,7 +154,7 @@ function drawTests(tests, cs, lvl) {
 	for(var i=0; i<tests.length; ++i)
 	{
 		var t = tests[i];
-		if(isArray(t)) drawTests(t, cs, 1+lvl);
+		if($j.isArray(t)) drawTests(t, cs, 1+lvl);
 		else {
 			var tn = tbody.rows.length;
 			rw = preCollapsed();
@@ -132,13 +173,13 @@ function drawTests(tests, cs, lvl) {
 		}
 	}
 	cs.endCollapser('','').toString();
-	preCollapsed('uncollapsing');
+	preCollapsed('uncollapsing');*/
 }
 
 nul.load.unitTest = function() {
-	if(!nul.debug.perf) $('perfTbl').hide();
-	clpsSstm = nul.txt.clpsSstm(tbody = $('tests'),'up');
-	drawTests(tests, clpsSstm, 0);
+	if(!nul.debug.perf) $j('perfTbl').hide();
+	//clpsSstm = nul.txt.clpsSstm(tbody = $('tests'),'up');
+	drawTests(tests, $j('#tests'));
 	if(urlOption('auto')) prgGrpTest(1);
 };
 
@@ -182,7 +223,7 @@ function doTest(tn) {
 		if(nul.erroneusJS) throw nul.erroneusJS;
 		return setResult(tn, 'err', err.message || err);
 	}
-	nul.execution.benchmark.draw($('benchmark'));
+	nul.execution.benchmark.draw($j('#perfTbl'));
 	if(isResult(test.rslt, v)) return setResult(tn, 'succ', v);
 	return setResult(tn, 'fail', v);
 }

@@ -28,23 +28,53 @@ csl = {
 		csl.editChanged();
 	},
 
+	panelInit: {
+		_nul_postsVw: function() {
+			$j('#_nul_postsVw').layout({
+				east : {
+					resizable: true,
+					slidable: true,
+					closable: true,
+					resizeWhileDragging: true,
+					size: 150,
+					initClosed: true,
+					SliderTip: 'Benchmarks',
+					slideTrigger_open: 'mouseover',
+					hideTogglerOnSlide: true,
+					minSize: 100,
+					spacing_closed: 3,
+					togglerLength_closed: 0,
+					togglerLength_opened: 0,
+					resizeWhileDragging: true,
+					fxName: 'slide'
+				}
+			});
+		},
+		_nul_valuesVw: function() {
+			//TODO 1: see why editor doesn't load on refresh
+			csl.editor = new CodeMirror($j('#_nul_valuesVw')[0], {
+				parserfile: ["parsenul.js"],
+				path: "../../3rd/codemirror/",
+				stylesheet: "../../3rd/codemirror/nulcolors.css",
+				tabMode: 'shift',
+				lineNumbers: true,
+				height: '100%',
+				initCallback: csl.cmReady,
+				onChange: csl.editChanged
+			});
+		}
+	},
+	
 	init: function() {
-		$j('body').tabs().bind('tabsshow', function(e, ui) { $j('#conToolBar').attr('class', 'toolFor'+ui.panel.id); }).tabs('select', 1);
+		$j('body').tabs().bind('tabsshow', function(e, ui) { 
+			if(csl.panelInit[ui.panel.id]) {
+				csl.panelInit[ui.panel.id]();
+				delete csl.panelInit[ui.panel.id];
+			}
+			$j('#conToolBar').attr('class', 'toolFor'+ui.panel.id);
+		}).tabs('select', 1);
 		$j('#_nul_console_pages').fitV();
-		
 		$j(window).resize();
-		
-		//TODO 1: see why editor doesn't load on refresh
-		csl.editor = new CodeMirror($j('#_nul_valuesVw')[0], {
-			parserfile: ["parsenul.js"],
-			path: "../../3rd/codemirror/",
-			stylesheet: "../../3rd/codemirror/nulcolors.css",
-			tabMode: 'shift',
-			lineNumbers: true,
-			height: '100%',
-			initCallback: csl.cmReady,
-			onChange: csl.editChanged
-		});
 		
 		nul.debug.globalKlg = $j('#_nul_globalKlgVw')[0];
 		nul.debug.newLog($j('#logsTBD'));
@@ -110,11 +140,8 @@ csl = {
 		edit_undo: function() { csl.editor.undo(); },
 		edit_redo: function() { csl.editor.redo(); },
 
-		clearLogs: function() {
-			alert('clearLogs');
-		},
-		clearBenchmarks: function() {
-			alert('clearBenchmarks');
+		clearPosts: function() {
+			alert('clearPosts');
 		}
 	},
 	showValue: function(val) {
@@ -137,6 +164,7 @@ csl = {
 			csl.disable('known');
 			csl.enable('eval');
 			csl.evaled = null;
+			csl.editor.focus();
 		}
 	},
 
@@ -178,7 +206,7 @@ csl = {
 			//Forward JS errors to Firebug
 		} finally {
 			nul.debug.applyTables();
-			nul.execution.benchmark.draw($j('#benchmarks')[0]);
+			nul.execution.benchmark.draw($j('#_nul_benchmarkVw'));
 			csl.assertSmGlobals();
 		}
 	},

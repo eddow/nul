@@ -118,7 +118,7 @@ nul.debuger = {
 			//Forward JS errors to Firebug
 		} finally {
 			nul.debug.applyTables();
-			nul.execution.benchmark.draw($('benchmark'));
+			nul.execution.benchmark.draw($j('#benchmark'));
 			nul.debuger.assertSmGlobals();
 		}
 	},

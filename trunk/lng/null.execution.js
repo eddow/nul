@@ -117,18 +117,26 @@ nul.execution = {
 		},
 		/**
 		 * Draw the benchmarks in a table
-		 * @param {HTMLTable} tbd
+		 * @param {HTMLTable} tbl
+		 * @param {Number} firsts Number of lines to draw (default 7)
 		 */
-		draw: function(tbd) {
-			$j(tbd).clearRows();
+		draw: function(tbl, firsts) {
+			var tbd;
+			switch(tbl[0].tagName.toLowerCase()) {
+			case 'tbody': tbd = tbl; break;
+			case 'table': 
+				tbd = tbl.find('tbody');
+				if(!tbd.length) tbl.append(tbd = $j('<tbody></tbody>'));
+				break;
+			default: throw 'trace me';
+			}
+			
+			tbd.empty();
 			var cs = [];
 			for(var c in this.computed) cs.push([c, this.computed[c]]);
 			cs.sort(function(a, b){ return b[1]-a[1]; });
-			for(var i=0; i<cs.length && i < 7; ++i) {
-				var rw = tbd.insertRow(-1);
-				rw.insertCell(0).innerHTML = cs[i][0];
-				rw.insertCell(1).innerHTML = cs[i][1];
-			}
+			for(var i=0; i<cs.length && i < (firsts||7); ++i)
+				tbd.append($j('<tr><td>'+cs[i][1]+'</td><th>'+cs[i][0]+'</th></tr>'));
 		}
 	},
 	
@@ -154,7 +162,7 @@ else
 	Function.prototype.perform = function(name) {
 		var ftc = this;
 		return function() {
-			var cargs = $A(arguments);
+			var cargs = $j.makeArray(arguments);
 			var obj = this;
 			if('function'== typeof name) name = name.apply(obj, cargs);
 			nul.execution.benchmark.enter(name);

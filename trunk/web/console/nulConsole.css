@@ -18,6 +18,23 @@ body .ui-tabs-nav { padding: 0 !important; border-top: 0 !important; }
 #_nul_logsVw { padding: 0; }
 table.ui-tabs-panel thead { font-size: 10pt; }
 
+#_nul_benchmarkVw {
+	border-collapse: collapse;
+	font-family: monospace;
+	font-size: 10pt;
+}
+#_nul_benchmarkVw td, #_nul_benchmarkVw th {
+	border: 1px #888888 solid;
+	font-weight: bold;
+	text-align: right;
+}
+
+#_nul_benchmarkVw th {
+	text-align: left;
+	font-weight: normal;
+	background: #CCCCCC url(images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
+}
+
 #_nul_console_pages > .ui-tabs-panel {
 	padding: 0;
 	overflow: auto;
@@ -45,11 +62,10 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 }
 
 #conToolBar .tabbed { display:none; }
-#conToolBar.toolFor_nul_benchmarkVw .tabbed.toolFor_nul_benchmarkVw { display:inline; }
 #conToolBar.toolFor_nul_valuesVw .tabbed.toolFor_nul_valuesVw { display:inline; }
-#conToolBar.toolFor_nul_logsVw .tabbed.toolFor_nul_logsVw { display:inline; }
 #conToolBar.toolFor_nul_globalKlgVw .tabbed.toolFor_nul_globalKlgVw { display:inline; }
 #conToolBar.toolFor_nul_valuesVw.toolForEdit .tabbed.toolForEdit { display:inline; }
+#conToolBar.toolFor_nul_postsVw .tabbed.toolFor_nul_postsVw { display:inline; }
 
 #conToolBar ul {
 	padding: 0;
@@ -118,4 +134,8 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 #valuesViewer {
 	height: 100%;
 	width: 100%;
+}
+
+.ui-layout-resizer {
+	background: #CCCCCC url(images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
 }

@@ -21,7 +21,7 @@ nul.data.dom.url = new JS.Class(nul.data,/** @lends nul.data.dom.url# */{
 	 */
 	initialize: function(doc) {
 		this.document = doc;
-		this.extract = new nul.data.dom.element($(doc.documentElement));
+		this.extract = new nul.data.dom.element($j(doc.documentElement));
 		this.callSuper(nul.data.dom, doc.documentURI);
 	}
 });
@@ -34,16 +34,16 @@ nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element 
 	 * @param {HTMLElement} element
 	 */
 	initialize: function(element) {
-		this.element = $(element);
-		if(!this.element.nulId) this.element.nulId = nul.execution.name.gen('element.nulId');
+		this.element = $j(element);
+		if(!this.element[0].nulId) this.element[0].nulId = nul.execution.name.gen('element.nulId');
 		this.callSuper(null);
-		this.tag = this.element.tagName;
+		this.tag = this.element[0].tagName;
 		this.properties = {
-			'': function() { return new nul.obj.litteral.string(this.element.tagName); },
-			'# ': function() { return new nul.obj.litteral.number(this.element.childNodes.length); }
+			'': function() { return new nul.obj.litteral.string(this.element[0].tagName); },
+			'# ': function() { return new nul.obj.litteral.number(this.element.children().length); }
 		};
-		for(var a=0; this.element.attributes[a]; ++a) this.properties[this.element.attributes[a].name] = function(klg, anm) {
-			return new nul.obj.litteral.string(this.element.getAttribute(anm)); };
+		for(var a=0; this.element[0].attributes[a]; ++a) this.properties[this.element[0].attributes[a].name] = function(klg, anm) {
+			return new nul.obj.litteral.string(this.element.attr(anm)); };
 	},
 ////////////////nul.obj.hc implementation
 	
@@ -58,9 +58,9 @@ nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element 
 		switch(key.expression) {
 		case 'string':
 			//TODO 2: essayer avec getElementsByTagName si en profondeur et simple CSS selector
-			if(!this.element.select) throw nul.semanticException('DOM', 'Element is not HTML - no CSS selection');
-			var els = this.element.select(key.value);	//cf prototype.js
-			return map(els, function() { return new nul.data.dom.element(this); });
+			if(!this.element.find) throw nul.semanticException('DOM', 'Element is not HTML - no CSS selection');
+			var els = this.element.find(key.value);	//cf prototype.js
+			return map(els, function() { return new nul.data.dom.element($j(this)); });
 		case 'node':
 			return nul.obj.node.relativise(key, this.listed());
 		default:
@@ -74,7 +74,7 @@ nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element 
 	 */
 	listed: function() {
 		var rv = [];
-		for(var chld = this.element.firstChild; chld; chld = chld.nextSibling) switch(chld.nodeName) {
+		for(var chld = this.element[0].firstChild; chld; chld = chld.nextSibling) switch(chld.nodeName) {
 			case '#text': rv.push(new nul.obj.litteral.string(chld.data)); break;
 			default: rv.push(new nul.data.dom.element(chld)); break;
 		}
@@ -87,7 +87,7 @@ nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element 
 	expression: 'dom',
 
 	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
-	sum_index: function() { return this.indexedSub(this.element.nulId); }
+	sum_index: function() { return this.indexedSub(this.element[0].nulId); }
 });
 
 /**
