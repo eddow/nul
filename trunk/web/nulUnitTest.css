@@ -28,9 +28,8 @@
 	background: #CCCCCC url(../3rd/jquery/theme/images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
 }
 
-#tests td:first-child { padding-left: 16px; }
+#tests tbody th:first-child { padding-left: 16px; }
 #tests td:first-child { text-align: right; }
-#tests tr.parent td:first-child { text-align: left; }
 
 
 #_perfTbl > .ui-tabs-panel {

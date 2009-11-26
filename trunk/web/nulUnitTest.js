@@ -94,10 +94,10 @@ function rsltDiv(rslt) {
 		rslt.chr+'</div>';
 }
 
-function createRow(name, pn, tn, rslt) {
+function createRow(tp, name, pn, tn, rslt) {
 	var rv = $j('<tr></tr>');
 	if(!rslt) rv.attr('id', "node-"+tn);
-	rv.append('<td>'+name+'</td>');
+	rv.append('<'+tp+'>'+name+'</'+tp+'>');
 	if('undefined'!= typeof pn) rv.addClass('child-of-node-'+pn);
 	rv.append('<td>'+'<input type="checkbox" checked="checked" onclick="prgGrpCgheck"(this.checked,'+tn+')" />'+'</td>');
 	rv.append('<td>'+'<input type="button" value="1" onclick="prgTest('+tn+')" />' +'</td>');
@@ -111,12 +111,12 @@ function createRow(name, pn, tn, rslt) {
 
 function drawTests(tests, tbody, ppn) {
 	var pn = tbody.nbrRows();
-	tbody.append(createRow(tests.name, ppn, pn));
+	tbody.append(createRow('th', tests.name, ppn, pn));
 	for(var i=0;i<tests.length;i++)
 	{
 		var t = tests[i];
 		if($j.isArray(t)) drawTests(t, tbody, pn);
-		else tbody.append(createRow(t.xpr, pn, tbody.nbrRows(), t.rslt));
+		else tbody.append(createRow('td', t.xpr, pn, tbody.nbrRows(), t.rslt));
 	}
 	
 }

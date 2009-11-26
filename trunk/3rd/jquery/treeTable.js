@@ -17,7 +17,7 @@
           // value of the first root node. This way I only have to call +css+ 
           // once.
           if (isNaN(defaultPaddingLeft)) {
-            defaultPaddingLeft = parseInt($($(this).children("td")[options.treeColumn]).css('padding-left'), 10);
+            defaultPaddingLeft = parseInt($($(this).children()[options.treeColumn]).css('padding-left'), 10);
           }
           
           initialize($(this));
@@ -133,7 +133,7 @@
   }
   
   function indent(node, value) {
-    var cell = $(node.children("td")[options.treeColumn]);
+    var cell = $(node.children()[options.treeColumn]);
     cell[0].style.paddingLeft = getPaddingLeft(cell) + value + "px";
     
     childrenOf(node).each(function() {
@@ -152,11 +152,11 @@
       }
       
       if(node.hasClass("parent")) {
-        var cell = $(node.children("td")[options.treeColumn]);
+        var cell = $(node.children()[options.treeColumn]);
         var padding = getPaddingLeft(cell) + options.indent;
         
         childNodes.each(function() {
-          $(this).children("td")[options.treeColumn].style.paddingLeft = padding + "px";
+          $(this).children()[options.treeColumn].style.paddingLeft = padding + "px";
         });
         
         if(options.expandable) {

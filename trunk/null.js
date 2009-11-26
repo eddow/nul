@@ -161,7 +161,7 @@ nul.loading.loaded = function(wwl) {
 		delete nul.loading;
 	}
 };
-nul.loading.loaded.already = {};
+nul.loading.loaded.already = {/*document:true TODO 1: fix chrome no 'onload'*/};
 
 nul.loading.status = function(type, arg) {
 	if('undefined'== typeof $j) return;	//Need jquery to be loaded

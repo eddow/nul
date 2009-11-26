@@ -6,7 +6,7 @@
 
 /* jquery.treeTable.collapsible
  * ------------------------------------------------------------------------- */
-.treeTable tr td .expander {
+.treeTable tr td .expander, .treeTable tr th .expander {
   background-position: left center;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -14,14 +14,14 @@
   zoom: 1; /* IE7 Hack */
 }
 
-.treeTable tr.collapsed td .expander {
+.treeTable tr.collapsed td .expander, .treeTable tr.collapsed th .expander {
 	width: 16px; height: 16px; 
 	/*background-image: url(images/toggle-expand-dark.png);*/
 	background-image: url(images/ui-icons_222222_256x240.png);
 	background-position: -32px -16px;
 }
 
-.treeTable tr.expanded td .expander {
+.treeTable tr.expanded td .expander, .treeTable tr.expanded th .expander {
 	width: 16px; height: 16px; 
 	/*background-image: url(images/toggle-expand-dark.png);*/
 	background-image: url(images/ui-icons_222222_256x240.png);
