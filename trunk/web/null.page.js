@@ -23,7 +23,7 @@ nul.page = {
 
 nul.load.page = function() {
 	try {
-		var elm = $j(this.documentElement);
+		var elm = $(this.documentElement);
 		var nulScripts = elm.find('script[type="text/nul"]');
 		for(var s=0; nulScripts[s]; ++s) {
 			if(nulScripts[s].src) nul.data.ajax.loadNul(nulScripts[s].src, nulScripts[s].readAttribute('id'));
@@ -38,7 +38,7 @@ nul.load.page = function() {
 		for(var n=0; nulNodes[n]; ++n) {
 			var nnid = nulNodes[s].readAttribute('id');
 			if(!nnid) nulNodes[s].writeAttribute('id', nnid = ('inline'+nul.execution.name.gen('nul.page.inline')));
-			nds[nnid] = $j(nulNodes[s]);
+			nds[nnid] = $(nulNodes[s]);
 			if(nulNodes[s].src) exts[nnid] = nulNodes[s].src;
 			else ints[nnid] = nulNodes[s].textContent;
 		}

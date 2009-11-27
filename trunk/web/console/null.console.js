@@ -8,20 +8,22 @@
 
 nul.load.console = function() {
 	if(nul.noConsole) return;
-	nul.console.frame = $j('<iframe id="_nul_console" src="javascript:false;" frameborder="0" scrolling="auto"></iframe>');
+	nul.console.frame = $('<iframe id="_nul_console" src="javascript:false;" frameborder="0" scrolling="auto"></iframe>');
 	
-	var bdy = $j('body');
+	var bdy = $('body');
 	bdy.wrapInner('<div id="_nul_content" class="ui-layout-center" ></div>');
 	bdy.append(nul.console.frame);
 	nul.console.layout = bdy.layout({
 		south : {
 			paneSelector: '#_nul_console',
-			togglerAlign_open: 'right',
-			togglerAlign_closed: 'right',
 			maskIframesOnResize: '#_nul_console',
 			resizable: true,
 			slidable: false,
 			closable: true,
+			
+			togglerLength_open: 0,
+			togglerLength_closed: 0,		
+			
 			size: 300,
 			initClosed: false,
 			togglerTip_closed: 'NUL console',

@@ -75,7 +75,7 @@ nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
  * @param {function(any) nul.xpr.object} wrp Function used to build a return object out of 'exp' for instance 
  */
 nul.obj.hc.filter = function(objs, exp, att, wrp) {
-	if(!$j.isArray(objs)) objs = [objs];
+	if(!$.isArray(objs)) objs = [objs];
 	return maf(objs, function(n, orv) {
 		try {
 			if(orv.isA(nul.data)) orv = orv.object;

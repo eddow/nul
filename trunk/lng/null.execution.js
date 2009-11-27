@@ -126,7 +126,7 @@ nul.execution = {
 			case 'tbody': tbd = tbl; break;
 			case 'table': 
 				tbd = tbl.find('tbody');
-				if(!tbd.length) tbl.append(tbd = $j('<tbody></tbody>'));
+				if(!tbd.length) tbl.append(tbd = $('<tbody></tbody>'));
 				break;
 			default: throw 'trace me';
 			}
@@ -136,7 +136,7 @@ nul.execution = {
 			for(var c in this.computed) cs.push([c, this.computed[c]]);
 			cs.sort(function(a, b){ return b[1]-a[1]; });
 			for(var i=0; i<cs.length && i < (firsts||7); ++i)
-				tbd.append($j('<tr><td>'+cs[i][1]+'</td><th>'+cs[i][0]+'</th></tr>'));
+				tbd.append($('<tr><td>'+cs[i][1]+'</td><th>'+cs[i][0]+'</th></tr>'));
 		}
 	},
 	
@@ -162,7 +162,7 @@ else
 	Function.prototype.perform = function(name) {
 		var ftc = this;
 		return function() {
-			var cargs = $j.makeArray(arguments);
+			var cargs = $.makeArray(arguments);
 			var obj = this;
 			if('function'== typeof name) name = name.apply(obj, cargs);
 			nul.execution.benchmark.enter(name);

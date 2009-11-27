@@ -21,7 +21,7 @@ nul.data.dom.url = new JS.Class(nul.data,/** @lends nul.data.dom.url# */{
 	 */
 	initialize: function(doc) {
 		this.document = doc;
-		this.extract = new nul.data.dom.element($j(doc.documentElement));
+		this.extract = new nul.data.dom.element($(doc.documentElement));
 		this.callSuper(nul.data.dom, doc.documentURI);
 	}
 });
@@ -34,7 +34,7 @@ nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element 
 	 * @param {HTMLElement} element
 	 */
 	initialize: function(element) {
-		this.element = $j(element);
+		this.element = $(element);
 		if(!this.element[0].nulId) this.element[0].nulId = nul.execution.name.gen('element.nulId');
 		this.callSuper(null);
 		this.tag = this.element[0].tagName;
@@ -60,7 +60,7 @@ nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element 
 			//TODO 2: essayer avec getElementsByTagName si en profondeur et simple CSS selector
 			if(!this.element.find) throw nul.semanticException('DOM', 'Element is not HTML - no CSS selection');
 			var els = this.element.find(key.value);	//cf prototype.js
-			return map(els, function() { return new nul.data.dom.element($j(this)); });
+			return map(els, function() { return new nul.data.dom.element($(this)); });
 		case 'node':
 			return nul.obj.node.relativise(key, this.listed());
 		default:

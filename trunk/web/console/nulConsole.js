@@ -6,11 +6,11 @@
  *
  *--------------------------------------------------------------------------*/
 
-$j.fn.fitV = function() {
+$.fn.fitV = function() {
 	var fitter = this;
-	$j(window).resize(function () {
+	$(window).resize(function () {
 		fitter.each(function() {
-			if($j(this).is(':visible')) $j(this).height($j(this).offsetParent().innerHeight()-$j(this).position().top);
+			if($(this).is(':visible')) $(this).height($(this).offsetParent().innerHeight()-$(this).position().top);
 		});
 	});		
 };
@@ -30,7 +30,7 @@ csl = {
 
 	panelInit: {
 		_nul_postsVw: function() {
-			$j('#_nul_postsVw').layout({
+			$('#_nul_postsVw').layout({
 				east : {
 					resizable: true,
 					slidable: true,
@@ -52,7 +52,7 @@ csl = {
 		},
 		_nul_valuesVw: function() {
 			//TODO 1: see why editor doesn't load on refresh
-			csl.editor = new CodeMirror($j('#_nul_valuesVw')[0], {
+			csl.editor = new CodeMirror($('#_nul_valuesVw')[0], {
 				parserfile: ["parsenul.js"],
 				path: "../../3rd/codemirror/",
 				stylesheet: "../../3rd/codemirror/nulcolors.css",
@@ -66,34 +66,34 @@ csl = {
 	},
 	
 	init: function() {
-		$j('body').tabs().bind('tabsshow', function(e, ui) { 
+		$('body').tabs().bind('tabsshow', function(e, ui) { 
 			if(csl.panelInit[ui.panel.id]) {
 				csl.panelInit[ui.panel.id]();
 				delete csl.panelInit[ui.panel.id];
 			}
-			$j('#conToolBar').attr('class', 'toolFor'+ui.panel.id);
+			$('#conToolBar').attr('class', 'toolFor'+ui.panel.id);
 		}).tabs('select', 1);
-		$j('#_nul_console_pages').fitV();
-		$j(window).resize();
+		$('#_nul_console_pages').fitV();
+		$(window).resize();
 		
-		nul.debug.globalKlg = $j('#_nul_globalKlgVw')[0];
-		nul.debug.newLog($j('#logsTBD'));
+		nul.debug.globalKlg = $('#_nul_globalKlgVw')[0];
+		nul.debug.newLog($('#logsTBD'));
 		nul.debug.applyTables();
-		var logSlct = $j('#dbgLogSelect');
+		var logSlct = $('#dbgLogSelect');
 		for(var i=0; i<nul.debug.possibleLogging.length; ++i)
 			logSlct.append('<li class="checkable"><a class="checker">'+nul.debug.possibleLogging[i]+'</a></li>');
 	
-		$j('#conToolBar .checker').click(function() { $j(this).parent('.checkable').toggleClass('checked'); });
-		$j(window).keypress(csl.keyHandler);
-		$j('#conToolBar .command').click(function() {
-			csl.command($j(this).attr('name'));
+		$('#conToolBar .checker').click(function() { $(this).parent('.checkable').toggleClass('checked'); });
+		$(window).keypress(csl.keyHandler);
+		$('#conToolBar .command').click(function() {
+			csl.command($(this).attr('name'));
 		});
 		csl.disable('reset');
 	},
 	keyCmd: function(keyCode) {
 		var kn = keyCode-111;
 		if(1>kn || 12< kn) return false;
-		var cmd = $j('.command[title^="F'+kn+':"]');
+		var cmd = $('.command[title^="F'+kn+':"]');
 		if(!cmd.length) return false;
 		csl.command(cmd.attr('name'));
 		return true;
@@ -104,13 +104,13 @@ csl = {
 		if('undefined'!= typeof v && !v) return csl.disable(cmd);
 		if(csl.commands[cmd].disabled) {
 			csl.commands[cmd].disabled = false;
-			$j('#conToolBar .command[name="'+cmd+'"]').parent().removeClass('ui-state-default');
+			$('#conToolBar .command[name="'+cmd+'"]').parent().removeClass('ui-state-default');
 		}
 	},
 	disable: function(cmd) {
 		if(!csl.commands[cmd].disabled) {
 			csl.commands[cmd].disabled = true;
-			$j('#conToolBar .command[name="'+cmd+'"]').parent().addClass('ui-state-default');
+			$('#conToolBar .command[name="'+cmd+'"]').parent().addClass('ui-state-default');
 		}
 	},
 	editChanged: function() {
@@ -119,7 +119,7 @@ csl = {
 		csl.enable('edit_redo', hs.redo);
 	},
 	commands: {
-		'edit': function() { csl.editValue(); },
+		edit: function() { csl.editValue(); },
 		eval: function() {
 			csl.test(function() {
 				csl.evaled = nul.nulRead(csl.editor.getCode());
@@ -145,20 +145,20 @@ csl = {
 		}
 	},
 	showValue: function(val) {
-		if($j(csl.editor.wrapping).is(':visible')) {
-			if(val) $j('#valuesViewer')[0].innerHTML = val;
-			$j(csl.editor.wrapping).hide();
-			$j('#conToolBar').removeClass('toolForEdit');
-			$j('#valuesViewer').show();
+		if($(csl.editor.wrapping).is(':visible')) {
+			if(val) $('#valuesViewer')[0].innerHTML = val;
+			$(csl.editor.wrapping).hide();
+			$('#conToolBar').removeClass('toolForEdit');
+			$('#valuesViewer').show();
 			csl.enable('edit');
 			csl.disable('eval');
 		}
 	},
 	editValue: function() {
-		if($j('#valuesViewer').is(':visible')) {
-			$j('#valuesViewer').hide();
-			$j('#conToolBar').addClass('toolForEdit');
-			$j(csl.editor.wrapping).show();
+		if($('#valuesViewer').is(':visible')) {
+			$('#valuesViewer').hide();
+			$('#conToolBar').addClass('toolForEdit');
+			$(csl.editor.wrapping).show();
 			csl.disable('edit');
 			csl.disable('query');
 			csl.disable('known');
@@ -172,15 +172,15 @@ csl = {
 	test: function(cb)
 	{
 		if(nul.debug) {
-			if($j('#dbgLogSelect').parent().hasClass('checked')) {
+			if($('#dbgLogSelect').parent().hasClass('checked')) {
 				nul.debug.logging = {error: true, fail: true};
-				var chkd = $j('#dbgLogSelect li.checked a');
+				var chkd = $('#dbgLogSelect li.checked a');
 				for(var c=0; c<chkd.length; ++c)
 					nul.debug.logging[chkd[c].textContent] = true;
 			} else nul.debug.logging = false;
 			
-			if($j('#dbgBreakLimited').hasClass('checked')) {
-				var bl = $j('#dbgBreakLimit').val();
+			if($('#dbgBreakLimited').hasClass('checked')) {
+				var bl = $('#dbgBreakLimit').val();
 				try {
 					var nbl = parseInt(bl);
 					if(isNaN(nbl)) throw '!';
@@ -206,7 +206,7 @@ csl = {
 			//Forward JS errors to Firebug
 		} finally {
 			nul.debug.applyTables();
-			nul.execution.benchmark.draw($j('#_nul_benchmarkVw'));
+			nul.execution.benchmark.draw($('#_nul_benchmarkVw'));
 			csl.assertSmGlobals();
 		}
 	},
