@@ -56,7 +56,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 						chsdCtx = ctx;
 				}
 				//chsdCtx is fixed as minimum distance
-				if(!chsdCtx) throw nul.internalException('Cannot query : ' + $j.keys(usg).join(', '));
+				if(!chsdCtx) throw nul.internalException('Cannot query : ' + $.keys(usg).join(', '));
 				obj = chsdCtx.query(obj);
 				usg = obj.dependance().usages;
 			}
@@ -80,7 +80,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 			 */
 			transform: function(xpr) {
 				if('data'== xpr.expression && this.context.name == xpr.source.context.name)
-					return $j.isFunction(xpr.source.extract)?xpr.source.extract(this.prm):xpr.source.extract;
+					return $.isFunction(xpr.source.extract)?xpr.source.extract(this.prm):xpr.source.extract;
 				return nul.browser.bijectif.unchanged;
 			}
 		})

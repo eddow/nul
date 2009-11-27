@@ -119,7 +119,7 @@ nul.loading.suffix = '';
 nul.loading.addRef = function(tag, props) {
 	var elm = document.createElement(tag);
 	for(l in props) if(!{}[l]) elm[l] = props[l];
-	if(nul.loading.nsn) nul.loading.head.appendChild(elm);
+	if(!nul.loading.nsn) nul.loading.head.appendChild(elm);
 	else nul.loading.head.insertBefore(elm, nul.loading.nsn);
 };
 
@@ -164,10 +164,10 @@ nul.loading.loaded = function(wwl) {
 nul.loading.loaded.already = {/*document:true TODO 1: fix chrome no 'onload'*/};
 
 nul.loading.status = function(type, arg) {
-	if('undefined'== typeof $j) return;	//Need jquery to be loaded
+	if('undefined'== typeof $) return;	//Need jquery to be loaded
 	if(!nul.loading.status.bar) {
-		nul.loading.status.bar = $j('<div id="nul_loading_bar"></div>');
-		$j('body').prepend(nul.loading.status.bar);
+		nul.loading.status.bar = $('<div id="nul_loading_bar"></div>');
+		$('body').prepend(nul.loading.status.bar);
 	}
 	if('end'== type) nul.loading.status.bar.remove();
 	else {
@@ -176,9 +176,9 @@ nul.loading.status = function(type, arg) {
 };
 
 nul.loading.addNexScriptRef = function() {
-	if('undefined'!= typeof $j && !nul.loading.jquery) {
-		//if($j(document).ready(??)) nul.loading.loaded('document');	//TODO 3: problems chrome css before js
-		/*else*/ $j(document).ready(function () { nul.loading.loaded('document');});
+	if('undefined'!= typeof $ && !nul.loading.jquery) {
+		if('complete' == document.readyState) nul.loading.loaded('document');	//TODO 3: check which ready-state
+		else $(document).ready(function () { nul.loading.loaded('document');});
 		nul.loading.jquery = true;
 	}
 	var sf = nul.loading.files.shift();

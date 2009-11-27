@@ -5,95 +5,14 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
-//TODO D
-
-tableStack = new JS.Class({
-	initialize: function(nm, tbl) {
-		this.nm = nm;
-		if(tbl) this.table = $j(tbl);
-	},
-	buffer: $j('<tbody></tbody>'),
-	getRowValue: function(tr) {
-		var rv = [];
-		for(var i=0; i<tr.cells.length; ++i) rv.push(tr.cells[i].innerHTML);
-		return rv;
-	},
-	setRowValue: function(tr, rv) {
-		this.dirty = true;
-		tr.innerHTML = '';
-		for(var i=0; i<rv.length; ++i ) {
-			var cl = tr.insertCell(-1);
-			cl.setAttribute('class',this.nm + ' c' + i);
-			cl.innerHTML = rv[i];
-		}
-		return $(tr);
-	},
-	length: function() {
-		return this.buffer.nbrRows();
-	},
-	clear: function() {
-		this.dirty = true;
-		this.buffer.clearRows();
-		if(this.table) this.table.clearRows();
-		this.apply();		
-	},
-	draw: function(cs) {
-		this.dirty = true;
-		this.clearRows();
-		for(var i=0; i<cs.length; ++i) this.push(cs[i]);
-		this.apply();
-	},
-	push: function(v) {
-		this.dirty = true;
-		return this.setRowValue(this.buffer[0].insertRow(0), beArrg(arguments));
-	},
-	log: function(v) {
-		this.dirty = true;
-		return this.setRowValue(this.buffer[0].insertRow(-1), beArrg(arguments));
-	},
-	unlog: function() {
-		this.dirty = true;
-		var p = this.buffer[0].nbrRows()-1;
-		var rv = this.getRowValue(this.buffer[0].rows[p]);
-		this.buffer[0].deleteRow(p);
-		return rv;
-	},
-	pop: function() {
-		this.dirty = true;
-		var rv = this.getRowValue(this.buffer[0].rows[0]);
-		this.buffer[0].deleteRow(0);
-		return rv;
-	},
-	item: function(ndx) {
-		if(!ndx) ndx = 0;
-		return {
-			ts: this,
-			tr: this.buffer[0].rows[ndx],
-			set: function(rv) {
-				this.ts.dirty = true;
-				this.ts.setRowValue(this.tr, beArrg(arguments));
-			},
-			get: function() {
-				return this.ts.getRowValue(this.tr);
-			}
-		};
-	},
-	apply: function() {
-		if(this.dirty && this.table) {
-			this.dirty = false;
-			this.table.completeRowsFrom(this.buffer);
-		}
-	}
-});
 
 /**
  * @namespace Debugging tools
  */
 nul.debug = {
 	fails: [],
-	logs: new tableStack('logs'),
 	logging: false,
+	logDeep: [],
 	possibleLogging: [
 		'Resolution',
 		'Unification',
@@ -105,7 +24,6 @@ nul.debug = {
 		'Extraction',
 		'Query',
 		'Relativise'],
-	watches: false,
 	assert: urlOption('debug'),
 	perf: !urlOption('noperf'),
 	acts: urlOption('actLog'),
@@ -118,7 +36,7 @@ nul.debug = {
 		return nul.debug.lc++;
 	},
 	toLogText: function(v) {
-		if($j.isArray(v)) {
+		if($.isArray(v)) {
 			var rv = [];
 			for(var i=0; i<v.length; ++i) rv.push(nul.debug.toLogText(v[i]));
 			return rv.join(' ');
@@ -128,10 +46,13 @@ nul.debug = {
 	},
 	log: function(tp, endC) {
 		return tp && nul.debug.logging && nul.debug.logging[tp] ? function(v) {
+			//TODO
+			var rw = $('<tr></tr>');
+			rw.append($('<th></th>').wrap(''+nul.debug.logCount()));
 			v = beArrg(arguments);
-			for(var vi = 0; vi<v.length; ++vi) v[vi] = nul.debug.toLogText(v[vi]);
-			v.unshift(nul.debug.logCount());
-			return nul.debug.logs.log(v).addClass(tp+' log');
+			for(var vi = 0; vi<v.length; ++vi) rw.append($('<th></th>').wrap(nul.debug.toLogText(v[vi])));
+			
+			return nul.debug.logTbl.append(rw.addClass(tp+' log'));
 		} : nul.debug.logCount;
 	},
 	warnRecursion: function(v)
@@ -149,27 +70,26 @@ nul.debug = {
 	},
 	
 	newLog: function(logTbl) {
-		if(logTbl) this.logs.table = logTbl;
-		nul.debug.logs.clear();
-		nul.debug.lcs = nul.txt.clpsSstm(this.logs.table, 'dn',
-			function() { return nul.debug.logs.buffer.nbrRows(); });
+		if(logTbl) nul.debug.logTbl = logTbl;
+		nul.debug.logDeep = [];
+		if(nul.debug.logTbl) nul.debug.logTbl.empty();
 		nul.debug.begin();
 	},
 	
 	applyTables: function() {
-		if(nul.debug.logging) nul.debug.logs.apply();
-		if(nul.debug.globalKlg) nul.debug.globalKlg.innerHTML = nul.execution.globalKlg.toHtml();
+		return; //TODO
+		if(nul.debug.logging && nul.debug.logTbl) nul.debug.logTbl.treeTable({ indent: 16, initialState: 'collapsed' });;
+		if(nul.debug.globalKlg) nul.debug.globalKlg.html(nul.execution.globalKlg.toHtml());
 	},
-	ctxTable: function(ctx) {
-		var rv = '';
-		for(var i=0; i<ctx.length; ++i)
-			rv += '<tr><th>'+i+'</th><td>'+ctx.lvals[i].dbgHtml()+'</td></tr>';
-		return ['', '<table class="context">'+rv+'</table>'];
+	wrapped: function() {
+		
 	},
 	described: function(name, dscr) {
+		return this;
+		//TOREDO
 		var ftc = this.perform(name);
 		return function() {
-			var cargs = $j.makeArray(arguments);
+			var cargs = $.makeArray(arguments);
 			var d, abrt = false, lgd = false, rv;
 			try {
 				d = dscr.apply(this, cargs);
@@ -293,6 +213,3 @@ function assert(cnd, str) {
 	if(!cnd)
 		throw nul.internalException('Assertion failed : '+str);
 }
-
-//Shortcuts to write in the firebug 'watch' box
-function dat() { nul.debug.applyTables(); return 'drawn'; }

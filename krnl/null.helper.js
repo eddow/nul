@@ -41,21 +41,10 @@ function newEmpty(obj) {
 	if(!obj.constructor) return {};
 	var nativeTypes = [Array, Boolean, Date, String, Number];
 
-	/*
-	var pttpd = {}, b;
-	for(var c = obj.constructor; c; b = c, c = c.superclass)
-		for(var p in c.prototype)
-			if(c.prototype[i]===obj[i])
-				pttpd[p] = true;
-	
-	var rv = nativeTypes.include(c) ? c() : {constructor: c, toString: obj.toString};
-
-	for(var p in pttpd) rv[p] = obj[p];
-	/*/
 	var c = obj.constructor;
 	var rv = nativeTypes.include(c) ? c() : {constructor: c, toString: obj.toString};
 	for(; c; c = c.superclass) for(var i in c.prototype) if(c.prototype[i]===obj[i]) rv[i] = c.prototype[i];
-	//*/
+
 	return rv;
 }
 
@@ -188,8 +177,8 @@ function reTyped(v) {
 function beArrg(args, ndx) {
 	if(!ndx) ndx = 0;
 	if(ndx >= args.length) return [];
-	if(1+ndx== args.length && $j.isArray(args[ndx])) return map(args[ndx]);
-	return $j.makeArray(args).slice(ndx);
+	if(1+ndx== args.length && $.isArray(args[ndx])) return map(args[ndx]);
+	return $.makeArray(args).slice(ndx);
 }
 
 /**
@@ -221,18 +210,6 @@ function merge(dst, src, cb) {
 			for(var i=0; i<o.length; ++i) this.push(o[i]);
 		}
 		return this; 
-	});
-
-[].without || (Array.prototype.without =
-	/**
-	 * Concatenate array(s) to this one
-	 * @memberOf Array#
-	 * @param {Array} [paramarray]
-	 * @name without
-	 */
-	function(){
-		var excl = beArrg(arguments);
-		return maf(this, function(n, o) { return excl.include(o)?null:o; } ); 
 	});
 
 [].union || (Array.prototype.union = 
@@ -269,7 +246,10 @@ function merge(dst, src, cb) {
 	});
 
 [].include || (Array.prototype.include = 
-	function(itm) { return -1< $j.inArray(itm, this); });
+	function(itm) { return -1< $.inArray(itm, this); });
+
+[].indexOf || (Array.prototype.indexOf = 
+	function(itm) { return $.inArray(itm, this); });
 
 
 /** @constant */

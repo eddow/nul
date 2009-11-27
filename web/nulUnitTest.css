@@ -17,15 +17,24 @@
 }
 
 #tests {
+	empty-cells: hide;
 	font-family: monospace;
 	font-size: 10pt;
-	overflow: show;
+}
+
+#tests input[type="button"]{
+	font-size: 8pt;
+	width: 16px;
+	height: 16px;
 }
 
 #tests th {
 	text-align: left;
 	border: 1px #888888 solid;
 	background: #CCCCCC url(../3rd/jquery/theme/images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
+}
+#tests td {
+	white-space: nowrap;
 }
 
 #tests tbody th:first-child { padding-left: 16px; }
@@ -37,3 +46,29 @@
 	overflow: auto;
 	height: 100%;
 }
+
+#progress {
+	height: 16px;
+	width: 100%;
+	border: 1px black solid;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+#progress div {
+	display: inline-block;
+	position: relative;
+	height: 16px;
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.rslt-succ { background-color: lightgreen; }
+.rslt-unk { background-color: lightblue; }
+.rslt-fail { background-color: pink; }
+.rslt-err { background-color: red; }
+.rslt-wrk { background-color: lightgray; }
+.rslt-tdo { background-color: white; }
+
