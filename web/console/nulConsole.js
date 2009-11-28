@@ -59,7 +59,7 @@ csl = {
 	},
 	
 	init: function() {
-		if('undefined' == typeof nul || nul.loading) return;
+		if('undefined' == typeof nul) return;
 		csl.init = function() {};
 		if(!window.console) $('#loggingOption').hide();
 

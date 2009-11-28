@@ -48,7 +48,7 @@ nul.loading.styles = [
 'web/console/null.console'
 ];
 
-nul.loading.files = [
+nul.loading.scripts = [
 '3rd/jsclass/core',		//must be first
 
 '3rd/jquery/jquery',
@@ -112,7 +112,7 @@ nul.loading.files = [
 'web/console/null.console'
 ];
 
-nul.loading.total = nul.loading.files.length;
+nul.loading.total = nul.loading.scripts.length;
 
 nul.loading.suffix = '';
 
@@ -130,38 +130,34 @@ nul.loading.onreadystatechange = function() {
 	}
 };
 
-nul.loading.loaded = function(wwl) {
-	nul.loading.loaded.already[wwl] = true;
-	if(nul.loading.loaded.already.document && nul.loading.loaded.already.scripts) {
-		var toProvide = {};
-		var toLoad = [];
-		for(var l in nul.load)
-			if(!function(){}[l]) {
-				if(!nul.load[l].provide) nul.load[l].provide = [];
-				if(!nul.load[l].provide.include(l)) nul.load[l].provide.push(l);
-				for(var p=0; nul.load[l].provide[p]; ++p)
-					toProvide[nul.load[l].provide[p]] = 1+(toProvide[nul.load[l].provide[p]]||0);
-				nul.load[l].name = l;
-				toLoad.push(nul.load[l]);
-			}
-		while(toLoad.length) {
-			var nxtLd = toLoad.shift();
-			var cn = true;
-			if(nxtLd.use)
-				for(var u in nxtLd.use)
-					if(toProvide[u]) cn = false;
-			if(cn) {
-				nul.loading.status('loader', nxtLd.name);
-				nxtLd.apply(document);
-				for(var p=0; nxtLd.provide[p]; ++p)
-					--toProvide[nxtLd.provide[p]];
-			} else toLoad.push(nxtLd);
+nul.loading.loaded = function() {
+	var toProvide = {};
+	var toLoad = [];
+	for(var l in nul.load)
+		if(!function(){}[l]) {
+			if(!nul.load[l].provide) nul.load[l].provide = [];
+			if(!nul.load[l].provide.include(l)) nul.load[l].provide.push(l);
+			for(var p=0; nul.load[l].provide[p]; ++p)
+				toProvide[nul.load[l].provide[p]] = 1+(toProvide[nul.load[l].provide[p]]||0);
+			nul.load[l].name = l;
+			toLoad.push(nul.load[l]);
 		}
-		nul.loading.status('end');
-		delete nul.loading;
+	while(toLoad.length) {
+		var nxtLd = toLoad.shift();
+		var cn = true;
+		if(nxtLd.use)
+			for(var u in nxtLd.use)
+				if(toProvide[u]) cn = false;
+		if(cn) {
+			nul.loading.status('loader', nxtLd.name);
+			nxtLd.apply(document);
+			for(var p=0; nxtLd.provide[p]; ++p)
+				--toProvide[nxtLd.provide[p]];
+		} else toLoad.push(nxtLd);
 	}
+	nul.loading.status('end');
+	delete nul.loading;
 };
-nul.loading.loaded.already = {/*document:true TODO 1: fix chrome no 'onload'*/};
 
 nul.loading.status = function(type, arg) {
 	if('undefined'== typeof $) return;	//Need jquery to be loaded
@@ -176,13 +172,12 @@ nul.loading.status = function(type, arg) {
 };
 
 nul.loading.addNexScriptRef = function() {
-	if('undefined'!= typeof $ && !nul.loading.jquery) {
-		if('complete' == document.readyState) nul.loading.loaded('document');	//TODO 3: check which ready-state
-		else $(document).ready(function () { nul.loading.loaded('document');});
-		nul.loading.jquery = true;
+	var sf = nul.loading.scripts.shift();
+	if(!sf) {
+		if('complete' == document.readyState) nul.loading.loaded();
+		else $(document).ready(nul.loading.loaded);
+		return;
 	}
-	var sf = nul.loading.files.shift();
-	if(!sf) return nul.loading.loaded('scripts');
 	nul.loading.status('script', sf);
 	nul.loading.addRef('script', {
 		type: 'text/javascript',
