@@ -84,7 +84,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	 */
 	pop: function(accepted)
 	{
-		if('eof'== this.token.type) throw nul.syntaxException('EOF', 'End of file reached.');
+		if('eof'== this.token.type) nul.ex.syntax('EOF', 'End of file reached.', this);
 		var rv = this.peek(accepted);
 		if(rv) this.next();
 		return rv;
@@ -110,7 +110,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	expect: function(value, rv)
 	{
 		if(!this.take(value))
-			throw nul.syntaxException('EXP', '"'+value+'" expected');
+			nul.ex.syntax('EXP', '"'+value+'" expected', this);
 		return rv;
 	},
 	/**
@@ -136,7 +136,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	rawExpect: function(value, rv)
 	{
 		if(!this.rawTake(value))
-			throw nul.syntaxException('EXP', '"'+value+'" expected');
+			nul.ex.syntax('EXP', '"'+value+'" expected', this);
 		return rv;
 	},
 	/**

@@ -172,7 +172,7 @@ nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.repres
 			this.prepStack[n].setSelfRef = evl.value.ndx;
 		}
 
-		if(evl.hasChanged) nul.debug.log('Represent')(this.dbgName, 'Representation', evl.changed, xpr, p);
+		if(evl.hasChanged) nul.debug.info('Represent')('Replacement', this.dbgName, evl.changed, xpr, p);
 		return evl.changed;
 	}
 });

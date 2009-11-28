@@ -3,23 +3,21 @@
 <html>
 	<head>
 		<title>NUL console</title>
-		<link href="../../lng/txt/out/null.txt.html.css" rel="stylesheet" type="text/css"></link>
-		<link href="../../3rd/jquery/theme/ui.css" rel="stylesheet" type="text/css"></link>
-		<link href="nulConsole.css" rel="stylesheet" type="text/css"></link>
+		<link href="nulConsole.css" rel="stylesheet" type="text/css" />
 		<script type="text/javascript" src="../../3rd/codemirror/codemirror.js"></script>
-		<script type="text/javascript" src="../../3rd/jquery/jquery.js"></script>
-		<script type="text/javascript" src="../../3rd/jquery/ui.all.js"></script>
-		<script type="text/javascript" src="../../3rd/jquery/ui.layout.js"></script>
-		<script type="text/javascript" src="../../3rd/jquery/emw.js"></script>
 		<script type="text/javascript" src="nulConsole.js"></script>
+
+
 	</head>
 	<body onload="csl.init();">
 		<ul>
 			<li><a href="#_nul_globalKlgVw">Global knowledge</a></li>
 			<li><a href="#_nul_valuesVw">Values</a></li>
 			<li><a href="#_nul_postsVw">Logs</a></li>
+			<a href="#" name="con_close" class="command ui-icon ui-icon-close console-control"></a>
+			<a href="#" name="con_free" class="command ui-icon ui-icon-copy console-control"></a>
+			<a href="#" name="con_link" class="command ui-icon ui-icon-link console-control"></a>
 		</ul>
-		<a class="ui-icon ui-icon-close console-control"></a>
 		<div id="conToolBar"><!--
 			
 			Reset
@@ -45,7 +43,7 @@
 			--><span class="tabbed toolFor_nul_valuesVw"><a href="#" title="Auto break" id="dbgBreakLimited" class="checkable">
 				<span class="popUp"><input id="dbgBreakLimit" type="text" size="10" value="500" /></span>
 				<span class="checker ui-icon ui-icon-arrowthickstop-1-e"></span>
-			</a></span><span class="tabbed toolFor_nul_valuesVw"><a href="#" title="Logging" class="checkable">
+			</a></span><span id="loggingOption" class="tabbed toolFor_nul_valuesVw"><a href="#" title="Logging" class="checkable">
 				<ul id="dbgLogSelect" class="popUp"></ul>
 				<span class="checker ui-icon ui-icon-note"></span>
 			</a></span><!--

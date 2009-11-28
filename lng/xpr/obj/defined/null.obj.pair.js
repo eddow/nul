@@ -67,7 +67,7 @@ nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 			return (new nul.obj.pair(
 				klg.unify(this.first.value, o.first.value),
 				klg.unify(this.second, o.second))).built();
-		nul.debug.log('error')('Warning', 'pair', 'Pair fuzzy comparison not yet implemented');
+		nul.debug.warn('error')('Pair fuzzy comparison not yet implemented');
 		if(this.toString() === o.toString()) return true;
 		nul.fail(o, ' not unifiable pair');
 	},

@@ -39,10 +39,6 @@ nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
 	sum_dependance: function() {
 		var rv = this.callSuper();
 		if(this.selfRef) {
-			/*if(nul.debug.assert) assert(
-					rv.usages[nul.obj.local.self.ref] &&
-					rv.usages[nul.obj.local.self.ref].local[this.selfRef],
-					'Self-reference consistence.');*/
 			if(rv.usages[nul.obj.local.self.ref] && rv.usages[nul.obj.local.self.ref].local[this.selfRef]) {
 				delete rv.usages[nul.obj.local.self.ref].local[this.selfRef];
 				if(isEmpty(rv.usages[nul.obj.local.self.ref].local))

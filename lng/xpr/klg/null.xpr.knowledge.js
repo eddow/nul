@@ -484,7 +484,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 
 		//Reduce IOR3s : if one has one choice, just merge this choice and forget about ior3
  		for(i=0; this.ior3[i];) switch(this.ior3[i].choices.length) {
- 		case 0: throw nul.internalException('IOR3 Always has a first unconditional');
+ 		case 0: nul.ex.internal('IOR3 Always has a first unconditional');
  		case 1:
  			this.merge(this.ior3[0]);
  			this.ior3.splice(i, 1);

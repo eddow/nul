@@ -40,9 +40,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  		this.reAccede();	//TODO O: maintaint access while pruning instead of rebuilding it
  		
  		return this;
- 	}.describe('Prune', function(value) {
-		return this.name+': ' + (value?(value.dbgHtml()+' ; '):'') + this.dbgHtml();
-	}),
+ 	}.describe('Prune'),
 
 	/**
 	 * Make the need envelope of locals.
@@ -131,47 +129,41 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  		var alreadyBlg = {};	//TODO 3: make a 'belong' this.access ?
  		var toBelong = [];
  		var ownClass = true;
- 		try {
-	 		while(toUnify.length || toBelong.length) {
-	 			while(toUnify.length) {
-		 			var v = toUnify.shift();
-		 			nul.xpr.use(v);
-		 			if(this.access[v]) {
-		 				v = this.access[v];
-		 				if(dstEqCls=== v) {}
-		 				else if(!v.summarised) {	//If not summarised, then it's a class built in another unification higher in the stack
-		 					ownClass = false;
-		 					this.unaccede(dstEqCls);
-		 					dstEqCls.merged = v;
-		 					v = dstEqCls;
-		 					dstEqCls = v.merged;
-		 				}
-		 				else this.removeEC(v);
-		 			}
-		 			if(dstEqCls=== v) {}
-		 			else if('eqCls'== v.expression) {
-		 				toUnify.pushs(v.equivls);
-						toBelong.pushs(v.belongs);
-						dstEqCls.hasAttr(v.attribs, this);
-		 			} else {
-		 				this.access[v] = dstEqCls;
-		 				dstEqCls.isEq(v, this);
-		 			}
-		 		}
-		 		if(toBelong.length) {
-		 			var s = toBelong.shift();
-					alreadyBlg[s] = true;
-					dstEqCls.isIn(s, this);
-		 		}
+ 		while(toUnify.length || toBelong.length) {
+ 			while(toUnify.length) {
+	 			var v = toUnify.shift();
+	 			nul.xpr.use(v);
+	 			if(this.access[v]) {
+	 				v = this.access[v];
+	 				if(dstEqCls=== v) {}
+	 				else if(!v.summarised) {	//If not summarised, then it's a class built in another unification higher in the stack
+	 					ownClass = false;
+	 					this.unaccede(dstEqCls);
+	 					dstEqCls.merged = v;
+	 					v = dstEqCls;
+	 					dstEqCls = v.merged;
+	 				}
+	 				else this.removeEC(v);
+	 			}
+	 			if(dstEqCls=== v) {}
+	 			else if('eqCls'== v.expression) {
+	 				toUnify.pushs(v.equivls);
+					toBelong.pushs(v.belongs);
+					dstEqCls.hasAttr(v.attribs, this);
+	 			} else {
+	 				this.access[v] = dstEqCls;
+	 				dstEqCls.isEq(v, this);
+	 			}
 	 		}
-	 		if(ownClass) this.ownEC(dstEqCls);
- 		} catch(err) {
- 			throw nul.exception.notice(err);
+	 		if(toBelong.length) {
+	 			var s = toBelong.shift();
+				alreadyBlg[s] = true;
+				dstEqCls.isIn(s, this);
+	 		}
  		}
+ 		if(ownClass) this.ownEC(dstEqCls);
 		return dstEqCls;
- 	}.describe('Unification', function() {
- 		return map(beArrg(arguments), function() { return this.dbgHtml(); }).join(' = ');
- 	}),
+ 	}.describe('Unification'),
 
  	/**
  	 * Get a pruned possible
@@ -182,7 +174,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
 		var representer = new nul.klg.represent(this);
-		nul.debug.log('Represent')(this.name, 'Knowledge', this);
+		nul.debug.info('Represent')('Representants', this.name, this);
 		for(var i=0; i<this.eqCls.length;) {
 			var ec = this.eqCls[i];
 			var dlc = nul.debug.lc;
@@ -196,7 +188,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 				//this.unification has effect on other equivalence classes that have to change in the representer
 				representer.invalidateCache();
 				
-				nul.debug.log('Represent')(this.name, 'Knowledge', this);
+				nul.debug.info('Represent')('Representants', this.name, this);
 				i = 0;
 			}
 		}
@@ -215,10 +207,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 		this.pruned(value);
  		
  		return new nul.xpr.possible(value, this.built());
- 	}.describe('Wrapping', function(value) {
- 		//TODO4: standardise the knowledge name in logs
-		return this.name+': ' + value.dbgHtml() + ' ; ' + this.dbgHtml();
-	}),
+ 	}.describe('Wrapping'),
 	
 	
 	/**

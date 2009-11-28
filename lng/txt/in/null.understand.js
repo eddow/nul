@@ -57,15 +57,15 @@ nul.understanding = {
 			case ';': return ops[0];
 			case '?': return ops[1];
 			case '..':
-				if('number'!= ops[0].expression) throw nul.semanticException('RNG', 'Range can only be defined with immediates');
-				if('number'!= ops[1].expression) throw nul.semanticException('RNG', 'Range can only be defined with immediates');
+				if('number'!= ops[0].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[0]);
+				if('number'!= ops[1].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[1]);
 				return new nul.obj.range(ops[0].value, ops[1].value);
 			case ':': 
 				var rv = ub.createFreedom(nul.understanding.rvName, false);
 				ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
 				return rv;
 			default:
-				throw nul.internalException('Unknown operator: "'+operator+'"');
+				nul.ex.internal('Unknown operator: "'+operator+'"');
 		}
 	},
 	/**
@@ -116,7 +116,7 @@ nul.understanding = {
 			}
 			break;
 		default:
-			throw nul.internalException('unknown atom type: ' + this.type + ' - ' + this.value);
+			nul.ex.internal('unknown atom type: ' + this.type + ' - ' + this.value);
 		}
 		return nul.obj.litteral.make(value);
 	},
@@ -156,7 +156,7 @@ nul.understanding = {
 	 * @return {nul.xpr.object}
 	 */
 	definition: function(ub) {
-		if('_'== this.decl) throw nul.semanticException('JKD', 'Cannot declare joker !');
+		if('_'== this.decl) nul.ex.semantic('JKD', 'Cannot declare joker !');
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
 	},
@@ -234,10 +234,10 @@ nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 	 * @param {String} name
 	 * @param {nul.xpr.object} value
 	 * @return {nul.xpr.object}
-	 * @throw {nul.semanticException}
+	 * @throw {nul.ex.semantic}
 	 */
 	createFreedom: function(name, value) {
-		if(this.parms[name]) throw nul.semanticException('FDT', 'Freedom declared twice: '+name);
+		if(this.parms[name]) nul.ex.semantic('FDT', 'Freedom declared twice: '+name);
 		var uniqueName = true;
 		if(false===value) uniqueName = false;
 		if(!value) value = this.klg.newLocal(name);
@@ -249,7 +249,7 @@ nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 	 * Applies the understandment process to a compiled node
 	 * @param {nul.compiled} cnt
 	 * @return {nul.xpr.object}
-	 * @throw {nul.semanticException}
+	 * @throw {nul.ex.semantic}
 	 */
 	understand: function(cnt) {
 		return this.klg.wrap(cnt.understand(this));
@@ -273,7 +273,7 @@ nul.understanding.base.set = new JS.Class(nul.understanding.base, /** @lends nul
 	 * Applies the understandment process to a compiled node
 	 * @param {nul.compiled} cnt
 	 * @return {nul.obj.pair|nul.obj.empty}
-	 * @throw {nul.semanticException}
+	 * @throw {nul.ex.semantic}
 	 */
 	understand: function(cnt) {
 		var rv;

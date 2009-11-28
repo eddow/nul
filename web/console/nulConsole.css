@@ -32,7 +32,7 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 #_nul_benchmarkVw th {
 	text-align: left;
 	font-weight: normal;
-	background: #CCCCCC url(../../3rd/jquery/theme/images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
+	background: url(../../3rd/jquery/theme/images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll;
 }
 
 #_nul_console_pages > .ui-tabs-panel {
@@ -42,11 +42,11 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 }
 
 .CodeMirror-line-numbers {
-  padding: .4em;
-  font-family: monospace;
-  font-size: 10pt;
-  color: #aaaaaa;
-  background-color: #eeeeee;
+	padding: .4em;
+	font-family: monospace;
+	font-size: 10pt;
+	color: #aaaaaa;
+	background-color: #eeeeee;
 }
 
 #logs .Knowledge.log { background-color: pink; }
@@ -72,7 +72,6 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 	margin: 0;
 }
 #conToolBar a {
-	/*border: outset lightgrey 1px;*/
 	display: inline-block;
 	text-decoration: none;
 	outline-style: none;
@@ -140,10 +139,16 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 	background: #CCCCCC url(images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
 }
 
-.console-control {
+.console-control.command {
 	float: right;
+	text-decoration: none;
+	outline-style: none;
+	background-color: brown;
+	border: 1px outset;
+	-moz-border-radius: 4px; -webkit-border-radius: 4px;
 }
 
 .console-control:hover {
 	border: 1px solid darkgrey;
+	background-color: darkred;
 }

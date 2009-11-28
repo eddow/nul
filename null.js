@@ -202,15 +202,10 @@ nul.loading();
  * @return {Boolean}
  */
 function urlOption(opt) {
-	var srch = window.location.href.split('?')[1];
+	var srch = (window.location.href.split('?')[1]||'').split('#')[0];
 	if(!srch) return;
 	srch = '&'+srch+'&';
 	var rx = new RegExp('\\&'+opt+'(\\=(.*?))?\\&');
 	var mh = rx.exec(srch);
 	return mh?(mh[2]||true):false;
 }
-/*
-window.onerror = function(a, b, c) {
-	alert(a+'\n'+b+'\n'+c);
-};
-*/

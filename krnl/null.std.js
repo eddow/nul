@@ -17,7 +17,7 @@ nul.extend( /** @lends nul */{
 	 * Failure object that is thrown and caught
 	 * @constant
 	 */
-	failure: 'failure',
+	failure: 'failure',	//TODO 1: failure becomes a nul.ex
 	/**
 	 * List of failures that happened during these trys
 	 */
@@ -34,14 +34,14 @@ nul.extend( /** @lends nul */{
 	 * Make several try/catch; accept some failures (debug purpose)
 	 */
 	trys: function(cb, name, obj, args) {
-		if(!nul.debug || !nul.debug.logging || !nul.debug.acts) return cb.apply(obj);
-		return nul.debug.trys(cb, name, obj, beArrg(arguments, 3));
+		/*if(!nul.debug || !nul.debug.logging || !nul.debug.acts)*/ return cb.apply(obj);
+		//return nul.debug.trys(cb, name, obj, beArrg(arguments, 3));
 	},
 	/**
 	 * Catch only failure.
 	 */
 	failed: function(err) {
-		if(nul.failure!= err) throw nul.exception.notice(err);
+		if(nul.failure!= err) throw nul.ex.be(err);
 	},
 	
 	/**
@@ -65,8 +65,8 @@ nul.extend( /** @lends nul */{
 	 * Compile a text and understand it
 	 * @param {String} txt
 	 * @return {nul.expression}
-	 * @throw {nul.semanticException}
-	 * @throw {nul.syntaxException} 
+	 * @throw {nul.ex.semantic}
+	 * @throw {nul.ex.syntax} 
 	 */
 	nulRead: function(txt, glbNm)
 	{
@@ -84,8 +84,8 @@ nul.extend( /** @lends nul */{
 	 * Compile an XML content and understand it
 	 * @param {XML} txt
 	 * @return {nul.expression}
-	 * @throw {nul.semanticException}
-	 * @throw {nul.syntaxException} 
+	 * @throw {nul.ex.semantic}
+	 * @throw {nul.ex.syntax} 
 	 */
 	xmlRead: function(txt, glbNm)
 	{
@@ -117,11 +117,9 @@ nul.extend( /** @lends nul */{
 			rv = gKlg.attribute(nul.execution.evalLocal, name);
 		} catch(x) {
 			nul.failed(x);
-			throw nul.semanticException('KNW', 'The evaluation of '+name+' failed');
+			nul.ex.semantic('KNW', 'The evaluation of '+name+' failed', set);
 		}
 		nul.execution.globalKlg = gKlg;
-		/*if(nul.debug.assert) assert(!rv.dependance().usages['global'],
-				'Knowning is enough to unreference global knowledge');*/
 		return rv;
 	},
 	
@@ -129,8 +127,8 @@ nul.extend( /** @lends nul */{
 	 * Compile a text and understand it in a fresh execution context
 	 * @param {String} txt
 	 * @return {nul.expression}
-	 * @throw {nul.semanticException}
-	 * @throw {nul.syntaxException} 
+	 * @throw {nul.ex.semantic}
+	 * @throw {nul.ex.syntax} 
 	 */
 	read: function(txt, glbNm)
 	{
