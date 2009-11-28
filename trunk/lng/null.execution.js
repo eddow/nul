@@ -142,13 +142,13 @@ nul.execution = {
 	
 	/**
 	 * Called when the page should have a fixed value (when all libs are loaded)
-	 * @throw {nul.semanticException}
+	 * @throw {nul.ex.semantic}
 	 */
 	existOnce: function() {
 		//TODO 2: verify that all attribs of evalLocal are context-free from 'global'
 		if(nul.execution.globalKlg.ior3.length || 2!= nul.execution.globalKlg.nbrLocals())	//kill globalKlg ?
 			//TODO 2: specify which .attr is too fuzzy
-			throw nul.semanticException('GLB', 'The global knowledge is too fuzzy');
+			nul.ex.semantic('GLB', 'The global knowledge is too fuzzy');
 	}
 };
 

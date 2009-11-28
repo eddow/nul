@@ -17,12 +17,13 @@ nul.dependance = new JS.Class(/** @lends nul.dependance# */{
 		this.usages = {};
 		if(dep) {
 			nul.obj.is(dep);
+			//if(obj) this.depend(dep, 'local', ndx, obj); else 
 			if(dep.isA(nul.obj.local)) this.depend(dep.klgRef, 'local', dep.ndx, dep);
 			else if(dep.isA(nul.obj.data)) {
 				var ctxName = dep.source.context.toString();
 				if(!nul.dependance.contexts[ctxName]) nul.dependance.contexts[ctxName] = dep.source.context; 
 				this.depend(ctxName, 'local', dep.source.index, dep);
-			} else throw nul.internalException('No dependance defined for '+dep.expression);
+			} else nul.ex.internal('No dependance defined for '+dep.expression);
 		}
 	},
 	
@@ -89,9 +90,9 @@ nul.dependance = new JS.Class(/** @lends nul.dependance# */{
 			var ld = this.usages[krf].local;
 			var rld = [];
 			for(var l in ld) rld.push(html.td(l+':'+ld[l].number));
-			rv.push(html.th(krf) + rld.join());
+			rv.push(html.th(krf) + rld.join(''));
 		}
-		return html.table(rv.join());
+		return html.table(rv.join(''));
 	},
 	
 	/**

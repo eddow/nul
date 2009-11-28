@@ -205,8 +205,7 @@ function merge(dst, src, cb) {
 	function(){
 		for(var j=0; j<arguments.length; ++j) {
 			var o = arguments[j];
-			if(this===o)
-				throw nul.internalException('Catenating self');
+			if(this===o) nul.ex.internal('Catenating self');
 			for(var i=0; i<o.length; ++i) this.push(o[i]);
 		}
 		return this; 
@@ -274,14 +273,7 @@ Element.addMethods({
 $o = {
 	clone: function(o) {
 		var rv = {};
-		for(a in o) rv[a] = o[a];
+		for(var a in o) rv[a] = o[a];
 		return rv;
 	}
 };
-
-/*
-window.onerror = function(a,b,c) {
-	alert(a+b+c);
-	console.trace();
-};
-*/

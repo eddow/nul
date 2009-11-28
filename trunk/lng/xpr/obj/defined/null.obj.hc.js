@@ -24,12 +24,12 @@ nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 	 * @param {nul.obj.defined} key
 	 * @return {nul.xpr.object|nul.data|nul.xpr.possible[]}
 	 */
-	seek: function(key) { throw nul.semanticException('CNT', this.expression+' cannot retrieve items'); },
+	seek: function(key) { nul.ex.semantic('CNT', this.expression+' cannot retrieve items', this); },
 	/**
 	 * Abstract : List the direct values of this set (the values that are not lambdas)
 	 * @return {nul.xpr.object|nul.data|nul.xpr.possible[]}
 	 */
-	listed: function() { throw nul.semanticException('CNT', this.expression+' cannot select items'); },
+	listed: function() { nul.ex.semantic('CNT', this.expression+' cannot select items', this); },
 	
 	/**
 	 * {@link nul.obj.hc.filter} the {@link nul.obj.hc#.seek} along the expected object to select

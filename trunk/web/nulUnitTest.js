@@ -147,7 +147,8 @@ nul.unitTest.fcts = {
 		}
 		rw.state = state;
 		var inm = { unk: 'help', succ: 'check', fail: 'closethick', err: 'alert', wrk: 'gear' };
-		$(rw).find('td.state').html('<span class="ui-icon ui-icon-'+inm[state]+' rslt-'+state+'"/>');
+		//$(rw).find('td.state').html('<span class="ui-icon ui-icon-'+inm[state]+' rslt-'+state+'"/>');
+		$($(rw).children()[1]).html('<span class="ui-icon ui-icon-'+inm[state]+' rslt-'+state+'"/>');
 		return state;
 	},
 	
@@ -192,9 +193,7 @@ nul.unitTest.fcts = {
 			try {
 				v = nul.data.query(nul.nulRead(rw.test.xpr)).toFlat();
 			} catch(err) {
-				nul.exception.notice(err);
-				nul.unitTest.setResult(rw, 'err', err.message || err);
-				if(nul.erroneusJS && console && console.firebug) console.error(nul.erroneusJS);
+				nul.unitTest.setResult(rw, 'err', nul.ex.be(err).message);
 				v = null;
 			}
 			if(v) {

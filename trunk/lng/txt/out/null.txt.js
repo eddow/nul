@@ -6,28 +6,27 @@
  *
  *--------------------------------------------------------------------------*/
  
-/**
- * Text output kernel
- * @class Singleton
- */
-nul.txt = new JS.Singleton({
+nul.txt = new JS.Class(/** @lends nul.txt */{
+	/**
+	 * Text output kernel
+	 * @construct
+	 */
+	initialize: function() {
+		this.drawing = [];
+	},
 	/**
 	 * Main function, making a string out of an expression
 	 * @param {nul.expression} xpr
 	 */
 	toText: function(xpr) {
 		if(!this.beginDraw(xpr)) return this.recurStr;
-		var ctx = this.enterContext(xpr);
 		try {
 			return this.wrap(
 				(this.draw[xpr.expression]||this.draw.other)
-					.apply(this.outp(xpr), [this.context]),
+					.apply(this.outp(xpr)),
 				xpr);
 		}
-		finally {
-			this.leaveContext(ctx);
-			this.endDraw(xpr);
-		}
+		finally { this.endDraw(xpr); }
 	},
 	/**
 	 * Pairs can have several writing depending on their constitution : singleton { 1 }, list (1, 2, 3) or set { 1 [] 2 [] 3 }.
@@ -59,37 +58,5 @@ nul.txt = new JS.Singleton({
 	endDraw: function(xpr) {
 		if(nul.debug.assert) assert(xpr==this.drawing.pop(), 'Drawing consistency');
 		else this.drawing.pop();
-	},
-	/**
-	 * Event managing the 'collapse' command.
-	 * @param {HTMLTable} tbl The collapsing table or one of its son
-	 * @param {Number} lc The table item to collapse (its collapser begin or its collapser end index)
-	 * @event
-	 */
-	collapse: function(tbl, lc) {
-		while(tbl && !tbl.clpsSstm) tbl = tbl.parentNode;
-		assert(tbl,'No orphan collapsers');
-		return tbl.clpsSstm.collapse(lc);
-	},
-	/**
-	 * Event managing the 'uncollapse' command.
-	 * @param {HTMLTable} tbl The collapsing table or one of its son
-	 * @param {Number} lc The table item to collapse (its collapser begin or its collapser end index)
-	 * @event
-	 */
-	uncollapse: function(tbl, lc) {
-		while(tbl && !tbl.clpsSstm) tbl = tbl.parentNode;
-		assert(tbl,'No orphan collapsers');
-		return tbl.clpsSstm.uncollapse(lc);
-	},
-//////////////// Knowledge data retrieval
-	context: {},
-	enterContext: function(xpr) {
-		if(!xpr.knowledge || this.context[xpr.knowledge.name]) return;
-		return this.context[xpr.knowledge.name] = xpr.knowledge;
-	},
-	leaveContext: function(xpr) {
-		if(xpr)
-			delete this.context[xpr.name];
 	}
 });

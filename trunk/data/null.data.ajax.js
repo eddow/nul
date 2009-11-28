@@ -16,20 +16,23 @@ nul.data.ajax = {
 	 * @return {nul.xpr.object} An undefined object, meaning "Not yet loaded" that will be replaced later. [TODO O]
 	 */
 	load: function(url, objFct) {
-		var rq = new Ajax.Request(url, {
-			method: 'get',
-			asynchronous: false,
-			onException: function(rq, x) {
+		var rq = $.ajax({
+			type: "get",
+			url: url,
+			async: false,
+			error: function(rq, x) {
 				switch(x.code) {
-					case 1012: throw nul.semanticException('AJAX', 'Ajax failure : Not respecting the <a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>');
-					default: throw nul.semanticException('AJAX', 'Ajax failure : '+x);
+					case 1012: alert('AJAX', 'Ajax failure : Not respecting the <a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>');
+					default: alert('AJAX', 'Ajax failure : '+x);
 				}
 			}
 		});
-		return objFct(rq.transport);
+		return objFct(rq);
 	},
+	
+	//TODO C
 	loadNul : function(url, id) {
-		return nul.data.ajax.load(url,
+		nul.data.ajax.load(url,
 			function(t) { return nul.read(t.responseText, id || url); } );
 	}
 };
@@ -61,7 +64,7 @@ nul.load.ajax = function() {
 				 * @return {nul.xpr.possible}
 				 */
 				retrieve: function(pnt, img) {
-					if('string'!= pnt.expression) throw nul.semanticException('LIB', 'Libraries files are retrieved from a string URL');
+					if('string'!= pnt.expression) nul.ex.semantic('LIB', 'Libraries files are retrieved from a string URL', pnt);
 					var libSet = nul.data.ajax.loadNul(pnt.value);
 					var klg = new nul.xpr.knowledge();
 					klg.belong(img, libSet);

@@ -6,66 +6,135 @@
  *
  *--------------------------------------------------------------------------*/
  
-//TODO D
-/**
- * @class
- */
-nul.exception = function(type, code, msg, chrct)
-{
-	var err = { nul: true, type: type, message: msg, code: code, chrct: chrct };
-	if(!nul.erroneus) nul.erroneus = err;
-	else nul.erroneus.follow = err;
-	try { nul.debug.log('error')('Error', type, msg); }
-	catch(err) { alert('Error on exception Log : ', err); }
-	return nul.erroneus;
-};
-
-/**
- * Manage an exception and sets the globals if there was JavaScript problems
- */
-nul.exception.notice = function(err)
-{
-	if(((err.fileName && err.stack) || 'number'== typeof err.number) && !nul.erroneus) {
-		nul.internalException('Javascript error : '+err.message);
-		nul.erroneusJS = err;
+nul.ex = new JS.Class(/** @lends nul.ex# */{
+	/** @ignore */
+	//include: [JS.Observable],
+	/**
+	 * Exception thrown by NUL
+	 * @construct
+	 */
+	initialize: function(name, msg) {
+		this.message = msg;
+		this.code = name;
+		//this.fire();
+	},
+	/**
+	 * Throw this exception
+	 */
+	raise: function() { throw this; },
+	extend: {
+		be: function(x) {
+			if(window.console && x.fileName && x.stack && 'number'== typeof x.lineNumber) {
+				console.error(x);
+				return new nul.ex.js('fbug', x.message, x.fileName, x.lineNumber);
+			}
+			if(!x.isA || !x.isA(nul.ex)) return new nul.ex.unk(x);
+			return x;
+		},
+		hook: function(wnd) {
+			window.onerror = nul.ex.js.onerror;
+		}, 
+		/**
+		 * When an exception function is called without 'new', just throw a new one
+		 */
+		initialize: function() {
+			(new arguments.callee.caller(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6])).raise();
+		}
 	}
-	return err;
-};
+});
 
-/**
- * An exception considering what is expressed by the NUL program
- * @constructs
- * @methodOf nul.exception
- * @param {String} code
- * @param {String} msg
- * @param {String} chrct
- */
-nul.semanticException = function(code, msg, chrct)
-{
-	return nul.exception('semantic', 'SEM'+code, msg, chrct);
-};
+nul.ex.js = new JS.Class(nul.ex, /** @lends nul.ex.js# */{
+	/**
+	 * Exception thrown by JavaScript interpreter on JavaScript error.
+	 * @extend nul.ex
+	 * @construct
+	 */
+	initialize: function(name, msg, url, ln) {
+		this.callSuper(name, msg);
+		this.file = url;
+		this.line = ln;
+	},
+	/**
+	 * 
+	 */
+	present: function() {
+	},
+	extend: /** @lends nul.ex.js */{
+		/**
+		 * window.onerror end-point
+		 */
+		onerror: function(msg, url, ln) {
+			if(window.console) return false;
+			throw new nul.ex.js('auto', msg, url, ln);
+		}
+	},
+	toString: function() { return 'JavaScript error'; }
+});
 
-/**
- * An exception considering how is written a NUL program
- * @constructs
- * @methodOf nul.exception
- * @param {String} code
- * @param {String} msg
- * @param {String} chrct
- */
-nul.syntaxException = function(code, msg, chrct)
-{	//TODO 3: line/char position in text
-	return nul.exception('syntax', 'SYN'+code, msg, chrct);
-};
+nul.ex.hook(window);
 
-/**
- * A bug in the NUL interpreter - ideally never raised
- * @constructs
- * @methodOf nul.exception
- * @param {String} msg
- * @param {String} chrct
- */
-nul.internalException = function(msg, chrct)
-{
-	return nul.exception('internal', 'INT', msg, chrct);
-};
+nul.ex.semantic = new JS.Class(nul.ex, /** @lends nul.ex.semantic# */{
+	/**
+	 * Exception thrown by the NUL interpreter when the semantic of the NUL text is wrong
+	 * @extend nul.ex
+	 * @construct
+	 */
+	initialize: function(name, msg, xpr) {
+		this.callSuper();
+		this.xpr = xpr;
+	},
+	toString: function() { return 'Semantic error'; }
+});
+
+nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
+	/**
+	 * Exception thrown by the NUL interpreter when the syntax of the NUL text is wrong
+	 * @extend nul.ex
+	 * @construct
+	 */
+	initialize: function(name, msg, tknzr) {
+		this.callSuper();
+		//this.line = ln;
+		//this.clmn = cl;
+	},
+	toString: function() { return 'Syntax error'; }
+});
+
+nul.ex.unk = new JS.Class(nul.ex, /** @lends nul.ex.unk# */{
+	/**
+	 * Exception thrown by we don't know where 
+	 * @extend nul.ex
+	 * @construct
+	 */
+	initialize: function(obj) {
+		this.callSuper('wtf', obj.toString());
+		this.object = obj;
+	},
+	toString: function() { return 'Unknown error'; }
+});
+
+nul.ex.internal = new JS.Class(nul.ex, /** @lends nul.ex.internal# */{
+	/**
+	 * A bug in the NUL interpreter - ideally never raised
+	 * @extend nul.ex
+	 * @construct
+	 */
+	initialize: function(msg) {
+		this.callSuper('bug', msg);
+		if(window.console) console.error(msg);
+	},
+	toString: function() { return 'Internal error'; }
+});
+
+nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
+	/**
+	 * A bug in the NUL interpreter - ideally never raised
+	 * @extend nul.ex
+	 * @construct
+	 */
+	initialize: function(msg) {
+		this.callSuper('assertion', msg);
+	},
+	toString: function() { return 'Assertion failure'; }
+});
+

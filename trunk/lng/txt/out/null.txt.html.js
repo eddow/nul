@@ -81,9 +81,10 @@ html = {
 
 /**
  * Expression HTML description building helper 
+ * @extends nul.txt
  * @class Singleton
  */
-nul.txt.html = new JS.Singleton(/** @lends nul.txt.html */{
+nul.txt.html = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 	
 	drawing: [],
 	/**
@@ -313,4 +314,3 @@ nul.txt.html = new JS.Singleton(/** @lends nul.txt.html */{
 	}
 
 });
-nul.txt.html.extend(nul.txt);

@@ -13,21 +13,12 @@ nul.debug = {
 	fails: [],
 	logging: false,
 	logDeep: [],
-	possibleLogging: [
-		'Resolution',
-		'Unification',
-		'Equivalence',
-		'Wrapping',
-		'Represent',
-		'Prune',
-		'Recursion',
-		'Extraction',
-		'Query',
-		'Relativise'],
+	possibleLogging: ['Represent'],
 	assert: urlOption('debug'),
 	perf: !urlOption('noperf'),
 	acts: urlOption('actLog'),
 	lcLimit: urlOption('break'),
+	
 	logCount: function() {
 		if(0< nul.debug.lcLimit && nul.debug.lcNextLimit< nul.debug.lc) {
 			nul.debug.warnRecursion();
@@ -35,32 +26,27 @@ nul.debug = {
 		}
 		return nul.debug.lc++;
 	},
-	toLogText: function(v) {
-		if($.isArray(v)) {
-			var rv = [];
-			for(var i=0; i<v.length; ++i) rv.push(nul.debug.toLogText(v[i]));
-			return rv.join(' ');
-		}
-		if(v.dbgHtml) return v.dbgHtml();
-		return v.toFlat?v.toFlat():v.toString();
+	log: function(tp, ltp) {
+		return window.console && tp && nul.debug.logging && nul.debug.logging[tp] ? console[ltp||'log'] : function() {};
+		nul.debug.logCount();
 	},
-	log: function(tp, endC) {
-		return tp && nul.debug.logging && nul.debug.logging[tp] ? function(v) {
-			//TODO
-			var rw = $('<tr></tr>');
-			rw.append($('<th></th>').wrap(''+nul.debug.logCount()));
-			v = beArrg(arguments);
-			for(var vi = 0; vi<v.length; ++vi) rw.append($('<th></th>').wrap(nul.debug.toLogText(v[vi])));
-			
-			return nul.debug.logTbl.append(rw.addClass(tp+' log'));
-		} : nul.debug.logCount;
+
+	warn: function(tp) { return this.log(tp, 'warn'); },
+	info: function(tp) { return this.log(tp, 'info'); },
+	error: function(tp) { return this.log(tp, 'error'); },
+	
+	newLog: function(logTbl) {
 	},
+	applyTables: function() {
+		if(nul.debug.globalKlg) nul.debug.globalKlg.html(nul.execution.globalKlg.toHtml());
+	},
+	
 	warnRecursion: function(v)
 	{
 		if(nul.erroneus) return;
 		if(v) nul.debug.watch(v);
 		nul.debug.applyTables();
-		if(!confirm('Keep on recursion?')) throw nul.internalException('Broken by debugger');
+		if(!confirm('Keep on recursion?')) nul.ex.internal('Broken by debugger');
 	},
 	begin: function(nlcl) {
 		nul.debug.lc = 0;
@@ -69,56 +55,40 @@ nul.debug = {
 		nul.debug.lcNextLimit = nul.debug.lcLimit;
 	},
 	
-	newLog: function(logTbl) {
-		if(logTbl) nul.debug.logTbl = logTbl;
-		nul.debug.logDeep = [];
-		if(nul.debug.logTbl) nul.debug.logTbl.empty();
-		nul.debug.begin();
-	},
-	
-	applyTables: function() {
-		return; //TODO
-		if(nul.debug.logging && nul.debug.logTbl) nul.debug.logTbl.treeTable({ indent: 16, initialState: 'collapsed' });;
-		if(nul.debug.globalKlg) nul.debug.globalKlg.html(nul.execution.globalKlg.toHtml());
-	},
-	wrapped: function() {
-		
-	},
-	described: function(name, dscr) {
-		return this;
-		//TOREDO
+	described: function(name) {
 		var ftc = this.perform(name);
+		if(!nul.debug.possibleLogging.include(name)) nul.debug.possibleLogging.push(name);
 		return function() {
 			var cargs = $.makeArray(arguments);
-			var d, abrt = false, lgd = false, rv;
+			arguments.callee = arguments.callee.caller;
+			if(!window.console || !console.groupCollapsed || !nul.debug.logging || !nul.debug.logging[name]) return ftc.apply(this, cargs);
+			var d, abrt = false, rv;
+			console.groupCollapsed(name);
+			console.log('Applied to', this);
+			console.log('Arguments', cargs);
 			try {
-				d = dscr.apply(this, cargs);
-				nul.debug.log(name)(nul.debug.lcs.collapser('Begin'), name, d);
-				lgd = true;
 				rv = ftc.apply(this, cargs);
-				return rv;
-			} catch(err) { abrt = true; nul.exception.notice(err); throw err;
+				console.log('Gives', rv);
+			} catch(err) {
+				console.warn('Aborted : ', nul.ex.be(err));
+				throw err;
 			} finally {
-				if(lgd) nul.debug.log(name,'end')(
-					nul.debug.lcs.endCollapser(
-						(abrt?'Abort':'End'),
-						(abrt?'Failed':'Done')),
-					name,
-					rv?[rv]:['nothing'], d);
+				console.groupEnd();
 			}
+			return rv;
 		};
 	},
-	asserted: function(str, obj) {
-		var ok = true;
-		if(nul.debug.assert) ok = this.apply(obj);
-		assert(ok, str);
+	asserted: function(obj, str) {
+		if('string'== typeof obj) {
+			str = obj;
+			obj = null;
+		}
+		if(nul.debug.assert) assert(this.apply(obj), str);
 	},
 	contract: function(str) {
 		if(!nul.debug.assert) return function() {};
 		var ftc = this;
-		return function() {
-			assert(ftc.apply(this), str);
-		};
+		return function() { assert(ftc.apply(this), str); };
 	},
 	
 	/**
@@ -138,7 +108,7 @@ nul.debug = {
 		if('function' != typeof cb) cb = null;
 		return function(obj) {
 			if(nul.debug.assert) assert(
-					obj && 
+					obj && obj.isA && 
 					obj.isA(cls) &&
 					(!cb || cb(obj)),
 				'Expected '+(nm||'a specific object'));
@@ -162,8 +132,8 @@ nul.debug = {
 		if(!'function'== typeof cb) cb = null;
 		return function(objs) {
 			if(nul.debug.assert) map(objs, function(i, obj) { assert(
-					obj && 
-					cls.is(obj) &&
+					obj && obj.isA && 
+					obj.isA(cls) &&
 					(!cb || cb(obj)),
 					'Expected '+ (nm||'specific object') + 's'); });
 		}; 
@@ -175,12 +145,13 @@ nul.debug = {
 	fail: function(reason) {
 		reason = beArrg(arguments);
 		if(nul.debug.fails.length) nul.debug.fails[0].push(reason, '|');
-		else nul.debug.log('fail')('', 'Failure', reason);
+		else nul.debug.warn('fail')('', 'Failure', reason);
 	},
 	/**
 	 * Make a bunch of tries. If none succed, report a failure
 	 */
 	trys: function(cb, name, obj, args) {
+		//TOREDO
 		nul.debug.fails.unshift([]);
 		nul.debug.log(name)(nul.debug.lcs.collapser('Begin'), name, args);
 		try {
@@ -209,7 +180,7 @@ if(nul.debug.assert) Function.prototype.asserted = nul.debug.asserted;
 else Function.prototype.asserted = function() {};
 
 function assert(cnd, str) {
-	//if(console) console.assert(cnd, str); /*try { console.assert(cnd, str); } catch(err) { throw nul.internalException('Assertion failed : '+str); }*/ else
+	if(window.console) console.assert(cnd, str);
 	if(!cnd)
-		throw nul.internalException('Assertion failed : '+str);
+		nul.ex.assert('Assertion failed : '+str);
 }

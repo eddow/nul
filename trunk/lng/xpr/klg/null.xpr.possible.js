@@ -50,9 +50,7 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 			assert(!rv.dependance().usages[klg.name],
 				'Out of knowledge, no more deps');
 		return rv;
-	}.describe('Extraction', function(o) {
-		return [o, this];
-	}),
+	}.describe('Extraction'),
 	
 	/**
 	 * Determine wether the resolution engine can distribute anything
@@ -77,12 +75,12 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	/**
 	 * @param {document} doc
 	 * @return {XMLElement}
-	 * @throw {nul.semanticException}
+	 * @throw {nul.ex.semantic}
 	 * TODO 2 returns Element
 	 */
 	XML: function(doc) {
 		if(nul.klg.always != this.knowledge) //TODO 2: if possible too fuzzy, get a "loading" node 
-			throw nul.semanticException('XML', 'No XML fixed representation for fuzzy expression');
+			nul.ex.semantic('XML', 'No XML fixed representation for fuzzy expression', this);
 		return this.value.XML(doc);
 	},	
 	

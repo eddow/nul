@@ -78,7 +78,7 @@ nul.load.time = function() {
 		 * @param {nul.obj.litteral.string} key
 		 */
 		seek: function(key) {
-			if('string'!= key.expression) throw nul.semanticException('Time', 'Time element can only be retrieved from a string');
+			if('string'!= key.expression) nul.ex.semantic('Time', 'Time element can only be retrieved from a string', key);
 			var t = Date.parse(key.value);
 			if(isNaN(t)) return [];
 			return new nul.data.time(new Date(t));

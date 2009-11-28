@@ -16,8 +16,8 @@ nul.page = {
 	 * @param msg Error message
 	 * @return nothing
 	 */
-	error: function(/**String*/msg) {
-		alert(msg);
+	error: function(/**nul.ex*/ex) {
+		alert(ex.name + ' : ' + ex.message);
 	}
 };
 
@@ -46,10 +46,6 @@ nul.load.page = function() {
 		for(var n in ints) nds[n].replaceWith(nul.read(ints[n], n).XML(this));
 		for(var n in exts) nds[n].replaceWith(nul.data.ajax.loadNul(exts[n], n).XML(this));
 		nul.execution.existOnce();
-	} catch(x) {
-		var msg = nul.exception.notice(x).message;
-		if(nul.erroneusJS) throw nul.erroneusJS;
-		else nul.page.error(msg);
-	}
+	} catch(x) { nul.page.error(nul.ex.be(x)); }
 };
 nul.load.page.use = {'executionReady': true, 'console': true, 'HTML': true};

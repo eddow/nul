@@ -42,7 +42,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 		 * @param {nul.xpr.object} obj
 		 * @return {nul.xpr.object} The same object without dependancies
 		 * @throw {nul.failure}
-		 * @throw {nul.semanticException}
+		 * @throw {nul.ex.semantic}
 		 */
 		query: function(obj) {
 			nul.obj.use(obj);
@@ -56,7 +56,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 						chsdCtx = ctx;
 				}
 				//chsdCtx is fixed as minimum distance
-				if(!chsdCtx) throw nul.internalException('Cannot query : ' + $.keys(usg).join(', '));
+				if(!chsdCtx) nul.ex.internal('Cannot query : ' + $.keys(usg).join(', '));
 				obj = chsdCtx.query(obj);
 				usg = obj.dependance().usages;
 			}
@@ -118,9 +118,7 @@ nul.data.context = new JS.Class(/** @lends nul.data.context# */{
 	 */
 	query: function(obj) {
 		return this.querier().browse(obj);
-	}.describe('Query', function() {
-		return this.name;
-	}),
+	}.describe('Query'),
 	
 	/**
 	 * Build a querier to browse and replace 'data' object from an expression.

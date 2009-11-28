@@ -58,13 +58,13 @@ nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element 
 		switch(key.expression) {
 		case 'string':
 			//TODO 2: essayer avec getElementsByTagName si en profondeur et simple CSS selector
-			if(!this.element.find) throw nul.semanticException('DOM', 'Element is not HTML - no CSS selection');
-			var els = this.element.find(key.value);	//cf prototype.js
+			if(!this.element.find) nul.ex.semantic('DOM', 'Element is not HTML - no CSS selection', this, key);
+			var els = $.makeArray(this.element.find(key.value));
 			return map(els, function() { return new nul.data.dom.element($(this)); });
 		case 'node':
 			return nul.obj.node.relativise(key, this.listed());
 		default:
-			throw nul.semanticException('DOM', 'DOM elements can only be indexed by CSS selector or by defaulting node');
+			nul.ex.semantic('DOM', 'DOM elements can only be indexed by CSS selector or by defaulting node', key);
 		}
 	},
 	
@@ -107,7 +107,7 @@ nul.load.dom = function() {
 		 * @return {nul.data.dom.url} The loaded document
 		 */
 		seek: function(pnt) {
-			if('string'!= pnt.expression) throw nul.semanticException('AJAX', 'Ajax retrieve XML documents from a string URL');
+			if('string'!= pnt.expression) nul.ex.semantic('AJAX', 'Ajax retrieve XML documents only from a string URL', pnt);
 			return nul.data.ajax.load(pnt.value,
 					function(t) { return new nul.data.dom.url(t.responseXML); } );
 		},

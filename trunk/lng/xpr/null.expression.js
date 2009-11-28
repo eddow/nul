@@ -189,11 +189,11 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	/**
 	 * @param {document} doc
 	 * @return {XMLElement}
-	 * @throw {nul.semanticException}
+	 * @throw {nul.ex.semantic}
 	 * TODO 2 returns Element
 	 */
 	XML: function(doc) {
-		throw nul.semanticException('XML', this.expression + ' doesnt fit for XML output');
+		nul.ex.semantic('XML', this.expression + ' doesnt fit for XML output', this);
 	},
 	
 //////////////// Summary users

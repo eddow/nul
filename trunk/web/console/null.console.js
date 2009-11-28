@@ -21,12 +21,14 @@ nul.load.console = function() {
 			slidable: false,
 			closable: true,
 			
-			togglerLength_open: 0,
-			togglerLength_closed: 0,		
+			//togglerLength_open: 0,
+			//togglerLength_closed: 0,		
+			togglerContent_closed: 'BLAH',
+			
+			togglerTip_closed: 'NUL console',
 			
 			size: 300,
 			initClosed: false,
-			togglerTip_closed: 'NUL console',
 			minSize: 150,
 			resizeWhileDragging: true,
 			fxName: "none",
@@ -48,6 +50,15 @@ nul.console = {
 		var cw = nul.console.frame[0].contentWindow;
 		var cde = nul.console.frame[0].contentDocument.documentElement;
 		cw.nul = nul;
+		nul.ex.js.hook(cw);
+	},
+	close: function() {
+		nul.console.layout.close('south');
+	},
+	extern: function(nwnd) {
+		nwnd.nul = nul;
+		nul.ex.hook(nwnd);
+		nul.console.layout.hide('south');
 	}
 };
 

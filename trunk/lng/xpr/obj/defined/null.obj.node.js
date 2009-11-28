@@ -55,7 +55,7 @@ nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 	/**
 	 * @param {document} doc
 	 * @return {XMLElement}
-	 * @throw {nul.semanticException}
+	 * @throw {nul.ex.semantic}
 	 * TODO 2 returns Element
 	 */
 	XML: function(doc) {
@@ -63,7 +63,7 @@ nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 		for(var a in this.attributes) {
 			//TODO 3: check a as attribute name
 			if(!this.attributes[a].isA(nul.obj.litteral.string))
-				throw nul.semanticException('XML', this.attributes[a] + ' doesnt fit for XML attribute');
+				nul.ex.semantic('XML', 'This doesnt fit for XML attribute', this.attributes[a]);
 			rv.setAttribute(a, this.attributes[a].value);
 		}
 		var lst = this.content.listed();
@@ -85,7 +85,7 @@ nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 		case 'node':
 			return nul.obj.node.relativise(key, this.listed());
 		default:
-			throw nul.semanticException('NODE', 'NODE elements can only be indexed [by CSS selector or ]by defaulting node');
+			nul.ex.semantic('NODE', 'NODE elements can only be indexed [by CSS selector or ]by defaulting node', key);
 		}
 	},
 	
@@ -138,6 +138,4 @@ nul.obj.node.relativise = function(tpl, objs) {
 		}
 	});
 	//TODO 3: manage 'content'
-}.describe('Relativise', function(tpl, objs) {
-	return [tpl, ' : ', objs];
-});
+}.describe('Relativise');

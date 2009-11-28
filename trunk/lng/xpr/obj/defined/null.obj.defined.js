@@ -98,6 +98,7 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	has: function(o, attrs) {
 		if(this.subHas) {
 			if(!this.selfRef) return this.subHas(o, attrs);
+			return;	//TODO R: recursion at the end, return a knowledge knowing he needs to make recursion
 			return nul.trys(function() {
 				var psbl = this.subHas(o, attrs);
 				var dp = [];

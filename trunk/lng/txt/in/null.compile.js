@@ -158,23 +158,21 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	/**
 	 * Requires the next token to be an alphanumeric
 	 * @return {String} The alphanumeric value
-	 * @throw {nul.syntaxException}
+	 * @throw {nul.ex.syntax}
 	 */
 	alphanum: function() {
 		var rv = this.tknzr.pop(['alphanum']);
-		if(!rv)
-			throw nul.syntaxException('IDE', 'Identifier expected');
+		if(!rv) nul.ex.syntax('IDE', 'Identifier expected', this.tknzr);
 		return rv.value;
 	},
 	/**
 	 * Requires the next token to be a number
 	 * @return {Number} The number value
-	 * @throw {nul.syntaxException}
+	 * @throw {nul.ex.syntax}
 	 */
 	number: function() {
 		var rv = this.tknzr.pop(['number']);
-		if(!rv)
-			throw nul.syntaxException('IDE', 'Number expected');
+		if(!rv) nul.ex.syntax('IDE', 'Number expected', this.tknzr);
 		return rv.value;
 	},
 	/**
@@ -183,7 +181,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	 * @param {String} oprtr The expected operator
 	 * @param {Number} oprtrLvl tThe operator-level : index in {@link nul.operators}
 	 * @return {nul.compiled} The compiled value
-	 * @throw {nul.syntaxException}
+	 * @throw {nul.ex.syntax}
 	 */
 	list: function(firstOp, oprtr, oprtrLvl) {
 		var rv = [firstOp];
@@ -205,7 +203,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 			case 's':
 				if( this.tknzr.take(oprtr[0]) ) rv.push('ceded');
 				break;
-			default: throw nul.internalException('Bad operator type');
+			default: nul.ex.internal('Bad operator type');
 		}
 		return rv;
 	},
@@ -213,7 +211,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	 * Gets the compiled expressionon the sepcified operator-level
 	 * @param {Number} oprtrLvl tThe operator-level : index in {@link nul.operators}
 	 * @return {nul.compiled} The compiled value
-	 * @throw {nul.syntaxException}
+	 * @throw {nul.ex.syntax}
 	 */
 	expression: function(oprtrLvl, firstOp) {
 		if('undefined'== typeof oprtrLvl) oprtrLvl = 0; 
@@ -226,7 +224,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 		do
 		{
 			rv = this.list(firstOp, oprtr, 1+oprtrLvl);
-			if(0== rv.length) throw nul.internalException('No components and an operator');
+			if(0== rv.length) nul.ex.internal('No components and an operator');
 			if(1== rv.length && !rv.follow) return rv[0];
 			if('ceded'== rv[1]) firstOp = 
 				this.expression(0, nul.compiled.postceded(oprtr[0], rv[0]));
@@ -238,7 +236,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	/**
 	 * Gather a compiled value and all its post-fixes 
 	 * @return {nul.compiled} The compiled value
-	 * @throw {nul.syntaxException}
+	 * @throw {nul.ex.syntax}
 	 */	
 	applied: function(lax) {
 		var rv = this.item(lax);
@@ -263,25 +261,25 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	/**
 	 * Read inside an XML node 
 	 * @return {nul.compiled} The compiled value
-	 * @throw {nul.syntaxException}
+	 * @throw {nul.ex.syntax}
 	 */	
 	innerXML: function() {
 		var comps = [];
 		do
 		{
 			var aTxt = this.tknzr.fly('<');
-			if(null=== aTxt) throw nul.syntaxException('XML', 'XML node not closed');
+			if(null=== aTxt) nul.ex.syntax('XML', 'XML node not closed', this.tknzr);
 			if(''!== aTxt) comps.push(nul.compiled.atom('string', aTxt.replace(/\uffff/g, '\n')));
 			if(this.tknzr.rawTake('<(')) comps.push(this.tknzr.rawExpect(')>',this.expression()));
 			else if(this.tknzr.rawTake('</')) return comps;
 			else if(this.tknzr.rawTake('<')) comps.push(this.xml());
-			else throw nul.syntaxException('UEI', "Don't know what to do with '"+this.tknzr.token.value+"'");
+			else nul.ex.syntax('UEI', "Don't know what to do with '"+this.tknzr.token.value+"'", this.tknzr);
 		} while(true);
 	},
 	/**
 	 * Read an XML node 
 	 * @return {nul.compiled} The compiled value
-	 * @throw {nul.syntaxException}
+	 * @throw {nul.ex.syntax}
 	 */	
 	xml: function() {
 		var node = this.alphanum(), attr, attrs = {};
@@ -300,7 +298,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	 * Read an item without precedance
 	 * @param {Boolean} lax Prevent to read an item that should be understood as an operation
 	 * @return {nul.compiled} The compiled value
-	 * @throw {nul.syntaxException}
+	 * @throw {nul.ex.syntax}
 	 */	
 	item: function(lax) {
 		var rv;
@@ -331,7 +329,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 			}
 			rv = this.tknzr.pop(['alphanum', 'number', 'string']);
 		}
-		if(!rv && !lax) throw nul.syntaxException('ITE', 'Item expected');
+		if(!rv && !lax) nul.ex.syntax('ITE', 'Item expected', this.tknzr);
 		if(rv) return nul.compiled.atom(rv.type, rv.value);
 	}
 });
@@ -340,13 +338,13 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
  * Make a compiled value out of a text.
  * @param {String} txt
  * @return {nul.compiled}
- * @throw {nul.syntaxException}
+ * @throw {nul.ex.syntax}
  */
 nul.compile = function(txt)
 {
 	var rv = new nul.compiler(txt+'\n');
 	var ev = rv.expression();
-	if(rv.tknzr.token.type != 'eof') throw nul.syntaxException('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.");
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", this.tknzr);
 	return ev;
 };
 
@@ -354,12 +352,12 @@ nul.compile = function(txt)
  * Make a compiled value out of an XML content.
  * @param {XML} txt
  * @return {nul.compiled}
- * @throw {nul.syntaxException}
+ * @throw {nul.ex.syntax}
  */
 nul.compile.xml = function(txt)
 {
 	var rv = new nul.compiler(txt+'</');
 	var ev = rv.innerXML();
-	if(rv.tknzr.token.type != 'eof') throw nul.syntaxException('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.");
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", this.tknzr);
 	return ev;
 };

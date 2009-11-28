@@ -8,10 +8,10 @@
 
 /**
  * Expression flat description building helper 
+ * @extends nul.txt
  * @class Singleton
  */
-nul.txt.flat = new JS.Singleton(/** @lends nul.txt.flat */{
-	drawing: [],
+nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
 	/**
 	 * Shortcut to make a table of string out of a table of expressions
 	 * @param {nul.expression[]} ass
@@ -184,4 +184,3 @@ nul.txt.flat = new JS.Singleton(/** @lends nul.txt.flat */{
 		}
 	}
 });
-nul.txt.flat.extend(nul.txt);
