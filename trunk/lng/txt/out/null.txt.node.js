@@ -62,7 +62,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		local: function() {
-			if(nul.debug.assert) assert(this.dbgName, 'Local has name if debug enabled'); 
+			if(nul.debugged) nul.assert(this.dbgName, 'Local has name if debug enabled'); 
 			return {
 				'': this.dbgName? (
 	                	this.dbgName+

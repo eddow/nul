@@ -82,13 +82,13 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 */
  	clearAccess: function() {
  		if(!this.access) return;
-		if(nul.debug.assert) {
+		if(nul.debugged) {
 			for(var i in ownNdx(this.access))
-				assert(this.access[i].summarised && 0<= this.eqCls.indexOf(this.access[i]),
+				nul.assert(this.access[i].summarised && 0<= this.eqCls.indexOf(this.access[i]),
 		 			'Knowledge access consistence');
 			for(var i in ownNdx(this.eqCls))
 				for(var e in ownNdx(this.eqCls[i].equivls))
-					assert(this.access[this.eqCls[i].equivls[e]] === this.eqCls[i],
+					nul.assert(this.access[this.eqCls[i].equivls[e]] === this.eqCls[i],
 		 				'Knowledge access consistence');
 		}
 		delete this.access;
@@ -103,7 +103,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 		if(ec) {
 	 		this.eqCls.push(ec);
 			for(var unfd in ownNdx(ec.equivls)) {
-				if(nul.debug.assert) assert(!this.access[ec.equivls[unfd]], 'No double access');
+				if(nul.debugged) nul.assert(!this.access[ec.equivls[unfd]], 'No double access');
 				this.access[ec.equivls[unfd]] = ec;
 			}
 		}
@@ -118,7 +118,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 	freeEC: function(ec) {
  		if(!ec.summarised) return ec;
 		var i = this.eqCls.indexOf(ec);
- 		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class');
+ 		if(nul.debugged) nul.assert(0<=i, 'Unaccede accessed class');
 		this.eqCls.splice(i, 1);
  		var rv = ec.modifiable();
 		for(var i in this.access) if(this.access[i] === ec) this.access[i] = rv;
@@ -144,7 +144,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 	removeEC: function(ec) {
  		this.modify(); nul.xpr.use(ec, 'nul.klg.eqClass');
 		var i = this.eqCls.indexOf(ec);
- 		if(nul.debug.assert) assert(0<=i, 'Unaccede accessed class');
+ 		if(nul.debugged) nul.assert(0<=i, 'Unaccede accessed class');
 		this.eqCls.splice(i, 1);
 		return this.unaccede(ec);
 	},
@@ -517,7 +517,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	}
 });
 
-if(nul.debug) nul.localsMdl = new JS.Module(/** @lends nul.xpr.knowledge# */{
+if(nul.action) nul.localsMdl = new JS.Module(/** @lends nul.xpr.knowledge# */{
 	/**
 	 * Remove the names of the unused locals.
 	 * Use the local names to textualise locals references.

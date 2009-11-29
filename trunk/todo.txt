@@ -3,8 +3,6 @@
 3- expression have an origin
 4- no more 'compiled' : understand directly : y/n?
 
-- freeEC in described
-
 $append
 ; append = { ({}, s, s) [] ((a,.. r), s, (a,.. ra ; append(r, s, ra)))}
 

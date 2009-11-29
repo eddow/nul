@@ -14,7 +14,7 @@ nul.data.time = new JS.Class(nul.obj.node, /** @lends nul.data.time# */{
 	 * @param {Date} dto
 	 */
 	initialize: function(dto) {
-		if(nul.debug.assert) assert(dto.setFullYear, 'Expected a date as argument');
+		if(nul.debugged) nul.assert(dto.setFullYear, 'Expected a date as argument');
 		this.dto = dto;
 		this.callSuper('DateTime', map(nul.data.time.nul2js, function() { return function(klg, anm) {
 			anm = nul.data.time.nul2js[anm];

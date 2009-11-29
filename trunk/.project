@@ -6,6 +6,19 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
+			<name>com.rockstarapps.html.refactoring.WebOptimizer</name>
+			<arguments>
+				<dictionary>
+					<key>null.debug.js</key>
+					<value>&lt;data&gt;&lt;fileName&gt;null.debug.js&lt;/fileName&gt;&lt;min&gt;false&lt;/min&gt;&lt;comp&gt;false&lt;/comp&gt;&lt;gZip&gt;false&lt;/gZip&gt;&lt;resolveImports&gt;false&lt;/resolveImports&gt;&lt;urlRewriting&gt;false&lt;/urlRewriting&gt;&lt;autoBuild&gt;true&lt;/autoBuild&gt;&lt;lineLength&gt;-1&lt;/lineLength&gt;&lt;dependencies&gt;&lt;file&gt;3rd/jsclass/loader.js&lt;/file&gt;&lt;file&gt;3rd/jquery/jquery.js&lt;/file&gt;&lt;file&gt;3rd/jquery/includeMany.js&lt;/file&gt;&lt;file&gt;null.loading.js&lt;/file&gt;&lt;/dependencies&gt;&lt;/data&gt;</value>
+				</dictionary>
+				<dictionary>
+					<key>null.extrn.js</key>
+					<value>&lt;data&gt;&lt;fileName&gt;null.extrn.js&lt;/fileName&gt;&lt;min&gt;true&lt;/min&gt;&lt;comp&gt;true&lt;/comp&gt;&lt;gZip&gt;false&lt;/gZip&gt;&lt;resolveImports&gt;false&lt;/resolveImports&gt;&lt;urlRewriting&gt;false&lt;/urlRewriting&gt;&lt;autoBuild&gt;true&lt;/autoBuild&gt;&lt;lineLength&gt;-1&lt;/lineLength&gt;&lt;dependencies&gt;&lt;file&gt;3rd/jsclass/core.js&lt;/file&gt;&lt;file&gt;3rd/jquery/jquery.js&lt;/file&gt;&lt;file&gt;3rd/jquery/emw.js&lt;/file&gt;&lt;file&gt;3rd/jquery/treeTable.js&lt;/file&gt;&lt;file&gt;3rd/jquery/ui.all.js&lt;/file&gt;&lt;file&gt;3rd/jquery/ui.layout.js&lt;/file&gt;&lt;file&gt;3rd/jquery/xmlns.js&lt;/file&gt;&lt;/dependencies&gt;&lt;/data&gt;</value>
+				</dictionary>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>org.eclipse.wst.jsdt.core.javascriptValidator</name>
 			<arguments>
 			</arguments>

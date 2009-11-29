@@ -20,7 +20,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * @param {String} tp Type of expression
 	 */
  	initialize: function(tp) {
-		if(nul.debug) this.origin = { action: nul.debug.action.doing() };
+		if(nul.action) this.origin = { action: nul.action.doing() };
 		/**
 		 * @type String
 		 */
@@ -57,7 +57,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 		if(!this.summarised) return this['sum_'+itm].apply(this);
 		//this.use();
 		if('undefined'== typeof this.summarised[itm]) {
-			assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
+			nul.assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
 			this.summarised[itm] = this['sum_'+itm].apply(this);
 		}
 		return this.summarised[itm];
@@ -92,7 +92,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 				return (comps[ndx] && comps[ndx].bunch)?map(obj):obj;
 		});
 		
-		if(nul.debug) rv.origin = { from: this, action: nul.debug.action.doing() };
+		if(nul.action) rv.origin = { from: this, action: nul.action.doing() };
 	
 		return rv;
 	},
@@ -130,7 +130,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 */
 	alreadyBuilt: function(smr) {
 		var built = this.built(smr);
-		if(nul.debug.assert) assert(this===built, 'Already built fix self');
+		if(nul.debugged) nul.assert(this===built, 'Already built fix self');
 	},
 	/**
 	 * Modify internal representation : you won't be changed anymore
@@ -149,18 +149,6 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	
 //////////////// Public
 
-	/**
-	 * Gets a string to represent this for debug.
-	 * Either HTML, either flat if it would be too big.
-	 * @return {String}
-	 */
-	dbgHtml: function() {
-		if(!nul.debug || !nul.debug.logging) return "[?]";
-		var f = this.toFlat();
-		if(500>f.length) return this.toHtml();
-		return f;
-	},
-	
 	/**
 	 * Change the summarised texts.
 	 * Can be changed even for a built expression (doesn't change the meaning, just the debug drawing)
@@ -184,7 +172,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	reself: function(newSelf, selfRef) {
 		if(!this.selfRef && !selfRef) return this;
 		var rv = new nul.xpr.object.reself(selfRef || this.selfRef, newSelf).browse(this);
-		if(nul.debug.assert) assert(this.expression == rv.expression || ('pair'== this.expression && '&phi;'== rv.expression),
+		if(nul.debugged) nul.assert(this.expression == rv.expression || ('pair'== this.expression && '&phi;'== rv.expression),
 			'Reselfing doesnt modify the definition');
 		return rv;
 	},
@@ -288,7 +276,7 @@ nul.xpr = {
 	 * @param {String} t JS type name
 	 */
 	are: function(x, t) {
-		nul.debug.are(t||'nul.expression')(x);
+		nul.debugged.are(t||'nul.expression')(x);
 		return x;
 	},
 	/**
@@ -297,7 +285,7 @@ nul.xpr = {
 	 * @param {String} t JS type name
 	 */
 	is: function(x, t) {
-		nul.debug.is(t||'nul.expression')(x);
+		nul.debugged.is(t||'nul.expression')(x);
 		return x;
 	},
 	/**
@@ -306,7 +294,7 @@ nul.xpr = {
 	 * @param {String} t JS type name
 	 */
 	use: function(x, t) {
-		nul.debug.is(t||'nul.expression', 'summarised', function(o) { return !!o.summarised; })(x);
+		nul.debugged.is(t||'nul.expression', 'summarised', function(o) { return !!o.summarised; })(x);
 		return x;
 	},
 	/**
@@ -315,7 +303,7 @@ nul.xpr = {
 	 * @param {String} t JS type name
 	 */
 	mod: function(x, t) {
-		nul.debug.is(t||'nul.expression', 'modifiable', function(o) { return !o.summarised; })(x);
+		nul.debugged.is(t||'nul.expression', 'modifiable', function(o) { return !o.summarised; })(x);
 		return x;
 	}
 };

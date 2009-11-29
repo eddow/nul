@@ -16,7 +16,7 @@ nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	 * @param {String} dbgName A string to draw as the name of this variable for debug info
 	 */
 	initialize: function(klgRef, ndx, dbgName) {
-		if(nul.debug.assert) assert(dbgName, 'Local has name if debug enabled');
+		if(nul.debugged) nul.assert(dbgName, 'Local has name if debug enabled');
 		
 		/**
 		 * The knowledge this local applies to
@@ -54,7 +54,7 @@ nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	 * @param {String} dbgName A string to draw as the name of this variable for debug info
 	 */
 	invalidateTexts: function(dbgName) {
-		if(nul.debug.assert) assert(dbgName, 'Local has name if debug enabled'); 
+		if(nul.debugged) nul.assert(dbgName, 'Local has name if debug enabled'); 
 		this.dbgName = dbgName;
 		this.callSuper();
 	}

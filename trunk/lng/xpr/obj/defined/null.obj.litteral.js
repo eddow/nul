@@ -92,14 +92,14 @@ nul.obj.litteral.number = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litt
  * @name nul.obj.litteral.boolean 
  * @extends nul.obj.litteral 
  */
-nul.obj.litteral.boolean = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.boolean# */{
+nul.obj.litteral['boolean'] = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.boolean# */{
 	
 ////////////////	nul.xpr.defined implementation
 	
 	/** @constant */
 	properties: {
 		'# ': function() { return nul.obj.litteral.make(this.value.length); },
-		'': function() { return nul.obj.litteral.tag.boolean; }
+		'': function() { return nul.obj.litteral.tag['boolean']; }
 	},
 	
 	/** @constant */
@@ -122,21 +122,21 @@ nul.obj.litteral.boolean = new JS.Class(nul.obj.litteral, /** @lends nul.obj.lit
  * Make a litteral from a javascript value - choose the wright class
  */
 nul.obj.litteral.make = function(v) {
-	if(nul.debug.assert) assert(nul.obj.litteral[typeof v], (typeof v)+' is a litteral type');
+	if(nul.debugged) nul.assert(nul.obj.litteral[typeof v], (typeof v)+' is a litteral type');
 	if('boolean'== typeof v) return nul.obj.litteral['boolean'][v?'true':'false'];
 	return new nul.obj.litteral[typeof v](v);
 };
 
 //TODO C
-nul.obj.litteral.boolean['true'] = new nul.obj.litteral.boolean(true);
-nul.obj.litteral.boolean['false'] = new nul.obj.litteral.boolean(false);
-nul.obj.litteral.boolean['true'].attributes['! '] = nul.obj.litteral.boolean['false'];
-nul.obj.litteral.boolean['false'].attributes['! '] = nul.obj.litteral.boolean['true'];
+nul.obj.litteral['boolean']['true'] = new nul.obj.litteral['boolean'](true);
+nul.obj.litteral['boolean']['false'] = new nul.obj.litteral['boolean'](false);
+nul.obj.litteral['boolean']['true'].attributes['! '] = nul.obj.litteral['boolean']['false'];
+nul.obj.litteral['boolean']['false'].attributes['! '] = nul.obj.litteral['boolean']['true'];
 
 //TODO C
 nul.obj.litteral.tag = {
 	string: new nul.obj.litteral.string('#text'),
 	number: new nul.obj.litteral.string('#number'),
-	boolean: new nul.obj.litteral.string('#boolean'),
+	'boolean': new nul.obj.litteral.string('#boolean'),
 	set: new nul.obj.litteral.string('#set')
 };

@@ -7,7 +7,6 @@
  *--------------------------------------------------------------------------*/
 
 nul.load.console = function() {
-	if(nul.noConsole) return;
 	nul.console.frame = $('<iframe id="_nul_console" src="javascript:false;" frameborder="0" scrolling="auto"></iframe>');
 	
 	var bdy = $('body');

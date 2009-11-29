@@ -52,7 +52,7 @@ nul.solve = function() {
 			if(!better.enth) rv.push(tdst);	//No way to bring infos by distributing ... TODO O: modify 'distribuable' ?
 			else {	//if some information can be brouhht
 		
-				nul.debug.info('Resolution')('Possibility', tdst.ior3[better.cases].choices[better.choice]);
+				nul.debugged.info('Resolution')('Possibility', tdst.ior3[better.cases].choices[better.choice]);
 			
 				try {
 					var choosen = tdst.clone();		//The case when the choice is taken
@@ -60,7 +60,7 @@ nul.solve = function() {
 					choosen.merge(tdst.ior3[better.cases].choices[better.choice]);
 					toDistr.push(choosen);
 				} catch(e) { nul.failed(e); }
-				if(nul.debug.assert) assert(2<= tdst.ior3[better.cases].choices.length, 'Choice length always at least 2');
+				if(nul.debugged) nul.assert(2<= tdst.ior3[better.cases].choices.length, 'Choice length always at least 2');
 				try {
 					if(2== tdst.ior3[better.cases].choices.length) {
 						tdst.merge(tdst.ior3[better.cases].choices[1-better.choice]);

@@ -42,7 +42,7 @@ nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
 		 * @return {String}
 		 */
 		local: function() {
-			if(nul.debug.assert) assert(this.dbgName, 'Local has name if debug enabled'); 
+			if(nul.debugged) nul.assert(this.dbgName, 'Local has name if debug enabled'); 
 			return (this.dbgName||'') + '[' + this.klgRef + '|' + this.ndx + ']';
 		},
 		/**

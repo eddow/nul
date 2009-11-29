@@ -25,7 +25,7 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 	},
 	enterKlg: function(klg) {
 		if(klg && !klg.isA(nul.klg.ncndtnl) && !this.table[klg.name]) {
-			if(nul.debug.assert) assert(!this.forbid[klg.name], 'Knowledge already used before entering');
+			if(nul.debugged) nul.assert(!this.forbid[klg.name], 'Knowledge already used before entering');
 			this.table[klg.name] = { klgRef: nul.execution.name.gen('klg') };
 			for(var v in ownNdx(this.veto)) this.enterKlg(this.veto[v]);
 			for(var i in ownNdx(this.ior3))
@@ -44,7 +44,7 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 	 */
 	build: function(xpr) {
 		if('klg'== xpr.expression && !xpr.isA(nul.klg.ncndtnl)) {
-			if(nul.debug.assert) assert(this.table[xpr.name], 'Only leave entered knowledge');
+			if(nul.debugged) nul.assert(this.table[xpr.name], 'Only leave entered knowledge');
 			xpr.name = this.table[xpr.name].klgRef;
 		}
 		return this.callSuper();
@@ -172,7 +172,7 @@ nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.repres
 			this.prepStack[n].setSelfRef = evl.value.ndx;
 		}
 
-		if(evl.hasChanged) nul.debug.info('Represent')('Replacement', this.dbgName, evl.changed, xpr, p);
+		if(evl.hasChanged) nul.debugged.info('Represent')('Replacement', this.dbgName, evl.changed, xpr, p);
 		return evl.changed;
 	}
 });

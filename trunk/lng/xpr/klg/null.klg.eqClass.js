@@ -87,9 +87,9 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 					}
 					if(true=== unf) unf = this.equivls[0];
 					else {
-						if(nul.debug.assert) {
-							assert(klg.access[this.equivls[0]] == this, 'Access consistence');
-							assert(klg.access[o] == this, 'Access consistence');
+						if(nul.debugged) {
+							nul.assert(klg.access[this.equivls[0]] == this, 'Access consistence');
+							nul.assert(klg.access[o] == this, 'Access consistence');
 						}
 						//TODO O: still let 'o' and 'this.equivls[0]' so they are replaced straight in representation ?
 						delete klg.access[o];

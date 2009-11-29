@@ -28,7 +28,7 @@ nul.load.page = function() {
 		for(var s=0; nulScripts[s]; ++s) {
 			if(nulScripts[s].src) nul.data.ajax.loadNul(nulScripts[s].src, nulScripts[s].readAttribute('id'));
 			else nul.read(nulScripts[s].text,
-				nulScripts[s].readAttribute('id') || 'script'+nul.execution.name.gen('nul.debuger.eval'));
+				nulScripts[s].readAttribute('id') || 'script'+nul.execution.name.gen('nul.page.outline'));
 			//We don't really use the value afterward
 		}
 		return;
