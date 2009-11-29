@@ -104,7 +104,7 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	chew: function() {
 		nul.klg.use(this.knowledge);
 		return this.knowledge.modifiable().wrap(this.value);
-	},
+	}.describe('Possible reformulation'),
 
 ////////////////	Internals
 

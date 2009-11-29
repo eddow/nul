@@ -44,7 +44,7 @@ nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 				img, att,
 				function(v) { return new nul.obj.lambda(pnt, v); }
 			);
-	},
+	}.describe('Retrieval'),
 	/**
 	 * {@link nul.obj.hc.filter} the {@link nul.obj.hc#.list} along the expected object to select
 	 * @param {nul.xpr.object} obj 'Return value' of the function call.
@@ -53,7 +53,7 @@ nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 	 */
 	select: function(obj, att) {
 		return nul.obj.hc.filter(this.listed(), obj, att);
-	},	
+	}.describe('Selection'),	
 	
 	/**
 	 * Delegate extraction to specific function-call or listing
@@ -92,4 +92,4 @@ nul.obj.hc.filter = function(objs, exp, att, wrp) {
 			return klg.wrap(vl);
 		} catch(e) { nul.failed(e); }
 	});
-};
+}.describe('Local filtering');

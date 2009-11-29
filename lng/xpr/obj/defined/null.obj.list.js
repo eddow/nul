@@ -23,7 +23,7 @@ nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
 	 * @function
 	 * @return {nul.obj.list}
 	 */
-	recursion: nul.summary('recursion'),
+	recursion: nul.summary('recursion').describe('Recursion analyse'),
 	
 	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link recursion} */
 	sum_recursion: function() { return nul.obj.empty; }

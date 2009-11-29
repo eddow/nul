@@ -140,6 +140,7 @@ nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 		return this.callSuper();
 	},
 	
+	//TODO C
 	sum_recursion: function() {
 		if(!this.selfRef) this.selfRef = nul.execution.name.gen('obj.local.self');
 		var rv = [];

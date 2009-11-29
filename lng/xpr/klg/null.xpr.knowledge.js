@@ -215,7 +215,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 	 		this.ior3.push(new nul.klg.ior3(klgs));
 	 		return rv;
 		}
-	},
+	}.describe('Hesitation'),
  	
  	/**
  	 * Know all what klg knows
@@ -352,7 +352,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 			}
 		} while(used);
 		return rv;
- 	},
+ 	}.describe('Sub-knowledge definition'),
  	
 	/**
 	 * Brings a knowledge in opposition

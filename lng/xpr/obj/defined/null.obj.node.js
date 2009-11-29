@@ -50,6 +50,10 @@ nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 		'# ': function(klg) { return this.content.attribute('# ', klg); }
 	},
 	
+	/**
+	 * Find out a function who, for an argument, tells which recursive arguments will be given to this
+	 * $ factorial -> { 0 => {} [] N n > 1 => { n-1 } }
+	 */
 	recursion: function() { return this.content.recursion(); },
 
 	/**
@@ -128,10 +132,10 @@ nul.obj.node.relativise = function(tpl, objs) {
 		nul.obj.is(obj, 'nul.obj.defined');
 		if(tpl.tag == obj.tag) {
 			var rAtt = $o.clone(obj.attributes);
-			klg = klg.modifiable();
 			merge(rAtt, obj.properties, function(a, b, n) { return a || obj.attribute(n); });
 			merge(rAtt, tpl.attributes, function(a, b, n) { return a || b; });
 			merge(rAtt, tpl.properties, function(a, b, n) { return a || tpl.attribute(n); });
+			klg = klg.modifiable();
 			var trv = klg.newLocal(tpl.tag);
 			klg.attributed(trv, rAtt);
 			return klg.wrap(trv);

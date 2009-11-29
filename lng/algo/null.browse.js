@@ -57,7 +57,7 @@ nul.browser = new JS.Class(/** @lends nul.browser# */{
 			if(xpr) return xpr;
 			throw err;
 		}
- 	},
+ 	}.describe('Browse'),
  	/**
  	 * Entry point of browsing
  	 */
@@ -160,7 +160,7 @@ nul.browser.bijectif = new JS.Class(nul.browser.cached, /** @lends nul.browser.b
 	 */
 	makeRV: function(xpr, bwsd) {
 		var evl = new nul.browser.bijectif.evolution(xpr);
-		var mod = nul.browser.bijectif.merge(evl.value, bwsd);
+		var mod = nul.browser.bijectif.merge(evl.value, bwsd, this);
 		if(!mod && this.forceBuild(evl.value)) mod = evl.value.modifiable();
 		if(mod) evl.receive(this.build(mod));	//Here are built modifiabled expressions
 		else evl.receive(this.leave(evl.value));
@@ -183,7 +183,7 @@ nul.browser.bijectif = new JS.Class(nul.browser.cached, /** @lends nul.browser.b
 		 * @param {nul.expression} xpr The expression to merge
 		 * @param {Association(nul.expression)} bwsd The browsed components results
 		 */
-		merge: function(xpr, bwsd) {
+		merge: function(xpr, bwsd, brwsr) {
 			var mod;
 			for(var c in bwsd) {
 				var nwItm = bwsd[c];

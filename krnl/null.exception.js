@@ -64,7 +64,7 @@ nul.ex.js = new JS.Class(nul.ex, /** @lends nul.ex.js# */{
 		 * window.onerror end-point
 		 */
 		onerror: function(msg, url, ln) {
-			if(window.console) return false;
+			//if(window.console) return false;
 			throw new nul.ex.js('auto', msg, url, ln);
 		}
 	},
