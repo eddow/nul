@@ -25,9 +25,7 @@ This enigma is especially the kindof problems that declarative languages aim to 
 = NUL zebra =
 
 {{{
-"The zebra belongs to the " + zebraOwner + " and water is drunk by the " + waterDrinker
-; S(_::nation zebraOwner ::animal "zebra")
-; S(_::nation waterDrinker ::drink "water")
+"The zebra belongs to the " + S(_::animal "zebra").nation + " and water is drunk by the " + S(_::drink "water").nation
 
 ; S = houses[1..5]
 ; houses = { {} => {} [] (n,.. ns) => (_::number n,.. houses[ns]) }
