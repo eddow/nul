@@ -50,7 +50,7 @@ This enigma is especially the kindof problems that declarative languages aim to 
 
 = Description =
 
-The first three lines give the shape of the result: a string showing {{{zebraOwner}}} and {{{waterDrinker}}}, while describing what these unknowns stand for.
+The first line give the shape of the result : a string containing two unknown {{{nation}}}.
 
 The {{{houses}}} auxiliary build a set of numbered houses out of a set of numbers.
 
