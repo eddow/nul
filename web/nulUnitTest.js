@@ -189,17 +189,14 @@ nul.unitTest.fcts = {
 		var v, rw = nul.unitTest.row(tn);
 		var splits = $(rw).attr("class").split("child-of-");
 		if(!$.isArray(rw.test)) {
-			nul.execution.reset('letBM');
+			nul.execution.reset();
 			try {
 				v = nul.data.query(nul.nulRead(rw.test.xpr)).toFlat();
 			} catch(err) {
 				nul.unitTest.setResult(rw, 'err', nul.ex.be(err).message);
 				v = null;
 			}
-			if(v) {
-				nul.execution.benchmark.draw($('#perfTbl'));
-				nul.unitTest.setResult(rw, nul.unitTest.isResult(rw.test.rslt, v)?'succ':'fail', v);
-			}
+			if(v) nul.unitTest.setResult(rw, nul.unitTest.isResult(rw.test.rslt, v)?'succ':'fail', v);
 		}
 		var nxt = nul.unitTest.row(++tn);
 		while (nxt) {
@@ -232,7 +229,6 @@ nul.unitTest.fcts = {
 
 	load: function() {
 		nul.unitTest.nbrTests = 0;
-		if(!nul.debug.perf || 'repeat'== nul.unitTest.auto) $('perfTbl').hide();
 		nul.unitTest.drawTests(nul.unitTest.tests, $('#tests tbody'));
 		
 		$("#tests").treeTable({ indent: 16, initialState: 'collapsed' });
@@ -256,7 +252,7 @@ nul.unitTest.fcts = {
 	
 };
 
-nul.unitTest.auto = urlOption('auto');
+nul.unitTest.auto = $.url('auto');
 nul.load.unitTest = function() {
 	$.extend(nul.unitTest, nul.unitTest.fcts);
 	nul.unitTest.load();

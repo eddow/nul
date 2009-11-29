@@ -51,7 +51,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 				var chsdCtx = null;
 				for(var d in ownNdx(usg)) {
 					var ctx = nul.dependance.contexts[d];
-					if(nul.debug.assert) assert(ctx.isA(nul.data.context), 'Context queried');
+					if(nul.debugged) nul.assert(ctx.isA(nul.data.context), 'Context queried');
 					if(!chsdCtx || ctx.distance < chsdCtx.distance)
 						chsdCtx = ctx;
 				}

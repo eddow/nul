@@ -256,20 +256,6 @@ pinf = Number.POSITIVE_INFINITY;
 /** @constant */
 ninf = Number.NEGATIVE_INFINITY;
 
-////////////////	prototype extension
-
-/*TODO 1: add in jq ext
-Element.addMethods({
-	enable: function(elm, tf) {
-		if('undefined'== typeof tf) tf = true;
-		elm.writeAttribute('disabled',tf?null:'true');
-	},
-	disable: function(elm, tf) {
-		if('undefined'== typeof tf) tf = true;
-		elm.enable(!tf);
-	}
-});
-*/
 $o = {
 	clone: function(o) {
 		var rv = {};
@@ -277,3 +263,6 @@ $o = {
 		return rv;
 	}
 };
+
+Function.prototype.contract = function(){ return function(){}; };
+Function.prototype.asserted = function(){};

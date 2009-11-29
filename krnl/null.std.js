@@ -27,15 +27,15 @@ nul.extend( /** @lends nul */{
 	 * @param reason items to shape a sentence
 	 */
 	fail: function(reason) {
-		nul.debug.fail(beArrg(arguments));
+		nul.debugged.fail(beArrg(arguments));
 		throw nul.failure;
 	},
 	/**
 	 * Make several try/catch; accept some failures (debug purpose)
 	 */
 	trys: function(cb, name, obj, args) {
-		/*if(!nul.debug || !nul.debug.logging || !nul.debug.acts)*/ return cb.apply(obj);
-		//return nul.debug.trys(cb, name, obj, beArrg(arguments, 3));
+		/*if(!nul.debugged || !nul.debugged.logging || !nul.debugged.acts)*/ return cb.apply(obj);
+		//return nul.debugged.trys(cb, name, obj, beArrg(arguments, 3));
 	},
 	/**
 	 * Catch only failure.
@@ -70,14 +70,12 @@ nul.extend( /** @lends nul */{
 	 */
 	nulRead: function(txt, glbNm)
 	{
-		return nul.execution.benchmark.measure('*reading',function(){
-			try {
-				return nul.understand(nul.compile(txt), glbNm);
-			} catch(x) {
-				nul.failed(x);
-				return nul.obj.empty;
-			}
-		});
+		try {
+			return nul.understand(nul.compile(txt), glbNm);
+		} catch(x) {
+			nul.failed(x);
+			return nul.obj.empty;
+		}
 	},
 
 	/**
@@ -89,15 +87,13 @@ nul.extend( /** @lends nul */{
 	 */
 	xmlRead: function(txt, glbNm)
 	{
-		return nul.execution.benchmark.measure('*reading',function(){
-			return nul.compile.xml(txt).mar(function() {
-				try {
-					return nul.understand(this, glbNm).listed();
-				} catch(x) {
-					nul.failed(x);
-					return [];
-				}
-			});
+		return nul.compile.xml(txt).mar(function() {
+			try {
+				return nul.understand(this, glbNm).listed();
+			} catch(x) {
+				nul.failed(x);
+				return [];
+			}
 		});
 	},
 
@@ -132,8 +128,7 @@ nul.extend( /** @lends nul */{
 	 */
 	read: function(txt, glbNm)
 	{
-		try { return nul.known(nul.data.query(nul.nulRead(txt, glbNm)), glbNm); }
-		finally { nul.debug.applyTables(); }
+		return nul.known(nul.data.query(nul.nulRead(txt, glbNm)), glbNm);
 	}.describe('Reading')
 });
 

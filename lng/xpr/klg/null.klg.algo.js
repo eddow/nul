@@ -174,10 +174,9 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
 		var representer = new nul.klg.represent(this);
-		nul.debug.info('Represent')('Representants', this.name, this);
+		nul.debugged.info('Represent')('Representants', this.name, this);
 		for(var i=0; i<this.eqCls.length;) {
 			var ec = this.eqCls[i];
-			var dlc = nul.debug.lc;
 			var nec = representer.subBrowse(ec);
 			if(nul.browser.bijectif.unchanged == nec) ++i;
 			else {
@@ -188,7 +187,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 				//this.unification has effect on other equivalence classes that have to change in the representer
 				representer.invalidateCache();
 				
-				nul.debug.info('Represent')('Representants', this.name, this);
+				nul.debugged.info('Represent')('Representants', this.name, this);
 				i = 0;
 			}
 		}

@@ -21,27 +21,6 @@ csl = {
 	},
 
 	panelInit: {
-		_nul_postsVw: function() {
-			$('#_nul_postsVw').layout({
-				east : {
-					resizable: true,
-					slidable: true,
-					closable: true,
-					resizeWhileDragging: true,
-					size: 150,
-					initClosed: true,
-					SliderTip: 'Benchmarks',
-					slideTrigger_open: 'mouseover',
-					hideTogglerOnSlide: true,
-					minSize: 100,
-					spacing_closed: 3,
-					togglerLength_closed: 0,
-					togglerLength_opened: 0,
-					resizeWhileDragging: true,
-					fxName: 'slide'
-				}
-			});
-		},
 		_nul_valuesVw: function() {
 			//TODO 1: see why editor doesn't load on refresh
 			csl.editor = new CodeMirror($('#_nul_valuesVw')[0], {
@@ -87,14 +66,17 @@ csl = {
 		setTimeout("$('body').tabs('select', 1);",50);
 		$('#_nul_console_pages').fitV();
 		$(window).resize();
+
+		$('#_nul_globalKlgVw').html(nul.execution.globalKlg.toHtml());
 		
-		nul.debug.globalKlg = $('#_nul_globalKlgVw');
-		nul.debug.newLog($('#logsTBD'));
-		nul.debug.applyTables();
 		var logSlct = $('#dbgLogSelect');
-		for(var i=0; i<nul.debug.possibleLogging.length; ++i)
-			logSlct.append('<li class="checkable"><a class="checker">'+nul.debug.possibleLogging[i]+'</a></li>');
-	
+		if(nul.debugged) {
+			for(var i=0; i<nul.debugged.possibleLogging.length; ++i)
+				logSlct.append('<li class="checkable"><a class="checker">'+nul.debugged.possibleLogging[i]+'</a></li>');
+		} else {
+			logSlct.hide();
+			$('#dbgBreakLimit').hide();
+		}
 		$('#conToolBar .checker').click(function() { $(this).parent('.checkable').toggleClass('checked'); });
 		$(window).keypress(csl.keyHandler);
 		$('a.command').click(function() {
@@ -152,10 +134,6 @@ csl = {
 		edit_undo: function() { csl.editor.undo(); },
 		edit_redo: function() { csl.editor.redo(); },
 
-		clearPosts: function() {
-			alert('clearPosts');
-		},
-		
 		con_close: function() {
 			switch(csl.mode) {
 			case 'inside': nul.console.close(); break;
@@ -196,25 +174,25 @@ csl = {
 	
 	test: function(cb)
 	{
-		if(nul.debug) {
+		if(nul.debugged) {
 			if(window.console && $('#dbgLogSelect').parent().hasClass('checked')) {
-				nul.debug.logging = {error: true, fail: true};
+				nul.debugged.logging = {error: true, fail: true};
 				var chkd = $('#dbgLogSelect li.checked a');
 				for(var c=0; c<chkd.length; ++c)
-					nul.debug.logging[chkd[c].textContent] = true;
-			} else nul.debug.logging = false;
+					nul.debugged.logging[chkd[c].textContent] = true;
+			} else nul.debugged.logging = false;
 			
 			if($('#dbgBreakLimited').hasClass('checked')) {
 				var bl = $('#dbgBreakLimit').val();
 				try {
 					var nbl = parseInt(bl);
 					if(isNaN(nbl)) throw '!';
-					nul.debug.begin(nbl);
+					nul.debugged.begin(nbl);
 				} catch(err) {
 					alert('Bad break limit : ' + bl);
 					return false;
 				}					
-			} else nul.debug.begin(0);
+			} else nul.debugged.begin(0);
 			
 		}
 		
@@ -226,8 +204,7 @@ csl = {
 			csl.showValue(nul.ex.be(err).message);
 			//Forward JS errors to Firebug
 		} finally {
-			nul.debug.applyTables();
-			nul.execution.benchmark.draw($('#_nul_benchmarkVw'));
+			$('#_nul_globalKlgVw').html(nul.execution.globalKlg.toHtml());
 			csl.assertSmGlobals();
 		}
 	},
@@ -263,23 +240,18 @@ csl = {
 
 };
 
+
 if('undefined' != typeof nul) {
 	nul.console.child = csl;
-	var scriptsToLoad = 4;
-	var scriptLoader = function() { if(!--scriptsToLoad) csl.init(); };
+	//TODO 2: use $.include[many]
 	csl.addRef('link', { type: 'text/css', href: '../../lng/txt/out/null.txt.html.css', rel:'stylesheet' });
 	csl.addRef('link', { type: 'text/css', href: '../../3rd/jquery/theme/ui.css',  rel:'stylesheet' });
-	csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/jquery.js', onload: function() {
-		csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/ui.all.js', onload: scriptLoader });
-		csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/ui.layout.js', onload: scriptLoader });
-		csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/emw.js', onload: scriptLoader });
-		if('complete' == document.readyState) scriptLoader(); else $(document).ready(scriptLoader);
+	csl.addRef('script', { type: 'text/javascript', src: '../../null.extrn.js', onload: function() {
+		csl.init();
 	}});
-
-	
 	csl.mode = nul.console.frame[0].contentWindow===window?'inside':'outside';
 } else {
-	csl.addRef('script', { type: 'text/javascript', src: '../../null.js', noconsole:'please', onload: function() { 
+	csl.addRef('script', { type: 'text/javascript', src: '../../null.debug.js', noconsole:'please', onload: function() { 
 		nul.load.csl = csl.init;
 		nul.load.csl.use = {executionReady: true};
 	} });

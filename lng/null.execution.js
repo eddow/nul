@@ -23,7 +23,6 @@ nul.execution = {
 		nul.erroneus = false;
 		nul.execution.name.space = {};
 		
-		nul.debug.newLog();
 		/**
 		 * The knowledge that is shared as a parent knowledge from a reading to another
 		 * @type {nul.xpr.knowledge}
@@ -42,10 +41,8 @@ nul.execution = {
 	},
 	/**
 	 * Reset the namespaces, the debug state, the erroneus state and the benchmarks(if not specified else)
-	 * @param {Boolean} letBM If set, don't reset the benchmarks
 	 */
-	reset: function(letBM) {
-		if(!letBM) nul.execution.benchmark.reset();
+	reset: function() {
 		nul.execution.createGlobalKlg();
 		nul.execution.ready();
 	},
@@ -103,7 +100,7 @@ nul.execution = {
 		 * @param {String} nm
 		 */
 		leave: function(nm) {
-			if(nul.debug.assert) assert(nm == this.stack[0], 'benchmark stack coherence');
+			if(nul.debugged) nul.assert(nm == this.stack[0], 'benchmark stack coherence');
 			this.cstop(this.stack[0]);
 			this.stack.shift();
 			if(this.stack.length) this.cstart(this.stack[0]);			
@@ -151,25 +148,6 @@ nul.execution = {
 			nul.ex.semantic('GLB', 'The global knowledge is too fuzzy');
 	}
 };
-
-if(urlOption('noperf'))
-	/** @ignore */ Function.prototype.perform = function(name) { return this; };
-else
-	/**
-	 * Notifies the performances of this function
-	 * @param {String} name Benchmark name to use.
-	 */
-	Function.prototype.perform = function(name) {
-		var ftc = this;
-		return function() {
-			var cargs = $.makeArray(arguments);
-			var obj = this;
-			if('function'== typeof name) name = name.apply(obj, cargs);
-			nul.execution.benchmark.enter(name);
-			try { return ftc.apply(obj, cargs); }
-			finally { nul.execution.benchmark.leave(name); }
-		};
-	};
 
 nul.load.globalKnowledge = nul.execution.createGlobalKlg;
 

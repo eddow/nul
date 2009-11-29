@@ -10,7 +10,7 @@ nul.browser = new JS.Class(/** @lends nul.browser# */{
 	/**
 	 * Generic expression browsing
 	 * @constructs
-	 * @param {String} desc Text description (used mainly for benchmarking)
+	 * @param {String} desc Text description
 	 */
 	initialize: function(desc) {
 		this.description = desc;
@@ -57,16 +57,13 @@ nul.browser = new JS.Class(/** @lends nul.browser# */{
 			if(xpr) return xpr;
 			throw err;
 		}
- 	}.describe('Browse'),
+ 	},
  	/**
  	 * Entry point of browsing
  	 */
  	browse: function(xpr) {
- 		var brwsr = this;
- 		return nul.execution.benchmark.measure(this.description+' browse', function() { 
- 			return brwsr.recursion(xpr);
- 		});
- 	}
+		return this.recursion(xpr);
+ 	}.describe('Browse')
 });
 
 nul.browser.cached = new JS.Class(nul.browser, /** @lends nul.browser.cached# */{
@@ -74,12 +71,12 @@ nul.browser.cached = new JS.Class(nul.browser, /** @lends nul.browser.cached# */
 	 * A browser that cache returns value in the expression JS object
 	 * @constructs
 	 * @extends nul.browser
-	 * @param {String} desc Text description (used mainly for benchmarking)
+	 * @param {String} desc Text description
 	 */
 	initialize: function(desc) {
 		this.name = 'browseCache' + nul.execution.name.gen('browser.cached');
 		this.cachedExpressions = [];
-		this.callSuper(null);
+		this.callSuper();
 	},
 	
 	/**

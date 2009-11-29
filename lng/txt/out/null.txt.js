@@ -56,7 +56,7 @@ nul.txt = new JS.Class(/** @lends nul.txt */{
 	 * @param {nul.expression} xpr
 	 */
 	endDraw: function(xpr) {
-		if(nul.debug.assert) assert(xpr==this.drawing.pop(), 'Drawing consistency');
+		if(nul.debugged) nul.assert(xpr==this.drawing.pop(), 'Drawing consistency');
 		else this.drawing.pop();
 	}
 });

@@ -1,4 +1,4 @@
-/**
+/*!
  * JS.Class: Ruby-style JavaScript
  * Copyright (c) 2007-2009 James Coglan
  * 
