@@ -41,33 +41,33 @@ nul.understanding = {
 
 		switch(this.operator)
 		{
-			case '+':
-			case '*':
-				return new nul.obj.operation.Nary(this.operator, ops);
-			case '-':
-			case '/':
-			case '%':
-				return nul.obj.operation.binary(this.operator, ops);
-			//TODO 3: > < >= <=
-			case '=>': return new nul.obj.lambda(ops[0], ops[1]);
-			case ',': return nul.obj.pair.list(ops.follow, ops);
-			case '=': return ub.klg.unify(ops);
-			case '!=': ub.klg.oppose(nul.klg.unification(ops));
-				return ops[0];
-			case ';': return ops[0];
-			case '?': return ops[1];
-			case '..':
-				if('number'!= ops[0].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[0]);
-				if('number'!= ops[1].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[1]);
-				return new nul.obj.range(ops[0].value, ops[1].value);
-			case ':': 
-				var rv = ub.createFreedom(nul.understanding.rvName, false);
-				ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
-				return rv;
-			default:
-				nul.ex.internal('Unknown operator: "'+operator+'"');
+		case '+':
+		case '*':
+			return new nul.obj.operation.Nary(this.operator, ops);
+		case '-':
+		case '/':
+		case '%':
+			return nul.obj.operation.binary(this.operator, ops);
+		//TODO 3: > < >= <=
+		case '=>': return new nul.obj.lambda(ops[0], ops[1]);
+		case ',': return nul.obj.pair.list(ops.follow, ops);
+		case '=': return ub.klg.unify(ops);
+		case '!=': ub.klg.oppose(nul.klg.unification(ops));
+			return ops[0];
+		case ';': return ops[0];
+		case '?': return ops[1];
+		case '..':
+			if('number'!= ops[0].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[0]);
+			if('number'!= ops[1].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[1]);
+			return new nul.obj.range(ops[0].value, ops[1].value);
+		case ':': 
+			var rv = ub.createFreedom(nul.understanding.rvName, false);
+			ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
+			return rv;
+		default:
+			nul.ex.internal('Unknown operator: "'+operator+'"');
 		}
-	},
+	}.describe('Understand'),
 	/**
 	 * Precedor understanding : a precedor and an operand
 	 * @example <b>++</b>operand
@@ -76,7 +76,7 @@ nul.understanding = {
 	 */
 	preceded: function(ub) {
 		return ub.klg.attribute(this.operand.understand(ub), this.operator+' ');
-	},
+	}.describe('Understand'),
 	/**
 	 * Postcedor understanding : a postcedor and an operand
 	 * @example operand<b>++</b>
@@ -88,7 +88,7 @@ nul.understanding = {
 		case ',.': return nul.obj.pair.list(null, [this.operand.understand(ub)]);
 		default: return ub.klg.attribute(this.operand.understand(ub), ' '+this.operator);
 		}
-	},
+	}.describe('Understand'),
 	/**
 	 * Atom understanding : a type and a value
 	 * @example <b>"</b>quoted text<b>"</b>
@@ -119,7 +119,7 @@ nul.understanding = {
 			nul.ex.internal('unknown atom type: ' + this.type + ' - ' + this.value);
 		}
 		return nul.obj.litteral.make(value);
-	},
+	}.describe('Understand'),
 	/**
 	 * Application understanding : two symbols separated by a space
 	 * @example item applied
@@ -128,7 +128,7 @@ nul.understanding = {
 	 */
 	application: function(ub) {
 		return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
-	},
+	}.describe('Understand'),
 	/**
 	 * 'Taking' understanding
 	 * @example item<b>[</b>token<b>]</b>
@@ -137,7 +137,7 @@ nul.understanding = {
 	 */
 	taking: function(ub) {
 		return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
-	},
+	}.describe('Understand'),
 	/**
 	 * 'Set' understanding
 	 * @example <b>{</b>content<b>}</b>
@@ -147,7 +147,7 @@ nul.understanding = {
 	set: function(ub) {
  		if(!this.content) return nul.obj.empty;
 		return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
-	},
+	}.describe('Understand'),
 
 	/**
 	 * Local-definition value understanding
@@ -159,7 +159,7 @@ nul.understanding = {
 		if('_'== this.decl) nul.ex.semantic('JKD', 'Cannot declare joker !');
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
-	},
+	}.describe('Understand'),
 
 	/**
 	 * XML-node understanding
@@ -172,7 +172,7 @@ nul.understanding = {
 			map(this.attributes, function() { return this.understand(ub); }),			//attributes
 			nul.obj.pair.list(null, nul.understanding.possibles(this.content, ub))		//content
 		);
-	},
+	}.describe('Understand'),
 
 	/**
 	 * Composition understanding
@@ -182,7 +182,7 @@ nul.understanding = {
 	 */
 	composed: function(ub) {
 		return ub.klg.attributed(this.object.understand(ub), this.aName, this.value.understand(ub));
-	},
+	}.describe('Understand'),
 	/**
 	 * Objective value understanding
 	 * @example applied<b>.</b>lcl
@@ -191,7 +191,7 @@ nul.understanding = {
 	 */
 	objectivity: function(ub) {
 		return ub.klg.attribute(this.applied.understand(ub), this.lcl);
-	},
+	}.describe('Understand'),
 	/**
 	 * Hardcoded JS value
 	 * @example <b><{</b> value = nul.obj.litteral.make(34) <b>}></b>
@@ -200,7 +200,7 @@ nul.understanding = {
 	 */
 	hardcode: function(ub) {
 		return this.value;
-	}
+	}.describe('Understand')
 };
 
 nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{

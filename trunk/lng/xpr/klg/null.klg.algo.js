@@ -225,7 +225,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 	distribute: function() {
 		if(this.ior3.length) return nul.solve.apply(this.modifiable());
 		return [this.modifiable()];
-	},
+	}.describe('Distribution'),
 	
 	/**
 	 * Use the resolution engine : make several knowledges (built) without ior3
@@ -234,7 +234,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 	distributed: function() {
 		if(this.ior3.length) return map(nul.solve.apply(this.modifiable()), this.built);
 		return [this];
-	},
+	}.describe('Distribution'),
 	
 	/**
 	 * Returns a list of all the eqClass we know 'obj' contains

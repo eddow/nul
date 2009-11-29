@@ -6,7 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-//TODO 2: "8x" should be an error, not "8 x" 
+//TODO 2: "8x" should be an error, not "8 x" ... or not ?
 
 nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	/**
@@ -55,14 +55,14 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 				this.token = { value: this.token, type: 'other', raw:this.token };
 				this.txt = this.txt.substr(1);
 			}
-		} while(!this.token.value && 'string'!= this.token.type);
+		} while(null=== this.token.value);
 		
 		return this.token;
 	},
 	/**
 	 * Compare and return next token
-	 * @param {String[]} accepted A list of accepted token type
-	 * @return {} next token if accepted or null
+	 * @param {String[]} accepted A list of accepted token type or nothing if any token accepted
+	 * @return {token} next token if accepted or null
 	 */
 	peek: function(accepted)
 	{
@@ -105,18 +105,17 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	 * @param {String} value The expected value of the next token
 	 * @param {any} rv The return value of this function
 	 * @return the parameter 'rv'
-	 * @throws {nul.synthaxException} if the token is not the one expected.
+	 * @throws {nul.ex.syntax} if the token is not the one expected.
 	 */
 	expect: function(value, rv)
 	{
-		if(!this.take(value))
-			nul.ex.syntax('EXP', '"'+value+'" expected', this);
+		if(!this.take(value)) nul.ex.syntax('EXP', '"'+value+'" expected', this);
 		return rv;
 	},
 	/**
 	 * Gets next characters and advance if accepted.
 	 * @param {String} value The characters expected to de found
-	 * @return true if the characters were found
+	 * @return true if the characters were found and taken
 	 */
 	rawTake: function(value)
 	{
@@ -131,18 +130,17 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	 * @param {String} value The expected string to find
 	 * @param {any} rv The return value of this function
 	 * @return the parameter 'rv'
-	 * @throws {nul.synthaxException} if the characters were not found exactly
+	 * @throws {nul.ex.syntax} if the characters were not found exactly
 	 */
 	rawExpect: function(value, rv)
 	{
-		if(!this.rawTake(value))
-			nul.ex.syntax('EXP', '"'+value+'" expected', this);
+		if(!this.rawTake(value)) nul.ex.syntax('EXP', '"'+value+'" expected', this);
 		return rv;
 	},
 	/**
 	 * Get a string until some character
 	 * @param {String} seeked The bound for seeking
-	 * @return the string until the bound.
+	 * @return {String} the string until the bound, null if the bound is not found.
 	 */
 	fly: function(seeked)
 	{
@@ -178,7 +176,6 @@ nul.tokenizer.alphabets = {
 		comm2:		'\\/\\*.*?\\*\\/',
 		oprtr:		[',..', '{', '}', '::', '[', ']', '(', ')', '\\/', '.']
 	};
-
 /**
  * Load the operators defined in the compiler to create an alphabet
  */

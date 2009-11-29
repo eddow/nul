@@ -265,12 +265,18 @@ csl = {
 
 if('undefined' != typeof nul) {
 	nul.console.child = csl;
+	var scriptsToLoad = 4;
+	var scriptLoader = function() { if(!--scriptsToLoad) csl.init(); };
 	csl.addRef('link', { type: 'text/css', href: '../../lng/txt/out/null.txt.html.css', rel:'stylesheet' });
 	csl.addRef('link', { type: 'text/css', href: '../../3rd/jquery/theme/ui.css',  rel:'stylesheet' });
-	csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/jquery.js' });
-	csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/ui.all.js' });
-	csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/ui.layout.js' });
-	csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/emw.js' });
+	csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/jquery.js', onload: function() {
+		csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/ui.all.js', onload: scriptLoader });
+		csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/ui.layout.js', onload: scriptLoader });
+		csl.addRef('script', { type: 'text/javascript', src: '../../3rd/jquery/emw.js', onload: scriptLoader });
+		if('complete' == document.readyState) scriptLoader(); else $(document).ready(scriptLoader);
+	}});
+
+	
 	csl.mode = nul.console.frame[0].contentWindow===window?'inside':'outside';
 } else {
 	csl.addRef('script', { type: 'text/javascript', src: '../../null.js', noconsole:'please', onload: function() { 

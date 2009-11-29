@@ -59,8 +59,8 @@ nul.loading.scripts = [
 '3rd/jquery/treeTable',
 
 'krnl/null.helper',
-'krnl/null.std',
 'krnl/null.debug',
+'krnl/null.std',
 'krnl/null.exception',
 'krnl/null.dependance',
 
@@ -171,6 +171,10 @@ nul.loading.status = function(type, arg) {
 	}
 };
 
+nul.loading.error = function() {
+	alert('Script loading fail : ' + this.src);
+};
+
 nul.loading.addNexScriptRef = function() {
 	var sf = nul.loading.scripts.shift();
 	if(!sf) {
@@ -183,7 +187,8 @@ nul.loading.addNexScriptRef = function() {
 		type: 'text/javascript',
 		src: nul.rootPath+sf+'.js' + nul.loading.suffix,
 		onreadystatechange: nul.loading.onreadystatechange,
-		onload: nul.loading.addNexScriptRef
+		onload: nul.loading.addNexScriptRef,
+		onerror: nul.loading.error
 	});
 };
 nul.rootPath = '';

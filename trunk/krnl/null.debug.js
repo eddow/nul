@@ -10,13 +10,67 @@
  * @namespace Debugging tools
  */
 nul.debug = {
+	action: new JS.Class(/** @lends nul.debug.action# */{
+		/**
+		 * @construct
+		 */
+		initialize: function(name, applied, args) {
+			this.name = name;
+			this.applied = applied;
+			this.args = args;
+			nul.debug.action.begin(this);
+			this.isToLog = nul.debug.action.isToLog(name);
+			if(this.isToLog) {
+				console.groupCollapsed(name);
+				console.log('Applied to', applied);
+				console.log('Arguments', args);
+			}
+		},
+		returns: function(value) {
+			nul.debug.action.end(this);
+			this.success = true;
+			this.result = value;
+			if(this.isToLog) {
+				console.log('Gives', rv);
+				console.groupEnd();
+			}
+			return value;
+		},
+		abort: function(err) {
+			nul.debug.action.end(this);
+			this.success = false;
+			this.error = nul.ex.be(err);
+			if(this.isToLog) {
+				console.warn('Aborted : ', this.error);
+				console.groupEnd();
+			}
+			return this.error;
+		},
+		extend: /** @lends nul.debug.action */{
+			present: [],
+			begin: function(action) {
+				if(nul.debug.assert) assert(!action.parent, 'Actions consistency');
+				action.parent = this.doing();
+				this.present.unshift(action);
+			},
+			end: function(action) {
+				if(nul.debug.assert) assert(this.present[0]===action, 'Actions consistency');
+				this.present.shift();
+			},
+			doing: function() {
+				return this.present[0];
+			},
+			isToLog: function(name) {
+				return window.console && console.groupCollapsed && nul.debug.logging && nul.debug.logging[name];
+			}		
+		}
+	}),
 	fails: [],
 	logging: false,
 	logDeep: [],
 	possibleLogging: ['Represent'],
 	assert: urlOption('debug'),
 	perf: !urlOption('noperf'),
-	acts: urlOption('actLog'),
 	lcLimit: urlOption('break'),
 	
 	logCount: function() {
@@ -56,26 +110,13 @@ nul.debug = {
 	},
 	
 	described: function(name) {
-		var ftc = this.perform(name);
+		var ftc = this;
 		if(!nul.debug.possibleLogging.include(name)) nul.debug.possibleLogging.push(name);
 		return function() {
 			var cargs = $.makeArray(arguments);
-			arguments.callee = arguments.callee.caller;
-			if(!window.console || !console.groupCollapsed || !nul.debug.logging || !nul.debug.logging[name]) return ftc.apply(this, cargs);
-			var d, abrt = false, rv;
-			console.groupCollapsed(name);
-			console.log('Applied to', this);
-			console.log('Arguments', cargs);
-			try {
-				rv = ftc.apply(this, cargs);
-				console.log('Gives', rv);
-			} catch(err) {
-				console.warn('Aborted : ', nul.ex.be(err));
-				throw err;
-			} finally {
-				console.groupEnd();
-			}
-			return rv;
+			var action = new nul.debug.action(name, this, cargs);
+			try { return action.returns(ftc.apply(this, cargs)); }
+			catch(err) { throw action.abort(err); }			
 		};
 	},
 	asserted: function(obj, str) {
@@ -172,8 +213,7 @@ nul.debug = {
 	}
 };
 
-if(nul.debug.acts) Function.prototype.describe = nul.debug.described;
-else Function.prototype.describe = function(name) { return this.perform(name); };
+Function.prototype.describe = nul.debug.described;
 
 Function.prototype.contract = nul.debug.contract;
 if(nul.debug.assert) Function.prototype.asserted = nul.debug.asserted;

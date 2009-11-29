@@ -40,6 +40,7 @@ nul.klg = {
 		//TODO C
 		modifiable: function() {
 			if(0== this.maxMult) nul.fail('No fewer than never');
+			//TODO 1: origin management ?
 			return new nul.xpr.knowledge(null, this.minMult, this.maxMult);
 		},
 		

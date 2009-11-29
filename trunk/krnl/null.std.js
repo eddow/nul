@@ -121,7 +121,7 @@ nul.extend( /** @lends nul */{
 		}
 		nul.execution.globalKlg = gKlg;
 		return rv;
-	},
+	}.describe('Knownation'),
 	
 	/**
 	 * Compile a text and understand it in a fresh execution context
@@ -134,7 +134,7 @@ nul.extend( /** @lends nul */{
 	{
 		try { return nul.known(nul.data.query(nul.nulRead(txt, glbNm)), glbNm); }
 		finally { nul.debug.applyTables(); }
-	}
+	}.describe('Reading')
 });
 
 /**

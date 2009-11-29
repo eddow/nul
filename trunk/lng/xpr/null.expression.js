@@ -20,6 +20,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * @param {String} tp Type of expression
 	 */
  	initialize: function(tp) {
+		if(nul.debug) this.origin = { action: nul.debug.action.doing() };
 		/**
 		 * @type String
 		 */
@@ -90,7 +91,9 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 			if(!bsd.include(ndx)) 
 				return (comps[ndx] && comps[ndx].bunch)?map(obj):obj;
 		});
-		//rv.constructor = this.constructor;
+		
+		if(nul.debug) rv.origin = { from: this, action: nul.debug.action.doing() };
+	
 		return rv;
 	},
 
