@@ -89,8 +89,11 @@ body {
 	font-size: 12px;
 }
 
-.console-control.command {
+.console-control {
 	float: right;
+}
+
+.console-control.command {
 	text-decoration: none;
 	outline-style: none;
 	background-color: brown;
@@ -109,4 +112,9 @@ body {
 
 #_nul_globalKlgVw {
 	overflow: auto;
+	background: white;
 }
+
+#status_bar a { display: none; vertical-align: middle; }
+#status_bar.ui-state-highlight a.ui-icon-info { display: inline-block; }
+#status_bar.ui-state-error a.ui-icon-alert { display: inline-block; }

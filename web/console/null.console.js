@@ -18,7 +18,7 @@ nul.load.console = function() {
 			maskIframesOnResize: '#_nul_console',
 			resizable: true,
 			slidable: false,
-			closable: true,
+			closable: false,
 			
 			//togglerLength_open: 0,
 			//togglerLength_closed: 0,		
@@ -50,9 +50,15 @@ nul.console = {
 		var cde = nul.console.frame[0].contentDocument.documentElement;
 		cw.nul = nul;
 		nul.ex.js.hook(cw);
+		nul.status = nul.console.child.status;
 	},
 	close: function() {
-		nul.console.layout.close('south');
+		nul.console.layout.hide('south');
+		//nul.status = my status line
+	},
+	open: function() {
+		nul.console.layout.show('south');
+		nul.status = nul.console.child.status;
 	},
 	extern: function(nwnd) {
 		nwnd.nul = nul;

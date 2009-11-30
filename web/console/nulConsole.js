@@ -13,7 +13,6 @@ csl = {
 		return false;
 	},
 	cmReady: function() {
-		csl.editor.grabKeys(csl.keyHandler, function(kc) { return 111<kc && 123>=kc; } );
 		for(var i in window) csl.knGlobs[i] = true;
 		//setTimeout('csl.editValue();', 50);
 		csl.editValue();
@@ -59,7 +58,8 @@ csl = {
 			east: {
 				closable: false,
 				resizable: true,
-				slidable: false
+				slidable: false,
+				size: 700
 			},
 			resizeWhileDragging: true
 		});
@@ -113,7 +113,7 @@ csl = {
 	commands: {
 		edit: function() { csl.editValue(); },
 		eval: function() {
-			csl.test(function() {
+			csl.test('Evaluation', function() {
 				return nul.nulRead(csl.editor.getCode());
 			});
 		},
@@ -145,6 +145,7 @@ csl = {
 	},
 	showValue: function(val) {
 		if(csl.layout.state.east.isHidden) {
+			csl.editor.grabKeys(csl.keyHandler);
 			if(val) {
 				if(!val.jquery) $('#valuesViewer').html(val);
 				else {
@@ -161,6 +162,7 @@ csl = {
 	},
 	editValue: function() {
 		if(!csl.layout.state.east.isHidden) {
+			csl.editor.grabKeys(csl.keyHandler, function(kc) { return 111<kc && 123>=kc; } );
 			csl.layout.hide('east');
 			csl.editChanged();
 			csl.disable('edit');
@@ -173,8 +175,7 @@ csl = {
 	},
 
 	
-	test: function(cb)
-	{
+	test: function(dsc, cb) {
 		if(nul.debugged) {
 			if(window.console && $('#dbgLogSelect').parent().hasClass('checked')) {
 				nul.debugged.logging = {error: true, fail: true};
@@ -200,11 +201,12 @@ csl = {
 		try {
 			csl.disable('query');
 			csl.disable('known');
-			csl.showValue((csl.evaled=cb()).toNode()); 
+			csl.showValue((csl.evaled=cb()).toNode());
+			csl.status.text(dsc+' successfull');
 			csl.enable('known');
 			csl.enable('query');
 		} catch( err ) {
-			csl.showValue(nul.ex.be(err).present());
+			csl.status.error(dsc+' failed : ' + nul.ex.be(err).present());
 			//Forward JS errors to Firebug
 		} finally {
 			csl.refreshGlobalKlgVw();
@@ -216,6 +218,21 @@ csl = {
 		var vw = $('#_nul_globalKlgVw');
 		vw.empty();
 		vw.append(nul.execution.globalKlg.toNode());
+	},
+	
+	status: {
+		info: function(txt) {
+			$('#status_bar').addClass('ui-state-highlight').removeClass('ui-state-error')
+			.find('span').text(txt);
+		},
+		error: function(txt) {
+			$('#status_bar').addClass('ui-state-error').removeClass('ui-state-highlight')
+			.find('span').text(txt);
+		},
+		text: function(txt) {
+			$('#status_bar').removeClass('ui-state-error').removeClass('ui-state-highlight')
+			.find('span').text(txt||'');
+		}
 	},
 	
 	knGlobs: {},
@@ -260,8 +277,9 @@ if('undefined' != typeof nul) {
 	}});
 	csl.mode = nul.console.frame[0].contentWindow===window?'inside':'outside';
 } else {
-	csl.addRef('script', { type: 'text/javascript', src: '../../null.debug.js', noconsole:'please', onload: function() { 
+	csl.addRef('script', { type: 'text/javascript', src: '../../null.debug.js', noconsole:'please', onload: function() {
 		nul.load.csl = csl.init;
+		nul.status = csl.status;
 		nul.load.csl.use = {executionReady: true};
 	} });
 	csl.mode = 'stand-alone';
