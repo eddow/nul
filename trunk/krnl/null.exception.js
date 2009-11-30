@@ -95,8 +95,8 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 	 */
 	initialize: function(name, msg, tknzr) {
 		this.callSuper();
-		//this.line = ln;
-		//this.clmn = cl;
+		this.line = tknzr.token.ln;
+		this.clmn = tknzr.token.cl;
 	},
 	present: function() { 
 		return '[l'+this.line+'|c'+this.clmn+'] ' + this.message;

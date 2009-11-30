@@ -344,7 +344,7 @@ nul.compile = function(txt)
 {
 	var rv = new nul.compiler(txt+'\n');
 	var ev = rv.expression();
-	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", this.tknzr);
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", rv.tknzr);
 	return ev;
 };
 
