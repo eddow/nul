@@ -18,6 +18,7 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 		this.code = name;
 		//this.fire();
 	},
+	present: function() { return this.message; },
 	/**
 	 * Throw this exception
 	 */
@@ -96,6 +97,9 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 		this.callSuper();
 		//this.line = ln;
 		//this.clmn = cl;
+	},
+	present: function() { 
+		return '[l'+this.line+'|c'+this.clmn+'] ' + this.message;
 	},
 	toString: function() { return 'Syntax error'; }
 });

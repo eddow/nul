@@ -17,7 +17,7 @@ nul.page = {
 	 * @return nothing
 	 */
 	error: function(/**nul.ex*/ex) {
-		alert(ex.name + ' : ' + ex.message);
+		alert(ex.name + ' : ' + ex.present());
 	}
 };
 
