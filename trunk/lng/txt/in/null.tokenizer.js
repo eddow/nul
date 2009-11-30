@@ -42,7 +42,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		do
 		{
 			if(''== this.txt)
-				return this.token = { value: '', type: 'eof' };
+				return this.token = { value: '', type: 'eof', cl: this.token.cl, ln:this.token.ln };
 			for(alphabet in nul.tokenizer.alphabets)
 				if(match = nul.tokenizer.isAB(this.txt, alphabet))
 				{
@@ -52,16 +52,14 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 						raw: match[0],
 						ln: this.token.ln,
 						cl: this.token.cl};
-					this.advance(this.txt, match[0].length);
-					this.txt = this.txt.substr(match[0].length);
+					this.advance(match[0].length);
 					break;
 				}
 			if(!match)
 			{
 				this.token = this.txt.substr(0,1);
-				this.token = { value: this.token, type: 'other', raw:this.token };
-				this.advance(this.txt, 1);
-				this.txt = this.txt.substr(1);
+				this.token = { value: this.token, type: 'other', raw:this.token, cl: this.token.cl, ln:this.token.ln };
+				this.advance(1);
 			}
 		} while(null=== this.token.value);
 		
@@ -129,8 +127,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	{
 		var txt = this.token.raw + this.txt;
 		if( txt.substr(0,value.length) != value ) return false;
-		this.advance(txt, value.length);
-		this.txt = txt.substr(value.length);
+		this.advance(value.length, txt);
 		this.next();
 		return true;
 	},
@@ -157,20 +154,23 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		var n = txt.indexOf(seeked);
 		if(-1== n) return null;
 		var rv = txt.substr(0, n);
-		this.advance(txt, n);
-		this.txt = txt.substr(n);
+		this.advance(n, txt);
 		this.next();
 		return rv;
 	},
 	/**
 	 * Advance the token position
 	 */
-	advance: function(origTxt, n) {
-		if(n>origTxt.length) {
-			this.token.ln += 1;
-			this.token.cl += n - origTxt.length;
+	advance: function(n, txt) {
+		if(!txt) txt = this.txt;
+		var advanced = txt.substr(0, n);
+		this.txt = txt.substr(n);
+		advanced = advanced.split('\uffff');
+		if(1>= advanced.length) this.token.cl += n;
+		else {
+			this.token.ln += advanced.length-1;
+			this.token.cl = advanced.pop().length;
 		}
-		else this.token.cl += n;
 	}
 });
 
