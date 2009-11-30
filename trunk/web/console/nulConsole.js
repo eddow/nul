@@ -207,7 +207,7 @@ csl = {
 			csl.enable('known');
 			csl.enable('query');
 		} catch( err ) {
-			csl.showValue(nul.ex.be(err).message);
+			csl.showValue(nul.ex.be(err).present());
 			//Forward JS errors to Firebug
 		} finally {
 			$('#_nul_globalKlgVw').html(nul.execution.globalKlg.toHtml());
