@@ -11,7 +11,6 @@
  * @namespace
  */
 
-nul = new JS.Singleton(nul);
 nul.extend( /** @lends nul */{
 	/**
 	 * Failure object that is thrown and caught
