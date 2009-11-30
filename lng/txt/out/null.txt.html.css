@@ -90,7 +90,7 @@ a._nul_xpr_tile {
 	display: block;
 	cursor: help;
 	position: absolute;
-	z-index: 500;
+	z-index: 50000;
 	height: 3px;
 	width: 3px;
 	border-width: 1px;
@@ -110,7 +110,7 @@ a._nul_xpr_tile:hover {
 	margin-top: -20px;
 	height: 24px;
 	width: auto;
-	z-index: 450;
+	z-index: 45000;
 }
 
 a._nul_xpr_tile:hover div {

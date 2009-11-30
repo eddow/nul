@@ -127,11 +127,11 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 		 */
 		range: function() {
 			var ltr = 0> this.lower ?
-				'&#x2124;':	//ℤ
-				'&#x2115;';	//ℕ
+				$('<span>&#x2124;</span>'):	//ℤ
+				$('<span>&#x2115;</span>');	//ℕ
 			if(pinf==this.upper) {
-				if(ninf==this.lower) return {'': ltr};
-				if(0== this.lower) return {'': ltr};
+				if(ninf==this.lower) return {'': [ltr]};
+				if(0== this.lower) return {'': [ltr]};
 			}
 			return {'': [ltr, $('<span class="desc" />')
 			             .append($('<span class="sup" />').text((pinf==this.upper)?'&infin;':this.upper))
@@ -193,7 +193,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 		 * @return {HTML}
 		 */
 		eqCls: function() {
-			var attrs = $('<table />');
+			var attrs = $('<table class="attributes" />');
 			for(var an in ownNdx(this.attribs))
 				attrs.append($('<tr />')
 						.append($('<th />').html(an))

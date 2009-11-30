@@ -13,34 +13,6 @@ body {
 	height: 100%;
 }
 
-body .ui-tabs-nav li a { padding: 0 5px !important; font-size: 10pt !important; }
-body .ui-tabs-nav { padding: 0 !important; border-top: 0 !important; }
-#_nul_logsVw { padding: 0; }
-table.ui-tabs-panel thead { font-size: 10pt; }
-
-#_nul_benchmarkVw {
-	border-collapse: collapse;
-	font-family: monospace;
-	font-size: 10pt;
-}
-#_nul_benchmarkVw td, #_nul_benchmarkVw th {
-	border: 1px #888888 solid;
-	font-weight: bold;
-	text-align: right;
-}
-
-#_nul_benchmarkVw th {
-	text-align: left;
-	font-weight: normal;
-	background: url(../../3rd/jquery/theme/images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll;
-}
-
-#_nul_console_pages > .ui-tabs-panel {
-	padding: 0;
-	overflow: auto;
-	height: 100%;
-}
-
 .CodeMirror-line-numbers {
 	padding: .4em;
 	font-family: monospace;
@@ -49,23 +21,10 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 	background-color: #eeeeee;
 }
 
-#logs .Knowledge.log { background-color: pink; }
-#logs .Resolution.log { background-color: papayawhip; }
-#logs .Unification.log { background-color: lightblue; }
-#logs .Represent.log { background-color: lightbrown; }
-#logs .error.log { background-color: red; }
-#logs .fail.log { background-color: pink; }
-
 #conToolBar {
 	background: lightgrey;
 	height: 23px;
 }
-
-#conToolBar .tabbed { display:none; }
-#conToolBar.toolFor_nul_valuesVw .tabbed.toolFor_nul_valuesVw { display:inline; }
-#conToolBar.toolFor_nul_globalKlgVw .tabbed.toolFor_nul_globalKlgVw { display:inline; }
-#conToolBar.toolFor_nul_valuesVw.toolForEdit .tabbed.toolForEdit { display:inline; }
-#conToolBar.toolFor_nul_postsVw .tabbed.toolFor_nul_postsVw { display:inline; }
 
 #conToolBar ul {
 	padding: 0;
@@ -130,15 +89,6 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 	font-size: 12px;
 }
 
-#valuesViewer {
-	height: 100%;
-	width: 100%;
-}
-
-.ui-layout-resizer {
-	background: #CCCCCC url(images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
-}
-
 .console-control.command {
 	float: right;
 	text-decoration: none;
@@ -151,4 +101,12 @@ table.ui-tabs-panel thead { font-size: 10pt; }
 .console-control:hover {
 	border: 1px solid darkgrey;
 	background-color: darkred;
+}
+
+.ui-layout-resizer {
+	background: #CCCCCC url(images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
+}
+
+#_nul_globalKlgVw {
+	overflow: auto;
 }

@@ -20,23 +20,6 @@ csl = {
 		csl.editChanged();
 	},
 
-	panelInit: {
-		_nul_valuesVw: function() {
-			//TODO 1: see why editor doesn't load on refresh
-			csl.editor = new CodeMirror($('#_nul_valuesVw')[0], {
-				parserfile: ["parsenul.js"],
-				path: "../../3rd/codemirror/",
-				stylesheet: "../../3rd/codemirror/nulcolors.css",
-				tabMode: 'shift',
-				lineNumbers: true,
-				height: '100%',
-				width: '100%',
-				initCallback: csl.cmReady,
-				onChange: csl.editChanged
-			});
-		}
-	},
-	
 	init: function() {
 		if('undefined' == typeof nul) return;
 		csl.init = function() {};
@@ -47,27 +30,41 @@ csl = {
 		case 'inside': $('a.command[name="con_link"]').hide(); break;
 		case 'outside': $('a.command[name="con_free"]').hide(); break;
 		}
-		$.fn.fitV = function() {
-			var fitter = this;
-			$(window).resize(function () {
-				fitter.each(function() {
-					if($(this).is(':visible')) $(this).height($(this).offsetParent().innerHeight()-$(this).position().top);
-				});
-			});		
-		};
-		
-		$('body').tabs().bind('tabsshow', function(e, ui) { 
-			if(csl.panelInit[ui.panel.id]) {
-				csl.panelInit[ui.panel.id]();
-				delete csl.panelInit[ui.panel.id];
-			}
-			$('#conToolBar').attr('class', 'toolFor'+ui.panel.id);
-		});
-		setTimeout("$('body').tabs('select', 1);",50);
-		$('#_nul_console_pages').fitV();
-		$(window).resize();
 
-		$('#_nul_globalKlgVw').html(nul.execution.globalKlg.toHtml());
+		csl.editor = new CodeMirror($('#_nul_editorVw')[0], {
+			parserfile: ["parsenul.js"],
+			path: "../../3rd/codemirror/",
+			stylesheet: "../../3rd/codemirror/nulcolors.css",
+			tabMode: 'shift',
+			lineNumbers: true,
+			height: '100%',
+			width: '100%',
+			initCallback: csl.cmReady,
+			onChange: csl.editChanged
+		});
+
+		csl.layout = $('body').layout({
+			north: {
+				spacing_open: 0,
+				closable: false,
+				resizable: false,
+				slidable: false,
+			},
+			west: {
+				closable: true,
+				resizable: true,
+				slidable: true,
+				initClosed: true
+			},
+			east: {
+				closable: false,
+				resizable: true,
+				slidable: false
+			},
+			resizeWhileDragging: true
+		});
+
+		csl.refreshGlobalKlgVw();
 		
 		var logSlct = $('#dbgLogSelect');
 		if(nul.debugged) {
@@ -108,6 +105,7 @@ csl = {
 		}
 	},
 	editChanged: function() {
+		if(!csl.layout.state.east.isHidden) return;
 		var hs = csl.editor.historySize();
 		csl.enable('edit_undo', hs.undo);
 		csl.enable('edit_redo', hs.redo);
@@ -146,7 +144,7 @@ csl = {
 		}
 	},
 	showValue: function(val) {
-		if($(csl.editor.wrapping).is(':visible')) {
+		if(csl.layout.state.east.isHidden) {
 			if(val) {
 				if(!val.jquery) $('#valuesViewer').html(val);
 				else {
@@ -154,18 +152,17 @@ csl = {
 					$('#valuesViewer').append(val);
 				}
 			}
-			$(csl.editor.wrapping).hide();
-			$('#conToolBar').removeClass('toolForEdit');
-			$('#valuesViewer').show();
+			csl.layout.show('east');
 			csl.enable('edit');
 			csl.disable('eval');
+			csl.disable('edit_undo');
+			csl.disable('edit_redo');
 		}
 	},
 	editValue: function() {
-		if($('#valuesViewer').is(':visible')) {
-			$('#valuesViewer').hide();
-			$('#conToolBar').addClass('toolForEdit');
-			$(csl.editor.wrapping).show();
+		if(!csl.layout.state.east.isHidden) {
+			csl.layout.hide('east');
+			csl.editChanged();
 			csl.disable('edit');
 			csl.disable('query');
 			csl.disable('known');
@@ -210,9 +207,15 @@ csl = {
 			csl.showValue(nul.ex.be(err).present());
 			//Forward JS errors to Firebug
 		} finally {
-			$('#_nul_globalKlgVw').html(nul.execution.globalKlg.toHtml());
+			csl.refreshGlobalKlgVw();
 			csl.assertSmGlobals();
 		}
+	},
+	
+	refreshGlobalKlgVw: function() {
+		var vw = $('#_nul_globalKlgVw');
+		vw.empty();
+		vw.append(nul.execution.globalKlg.toNode());
 	},
 	
 	knGlobs: {},

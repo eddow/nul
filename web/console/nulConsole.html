@@ -9,13 +9,8 @@
 	</head>
 	<body>
 		<ul>
-			<li><a href="#_nul_globalKlgVw">Global knowledge</a></li>
-			<li><a href="#_nul_valuesVw">Values</a></li>
-			<a href="#" name="con_close" class="command ui-icon ui-icon-close console-control"></a>
-			<a href="#" name="con_free" class="command ui-icon ui-icon-copy console-control"></a>
-			<a href="#" name="con_link" class="command ui-icon ui-icon-link console-control"></a>
 		</ul>
-		<div id="conToolBar"><!--
+		<div id="conToolBar" class="ui-layout-north"><!--
 			
 			Reset
 			 
@@ -23,35 +18,39 @@
 			 
 			Edition tools
 			
-			--><span class="tabbed toolForEdit"><a name="edit_undo" class="command ui-icon ui-icon-arrowreturnthick-1-w" href="#" title="Ctrl-Z: Undo"></a></span><!--
-			--><span class="tabbed toolForEdit"><a name="edit_redo" class="command ui-icon ui-icon-arrowreturnthick-1-e" href="#" title="Ctrl-Y: Redo"></a></span>
+			--><span class="tabbed"><a name="edit_undo" class="command ui-icon ui-icon-arrowreturnthick-1-w" href="#" title="Ctrl-Z: Undo"></a></span><!--
+			--><span class="tabbed"><a name="edit_redo" class="command ui-icon ui-icon-arrowreturnthick-1-e" href="#" title="Ctrl-Y: Redo"></a></span>
 			<!--
 			
 			Expression tools
 			
-			--><span class="tabbed toolFor_nul_valuesVw"><a name="edit" class="command ui-icon ui-icon-script" href="#" title="F2: Edit value"></a></span><!--
-			--><span class="tabbed toolFor_nul_valuesVw"><a name="eval" class="command ui-icon ui-icon-play" href="#" title="F5: Evaluate"></a></span><!--
-			--><span class="tabbed toolFor_nul_valuesVw"><a name="query" class="command ui-icon ui-icon-transfer-e-w" href="#" title="F6: Query"></a></span><!--
-			--><span class="tabbed toolFor_nul_valuesVw"><a name="known" class="command ui-icon ui-icon-check" href="#" title="F8: Known"></a></span>
+			--><span class="tabbed"><a name="edit" class="command ui-icon ui-icon-script" href="#" title="F2: Edit value"></a></span><!--
+			--><span class="tabbed"><a name="eval" class="command ui-icon ui-icon-play" href="#" title="F5: Evaluate"></a></span><!--
+			--><span class="tabbed"><a name="query" class="command ui-icon ui-icon-transfer-e-w" href="#" title="F6: Query"></a></span><!--
+			--><span class="tabbed"><a name="known" class="command ui-icon ui-icon-check" href="#" title="F8: Known"></a></span>
 			<!--
 			
 			Expression options
 			
-			--><span class="tabbed toolFor_nul_valuesVw"><a href="#" title="Auto break" id="dbgBreakLimited" class="checkable">
+			--><span class="tabbed"><a href="#" title="Auto break" id="dbgBreakLimited" class="checkable">
 				<span class="popUp"><input id="dbgBreakLimit" type="text" size="10" value="500" /></span>
 				<span class="checker ui-icon ui-icon-arrowthickstop-1-e"></span>
-			</a></span><span id="loggingOption" class="tabbed toolFor_nul_valuesVw"><a href="#" title="Logging" class="checkable">
+			</a></span><span id="loggingOption" class="tabbed"><a href="#" title="Logging" class="checkable">
 				<ul id="dbgLogSelect" class="popUp"></ul>
 				<span class="checker ui-icon ui-icon-note"></span>
 			</a></span>
+			
+			
+			<a href="#" name="con_close" class="command ui-icon ui-icon-close console-control"></a>
+			<a href="#" name="con_free" class="command ui-icon ui-icon-copy console-control"></a>
+			<a href="#" name="con_link" class="command ui-icon ui-icon-link console-control"></a>
 		</div>
-		<div id="_nul_console_pages">
-			<div id="_nul_globalKlgVw">
-			</div>
-			<div id="_nul_valuesVw">
-				<div id="valuesViewer">
-				</div>
-			</div>			
+		<div id="_nul_globalKlgVw" class="ui-layout-west">
+		</div>
+		<div id="_nul_editorVw" class="ui-layout-center">
+		</div>			
+		<div id="_nul_valueVw" class="ui-layout-east">
+			<div id="valuesViewer"></div>
 		</div>
 	</body>
 </html>
