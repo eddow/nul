@@ -70,8 +70,10 @@ nul.loading.scripts = [
 'lng/txt/out/null.txt',
 'lng/txt/out/null.txt.flat',
 'lng/txt/out/null.txt.html',
+'lng/txt/out/null.txt.node',
 
 'lng/xpr/null.expression',
+'lng/xpr/null.origin',
 
 'lng/algo/null.browse',
 'lng/algo/null.solve',

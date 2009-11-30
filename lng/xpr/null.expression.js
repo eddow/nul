@@ -20,7 +20,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * @param {String} tp Type of expression
 	 */
  	initialize: function(tp) {
-		if(nul.action) this.origin = { action: nul.action.doing() };
+		if(nul.action) this.origin = new nul.origin();
 		/**
 		 * @type String
 		 */
@@ -44,7 +44,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * Assert this expression is summarised
 	 */
 	use: function() {
-		return this.summarised;
+		return !!this.summarised;
 	}.contract('Cannot use non-summarised'),
 
 //////////////// Summary functionment
@@ -92,7 +92,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 				return (comps[ndx] && comps[ndx].bunch)?map(obj):obj;
 		});
 		
-		if(nul.action) rv.origin = { from: this, action: nul.action.doing() };
+		if(nul.action) rv.origin = new nul.origin(this);
 	
 		return rv;
 	},
@@ -202,6 +202,12 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 */
 	toHtml: nul.summary('htmlTxt'),
 	/**
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The NODE representation
+	 * @function
+	 * @return {NODE}
+	 */
+	toNode: function() { return this.summary('nodeTxt').clone(true); },
+	/**
 	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The flat-text representation
 	 * @function
 	 * @return {String}
@@ -253,6 +259,8 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 	return '['+ rv.join('|') +']';
 	},
 
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link toNode} */
+	sum_nodeTxt: function() { return nul.txt.node.toText(this); },
 	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link toHtml} */
 	sum_htmlTxt: function() { return nul.txt.html.toText(this); },
 	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link toFlat} */

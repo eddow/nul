@@ -1083,10 +1083,6 @@ JS.Singleton = new JS.Class({
 (function(){
 
 var 
-	// Will speed up references to window, and allows munging its name.
-	window = this,
-	// Will speed up references to undefined, and allows munging its name.
-	undefined,
 	// Map over jQuery in case of overwrite
 	_jQuery = window.jQuery,
 	// Map over the $ in case of overwrite
@@ -5486,7 +5482,7 @@ jQuery.each([ "Height", "Width" ], function(i, name){
 /*
  * START OF FILE - /trunk/3rd/jquery/treeTable.js
  */
-/* jQuery treeTable Plugin 2.2.3 - http://ludo.cubicphuse.nl/jquery-plugins/treeTable/ */
+/*! jQuery treeTable Plugin 2.2.3 - http://ludo.cubicphuse.nl/jquery-plugins/treeTable/ */
 (function($) {
   // Helps to make options available to all functions
   // TODO: This gives problems when there are both expandable and non-expandable
@@ -5696,7 +5692,7 @@ jQuery.each([ "Height", "Width" ], function(i, name){
 /*
  * START OF FILE - /trunk/3rd/jquery/ui.all.js
  */
-/*
+/*!
  * jQuery UI 1.7.2
  *
  * Copyright (c) 2009 AUTHORS.txt (http://jqueryui.com/about)
@@ -6001,7 +5997,7 @@ jQuery.effects||(function(d){d.effects={version:"1.7.2",save:function(g,h){for(v
 /*
  * START OF FILE - /trunk/3rd/jquery/ui.layout.js
  */
-/*
+/*!
  * jquery.layout 1.3.0 - Release Candidate 14
  *
  * Copyright (c) 2009 

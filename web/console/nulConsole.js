@@ -116,9 +116,7 @@ csl = {
 		edit: function() { csl.editValue(); },
 		eval: function() {
 			csl.test(function() {
-				csl.evaled = nul.nulRead(csl.editor.getCode());
-				csl.enable('known');
-				return csl.evaled.toHtml();
+				return nul.nulRead(csl.editor.getCode());
 			});
 		},
 		query: function() {
@@ -149,7 +147,13 @@ csl = {
 	},
 	showValue: function(val) {
 		if($(csl.editor.wrapping).is(':visible')) {
-			if(val) $('#valuesViewer')[0].innerHTML = val;
+			if(val) {
+				if(!val.jquery) $('#valuesViewer').html(val);
+				else {
+					$('#valuesViewer').empty();
+					$('#valuesViewer').append(val);
+				}
+			}
 			$(csl.editor.wrapping).hide();
 			$('#conToolBar').removeClass('toolForEdit');
 			$('#valuesViewer').show();
@@ -198,7 +202,9 @@ csl = {
 		
 		try {
 			csl.disable('query');
-			csl.showValue(cb());
+			csl.disable('known');
+			csl.showValue((csl.evaled=cb()).toNode()); 
+			csl.enable('known');
 			csl.enable('query');
 		} catch( err ) {
 			csl.showValue(nul.ex.be(err).message);

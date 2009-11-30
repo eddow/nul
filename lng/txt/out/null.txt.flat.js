@@ -168,7 +168,7 @@ nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
 		 * @return {String}
 		 */
 		ior3: function() {
-			return '('+nul.txt.flat.all(maf(this.choices)).join(' &or; ')+')';
+			return '('+nul.txt.flat.all(this.choices).join(' &or; ')+')';
 		},
 		/**
 		 * @methodOf nul.xpr.possible#

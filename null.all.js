@@ -1083,10 +1083,6 @@ JS.Singleton = new JS.Class({
 (function(){
 
 var 
-	// Will speed up references to window, and allows munging its name.
-	window = this,
-	// Will speed up references to undefined, and allows munging its name.
-	undefined,
 	// Map over jQuery in case of overwrite
 	_jQuery = window.jQuery,
 	// Map over the $ in case of overwrite
@@ -5486,7 +5482,7 @@ jQuery.each([ "Height", "Width" ], function(i, name){
 /*
  * START OF FILE - /trunk/3rd/jquery/treeTable.js
  */
-/* jQuery treeTable Plugin 2.2.3 - http://ludo.cubicphuse.nl/jquery-plugins/treeTable/ */
+/*! jQuery treeTable Plugin 2.2.3 - http://ludo.cubicphuse.nl/jquery-plugins/treeTable/ */
 (function($) {
   // Helps to make options available to all functions
   // TODO: This gives problems when there are both expandable and non-expandable
@@ -5696,7 +5692,7 @@ jQuery.each([ "Height", "Width" ], function(i, name){
 /*
  * START OF FILE - /trunk/3rd/jquery/ui.all.js
  */
-/*
+/*!
  * jQuery UI 1.7.2
  *
  * Copyright (c) 2009 AUTHORS.txt (http://jqueryui.com/about)
@@ -6001,7 +5997,7 @@ jQuery.effects||(function(d){d.effects={version:"1.7.2",save:function(g,h){for(v
 /*
  * START OF FILE - /trunk/3rd/jquery/ui.layout.js
  */
-/*
+/*!
  * jquery.layout 1.3.0 - Release Candidate 14
  *
  * Copyright (c) 2009 
@@ -9968,7 +9964,8 @@ $.expr.filter.ATTR = function(elem, match) {
 /*
  * START OF FILE - /trunk/null.js
  */
-/*!  NUL language JavaScript framework
+/*!
+ *  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
  *
  * NUL is freely distributable under the terms of GNU GPLv3 license.
@@ -10134,10 +10131,7 @@ function maf(itm, fct) {
  * @return {HTML}
  */
 function escapeHTML(str) {
-   var div = document.createElement('div');
-   var text = document.createTextNode(str);
-   div.appendChild(text);
-   return div.innerHTML;
+	return $('<div />').text(str).html();
 };
 
 /**
@@ -10201,7 +10195,8 @@ function merge(dst, src, cb) {
 		for(var j=0; j<arguments.length; ++j) {
 			var o = arguments[j];
 			if(this===o) nul.ex.internal('Catenating self');
-			for(var i=0; i<o.length; ++i) this.push(o[i]);
+			if(!$.isArray(o)) this.push(o);
+			else for(var i=0; i<o.length; ++i) this.push(o[i]);
 		}
 		return this; 
 	});
@@ -12044,7 +12039,7 @@ nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
 		 * @return {String}
 		 */
 		ior3: function() {
-			return '('+nul.txt.flat.all(maf(this.choices)).join(' &or; ')+')';
+			return '('+nul.txt.flat.all(this.choices).join(' &or; ')+')';
 		},
 		/**
 		 * @methodOf nul.xpr.possible#
@@ -12129,23 +12124,6 @@ html = {
 				//title: ttl,
 		        style: 'margin-left: '+(5*pos)+'px;'
 			}, html.div({}, cnt));
-	},
-	tilePopup: function(knd, cnt) {
-		return ''+
-			html.tagged('div', {
-				'class': knd,
-		        onmouseout: 'nul.txt.html.js.leave();',
-		        style: 'display: none;'
-			}, cnt);
-	},
-	tileSquare: function(knd, ttl, pos) {
-        return ''+
-			html.tagged('a', {
-				'class': knd,
-				title: ttl,
-		        onmouseover: 'nul.txt.html.js.enter(this.parentNode, \''+knd+'\');',
-		        style: 'left: '+(5*pos)+'px;'
-			}, '');
 	}
 };
 
@@ -12363,7 +12341,7 @@ nul.txt.html = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 */
 		ior3: function() {
 			return {
-				'': html.op('(')+nul.txt.html.all(maf(this.choices)).join(html.op('&or;'))+html.op(')')
+				'': html.op('(')+nul.txt.html.all(this.choices).join(html.op('&or;'))+html.op(')')
 			};
 		},
 		
@@ -12405,7 +12383,7 @@ nul.txt.html = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
  * @extends nul.txt
  * @class Singleton
  */
-nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
+nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 	
 	drawing: [],
 	/**
@@ -12413,11 +12391,20 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 	 * @param {nul.expression[]} ass
 	 * @return {HTML[]}
 	 */
-	all: function(ass) {
-		return maf(ass, function() { return this.toNode(); });
+	all: function(ass, glu, b4, a9, flwr) {
+		var lst = maf(ass, function() { return this.toNode(); });
+		var rv = b4||[];
+		if(!$.isArray(rv)) rv = [rv];
+		if(lst.length) {
+			rv.push(lst[0]);
+			for(var i=1; lst[i]; ++i) rv.pushs([glu.clone(), lst[i]]);
+		}
+		if(flwr && ass.follow) rv.pushs([flwr, ass.follow.toNode()]);
+		if(a9) rv.push(a9);
+		return rv;
 	},
 	/** @constant */
-	recurStr: '[recur]',
+	recurStr: $('<span>[recur]</span>'),
 	/**
 	 * Called for each drawn expression to wrap it in common spans and add the tiles (for dependance, ...)
 	 * @param {HTML} txt The text specific to this expression
@@ -12425,22 +12412,34 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 	 * @return {HTML}
 	 */
 	wrap: function(txt, xpr) {
-		var tilesStr = '';
+		function tilesNode(knd, cnt, pos) {
+			if(cnt.toHtml) cnt = cnt.toHtml();
+			return $('<a />').attr('class',knd+' _nul_xpr_tile').css('margin-left', (5*pos)+'px').append($('<div />').html(cnt));
+		}
+		
 		var tiles = {};
 		tiles.shortStr = xpr.toFlat();
 		tiles.index = xpr.toString();
 		if(xpr.selfRef) tiles.reference = xpr.selfRef;
 		merge(tiles, txt);
 		delete tiles[''];
-		var spos = 0;
-		for(var t in tiles) tilesStr += html.tilesStr(t, tiles[t], spos++);
 		
 		var deps = xpr.dependance();
-		var df = deps.toFlat();
-		if(df) tilesStr += html.tilesStr('dependances', deps, spos++);
-		return html.span('xpr',
-				tilesStr+
-				html.span(xpr.expression, txt['']));
+		if(!isEmpty(deps.usages)) tiles['dependances'] = deps;
+
+		var rv = $('<span />').addClass(xpr.expression).addClass('xpr');
+		if(nul.debugged) nul.assert(xpr.origin, 'Each expression have an origin.');
+		rv.append(tilesNode('explain', xpr.origin, 0).click(nul.txt.node.explain(xpr)));
+				/*$('<a />')
+				.attr({'class':'explain _nul_xpr_tile', title: 'Explain'})
+				.css('margin-left', '0px')
+				.click(nul.txt.node.explain(xpr)));*/
+		var spos = 1;
+		for(var t in tiles) rv.append(tilesNode(t, tiles[t], spos++));
+		
+		for(var i=0; i<txt[''].length; ++i)
+			rv.append(txt[''][i]);
+		return rv;
 	},
 	outp: function(xpr) { return xpr; },
 	/** @namespace */
@@ -12449,20 +12448,19 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @methodOf nul.obj.pair#
 		 * @return {HTML}
 		 */
-		pair: function() { return nul.txt.html.dispatchPair(this); },
+		pair: function() { return nul.txt.node.dispatchPair(this); },
 		
 		/**
 		 * @methodOf nul.obj.local#
 		 * @return {HTML}
 		 */
 		local: function() {
-			if(nul.debugged) nul.assert(this.dbgName, 'Local has name if debug enabled'); 
+			nul.assert(this.dbgName, 'Local has name if debug enabled');
+			
 			return {
-				'': this.dbgName? (
-	                	this.dbgName+
-	                	html.span('desc', html.span('sup',this.ndx)+
-	                	html.span('sub',this.klgRef))
-                	) : this.ndx+html.span('desc', html.span('sub',this.klgRef))
+				'': [this.dbgName, $('<span class="desc"/>')
+						.append($('<span class="sup"/>').html(this.ndx))
+						.append($('<span class="sub"/>').html(this.klgRef))]
                 };
 		},
 
@@ -12471,10 +12469,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		operation: function() {
-			return {'': html.op('(') +
-				nul.txt.html.all(this.operands)
-					.join(html.op(this.operator)) +
-				html.op(')')};
+			return {'': nul.txt.node.all(this.operands, nul.txt.node.op(this.operator), nul.txt.node.op('('), nul.txt.node.op(')'))};
 		},
 		/**
 		 * @methodOf nul.obj.litteral.number#
@@ -12490,7 +12485,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		string: function() {
-			return {'': '"'+this.value+'"'};
+			return {'': '"'+this.value+'"'};	//TODO 3: html escape
 		},
 		/**
 		 * @methodOf nul.obj.litteral.boolean#
@@ -12511,9 +12506,10 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 				if(ninf==this.lower) return {'': ltr};
 				if(0== this.lower) return {'': ltr};
 			}
-			return {'': ltr+html.span('desc',
-				html.span('sup',(pinf==this.upper)?'&infin;':this.upper)+
-                html.span('sub',(ninf==this.lower)?'&infin;':this.lower))};
+			return {'': [ltr, $('<span class="desc" />')
+			             .append($('<span class="sup" />').text((pinf==this.upper)?'&infin;':this.upper))
+			             .append($('<span class="sub" />').text((ninf==this.lower)?'&infin;':this.lower))]
+			};
 		},
 		/**
 		 * @methodOf nul.obj.data#
@@ -12521,9 +12517,9 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 */
 		data: function() {
 			return {
-				'': html.span('op','&Dagger;') +
-	                	html.span('desc', html.span('sup',this.source.index)+
-	                	html.span('sub',this.source.context))
+				'': [nul.txt.node.op('&Dagger;'), $('<span class="desc"/>')
+						.append($('<span class="sup"/>').html(this.source.index))
+						.append($('<span class="sub"/>').html(this.source.context))]
                 };
 		},
 		/**
@@ -12531,7 +12527,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		other: function() {
-			return {'': this.expression};
+			return {'': [this.expression]};
 		},
 		
 		/**
@@ -12539,14 +12535,14 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		lambda: function() {
-			return {'': this.point.toHtml() + html.op('&rArr;') + this.image.toHtml()};
+			return {'': [this.point.toNode(), nul.txt.node.op('&rArr;'), this.image.toNode()]};
 		},
 		/**
 		 * @methodOf nul.obj.pair#
 		 * @return {HTML}
 		 */
 		singleton: function() {
-			return {'': html.op('{') + this.first.toHtml() + html.op('}')};
+			return {'': [nul.txt.node.op('{'), this.first.toNode(), nul.txt.node.op('}')]};
 		},
 		/**
 		 * @methodOf nul.obj.pair#
@@ -12554,8 +12550,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		list: function(flat) {
-			return {'': html.op('(') + nul.txt.html.all(flat).join(html.op(',')) +
-				(flat.follow?(html.op(',.. ')+flat.follow.toHtml()):'')+ html.op(')')};
+			return {'': nul.txt.node.all(flat, nul.txt.node.op(','), nul.txt.node.op('('), nul.txt.node.op(')'), nul.txt.node.op(',..'))};
 		},
 		/**
 		 * @methodOf nul.obj.pair#
@@ -12563,12 +12558,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		set: function(flat) {
-			return {
-				'': html.span('big op','{') +
-						nul.txt.html.all(flat).join(' &#9633; ') +
-					html.span('big op','}') +
-					(flat.follow?(html.op('&cup;')+flat.follow.toHtml()):'')
-			};
+			return {'': nul.txt.node.all(flat, nul.txt.node.op('&#9633;'), nul.txt.node.bigop('{'), nul.txt.node.bigop('}'), nul.txt.node.op('&cup;'))};
 		},
 		
 		/**
@@ -12576,36 +12566,39 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		eqCls: function() {
-			var attrs = [];
+			var attrs = $('<table />');
 			for(var an in ownNdx(this.attribs))
-				attrs.push(html.tr(html.th(an)+html.td(this.attribs[an].toHtml())));
-
-			attrs = attrs.length?html.table(attrs.join(''),'attributes'):'';
-
-			return {'': html.op('(') + attrs +
-				nul.txt.html.all(this.equivls).join(html.op('=')) +
-				html.op(')') +
-				(this.belongs.length?
-					(html.op('&isin;') + nul.txt.html.all(this.belongs).join(html.op(','))):
-					'')};
+				attrs.append($('<tr />')
+						.append($('<th />').html(an))
+						.append($('<td />').append(this.attribs[an].toNode())));
+			var b4 = [nul.txt.node.op('(')];
+			if(attrs.children().length) b4.push(attrs);
+			var lst = nul.txt.node.all(this.equivls, nul.txt.node.op('='), b4, nul.txt.node.op(')'));
+			if(this.belongs.length) {
+				lst.pushs(nul.txt.node.op('&isin;'), nul.txt.node.all(this.belongs, nul.txt.node.op(',')));
+			}
+			return {'': lst};
 		},
 		/**
 		 * @methodOf nul.xpr.knowledge#
 		 * @return {HTML}
 		 */
 		klg: function() {
-			if(this.isA(nul.klg.ncndtnl)) return {'':html.op(this.name)};
-			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
-			var ior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'));
-			var veto = nul.txt.html.all(this.veto).join(html.op('&or;'));
-			if(rv && ior3) rv += html.op('&and;') + ior3;
-			else if(ior3) rv = ior3;
-			if(rv && veto) rv += html.op('&and;')+html.op('&not;') + veto;
-			else if(veto) rv = html.op('&not;') + veto;
+			if(this.isA(nul.klg.ncndtnl)) return {'':[nul.txt.node.op(this.name)]};
+			var rv = nul.txt.node.all(this.eqCls, nul.txt.node.op('&and;'));
+			var ior3 = nul.txt.node.all(this.ior3, nul.txt.node.op('&and;'));
+			var veto = nul.txt.node.all(this.veto, nul.txt.node.op('&or;'));
+			
+			if(rv.length && ior3.length) rv.pushs(nul.txt.node.op('&and;'), ior3);
+			else if(ior3.length) rv = ior3;
+			
+			if(rv.length && veto.length) rv.pushs(nul.txt.node.op('&and;'), nul.txt.node.op('&not;'));
+			else if(veto.length) rv = [nul.txt.node.op('&not;')];
+			if(veto.length) rv.pushs(veto);
+			
 			return {
-				'': rv?(html.op('(')+rv+html.op(')')):'',
-				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):''),
-				arbitre: '['+this.minMult+((this.minMult==this.maxMult)?'':('-'+this.maxMult))+']'
+				'': rv.length?[nul.txt.node.op('(')].pushs(rv, nul.txt.node.op(')')):[],
+				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):'')
 			};
 		},
 		/**
@@ -12613,9 +12606,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		ior3: function() {
-			return {
-				'': html.op('(')+nul.txt.html.all(maf(this.choices)).join(html.op('&or;'))+html.op(')')
-			};
+			return {'': nul.txt.node.all(this.choices, nul.txt.node.op('&or;'), nul.txt.node.op('('), nul.txt.node.op(')'))};
 		},
 		
 		/**
@@ -12623,17 +12614,24 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		possible: function() {
-			if(this===nul.xpr.failure) return { '': html.op('Failure') };
-			if(this.knowledge===nul.klg.always) return { '': this.value.toHtml() };
+			if(this===nul.xpr.failure) return { '': nul.txt.node.op('Failure') };
+			if(this.knowledge===nul.klg.always) return { '': this.value.toNode() };
 			return {
-				'': html.table(
-					html.tr(html.td(this.value.toHtml(),'freedom')) +
-					html.tr(html.th(this.knowledge.toHtml(),'freedom')),
-					'xpr freedom')
+				'': [$('<table class="xpr freedom" />')
+						.append($('<tr><td class="freedom" /></tr>').append(this.value.toNode()))
+						.append($('<tr><th class="freedom" /></tr>').append(this.knowledge.toNode()))]
 			};
 		}
+	},
+	op: function(os) { return $('<span class="op" />').html(os); },
+	bigop: function(os) { return $('<span class="big op" />').html(os); },
+	
+	explain: function(xpr) {
+		return function() {
+			nul.xpr.use(xpr);
+			alert(xpr.toFlat());
+		};
 	}
-
 });
 
 /*
@@ -12665,7 +12663,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * @param {String} tp Type of expression
 	 */
  	initialize: function(tp) {
-		if(nul.action) this.origin = { action: nul.action.doing() };
+		if(nul.action) this.origin = new nul.origin();
 		/**
 		 * @type String
 		 */
@@ -12689,7 +12687,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * Assert this expression is summarised
 	 */
 	use: function() {
-		return this.summarised;
+		return !!this.summarised;
 	}.contract('Cannot use non-summarised'),
 
 //////////////// Summary functionment
@@ -12737,7 +12735,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 				return (comps[ndx] && comps[ndx].bunch)?map(obj):obj;
 		});
 		
-		if(nul.action) rv.origin = { from: this, action: nul.action.doing() };
+		if(nul.action) rv.origin = new nul.origin(this);
 	
 		return rv;
 	},
@@ -12847,6 +12845,12 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 */
 	toHtml: nul.summary('htmlTxt'),
 	/**
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The NODE representation
+	 * @function
+	 * @return {NODE}
+	 */
+	toNode: function() { return this.summary('nodeTxt').clone(true); },
+	/**
 	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The flat-text representation
 	 * @function
 	 * @return {String}
@@ -12898,6 +12902,8 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 	return '['+ rv.join('|') +']';
 	},
 
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link toNode} */
+	sum_nodeTxt: function() { return nul.txt.node.toText(this); },
 	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link toHtml} */
 	sum_htmlTxt: function() { return nul.txt.html.toText(this); },
 	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link toFlat} */
@@ -12967,6 +12973,31 @@ nul.xpr.application = function(set, itm, klg) {
 
 /*
  * END OF FILE - /trunk/lng/xpr/null.expression.js
+ */
+
+/*
+ * START OF FILE - /trunk/lng/xpr/null.origin.js
+ */
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+nul.origin = new JS.Class({
+	initialize: function(frm) {
+		this.action = nul.action.doing();
+		this.from = frm;
+	},
+	toString: function() {
+		if(!this.from) return 'Created while ' + this.action.name + '.';
+		return 'Transformation while ' + this.action.name + ' of ' + this.from.toFlat();
+	}
+});
+/*
+ * END OF FILE - /trunk/lng/xpr/null.origin.js
  */
 
 /*
