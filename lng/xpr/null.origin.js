@@ -11,7 +11,8 @@ nul.origin = new JS.Class({
 		this.action = nul.action.doing();
 		this.from = frm;
 	},
-	toString: function() {
+	toShort: function() {
+		if(!this.action) return 'Bereth ...';
 		if(!this.from) return 'Created while ' + this.action.name + '.';
 		return 'Transformation while ' + this.action.name + ' of ' + this.from.toFlat();
 	}

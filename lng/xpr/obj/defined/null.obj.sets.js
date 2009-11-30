@@ -14,8 +14,8 @@ nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
 	 * @constructs
 	 */
 	initialize: function() {
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 	
 	/**

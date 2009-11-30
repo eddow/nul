@@ -112,58 +112,44 @@ a._nul_xpr_tile:hover {
 	width: auto;
 	z-index: 450;
 }
-/*
-a.explain._nul_xpr_tile:hover {
-	margin-top: 0px;
-	height: 3px;
-	width: 3px;
-	z-index: 500;
-}
-*/
+
 a._nul_xpr_tile:hover div {
 	display: inline;
 }
 
-/*div.shortStr, div.index, div.locals, div.dependances, div.reference, div.arbitre {
-	cursor: default;
-	font-size: 1em;
-	position: absolute;
-	padding: 0.5em;
-	top: -2em;
-	left: -1px;
-	border-width: 1px;
-	border-style: solid;
-	white-space: nowrap;
-}*/
-
-.shortStr {
+a.shortStr {
 	border-color: blue;
 	background-color: lightblue;
 }
 
-.index {
+a.index {
 	border-color: darkgrey;
 	background-color: lightgrey;
 }
 
-.locals {
+a.locals {
 	border-color: red;
 	background-color: orange;
 }
 
-.dependances {
+a.dependances {
 	border-color: darkmagenta;
 	background-color: darkorchid;
 }
 
-.reference {
+a.reference {
 	border-color: black;
 	background-color: grey;
 }
 
-.arbitre {
+a.arbitre {
 	border-color: darkgreen;
 	background-color: lightgreen;
+}
+
+a.explain {
+	border-color: red;
+	background-color: pink;
 }
 
 a._nul_xpr_tile.dependances:hover {

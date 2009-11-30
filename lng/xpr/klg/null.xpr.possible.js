@@ -15,12 +15,15 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	 * @param {nul.xpr.knowledge} knowledge
 	 */
 	initialize: function(value, knowledge) {
-		if(!knowledge) knowledge = nul.klg.always;
-		nul.obj.use(value); nul.klg.use(knowledge);
-		/** @type nul.xpr.object */
-		this.value = value;
-		/** @type nul.xpr.knowledge */
-		this.knowledge = knowledge;
+		this.callSuper(null, null);
+		if(value) {
+			if(!knowledge) knowledge = nul.klg.always;
+			nul.obj.use(value); nul.klg.use(knowledge);
+			/** @type nul.xpr.object */
+			this.value = value;
+			/** @type nul.xpr.knowledge */
+			this.knowledge = knowledge;
+		}
 		this.alreadyBuilt();
 	},
 
@@ -143,7 +146,7 @@ nul.xpr.failure = nul.xpr.possible.prototype.failure = new JS.Singleton(nul.xpr.
 	 * @constructs
 	 * @class Singleton
 	 */
-	initialize: function() { this.alreadyBuilt(); },
+	initialize: function() { this.callSuper(); },
 	/** @constant */
 	expression: 'possible',
 	/** @constant */

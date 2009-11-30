@@ -20,8 +20,8 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 		this.point = point;
 		/** @type nul.xpr.object */
 		this.image = image;
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 
 //////////////// nul.obj.defined implementation

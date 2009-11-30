@@ -14,7 +14,7 @@ nul.klg = {
 	//TODO C
 	unconditional: function(mul, name) {
 		if(!nul.klg.unconditionals[mul])
-			nul.klg.unconditionals[mul] = new nul.klg.ncndtnl(mul, name);
+			nul.klg.unconditionals[mul] = new nul.klg.ncndtnl(name, mul);
 		return nul.klg.unconditionals[mul];
 	},
 	//TODO C
@@ -28,15 +28,14 @@ nul.klg = {
 		 * @param {Number} min
 		 * @param {Number} max
 		 */
-		initialize: function(mul, name) {
-	        this.locals = this.emptyLocals();
+		initialize: function(name, mul) {
+			this.callSuper(name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']'));
+	        /*this.locals = this.emptyLocals();
 			this.minMult = mul;
 			this.maxMult = mul;
-			this.name = name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']');
+			this.name = name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']');*/
 			this.alreadyBuilt();
 		},
-		/** @constant */
-		expression: 'klg',
 		//TODO C
 		modifiable: function() {
 			if(0== this.maxMult) nul.fail('No fewer than never');

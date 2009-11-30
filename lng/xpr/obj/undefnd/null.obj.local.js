@@ -17,6 +17,7 @@ nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	 */
 	initialize: function(klgRef, ndx, dbgName) {
 		if(nul.debugged) nul.assert(dbgName, 'Local has name if debug enabled');
+		this.callSuper();
 		
 		/**
 		 * The knowledge this local applies to
@@ -39,7 +40,6 @@ nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 		this.alreadyBuilt({
 			index: this.indexedSub(this.klgRef, this.ndx)
 		});
-		return this.callSuper();
 	},
 
 ////////////////nul.expression implementation

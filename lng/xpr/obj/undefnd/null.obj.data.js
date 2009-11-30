@@ -14,8 +14,8 @@ nul.obj.data = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.data# */{
 	 */
 	initialize: function(ds) {
 		this.source = ds;
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 
 //////////////// nul.expression implementation

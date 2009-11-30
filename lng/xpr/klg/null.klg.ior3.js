@@ -14,6 +14,7 @@ nul.klg.ior3 = new JS.Class(nul.expression, /** @lends nul.klg.ior3# */{
 	 * @param {nul.xpr.knowledge[]} choices The possible cases
 	 */
 	initialize: function(choices) {
+		this.callSuper(null);
 		this.choices = map(choices);
 		if(!this.choices[0].isA(nul.klg.ncndtnl)) this.choices.unshift(nul.klg.never);
 		this.alreadyBuilt();

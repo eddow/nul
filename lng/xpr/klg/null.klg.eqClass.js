@@ -16,6 +16,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {Attributes} attr The attributes the object is known zith
 	 */
 	initialize: function(obj, attr) {
+		this.callSuper(null);
  		if(obj && 'eqCls'== obj.expression) {
 			this.equivls = map(obj.equivls);	//Equal values
 			this.belongs = map(obj.belongs);	//Sets the values belong to
