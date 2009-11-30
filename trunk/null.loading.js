@@ -11,33 +11,32 @@
  * This file just load the needed script files. 
  */
 
-nul = new JS.Singleton(/** @lends nul */{
-	rootPath: '',
-	load: {},
-	loading : function() {
-		if (document.getElementsByTagName) {
-			nul.loading.head = document.getElementsByTagName("HEAD");
-			if (nul.loading.head) {
-				nul.loading.head = nul.loading.head[0];
-				var nss = nul.loading.head.getElementsByTagName("SCRIPT");
-				for(var i=0; i<nss.length; ++i) if(nss[i] && nss[i].src) {
-					var spl = nss[i].src.split('null.');
-					if(1< spl.length) {
-						nul.rootPath = spl[0];
-						nul.loading.nsn = nss[i];
-						if(!nss[i].getAttribute('noconsole')) nul.loading.scripts.push('web/console/null.console');
-						break;
-					}
+nul = new JS.Singleton(/** @lends nul */{ load: {} });
+
+nul.rootPath = '';
+nul.loading = function() {
+	if (document.getElementsByTagName) {
+		nul.loading.head = document.getElementsByTagName("HEAD");
+		if (nul.loading.head) {
+			nul.loading.head = nul.loading.head[0];
+			var nss = nul.loading.head.getElementsByTagName("SCRIPT");
+			for(var i=0; i<nss.length; ++i) if(nss[i] && nss[i].src) {
+				var spl = nss[i].src.split('null.');
+				if(1< spl.length) {
+					nul.rootPath = spl[0];
+					nul.loading.nsn = nss[i];
+					if(!nss[i].getAttribute('noconsole')) nul.loading.scripts.push('web/console/null.console');
+					break;
 				}
-				
-				for(var i=0; nul.loading.scripts[i]; ++i) nul.loading.scripts[i] = nul.rootPath+nul.loading.scripts[i]+'.js';
-				for(var i=0; nul.loading.styles[i]; ++i) nul.loading.styles[i] = nul.rootPath+nul.loading.styles[i]+'.css';
-				$.include(nul.loading.styles);
-				$.chainclude(nul.loading.scripts, nul.loading.initiate);
 			}
+			
+			for(var i=0; nul.loading.scripts[i]; ++i) nul.loading.scripts[i] = nul.rootPath+nul.loading.scripts[i]+'.js';
+			for(var i=0; nul.loading.styles[i]; ++i) nul.loading.styles[i] = nul.rootPath+nul.loading.styles[i]+'.css';
+			$.include(nul.loading.styles);
+			$.chainclude(nul.loading.scripts, nul.loading.initiate);
 		}
 	}
-});
+};
 
 nul.loading.styles = [
 'web/null.page',

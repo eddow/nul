@@ -7,11 +7,9 @@
  *
  *--------------------------------------------------------------------------*/
 
-nul = new JS.Singleton(/** @lends nul */{ 
-	load: {},
-	rootPath: '' //TODO 5: quid?
-});
+nul = new JS.Singleton(/** @lends nul */{ load: {} });
 
+nul.rootPath = '';
 $('head script').each(function(){
 	var spl = this.src.split('null.');
 	if(1< spl.length) nul.rootPath = spl[0];
