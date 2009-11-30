@@ -156,7 +156,7 @@ nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
  * @param flw Trail of this list. Will be the empty set if not specified
  * @param elms The elements that will be the 'first' of each pairs.
  * @return {nul.obj.pair} The built pair
- * @throws {nul.failure}
+ * @throws {nul.ex.failure}
  */
 nul.obj.pair.list = function(/**nul.xpr.object|null*/flw, /**nul.xpr.possible[]*/elms) {
 	elms = beArrg(arguments, 1);

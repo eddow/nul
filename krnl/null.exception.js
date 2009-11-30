@@ -18,7 +18,6 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 		this.code = name;
 		//this.fire();
 	},
-	present: function() { return this.message; },
 	/**
 	 * Throw this exception
 	 */
@@ -55,11 +54,6 @@ nul.ex.js = new JS.Class(nul.ex, /** @lends nul.ex.js# */{
 		this.file = url;
 		this.line = ln;
 	},
-	/**
-	 * 
-	 */
-	present: function() {
-	},
 	extend: /** @lends nul.ex.js */{
 		/**
 		 * window.onerror end-point
@@ -93,13 +87,17 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 	 * @extend nul.ex
 	 * @construct
 	 */
-	initialize: function(name, msg, tknzr) {
+	initialize: function(name, msg, tknzr, type) {
 		this.callSuper();
-		this.line = tknzr.token.ln;
-		this.clmn = tknzr.token.cl;
+		this.token = tknzr.token;
+		this.until = { line: tknzr.line, clmn: tknzr.clmn };
+		this.type = type||'before';
 	},
-	present: function() { 
-		return '[l'+this.line+'|c'+this.clmn+'] ' + this.message;
+	select: function(editor) {
+		switch(this.type) {
+		case 'before': editor.selectLines(editor.nthLine(this.token.line+1), this.token.clmn); break;
+		case 'token': editor.selectLines(editor.nthLine(this.token.line+1), this.token.clmn, editor.nthLine(this.until.line+1), this.until.clmn); break;
+		}
 	},
 	toString: function() { return 'Syntax error'; }
 });
@@ -140,5 +138,17 @@ nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 		this.callSuper('assertion', msg);
 	},
 	toString: function() { return 'Assertion failure'; }
+});
+
+nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
+	/**
+	 * A failed evaluation
+	 * @extend nul.ex
+	 * @construct
+	 */
+	initialize: function(msg) {
+		this.callSuper('failure');
+	},
+	toString: function() { return 'Failure'; }
 });
 

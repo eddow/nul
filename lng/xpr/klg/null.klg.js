@@ -104,7 +104,7 @@ nul.klg.unification = function(objs) {
  * @param {nul.xpr.object} o
  * @param {nul.xpr.object} val
  * @return {nul.xpr.possible[]}
- * @throws {nul.failure}
+ * @throws {nul.ex.failure}
  */
 nul.klg.has = function(o, val) {
 	var klg = new nul.xpr.knowledge();

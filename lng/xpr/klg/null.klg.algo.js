@@ -120,7 +120,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	 * Modifies the knowledge
  	 * @param {nul.xpr.object} and {nul.klg.eqClass}
  	 * @return {nul.klg.eqClass} unsummarised (if in a higher-stack level unification) or summarised
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	unification: function() { 	
  		var toUnify = beArrg(arguments);
@@ -169,7 +169,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	 * Get a pruned possible
  	 * @param {nul.xpr.object} value
 	 * @return {nul.xpr.possible}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
  	 */
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);

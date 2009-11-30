@@ -272,7 +272,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 			if(this.tknzr.rawTake('<(')) comps.push(this.tknzr.rawExpect(')>',this.expression()));
 			else if(this.tknzr.rawTake('</')) return comps;
 			else if(this.tknzr.rawTake('<')) comps.push(this.xml());
-			else nul.ex.syntax('UEI', "Don't know what to do with '"+this.tknzr.token.value+"'", this.tknzr);
+			else nul.ex.syntax('UEI', "Don't know what to do with '"+this.tknzr.token.value+"'", this.tknzr, 'token');
 		} while(true);
 	},
 	/**
@@ -343,7 +343,7 @@ nul.compile = function(txt)
 {
 	var rv = new nul.compiler(txt+'\n');
 	var ev = rv.expression();
-	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", rv.tknzr);
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", rv.tknzr, 'token');
 	return ev;
 };
 
@@ -357,6 +357,6 @@ nul.compile.xml = function(txt)
 {
 	var rv = new nul.compiler(txt+'</');
 	var ev = rv.innerXML();
-	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", this.tknzr);
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", this.tknzr, 'token');
 	return ev;
 };

@@ -47,7 +47,7 @@ csl = {
 				spacing_open: 0,
 				closable: false,
 				resizable: false,
-				slidable: false,
+				slidable: false
 			},
 			west: {
 				closable: true,
@@ -206,7 +206,8 @@ csl = {
 			csl.enable('known');
 			csl.enable('query');
 		} catch( err ) {
-			csl.status.error(dsc+' failed : ' + nul.ex.be(err).present());
+			csl.status.error(dsc+' failed : ' + nul.ex.be(err).message);
+			if(nul.ex.syntax.def(err)) err.select(csl.editor);
 			//Forward JS errors to Firebug
 		} finally {
 			csl.refreshGlobalKlgVw();

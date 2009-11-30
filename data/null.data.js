@@ -41,7 +41,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 		 * Query what is needed to have the queried state of the object
 		 * @param {nul.xpr.object} obj
 		 * @return {nul.xpr.object} The same object without dependancies
-		 * @throw {nul.failure}
+		 * @throw {nul.ex.failure}
 		 * @throw {nul.ex.semantic}
 		 */
 		query: function(obj) {
@@ -114,7 +114,7 @@ nul.data.context = new JS.Class(/** @lends nul.data.context# */{
 	 * Gets an object image no more dependant from this context
 	 * @param {nul.xpr.object} obj
 	 * @return {nul.browser.bijectif}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	query: function(obj) {
 		return this.querier().browse(obj);

@@ -1,4 +1,4 @@
-- syntax exception with cur position / hafl syntax-semantic exception (cannot declare joker, freedom declared twice) ?
+- 5 = 9 throw failure : should return {}
 
 $append
 ; append = { ({}, s, s) [] ((a,.. r), s, (a,.. ra ; append(r, s, ra)))}

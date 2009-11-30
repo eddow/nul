@@ -13612,7 +13612,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	/**
  	 * Add the given equivalence classes in this knowledge
  	 * @param {nul.klg.eqClass[]} eqCls
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	addEqCls: function(eqCls) {
  		for(var ec in ownNdx(eqCls)) this.unify(nul.xpr.use(eqCls[ec], 'nul.klg.eqClass'));
@@ -13671,7 +13671,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @param {nul.xpr.object} val [optional] Value to modify too
  	 * @return {nul.xpr.object} Value expressed under this knowledge if 
  	 * @return {nul.klg.stepUp} Browser to parse further values if no value were specified
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	merge: function(klg, val) {
  		if(nul.klg.never== klg) nul.fail('Merging failure');
@@ -13698,7 +13698,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * Modifies the knowledge
  	 * @param {nul.xpr.object} and {nul.klg.eqClass}
  	 * @return nul.xpr.object The replacement value for all the given values
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	unify: function(a, b) {
  		return this.unification(beArrg(arguments)).represent();
@@ -13708,7 +13708,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * Know that 'e' is in the sets 'ss'.
  	 * Modifies the knowledge
  	 * @return The replacement value for 'e' or nothing if inclusion failed.
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	belong: function(e, ss) {
  		ss = beArrg(arguments, 1);
@@ -13725,7 +13725,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @param {String} anm
  	 * @param {nul.xpr.object} vl
  	 * @return {nul.xpr.object}
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	attributed: function(e, anm, vl) {
  		this.modify(); nul.obj.use(e);
@@ -13741,7 +13741,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * Retrieve the attributes stated for 'e'
  	 * @param {nul.xpr.object} e
  	 * @return {nul.xpr.object[]}
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	attributes: function(e) {
  		nul.obj.use(e);
@@ -13757,7 +13757,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @param {nul.xpr.String} anm
  	 * @return {nul.xpr.object} The attribute 'anm' stated for e 
  	 * @return {null} There is no information about this attribute 
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	attribute: function(e, anm) {
  		nul.obj.use(e);
@@ -13805,7 +13805,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 	/**
 	 * Brings a knowledge in opposition
 	 * @param {nul.xpr.knowledge} klg
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	oppose: function(klg) {
 		this.modify(); nul.klg.use(klg);
@@ -14149,7 +14149,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	 * Modifies the knowledge
  	 * @param {nul.xpr.object} and {nul.klg.eqClass}
  	 * @return {nul.klg.eqClass} unsummarised (if in a higher-stack level unification) or summarised
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	unification: function() { 	
  		var toUnify = beArrg(arguments);
@@ -14198,7 +14198,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	 * Get a pruned possible
  	 * @param {nul.xpr.object} value
 	 * @return {nul.xpr.possible}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
  	 */
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
@@ -14430,7 +14430,7 @@ nul.klg.unification = function(objs) {
  * @param {nul.xpr.object} o
  * @param {nul.xpr.object} val
  * @return {nul.xpr.possible[]}
- * @throws {nul.failure}
+ * @throws {nul.ex.failure}
  */
 nul.klg.has = function(o, val) {
 	var klg = new nul.xpr.knowledge();
@@ -14702,7 +14702,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {nul.xpr.object} o object to add
 	 * @param {nul.xpr.knowledge} klg
 	 * @return nothing
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	isEq: function(o, klg) {
  		this.modify(); nul.obj.use(o);
@@ -14752,7 +14752,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * Add an object as a belongs.
 	 * @param {nul.xpr.object} o object that belongs the class
 	 * @param {nul.xpr.knowledge} klg
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	isIn: function(s, klg) {
  		this.modify(); s.use();
@@ -14784,7 +14784,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {Attributes} attrs 
 	 * @param {nul.xpr.knowledge} klg
 	 * @return {Boolean} Weither the call was useless
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	hasAttr: function(attrs, klg) {
 		this.modify();
@@ -14856,7 +14856,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {nul.obj.defined} s1
 	 * @param {nul.obj.defined} s2
 	 * @return {nul.obj.defined | null} Nothing if nothing can still be said
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	intersect: function(klg, s1, s2) {
 		if(s1==s2) return s1;
@@ -15100,7 +15100,7 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	 * Returns a possible, this unified to o.
 	 * @param {nul.xpr.object} o
 	 * @return {nul.xpr.possible}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	extract: function(o) {
 		//var klg = this.knowledge.modifiable();
@@ -15375,7 +15375,7 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
 	 * Unify two defined objects
 	 * @return {nul.obj.defined}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	unified: function(o, klg) {
 		this.use(); nul.obj.use(o); nul.klg.mod(klg);
@@ -15402,7 +15402,7 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
 	 * Intersect two defined objects
 	 * @return nul.obj.defined
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 * TODO 2: refaire le meme systeme qu'avec unified : subIntersect de deux defined
 	 */
 	intersect: function(o, klg) {
@@ -15431,7 +15431,7 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * Retrieve an attribute
 	 * @param {String} an Attribute Name
 	 * @return {nul.xpr.object}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	attribute: function(anm, klg) {
 		var af = this.attributes[anm] || this.cachedProperties[anm];
@@ -15632,7 +15632,7 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 
 	/**
 	 * Lambdas have no attributes
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	attribute: function() { nul.fail('Lambdas have no attributes'); },
 	
@@ -15641,7 +15641,7 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 	 * @param {nul.obj.defined} o The other object to unify to
 	 * @param {nul.xpr.knowledge} klg
 	 * @returns {nul.obj.lambda} The lambda of unified components
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	subUnified: function(o, klg) {
 		if('lambda'!= o.expression) nul.fail(o, ' not a lambda');
@@ -15652,7 +15652,7 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 
 	/**
 	 * Lambdas contain nothing
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	subHas: function() { nul.fail('Lambdas contains nothing'); },
 		
@@ -16171,7 +16171,7 @@ nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
  * @param flw Trail of this list. Will be the empty set if not specified
  * @param elms The elements that will be the 'first' of each pairs.
  * @return {nul.obj.pair} The built pair
- * @throws {nul.failure}
+ * @throws {nul.ex.failure}
  */
 nul.obj.pair.list = function(/**nul.xpr.object|null*/flw, /**nul.xpr.possible[]*/elms) {
 	elms = beArrg(arguments, 1);
@@ -16716,7 +16716,7 @@ nul.data.context = new JS.Class(/** @lends nul.data.context# */{
 	 * Gets an object image no more dependant from this context
 	 * @param {nul.xpr.object} obj
 	 * @return {nul.browser.bijectif}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	query: function(obj) {
 		return this.querier().browse(obj);

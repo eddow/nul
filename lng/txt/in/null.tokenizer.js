@@ -16,6 +16,8 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	 */
 	initialize: function(src) {
 		this.txt = src.replace(/\n\r/g,'\uffff').replace(/\n/g,'\uffff').replace(/\r/g,'\uffff');
+		this.line = 0;
+		this.clmn = 0;
 		this.next();
 	},
 	/**
@@ -29,10 +31,11 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		/** The text that produced this token */
 		raw: '',
 		/** Line coordinate */
-		ln: 0,
+		line: 0,
 		/** Row coordinate*/
-		cl: 0
+		clmn: 0
 	},
+	
 	/**
 	 * Consider the next token
 	 */
@@ -42,7 +45,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		do
 		{
 			if(''== this.txt)
-				return this.token = { value: '', type: 'eof', cl: this.token.cl, ln:this.token.ln };
+				return this.token = { value: '', type: 'eof', clmn: this.clmn, line:this.line };
 			for(alphabet in nul.tokenizer.alphabets)
 				if(match = nul.tokenizer.isAB(this.txt, alphabet))
 				{
@@ -50,8 +53,8 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 						value: (1< match.length) ? match[1]: null,
 						type: alphabet,
 						raw: match[0],
-						ln: this.token.ln,
-						cl: this.token.cl};
+						line: this.line,
+						clmn: this.clmn};
 					this.advance(match[0].length);
 					break;
 				}
@@ -167,10 +170,10 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		this.txt = txt.substr(n);
 		
 		advanced = advanced.split('\uffff');
-		if(1>= advanced.length) this.token.cl += n;
+		if(1>= advanced.length) this.clmn += n;
 		else if(this.txt) {
-			this.token.ln += advanced.length-1;
-			this.token.cl = advanced.pop().length;
+			this.line += advanced.length-1;
+			this.clmn = advanced.pop().length;
 		}
 	}
 });

@@ -22,7 +22,7 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
 	 * Unify two defined objects
 	 * @return {nul.obj.defined}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	unified: function(o, klg) {
 		this.use(); nul.obj.use(o); nul.klg.mod(klg);
@@ -49,7 +49,7 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
 	 * Intersect two defined objects
 	 * @return nul.obj.defined
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 * TODO 2: refaire le meme systeme qu'avec unified : subIntersect de deux defined
 	 */
 	intersect: function(o, klg) {
@@ -78,7 +78,7 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	 * Retrieve an attribute
 	 * @param {String} an Attribute Name
 	 * @return {nul.xpr.object}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	attribute: function(anm, klg) {
 		var af = this.attributes[anm] || this.cachedProperties[anm];

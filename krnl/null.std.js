@@ -27,7 +27,7 @@ nul.extend( /** @lends nul */{
 	 */
 	fail: function(reason) {
 		nul.debugged.fail(beArrg(arguments));
-		throw nul.failure;
+		throw nul.ex.failure;
 	},
 	/**
 	 * Make several try/catch; accept some failures (debug purpose)
@@ -40,7 +40,7 @@ nul.extend( /** @lends nul */{
 	 * Catch only failure.
 	 */
 	failed: function(err) {
-		if(nul.failure!= err) throw nul.ex.be(err);
+		if(nul.ex.failure!== err) throw nul.ex.be(err);
 	},
 	
 	/**
