@@ -21,8 +21,8 @@ nul.obj.operation = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.operation# 
 	initialize: function(operator, ops) {
 		this.operator = operator;
 		this.operands = ops;
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 	
 //////////////// nul.expression implementation

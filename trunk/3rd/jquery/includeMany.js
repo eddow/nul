@@ -28,7 +28,7 @@ $.chainclude = function(urls,finaly){
 										?$.isFunction(finaly)?finaly(data):null
 										:$.chainclude.load(urls,onload);
 						}
-					}
+					};
 	$.chainclude.load(urls,onload);
 };
 $.chainclude.load = function(urls,onload){
@@ -45,7 +45,7 @@ $.include = function(urls,finaly){
 							callback(data);
 						if(--$.include.counter[luid]==0&&$.isFunction(finaly))
 							finaly();
-					}
+					};
 	if(typeof urls=='object' && typeof urls.length=='undefined'){
 		$.include.counter[luid] = 0;
 		for(var item in urls)

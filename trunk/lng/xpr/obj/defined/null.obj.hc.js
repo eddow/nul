@@ -15,8 +15,8 @@ nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 	 */
 	initialize: function(singleton) {
 		if(singleton) this.extend(singleton);
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 	
 	/**

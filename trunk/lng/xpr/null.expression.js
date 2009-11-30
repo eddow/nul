@@ -20,11 +20,20 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * @param {String} tp Type of expression
 	 */
  	initialize: function(tp) {
-		if(nul.action) this.origin = new nul.origin();
+		this.haveOrigin();
 		/**
 		 * @type String
 		 */
  		if(tp) this.expression = tp;
+ 	},
+
+	/**
+	 * Fix my origin from this actual action
+	 * @param {nul.expression} frm The expression this is derived from
+	 */
+ 	haveOrigin: function(frm) {
+		if(nul.action) this.origin = new nul.origin(frm);
+		return this;
  	},
  	/**
  	 * Defined empty by default. Must be overriden.
@@ -92,9 +101,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 				return (comps[ndx] && comps[ndx].bunch)?map(obj):obj;
 		});
 		
-		if(nul.action) rv.origin = new nul.origin(this);
-	
-		return rv;
+		return rv.haveOrigin(this);
 	},
 
 //////////////// Virtuals
@@ -110,6 +117,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * Return a summarised version of this. Verify children consistency and make them {@link placed}
 	 */
 	built: function(smr) {
+		if(nul.debugged) nul.assert(this.origin, 'Each expression have an origin.');
 		this.modify();
 		for(var comp in this.components)
 			if(this.components[comp].bunch) {

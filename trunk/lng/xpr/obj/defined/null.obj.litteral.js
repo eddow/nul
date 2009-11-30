@@ -14,10 +14,10 @@ nul.obj.litteral = new JS.Class(nul.obj.defined, /** @lends nul.obj.litteral# */
 	 * @param {Number|String|Boolean} val Javascript value to hold.
 	 */
 	initialize: function(val) {
+		this.callSuper();
 		/** @constant */
 		this.value = val;
 		this.alreadyBuilt();
-		this.callSuper();
 	}
 });
 

@@ -140,4 +140,4 @@ nul.assert = function(cnd, str) {
 	if(window.console) console.assert(cnd, str);
 	if(!cnd)
 		nul.ex.assert('Assertion failed : '+str);
-}
+};

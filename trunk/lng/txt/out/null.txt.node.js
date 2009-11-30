@@ -56,8 +56,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 		if(!isEmpty(deps.usages)) tiles['dependances'] = deps;
 
 		var rv = $('<span />').addClass(xpr.expression).addClass('xpr');
-		if(nul.debugged) nul.assert(xpr.origin, 'Each expression have an origin.');
-		rv.append(tilesNode('explain', xpr.origin, 0).click(nul.txt.node.explain(xpr)));
+		rv.append(tilesNode('explain', xpr.origin.toShort(), 0).click(nul.txt.node.explain(xpr)));
 				/*$('<a />')
 				.attr({'class':'explain _nul_xpr_tile', title: 'Explain'})
 				.css('margin-left', '0px')

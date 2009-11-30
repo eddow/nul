@@ -14,6 +14,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 	 * @param {String} klgName [optional] Knowledge name
 	 */
 	initialize: function(klgName, n, x) {
+		this.callSuper(null);
  		/**
  		 * Describe the used localspace
  		 * @type String[]
@@ -46,7 +47,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  		this.name = klgName || nul.execution.name.gen('klg');
 		if('undefined'== typeof n) n = 1;
 		if('undefined'== typeof x) x = n;
-		if(!n.expression) n = { minMult:n, maxMult: x || n };
+		if(!n.expression) n = { minMult:n, maxMult: x };
 		this.minMult = n.minMult;
 		this.maxMult = n.maxMult;
  	},
