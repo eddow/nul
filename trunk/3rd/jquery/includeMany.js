@@ -1,5 +1,5 @@
 (function($){
-/*
+/*!
  * includeMany 1.2.1
  *
  * Copyright (c) 2009 Arash Karimzadeh (arashkarimzadeh.com)

@@ -112,7 +112,14 @@ a._nul_xpr_tile:hover {
 	width: auto;
 	z-index: 450;
 }
-
+/*
+a.explain._nul_xpr_tile:hover {
+	margin-top: 0px;
+	height: 3px;
+	width: 3px;
+	z-index: 500;
+}
+*/
 a._nul_xpr_tile:hover div {
 	display: inline;
 }

@@ -59,23 +59,6 @@ html = {
 				//title: ttl,
 		        style: 'margin-left: '+(5*pos)+'px;'
 			}, html.div({}, cnt));
-	},
-	tilePopup: function(knd, cnt) {
-		return ''+
-			html.tagged('div', {
-				'class': knd,
-		        onmouseout: 'nul.txt.html.js.leave();',
-		        style: 'display: none;'
-			}, cnt);
-	},
-	tileSquare: function(knd, ttl, pos) {
-        return ''+
-			html.tagged('a', {
-				'class': knd,
-				title: ttl,
-		        onmouseover: 'nul.txt.html.js.enter(this.parentNode, \''+knd+'\');',
-		        style: 'left: '+(5*pos)+'px;'
-			}, '');
 	}
 };
 
@@ -293,7 +276,7 @@ nul.txt.html = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 */
 		ior3: function() {
 			return {
-				'': html.op('(')+nul.txt.html.all(maf(this.choices)).join(html.op('&or;'))+html.op(')')
+				'': html.op('(')+nul.txt.html.all(this.choices).join(html.op('&or;'))+html.op(')')
 			};
 		},
 		

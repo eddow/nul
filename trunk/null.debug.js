@@ -1507,10 +1507,6 @@ JS.Packages(function() { with(this) {
 (function(){
 
 var 
-	// Will speed up references to window, and allows munging its name.
-	window = this,
-	// Will speed up references to undefined, and allows munging its name.
-	undefined,
 	// Map over jQuery in case of overwrite
 	_jQuery = window.jQuery,
 	// Map over the $ in case of overwrite
@@ -5878,7 +5874,7 @@ jQuery.each([ "Height", "Width" ], function(i, name){
  * START OF FILE - /trunk/3rd/jquery/includeMany.js
  */
 (function($){
-/*
+/*!
  * includeMany 1.2.1
  *
  * Copyright (c) 2009 Arash Karimzadeh (arashkarimzadeh.com)
@@ -6072,8 +6068,10 @@ nul.loading.scripts = [
 'lng/txt/out/null.txt',
 'lng/txt/out/null.txt.flat',
 'lng/txt/out/null.txt.html',
+'lng/txt/out/null.txt.node',
 
 'lng/xpr/null.expression',
+'lng/xpr/null.origin',
 
 'lng/algo/null.browse',
 'lng/algo/null.solve',

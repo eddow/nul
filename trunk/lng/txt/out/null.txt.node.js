@@ -11,7 +11,7 @@
  * @extends nul.txt
  * @class Singleton
  */
-nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
+nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 	
 	drawing: [],
 	/**
@@ -19,11 +19,20 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 	 * @param {nul.expression[]} ass
 	 * @return {HTML[]}
 	 */
-	all: function(ass) {
-		return maf(ass, function() { return this.toNode(); });
+	all: function(ass, glu, b4, a9, flwr) {
+		var lst = maf(ass, function() { return this.toNode(); });
+		var rv = b4||[];
+		if(!$.isArray(rv)) rv = [rv];
+		if(lst.length) {
+			rv.push(lst[0]);
+			for(var i=1; lst[i]; ++i) rv.pushs([glu.clone(), lst[i]]);
+		}
+		if(flwr && ass.follow) rv.pushs([flwr, ass.follow.toNode()]);
+		if(a9) rv.push(a9);
+		return rv;
 	},
 	/** @constant */
-	recurStr: '[recur]',
+	recurStr: $('<span>[recur]</span>'),
 	/**
 	 * Called for each drawn expression to wrap it in common spans and add the tiles (for dependance, ...)
 	 * @param {HTML} txt The text specific to this expression
@@ -31,22 +40,34 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 	 * @return {HTML}
 	 */
 	wrap: function(txt, xpr) {
-		var tilesStr = '';
+		function tilesNode(knd, cnt, pos) {
+			if(cnt.toHtml) cnt = cnt.toHtml();
+			return $('<a />').attr('class',knd+' _nul_xpr_tile').css('margin-left', (5*pos)+'px').append($('<div />').html(cnt));
+		}
+		
 		var tiles = {};
 		tiles.shortStr = xpr.toFlat();
 		tiles.index = xpr.toString();
 		if(xpr.selfRef) tiles.reference = xpr.selfRef;
 		merge(tiles, txt);
 		delete tiles[''];
-		var spos = 0;
-		for(var t in tiles) tilesStr += html.tilesStr(t, tiles[t], spos++);
 		
 		var deps = xpr.dependance();
-		var df = deps.toFlat();
-		if(df) tilesStr += html.tilesStr('dependances', deps, spos++);
-		return html.span('xpr',
-				tilesStr+
-				html.span(xpr.expression, txt['']));
+		if(!isEmpty(deps.usages)) tiles['dependances'] = deps;
+
+		var rv = $('<span />').addClass(xpr.expression).addClass('xpr');
+		if(nul.debugged) nul.assert(xpr.origin, 'Each expression have an origin.');
+		rv.append(tilesNode('explain', xpr.origin, 0).click(nul.txt.node.explain(xpr)));
+				/*$('<a />')
+				.attr({'class':'explain _nul_xpr_tile', title: 'Explain'})
+				.css('margin-left', '0px')
+				.click(nul.txt.node.explain(xpr)));*/
+		var spos = 1;
+		for(var t in tiles) rv.append(tilesNode(t, tiles[t], spos++));
+		
+		for(var i=0; i<txt[''].length; ++i)
+			rv.append(txt[''][i]);
+		return rv;
 	},
 	outp: function(xpr) { return xpr; },
 	/** @namespace */
@@ -55,20 +76,19 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @methodOf nul.obj.pair#
 		 * @return {HTML}
 		 */
-		pair: function() { return nul.txt.html.dispatchPair(this); },
+		pair: function() { return nul.txt.node.dispatchPair(this); },
 		
 		/**
 		 * @methodOf nul.obj.local#
 		 * @return {HTML}
 		 */
 		local: function() {
-			if(nul.debugged) nul.assert(this.dbgName, 'Local has name if debug enabled'); 
+			nul.assert(this.dbgName, 'Local has name if debug enabled');
+			
 			return {
-				'': this.dbgName? (
-	                	this.dbgName+
-	                	html.span('desc', html.span('sup',this.ndx)+
-	                	html.span('sub',this.klgRef))
-                	) : this.ndx+html.span('desc', html.span('sub',this.klgRef))
+				'': [this.dbgName, $('<span class="desc"/>')
+						.append($('<span class="sup"/>').html(this.ndx))
+						.append($('<span class="sub"/>').html(this.klgRef))]
                 };
 		},
 
@@ -77,10 +97,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		operation: function() {
-			return {'': html.op('(') +
-				nul.txt.html.all(this.operands)
-					.join(html.op(this.operator)) +
-				html.op(')')};
+			return {'': nul.txt.node.all(this.operands, nul.txt.node.op(this.operator), nul.txt.node.op('('), nul.txt.node.op(')'))};
 		},
 		/**
 		 * @methodOf nul.obj.litteral.number#
@@ -96,7 +113,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		string: function() {
-			return {'': '"'+this.value+'"'};
+			return {'': '"'+this.value+'"'};	//TODO 3: html escape
 		},
 		/**
 		 * @methodOf nul.obj.litteral.boolean#
@@ -117,9 +134,10 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 				if(ninf==this.lower) return {'': ltr};
 				if(0== this.lower) return {'': ltr};
 			}
-			return {'': ltr+html.span('desc',
-				html.span('sup',(pinf==this.upper)?'&infin;':this.upper)+
-                html.span('sub',(ninf==this.lower)?'&infin;':this.lower))};
+			return {'': [ltr, $('<span class="desc" />')
+			             .append($('<span class="sup" />').text((pinf==this.upper)?'&infin;':this.upper))
+			             .append($('<span class="sub" />').text((ninf==this.lower)?'&infin;':this.lower))]
+			};
 		},
 		/**
 		 * @methodOf nul.obj.data#
@@ -127,9 +145,9 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 */
 		data: function() {
 			return {
-				'': html.span('op','&Dagger;') +
-	                	html.span('desc', html.span('sup',this.source.index)+
-	                	html.span('sub',this.source.context))
+				'': [nul.txt.node.op('&Dagger;'), $('<span class="desc"/>')
+						.append($('<span class="sup"/>').html(this.source.index))
+						.append($('<span class="sub"/>').html(this.source.context))]
                 };
 		},
 		/**
@@ -137,7 +155,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		other: function() {
-			return {'': this.expression};
+			return {'': [this.expression]};
 		},
 		
 		/**
@@ -145,14 +163,14 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		lambda: function() {
-			return {'': this.point.toHtml() + html.op('&rArr;') + this.image.toHtml()};
+			return {'': [this.point.toNode(), nul.txt.node.op('&rArr;'), this.image.toNode()]};
 		},
 		/**
 		 * @methodOf nul.obj.pair#
 		 * @return {HTML}
 		 */
 		singleton: function() {
-			return {'': html.op('{') + this.first.toHtml() + html.op('}')};
+			return {'': [nul.txt.node.op('{'), this.first.toNode(), nul.txt.node.op('}')]};
 		},
 		/**
 		 * @methodOf nul.obj.pair#
@@ -160,8 +178,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		list: function(flat) {
-			return {'': html.op('(') + nul.txt.html.all(flat).join(html.op(',')) +
-				(flat.follow?(html.op(',.. ')+flat.follow.toHtml()):'')+ html.op(')')};
+			return {'': nul.txt.node.all(flat, nul.txt.node.op(','), nul.txt.node.op('('), nul.txt.node.op(')'), nul.txt.node.op(',..'))};
 		},
 		/**
 		 * @methodOf nul.obj.pair#
@@ -169,12 +186,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		set: function(flat) {
-			return {
-				'': html.span('big op','{') +
-						nul.txt.html.all(flat).join(' &#9633; ') +
-					html.span('big op','}') +
-					(flat.follow?(html.op('&cup;')+flat.follow.toHtml()):'')
-			};
+			return {'': nul.txt.node.all(flat, nul.txt.node.op('&#9633;'), nul.txt.node.bigop('{'), nul.txt.node.bigop('}'), nul.txt.node.op('&cup;'))};
 		},
 		
 		/**
@@ -182,36 +194,39 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		eqCls: function() {
-			var attrs = [];
+			var attrs = $('<table />');
 			for(var an in ownNdx(this.attribs))
-				attrs.push(html.tr(html.th(an)+html.td(this.attribs[an].toHtml())));
-
-			attrs = attrs.length?html.table(attrs.join(''),'attributes'):'';
-
-			return {'': html.op('(') + attrs +
-				nul.txt.html.all(this.equivls).join(html.op('=')) +
-				html.op(')') +
-				(this.belongs.length?
-					(html.op('&isin;') + nul.txt.html.all(this.belongs).join(html.op(','))):
-					'')};
+				attrs.append($('<tr />')
+						.append($('<th />').html(an))
+						.append($('<td />').append(this.attribs[an].toNode())));
+			var b4 = [nul.txt.node.op('(')];
+			if(attrs.children().length) b4.push(attrs);
+			var lst = nul.txt.node.all(this.equivls, nul.txt.node.op('='), b4, nul.txt.node.op(')'));
+			if(this.belongs.length) {
+				lst.pushs(nul.txt.node.op('&isin;'), nul.txt.node.all(this.belongs, nul.txt.node.op(',')));
+			}
+			return {'': lst};
 		},
 		/**
 		 * @methodOf nul.xpr.knowledge#
 		 * @return {HTML}
 		 */
 		klg: function() {
-			if(this.isA(nul.klg.ncndtnl)) return {'':html.op(this.name)};
-			var rv = nul.txt.html.all(this.eqCls).join(html.op('&and;'));
-			var ior3 = nul.txt.html.all(this.ior3).join(html.op('&and;'));
-			var veto = nul.txt.html.all(this.veto).join(html.op('&or;'));
-			if(rv && ior3) rv += html.op('&and;') + ior3;
-			else if(ior3) rv = ior3;
-			if(rv && veto) rv += html.op('&and;')+html.op('&not;') + veto;
-			else if(veto) rv = html.op('&not;') + veto;
+			if(this.isA(nul.klg.ncndtnl)) return {'':[nul.txt.node.op(this.name)]};
+			var rv = nul.txt.node.all(this.eqCls, nul.txt.node.op('&and;'));
+			var ior3 = nul.txt.node.all(this.ior3, nul.txt.node.op('&and;'));
+			var veto = nul.txt.node.all(this.veto, nul.txt.node.op('&or;'));
+			
+			if(rv.length && ior3.length) rv.pushs(nul.txt.node.op('&and;'), ior3);
+			else if(ior3.length) rv = ior3;
+			
+			if(rv.length && veto.length) rv.pushs(nul.txt.node.op('&and;'), nul.txt.node.op('&not;'));
+			else if(veto.length) rv = [nul.txt.node.op('&not;')];
+			if(veto.length) rv.pushs(veto);
+			
 			return {
-				'': rv?(html.op('(')+rv+html.op(')')):'',
-				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):''),
-				arbitre: '['+this.minMult+((this.minMult==this.maxMult)?'':('-'+this.maxMult))+']'
+				'': rv.length?[nul.txt.node.op('(')].pushs(rv, nul.txt.node.op(')')):[],
+				locals: this.name + (this.locals.length?(' : ' + this.locals.join(', ')):'')
 			};
 		},
 		/**
@@ -219,9 +234,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		ior3: function() {
-			return {
-				'': html.op('(')+nul.txt.html.all(maf(this.choices)).join(html.op('&or;'))+html.op(')')
-			};
+			return {'': nul.txt.node.all(this.choices, nul.txt.node.op('&or;'), nul.txt.node.op('('), nul.txt.node.op(')'))};
 		},
 		
 		/**
@@ -229,15 +242,22 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 		 * @return {HTML}
 		 */
 		possible: function() {
-			if(this===nul.xpr.failure) return { '': html.op('Failure') };
-			if(this.knowledge===nul.klg.always) return { '': this.value.toHtml() };
+			if(this===nul.xpr.failure) return { '': nul.txt.node.op('Failure') };
+			if(this.knowledge===nul.klg.always) return { '': this.value.toNode() };
 			return {
-				'': html.table(
-					html.tr(html.td(this.value.toHtml(),'freedom')) +
-					html.tr(html.th(this.knowledge.toHtml(),'freedom')),
-					'xpr freedom')
+				'': [$('<table class="xpr freedom" />')
+						.append($('<tr><td class="freedom" /></tr>').append(this.value.toNode()))
+						.append($('<tr><th class="freedom" /></tr>').append(this.knowledge.toNode()))]
 			};
 		}
+	},
+	op: function(os) { return $('<span class="op" />').html(os); },
+	bigop: function(os) { return $('<span class="big op" />').html(os); },
+	
+	explain: function(xpr) {
+		return function() {
+			nul.xpr.use(xpr);
+			alert(xpr.toFlat());
+		};
 	}
-
 });

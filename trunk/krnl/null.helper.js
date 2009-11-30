@@ -139,10 +139,7 @@ function maf(itm, fct) {
  * @return {HTML}
  */
 function escapeHTML(str) {
-   var div = document.createElement('div');
-   var text = document.createTextNode(str);
-   div.appendChild(text);
-   return div.innerHTML;
+	return $('<div />').text(str).html();
 };
 
 /**
@@ -206,7 +203,8 @@ function merge(dst, src, cb) {
 		for(var j=0; j<arguments.length; ++j) {
 			var o = arguments[j];
 			if(this===o) nul.ex.internal('Catenating self');
-			for(var i=0; i<o.length; ++i) this.push(o[i]);
+			if(!$.isArray(o)) this.push(o);
+			else for(var i=0; i<o.length; ++i) this.push(o[i]);
 		}
 		return this; 
 	});

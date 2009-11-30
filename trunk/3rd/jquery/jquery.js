@@ -12,10 +12,6 @@
 (function(){
 
 var 
-	// Will speed up references to window, and allows munging its name.
-	window = this,
-	// Will speed up references to undefined, and allows munging its name.
-	undefined,
 	// Map over jQuery in case of overwrite
 	_jQuery = window.jQuery,
 	// Map over the $ in case of overwrite

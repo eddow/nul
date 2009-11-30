@@ -1,4 +1,4 @@
-/*
+/*!
  * jquery.layout 1.3.0 - Release Candidate 14
  *
  * Copyright (c) 2009 

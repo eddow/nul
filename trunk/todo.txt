@@ -1,7 +1,8 @@
-1- tokenizer records line/column number
-2- syntax exception with cur position / hafl syntax-semantic exception (cannot declare joker, freedom declared twice) ?
-3- expression have an origin
-4- no more 'compiled' : understand directly : y/n?
+- tokenizer records line/column number
+- syntax exception with cur position / hafl syntax-semantic exception (cannot declare joker, freedom declared twice) ?
+- no more 'compiled' : understand directly : y/n?
+
+- nul.txt.node 
 
 $append
 ; append = { ({}, s, s) [] ((a,.. r), s, (a,.. ra ; append(r, s, ra)))}
