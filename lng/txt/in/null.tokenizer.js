@@ -165,9 +165,10 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		if(!txt) txt = this.txt;
 		var advanced = txt.substr(0, n);
 		this.txt = txt.substr(n);
+		
 		advanced = advanced.split('\uffff');
 		if(1>= advanced.length) this.token.cl += n;
-		else {
+		else if(this.txt) {
 			this.token.ln += advanced.length-1;
 			this.token.cl = advanced.pop().length;
 		}
