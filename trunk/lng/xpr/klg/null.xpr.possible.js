@@ -42,7 +42,7 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	 * Returns a possible, this unified to o.
 	 * @param {nul.xpr.object} o
 	 * @return {nul.xpr.possible}
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	extract: function(o) {
 		//var klg = this.knowledge.modifiable();

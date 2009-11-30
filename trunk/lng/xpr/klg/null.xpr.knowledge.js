@@ -165,7 +165,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	/**
  	 * Add the given equivalence classes in this knowledge
  	 * @param {nul.klg.eqClass[]} eqCls
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	addEqCls: function(eqCls) {
  		for(var ec in ownNdx(eqCls)) this.unify(nul.xpr.use(eqCls[ec], 'nul.klg.eqClass'));
@@ -224,7 +224,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @param {nul.xpr.object} val [optional] Value to modify too
  	 * @return {nul.xpr.object} Value expressed under this knowledge if 
  	 * @return {nul.klg.stepUp} Browser to parse further values if no value were specified
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	merge: function(klg, val) {
  		if(nul.klg.never== klg) nul.fail('Merging failure');
@@ -251,7 +251,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * Modifies the knowledge
  	 * @param {nul.xpr.object} and {nul.klg.eqClass}
  	 * @return nul.xpr.object The replacement value for all the given values
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	unify: function(a, b) {
  		return this.unification(beArrg(arguments)).represent();
@@ -261,7 +261,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * Know that 'e' is in the sets 'ss'.
  	 * Modifies the knowledge
  	 * @return The replacement value for 'e' or nothing if inclusion failed.
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	belong: function(e, ss) {
  		ss = beArrg(arguments, 1);
@@ -278,7 +278,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @param {String} anm
  	 * @param {nul.xpr.object} vl
  	 * @return {nul.xpr.object}
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	attributed: function(e, anm, vl) {
  		this.modify(); nul.obj.use(e);
@@ -294,7 +294,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * Retrieve the attributes stated for 'e'
  	 * @param {nul.xpr.object} e
  	 * @return {nul.xpr.object[]}
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	attributes: function(e) {
  		nul.obj.use(e);
@@ -310,7 +310,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  	 * @param {nul.xpr.String} anm
  	 * @return {nul.xpr.object} The attribute 'anm' stated for e 
  	 * @return {null} There is no information about this attribute 
- 	 * @throws {nul.failure}
+ 	 * @throws {nul.ex.failure}
  	 */
  	attribute: function(e, anm) {
  		nul.obj.use(e);
@@ -358,7 +358,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 	/**
 	 * Brings a knowledge in opposition
 	 * @param {nul.xpr.knowledge} klg
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	oppose: function(klg) {
 		this.modify(); nul.klg.use(klg);

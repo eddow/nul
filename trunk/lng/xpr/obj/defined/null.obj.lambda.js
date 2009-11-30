@@ -28,7 +28,7 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 
 	/**
 	 * Lambdas have no attributes
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	attribute: function() { nul.fail('Lambdas have no attributes'); },
 	
@@ -37,7 +37,7 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 	 * @param {nul.obj.defined} o The other object to unify to
 	 * @param {nul.xpr.knowledge} klg
 	 * @returns {nul.obj.lambda} The lambda of unified components
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	subUnified: function(o, klg) {
 		if('lambda'!= o.expression) nul.fail(o, ' not a lambda');
@@ -48,7 +48,7 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 
 	/**
 	 * Lambdas contain nothing
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	subHas: function() { nul.fail('Lambdas contains nothing'); },
 		

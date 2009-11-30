@@ -68,7 +68,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {nul.xpr.object} o object to add
 	 * @param {nul.xpr.knowledge} klg
 	 * @return nothing
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	isEq: function(o, klg) {
  		this.modify(); nul.obj.use(o);
@@ -118,7 +118,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * Add an object as a belongs.
 	 * @param {nul.xpr.object} o object that belongs the class
 	 * @param {nul.xpr.knowledge} klg
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	isIn: function(s, klg) {
  		this.modify(); s.use();
@@ -150,7 +150,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {Attributes} attrs 
 	 * @param {nul.xpr.knowledge} klg
 	 * @return {Boolean} Weither the call was useless
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	hasAttr: function(attrs, klg) {
 		this.modify();
@@ -222,7 +222,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {nul.obj.defined} s1
 	 * @param {nul.obj.defined} s2
 	 * @return {nul.obj.defined | null} Nothing if nothing can still be said
-	 * @throws {nul.failure}
+	 * @throws {nul.ex.failure}
 	 */
 	intersect: function(klg, s1, s2) {
 		if(s1==s2) return s1;
