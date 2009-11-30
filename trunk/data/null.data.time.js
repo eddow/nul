@@ -56,7 +56,7 @@ nul.load.time = function() {
 		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
 		 */
 		subHas: function(obj, att) {
-			if(obj.isA(nul.obj.data) && 
+			if(nul.obj.data.def(obj) && 
 					['now'].include(obj.source.index) &&
 					obj.source.context == nul.data.context.local )
 				return [obj];
@@ -69,8 +69,8 @@ nul.load.time = function() {
 		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
 		 */
 		select: function(obj, att) {
-			if(obj.isA(nul.data.time)) return [obj];
-			if(obj.isA(nul.obj.defined)) return [];
+			if(nul.data.time.def(obj)) return [obj];
+			if(nul.obj.defined.def(obj)) return [];
 			//TODO 3: try to see with the attributes if we can discover the date. If yes, return [built date]
 		},
 		/**

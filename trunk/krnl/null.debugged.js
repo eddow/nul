@@ -69,8 +69,7 @@ nul.debugged = {
 		if('function' != typeof cb) cb = null;
 		return function(obj) {
 			if(nul.debugged) nul.assert(
-					obj && obj.isA && 
-					obj.isA(cls) &&
+					cls.def(obj) &&
 					(!cb || cb(obj)),
 				'Expected '+(nm||'a specific object'));
 			return obj;
@@ -93,8 +92,7 @@ nul.debugged = {
 		if(!'function'== typeof cb) cb = null;
 		return function(objs) {
 			if(nul.debugged.assert) map(objs, function(i, obj) { assert(
-					obj && obj.isA && 
-					obj.isA(cls) &&
+					cls.def(obj) &&
 					(!cb || cb(obj)),
 					'Expected '+ (nm||'specific object') + 's'); });
 		}; 

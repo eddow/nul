@@ -208,7 +208,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 		return rv;
 	},
 	/**
-	 * Gets the compiled expressionon the sepcified operator-level
+	 * Gets the compiled expression on the sepcified operator-level
 	 * @param {Number} oprtrLvl tThe operator-level : index in {@link nul.operators}
 	 * @return {nul.compiled} The compiled value
 	 * @throw {nul.ex.syntax}
@@ -228,7 +228,6 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 			if(1== rv.length && !rv.follow) return rv[0];
 			if('ceded'== rv[1]) firstOp = 
 				this.expression(0, nul.compiled.postceded(oprtr[0], rv[0]));
-				//nul.compiled.postceded(oprtr[0], rv[0]);
 			else firstOp = nul.compiled.expression(oprtr[0], rv);
 		} while('l'== oprtr[1]);
 		return firstOp;

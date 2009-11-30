@@ -14,7 +14,7 @@
 				</dictionary>
 				<dictionary>
 					<key>null.debug.js</key>
-					<value>&lt;data&gt;&lt;fileName&gt;null.debug.js&lt;/fileName&gt;&lt;min&gt;false&lt;/min&gt;&lt;comp&gt;false&lt;/comp&gt;&lt;gZip&gt;false&lt;/gZip&gt;&lt;resolveImports&gt;false&lt;/resolveImports&gt;&lt;urlRewriting&gt;false&lt;/urlRewriting&gt;&lt;autoBuild&gt;true&lt;/autoBuild&gt;&lt;lineLength&gt;-1&lt;/lineLength&gt;&lt;dependencies&gt;&lt;file&gt;3rd/jsclass/loader.js&lt;/file&gt;&lt;file&gt;3rd/jquery/jquery.js&lt;/file&gt;&lt;file&gt;3rd/jquery/includeMany.js&lt;/file&gt;&lt;file&gt;null.loading.js&lt;/file&gt;&lt;/dependencies&gt;&lt;/data&gt;</value>
+					<value>&lt;data&gt;&lt;fileName&gt;null.debug.js&lt;/fileName&gt;&lt;min&gt;false&lt;/min&gt;&lt;comp&gt;false&lt;/comp&gt;&lt;gZip&gt;false&lt;/gZip&gt;&lt;resolveImports&gt;false&lt;/resolveImports&gt;&lt;urlRewriting&gt;false&lt;/urlRewriting&gt;&lt;autoBuild&gt;true&lt;/autoBuild&gt;&lt;lineLength&gt;-1&lt;/lineLength&gt;&lt;dependencies&gt;&lt;file&gt;3rd/jsclass/core.js&lt;/file&gt;&lt;file&gt;3rd/jquery/jquery.js&lt;/file&gt;&lt;file&gt;3rd/jquery/includeMany.js&lt;/file&gt;&lt;file&gt;null.loading.js&lt;/file&gt;&lt;/dependencies&gt;&lt;/data&gt;</value>
 				</dictionary>
 				<dictionary>
 					<key>null.extrn.js</key>
