@@ -13,7 +13,10 @@ nul.origin = new JS.Class({
 	},
 	toShort: function() {
 		if(!this.action) return 'Bereth ...';
-		if(!this.from) return 'Created while ' + this.action.name + '.';
-		return 'Transformation while ' + this.action.name + ' of ' + this.from.toFlat();
+		var dspl = this.action.name;
+		if(nul.browser.def(this.action.applied))
+			dspl += ' ' + this.action.applied.description;
+		if(!this.from) return 'Created while ' + dspl + '.';
+		return 'Transformation while ' + dspl + ' of ' + this.from.toFlat();
 	}
 });

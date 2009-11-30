@@ -323,6 +323,10 @@ JS.extend(JS.Module.prototype, {
     
     if (JS.Module.__chainq__) JS.Module.__chainq__.push(this);
   },
+
+  def: function(obj) {
+	  return obj && obj.isA && obj.isA(this);
+  },
   
   /**
    * JS.Module#setName(name) -> undefined

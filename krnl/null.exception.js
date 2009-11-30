@@ -29,7 +29,7 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 				console.error(x);
 				return new nul.ex.js('fbug', x.message, x.fileName, x.lineNumber);
 			}
-			if(!x.isA || !x.isA(nul.ex)) return new nul.ex.unk(x);
+			if(!nul.ex.def(x)) return new nul.ex.unk(x);
 			return x;
 		},
 		hook: function(wnd) {

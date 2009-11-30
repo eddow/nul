@@ -18,8 +18,8 @@ nul.dependance = new JS.Class(/** @lends nul.dependance# */{
 		if(dep) {
 			nul.obj.is(dep);
 			//if(obj) this.depend(dep, 'local', ndx, obj); else 
-			if(dep.isA(nul.obj.local)) this.depend(dep.klgRef, 'local', dep.ndx, dep);
-			else if(dep.isA(nul.obj.data)) {
+			if(nul.obj.local.def(dep)) this.depend(dep.klgRef, 'local', dep.ndx, dep);
+			else if(nul.obj.data.def(dep)) {
 				var ctxName = dep.source.context.toString();
 				if(!nul.dependance.contexts[ctxName]) nul.dependance.contexts[ctxName] = dep.source.context; 
 				this.depend(ctxName, 'local', dep.source.index, dep);

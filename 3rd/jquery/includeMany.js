@@ -55,7 +55,7 @@ $.include = function(urls,finaly){
 	urls = $.makeArray(urls);
 	$.include.counter[luid] = urls.length;
 	$.each(urls,function(){$.include.load(this,onload,null);});
-}
+};
 $.extend(
 	$.include,
 	{
@@ -69,7 +69,7 @@ $.extend(
 			else if(/.js$/.test(url))
 				$.include.loadJS(url,onload,callback);
 			else
-				$.get(url,function(data){onload(callback,data)});
+				$.get(url,function(data){onload(callback,data);});
 		},
 		loadCSS: function(url,onload,callback){
 			var css=document.createElement('link');
@@ -87,7 +87,7 @@ $.extend(
 			js.setAttribute('src',''+url);
 			$.browser.msie
 				?$.include.IEonload(js,onload,callback)
-				:js.onload = function(){onload(callback)};
+				:js.onload = function(){onload(callback);};
 			$('head').get(0).appendChild(js);
 		},
 		IEonload: function(elm,onload,callback){
@@ -95,7 +95,7 @@ $.extend(
 					function(){
 						if(this.readyState=='loaded'||this.readyState=='complete')
 							onload(callback);
-					}
+					};
 		},
 		exist: function(url){
 			var fresh = false;

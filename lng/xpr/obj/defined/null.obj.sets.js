@@ -77,7 +77,7 @@ nul.obj.number = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.number# */{
 	},
 	subHas: function(o, att) {
 		if('number'== o.expression) return isFinite(o.value)?[o]:[];
-		if(att.text && att.text.isA(nul.obj.defined)) {
+		if(nul.obj.defined.def(att.text)) {
 			if('string'!= att.text.expression) return [];	//The attribute text is not a string
 			var nbr = parseInt(att.text.value);
 			if(nbr.toString() != att.text.value) return [];	//The attribute text is not a good numeric string

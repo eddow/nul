@@ -330,6 +330,10 @@ JS.extend(JS.Module.prototype, {
     
     if (JS.Module.__chainq__) JS.Module.__chainq__.push(this);
   },
+
+  def: function(obj) {
+	  return obj && obj.isA && obj.isA(this);
+  },
   
   /**
    * JS.Module#setName(name) -> undefined
@@ -10519,6 +10523,7 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 		this.code = name;
 		//this.fire();
 	},
+	present: function() { return this.message; },
 	/**
 	 * Throw this exception
 	 */
@@ -10529,7 +10534,7 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 				console.error(x);
 				return new nul.ex.js('fbug', x.message, x.fileName, x.lineNumber);
 			}
-			if(!x.isA || !x.isA(nul.ex)) return new nul.ex.unk(x);
+			if(!nul.ex.def(x)) return new nul.ex.unk(x);
 			return x;
 		},
 		hook: function(wnd) {
@@ -10595,8 +10600,11 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 	 */
 	initialize: function(name, msg, tknzr) {
 		this.callSuper();
-		//this.line = ln;
-		//this.clmn = cl;
+		this.line = tknzr.token.ln;
+		this.clmn = tknzr.token.cl;
+	},
+	present: function() { 
+		return '[l'+this.line+'|c'+this.clmn+'] ' + this.message;
 	},
 	toString: function() { return 'Syntax error'; }
 });
@@ -10667,8 +10675,8 @@ nul.dependance = new JS.Class(/** @lends nul.dependance# */{
 		if(dep) {
 			nul.obj.is(dep);
 			//if(obj) this.depend(dep, 'local', ndx, obj); else 
-			if(dep.isA(nul.obj.local)) this.depend(dep.klgRef, 'local', dep.ndx, dep);
-			else if(dep.isA(nul.obj.data)) {
+			if(nul.obj.local.def(dep)) this.depend(dep.klgRef, 'local', dep.ndx, dep);
+			else if(nul.obj.data.def(dep)) {
 				var ctxName = dep.source.context.toString();
 				if(!nul.dependance.contexts[ctxName]) nul.dependance.contexts[ctxName] = dep.source.context; 
 				this.depend(ctxName, 'local', dep.source.index, dep);
@@ -10964,7 +10972,11 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		/** The computed token value */
 		value: '',
 		/** The text that produced this token */
-		raw: ''
+		raw: '',
+		/** Line coordinate */
+		ln: 0,
+		/** Row coordinate*/
+		cl: 0
 	},
 	/**
 	 * Consider the next token
@@ -10982,7 +10994,10 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 					this.token = {
 						value: (1< match.length) ? match[1]: null,
 						type: alphabet,
-						raw: match[0]};
+						raw: match[0],
+						ln: this.token.ln,
+						cl: this.token.cl};
+					this.advance(this.txt, match[0].length);
 					this.txt = this.txt.substr(match[0].length);
 					break;
 				}
@@ -10990,6 +11005,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 			{
 				this.token = this.txt.substr(0,1);
 				this.token = { value: this.token, type: 'other', raw:this.token };
+				this.advance(this.txt, 1);
 				this.txt = this.txt.substr(1);
 			}
 		} while(null=== this.token.value);
@@ -11058,6 +11074,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	{
 		var txt = this.token.raw + this.txt;
 		if( txt.substr(0,value.length) != value ) return false;
+		this.advance(txt, value.length);
 		this.txt = txt.substr(value.length);
 		this.next();
 		return true;
@@ -11085,9 +11102,20 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		var n = txt.indexOf(seeked);
 		if(-1== n) return null;
 		var rv = txt.substr(0, n);
+		this.advance(txt, n);
 		this.txt = txt.substr(n);
 		this.next();
 		return rv;
+	},
+	/**
+	 * Advance the token position
+	 */
+	advance: function(origTxt, n) {
+		if(n>origTxt.length) {
+			this.token.ln += 1;
+			this.token.cl += n - origTxt.length;
+		}
+		else this.token.cl += n;
 	}
 });
 
@@ -11341,7 +11369,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 		return rv;
 	},
 	/**
-	 * Gets the compiled expressionon the sepcified operator-level
+	 * Gets the compiled expression on the sepcified operator-level
 	 * @param {Number} oprtrLvl tThe operator-level : index in {@link nul.operators}
 	 * @return {nul.compiled} The compiled value
 	 * @throw {nul.ex.syntax}
@@ -11361,7 +11389,6 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 			if(1== rv.length && !rv.follow) return rv[0];
 			if('ceded'== rv[1]) firstOp = 
 				this.expression(0, nul.compiled.postceded(oprtr[0], rv[0]));
-				//nul.compiled.postceded(oprtr[0], rv[0]);
 			else firstOp = nul.compiled.expression(oprtr[0], rv);
 		} while('l'== oprtr[1]);
 		return firstOp;
@@ -11477,7 +11504,7 @@ nul.compile = function(txt)
 {
 	var rv = new nul.compiler(txt+'\n');
 	var ev = rv.expression();
-	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", this.tknzr);
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", rv.tknzr);
 	return ev;
 };
 
@@ -12428,8 +12455,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 		if(!isEmpty(deps.usages)) tiles['dependances'] = deps;
 
 		var rv = $('<span />').addClass(xpr.expression).addClass('xpr');
-		if(nul.debugged) nul.assert(xpr.origin, 'Each expression have an origin.');
-		rv.append(tilesNode('explain', xpr.origin, 0).click(nul.txt.node.explain(xpr)));
+		rv.append(tilesNode('explain', xpr.origin.toShort(), 0).click(nul.txt.node.explain(xpr)));
 				/*$('<a />')
 				.attr({'class':'explain _nul_xpr_tile', title: 'Explain'})
 				.css('margin-left', '0px')
@@ -12663,11 +12689,20 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * @param {String} tp Type of expression
 	 */
  	initialize: function(tp) {
-		if(nul.action) this.origin = new nul.origin();
+		this.haveOrigin();
 		/**
 		 * @type String
 		 */
  		if(tp) this.expression = tp;
+ 	},
+
+	/**
+	 * Fix my origin from this actual action
+	 * @param {nul.expression} frm The expression this is derived from
+	 */
+ 	haveOrigin: function(frm) {
+		if(nul.action) this.origin = new nul.origin(frm);
+		return this;
  	},
  	/**
  	 * Defined empty by default. Must be overriden.
@@ -12735,9 +12770,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 				return (comps[ndx] && comps[ndx].bunch)?map(obj):obj;
 		});
 		
-		if(nul.action) rv.origin = new nul.origin(this);
-	
-		return rv;
+		return rv.haveOrigin(this);
 	},
 
 //////////////// Virtuals
@@ -12753,6 +12786,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * Return a summarised version of this. Verify children consistency and make them {@link placed}
 	 */
 	built: function(smr) {
+		if(nul.debugged) nul.assert(this.origin, 'Each expression have an origin.');
 		this.modify();
 		for(var comp in this.components)
 			if(this.components[comp].bunch) {
@@ -12991,9 +13025,13 @@ nul.origin = new JS.Class({
 		this.action = nul.action.doing();
 		this.from = frm;
 	},
-	toString: function() {
-		if(!this.from) return 'Created while ' + this.action.name + '.';
-		return 'Transformation while ' + this.action.name + ' of ' + this.from.toFlat();
+	toShort: function() {
+		if(!this.action) return 'Bereth ...';
+		var dspl = this.action.name;
+		if(nul.browser.def(this.action.applied))
+			dspl += ' ' + this.action.applied.description;
+		if(!this.from) return 'Created while ' + dspl + '.';
+		return 'Transformation while ' + dspl + ' of ' + this.from.toFlat();
 	}
 });
 /*
@@ -13426,6 +13464,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
 	 * @param {String} klgName [optional] Knowledge name
 	 */
 	initialize: function(klgName, n, x) {
+		this.callSuper(null);
  		/**
  		 * Describe the used localspace
  		 * @type String[]
@@ -13458,7 +13497,7 @@ nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# *
  		this.name = klgName || nul.execution.name.gen('klg');
 		if('undefined'== typeof n) n = 1;
 		if('undefined'== typeof x) x = n;
-		if(!n.expression) n = { minMult:n, maxMult: x || n };
+		if(!n.expression) n = { minMult:n, maxMult: x };
 		this.minMult = n.minMult;
 		this.maxMult = n.maxMult;
  	},
@@ -14304,7 +14343,7 @@ nul.klg = {
 	//TODO C
 	unconditional: function(mul, name) {
 		if(!nul.klg.unconditionals[mul])
-			nul.klg.unconditionals[mul] = new nul.klg.ncndtnl(mul, name);
+			nul.klg.unconditionals[mul] = new nul.klg.ncndtnl(name, mul);
 		return nul.klg.unconditionals[mul];
 	},
 	//TODO C
@@ -14318,15 +14357,14 @@ nul.klg = {
 		 * @param {Number} min
 		 * @param {Number} max
 		 */
-		initialize: function(mul, name) {
-	        this.locals = this.emptyLocals();
+		initialize: function(name, mul) {
+			this.callSuper(name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']'));
+	        /*this.locals = this.emptyLocals();
 			this.minMult = mul;
 			this.maxMult = mul;
-			this.name = name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']');
+			this.name = name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']');*/
 			this.alreadyBuilt();
 		},
-		/** @constant */
-		expression: 'klg',
 		//TODO C
 		modifiable: function() {
 			if(0== this.maxMult) nul.fail('No fewer than never');
@@ -14615,6 +14653,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {Attributes} attr The attributes the object is known zith
 	 */
 	initialize: function(obj, attr) {
+		this.callSuper(null);
  		if(obj && 'eqCls'== obj.expression) {
 			this.equivls = map(obj.equivls);	//Equal values
 			this.belongs = map(obj.belongs);	//Sets the values belong to
@@ -14971,6 +15010,7 @@ nul.klg.ior3 = new JS.Class(nul.expression, /** @lends nul.klg.ior3# */{
 	 * @param {nul.xpr.knowledge[]} choices The possible cases
 	 */
 	initialize: function(choices) {
+		this.callSuper(null);
 		this.choices = map(choices);
 		if(!this.choices[0].isA(nul.klg.ncndtnl)) this.choices.unshift(nul.klg.never);
 		this.alreadyBuilt();
@@ -15036,12 +15076,15 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	 * @param {nul.xpr.knowledge} knowledge
 	 */
 	initialize: function(value, knowledge) {
-		if(!knowledge) knowledge = nul.klg.always;
-		nul.obj.use(value); nul.klg.use(knowledge);
-		/** @type nul.xpr.object */
-		this.value = value;
-		/** @type nul.xpr.knowledge */
-		this.knowledge = knowledge;
+		this.callSuper(null, null);
+		if(value) {
+			if(!knowledge) knowledge = nul.klg.always;
+			nul.obj.use(value); nul.klg.use(knowledge);
+			/** @type nul.xpr.object */
+			this.value = value;
+			/** @type nul.xpr.knowledge */
+			this.knowledge = knowledge;
+		}
 		this.alreadyBuilt();
 	},
 
@@ -15164,7 +15207,7 @@ nul.xpr.failure = nul.xpr.possible.prototype.failure = new JS.Singleton(nul.xpr.
 	 * @constructs
 	 * @class Singleton
 	 */
-	initialize: function() { this.alreadyBuilt(); },
+	initialize: function() { this.callSuper(); },
 	/** @constant */
 	expression: 'possible',
 	/** @constant */
@@ -15476,8 +15519,8 @@ nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 	 */
 	initialize: function(singleton) {
 		if(singleton) this.extend(singleton);
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 	
 	/**
@@ -15584,8 +15627,8 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 		this.point = point;
 		/** @type nul.xpr.object */
 		this.image = image;
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 
 //////////////// nul.obj.defined implementation
@@ -15687,10 +15730,10 @@ nul.obj.litteral = new JS.Class(nul.obj.defined, /** @lends nul.obj.litteral# */
 	 * @param {Number|String|Boolean} val Javascript value to hold.
 	 */
 	initialize: function(val) {
+		this.callSuper();
 		/** @constant */
 		this.value = val;
 		this.alreadyBuilt();
-		this.callSuper();
 	}
 });
 
@@ -16166,8 +16209,8 @@ nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
 	 * @constructs
 	 */
 	initialize: function() {
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 	
 	/**
@@ -16229,7 +16272,7 @@ nul.obj.number = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.number# */{
 	},
 	subHas: function(o, att) {
 		if('number'== o.expression) return isFinite(o.value)?[o]:[];
-		if(att.text && att.text.isA(nul.obj.defined)) {
+		if(nul.obj.defined.def(att.text)) {
 			if('string'!= att.text.expression) return [];	//The attribute text is not a string
 			var nbr = parseInt(att.text.value);
 			if(nbr.toString() != att.text.value) return [];	//The attribute text is not a good numeric string
@@ -16402,8 +16445,8 @@ nul.obj.data = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.data# */{
 	 */
 	initialize: function(ds) {
 		this.source = ds;
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 
 //////////////// nul.expression implementation
@@ -16445,6 +16488,7 @@ nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	 */
 	initialize: function(klgRef, ndx, dbgName) {
 		if(nul.debugged) nul.assert(dbgName, 'Local has name if debug enabled');
+		this.callSuper();
 		
 		/**
 		 * The knowledge this local applies to
@@ -16467,7 +16511,6 @@ nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 		this.alreadyBuilt({
 			index: this.indexedSub(this.klgRef, this.ndx)
 		});
-		return this.callSuper();
 	},
 
 ////////////////nul.expression implementation
@@ -16534,8 +16577,8 @@ nul.obj.operation = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.operation# 
 	initialize: function(operator, ops) {
 		this.operator = operator;
 		this.operands = ops;
+		this.callSuper();
 		this.alreadyBuilt();
-		return this.callSuper();
 	},
 	
 //////////////// nul.expression implementation
@@ -16613,7 +16656,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 				var chsdCtx = null;
 				for(var d in ownNdx(usg)) {
 					var ctx = nul.dependance.contexts[d];
-					if(nul.debugged) nul.assert(ctx.isA(nul.data.context), 'Context queried');
+					if(nul.debugged) nul.assert(nul.data.context.def(ctx), 'Context queried');
 					if(!chsdCtx || ctx.distance < chsdCtx.distance)
 						chsdCtx = ctx;
 				}
@@ -16850,7 +16893,7 @@ nul.load.time = function() {
 		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
 		 */
 		subHas: function(obj, att) {
-			if(obj.isA(nul.obj.data) && 
+			if(nul.obj.data.def(obj) && 
 					['now'].include(obj.source.index) &&
 					obj.source.context == nul.data.context.local )
 				return [obj];
@@ -16863,8 +16906,8 @@ nul.load.time = function() {
 		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
 		 */
 		select: function(obj, att) {
-			if(obj.isA(nul.data.time)) return [obj];
-			if(obj.isA(nul.obj.defined)) return [];
+			if(nul.data.time.def(obj)) return [obj];
+			if(nul.obj.defined.def(obj)) return [];
 			//TODO 3: try to see with the attributes if we can discover the date. If yes, return [built date]
 		},
 		/**
@@ -17054,7 +17097,7 @@ nul.page = {
 	 * @return nothing
 	 */
 	error: function(/**nul.ex*/ex) {
-		alert(ex.name + ' : ' + ex.message);
+		alert(ex.name + ' : ' + ex.present());
 	}
 };
 
