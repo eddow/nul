@@ -27,7 +27,11 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		/** The computed token value */
 		value: '',
 		/** The text that produced this token */
-		raw: ''
+		raw: '',
+		/** Line coordinate */
+		ln: 0,
+		/** Row coordinate*/
+		cl: 0
 	},
 	/**
 	 * Consider the next token
@@ -45,7 +49,10 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 					this.token = {
 						value: (1< match.length) ? match[1]: null,
 						type: alphabet,
-						raw: match[0]};
+						raw: match[0],
+						ln: this.token.ln,
+						cl: this.token.cl};
+					this.advance(this.txt, match[0].length);
 					this.txt = this.txt.substr(match[0].length);
 					break;
 				}
@@ -53,6 +60,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 			{
 				this.token = this.txt.substr(0,1);
 				this.token = { value: this.token, type: 'other', raw:this.token };
+				this.advance(this.txt, 1);
 				this.txt = this.txt.substr(1);
 			}
 		} while(null=== this.token.value);
@@ -121,6 +129,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	{
 		var txt = this.token.raw + this.txt;
 		if( txt.substr(0,value.length) != value ) return false;
+		this.advance(txt, value.length);
 		this.txt = txt.substr(value.length);
 		this.next();
 		return true;
@@ -148,9 +157,20 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		var n = txt.indexOf(seeked);
 		if(-1== n) return null;
 		var rv = txt.substr(0, n);
+		this.advance(txt, n);
 		this.txt = txt.substr(n);
 		this.next();
 		return rv;
+	},
+	/**
+	 * Advance the token position
+	 */
+	advance: function(origTxt, n) {
+		if(n>origTxt.length) {
+			this.token.ln += 1;
+			this.token.cl += n - origTxt.length;
+		}
+		else this.token.cl += n;
 	}
 });
 
