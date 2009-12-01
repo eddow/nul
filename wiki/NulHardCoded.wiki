@@ -1,0 +1,5 @@
+#NulHardCoded
+
+= Introduction =
+
+The objects that is defined in javascript, along functions and/or set listing.

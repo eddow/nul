@@ -1,0 +1,5 @@
+#NulLocal
+
+= Introduction =
+
+Define an object that is a value of a local.

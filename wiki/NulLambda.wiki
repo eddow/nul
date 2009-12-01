@@ -1,0 +1,5 @@
+#NulLambda
+
+= Introduction =
+
+Represents the application of a point to an image.

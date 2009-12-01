@@ -2,7 +2,7 @@
 #labels Phase-Design
 #sidebar NulExpressionsTree
 
-Class [nul_expression nul.expression]
+Class [http://nul.googlecode.com/svn/doc/symbols/_nul.expression.html nul.expression]
 
 = Introduction =
 
