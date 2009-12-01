@@ -8,5 +8,5 @@
    * UI and UI.layout - http://jqueryui.com/
  * !CodeMirror: !CodeMirror is a !JavaScript library that can be used to create a relatively pleasant editor interface for code-like content. Read more at [http://marijn.haverbeke.nl/codemirror CodeMirror website].
  * JS.Class: is a library designed to facilitate object-oriented development in !JavaScript. Find out more at [http://jsclass.jcoglan.com/ JS.Class developer site].
- * jsdoc_toolkit: !JsDoc Toolkit is an application, written in !JavaScript, for automatically generating template-formatted, multi-page HTML (or XML, JSON, or any other text-based) documentation from commented JavaScript source code. More at [http://code.google.com/p/jsdoc-toolkit the developers Google Code website].
+ * jsdoc_toolkit: !JsDoc Toolkit is an application, written in !JavaScript, for automatically generating template-formatted, multi-page HTML (or XML, JSON, or any other text-based) documentation from commented !JavaScript source code. More at [http://code.google.com/p/jsdoc-toolkit the developers Google Code website].
  * !RockstarApps - http://www.rockstarapps.com/
