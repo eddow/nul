@@ -193,7 +193,7 @@ nul.unitTest.fcts = {
 			try {
 				v = nul.data.query(nul.nulRead(rw.test.xpr)).toFlat();
 			} catch(err) {
-				nul.unitTest.setResult(rw, 'err', nul.ex.be(err).present());
+				nul.unitTest.setResult(rw, 'err', nul.ex.be(err).message);
 				v = null;
 			}
 			if(v) nul.unitTest.setResult(rw, nul.unitTest.isResult(rw.test.rslt, v)?'succ':'fail', v);

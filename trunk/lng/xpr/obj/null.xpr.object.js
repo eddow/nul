@@ -58,6 +58,13 @@ nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.ob
 	 * @param {nul.xpr.object|String} trgt The replacement value. If a string, will be a self-reference local.
 	 */
 	initialize: function(selfRef, trgt) {
+		this.toNode = function() {
+			return $('<span />')
+				.append($.text('Reselfing '))
+				.append($('<span />').text(selfRef))
+				.append($.text(' toward '))
+				.append(nul.txt.node.as(trgt));
+		};
 		this.selfRef = selfRef;
 		if(!trgt.expression) this.newRef = trgt;
 		this.trgt = trgt.expression?trgt:nul.obj.local.self(trgt);
@@ -85,8 +92,7 @@ nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.ob
 	}
 });
 
-/** @namespace Objects helper */
-nul.obj = {
+nul.obj = nul.debugged?/** @namespace Object helper */{
 	/**
 	 * Assert: 'x' are a collection of objects of type 't'
 	 * @param {nul.object[]} x
@@ -111,4 +117,4 @@ nul.obj = {
 	 * @param {String} t JS type name
 	 */
 	mod: function(x, t) { return nul.xpr.mod(x,t||'nul.xpr.object'); }
-};
+}:/** @ignore */{ are: $.id, is: $.id, use: $.id, mod: $.id };

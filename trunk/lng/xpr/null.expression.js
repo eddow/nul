@@ -35,6 +35,15 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 		if(nul.action) this.origin = new nul.origin(frm);
 		return this;
  	},
+
+	/**
+	 * Fix my origin profenance to frm
+	 * @param {nul.expression} frm The expression this is derived from
+	 */
+ 	from: function(frm) {
+		this.origin.from = frm;
+		return this;
+ 	},
  	/**
  	 * Defined empty by default. Must be overriden.
  	 * @type String[]
@@ -66,7 +75,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 		if(!this.summarised) return this['sum_'+itm].apply(this);
 		//this.use();
 		if('undefined'== typeof this.summarised[itm]) {
-			nul.assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
+			if(nul.debugged) nul.assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
 			this.summarised[itm] = this['sum_'+itm].apply(this);
 		}
 		return this.summarised[itm];
@@ -284,8 +293,8 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	
 });
 
-/** @namespace Expression helper */
-nul.xpr = {
+
+nul.xpr = nul.debugged?/** @namespace Expression helper */{
 	/**
 	 * Assert: 'x' are a collection of expression of type 't'
 	 * @param {nul.expression[]} x
@@ -322,7 +331,7 @@ nul.xpr = {
 		nul.debugged.is(t||'nul.expression', 'modifiable', function(o) { return !o.summarised; })(x);
 		return x;
 	}
-};
+}:/** @ignore */{ are: $.id, is: $.id, use: $.id, mod: $.id };
 
 /**
  * Retrieve an expression (and modifies the knowledge) to represent a value-taking

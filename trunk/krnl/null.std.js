@@ -13,11 +13,6 @@
 
 nul.extend( /** @lends nul */{
 	/**
-	 * Failure object that is thrown and caught
-	 * @constant
-	 */
-	failure: 'failure',	//TODO 1: failure becomes a nul.ex
-	/**
 	 * List of failures that happened during these trys
 	 */
 	fails: [],
@@ -26,7 +21,7 @@ nul.extend( /** @lends nul */{
 	 * @param reason items to shape a sentence
 	 */
 	fail: function(reason) {
-		nul.debugged.fail(beArrg(arguments));
+		if(nul.debugged) nul.debugged.fail(beArrg(arguments));
 		throw nul.ex.failure;
 	},
 	/**

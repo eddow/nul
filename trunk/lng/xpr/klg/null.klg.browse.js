@@ -14,6 +14,17 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 	 * @param {nul.xpr.knowledge} dstKlg The knowledge whose space the expression is taken to
 	 */
 	initialize: function(srcKlgRef, dstKlg) {
+		var nl = dstKlg.nbrLocals();
+		this.toNode = function() {
+			return $('<span />')
+				.append($.text('StepUp from '))
+				.append($('<span />').text(srcKlgRef))
+				.append($.text(' to '))
+				.append($('<span />').text(dstKlg.name))
+				.append($.text(' whom has '))
+				.append($('<span />').text(nl))
+				.append($.text(' locals'));				
+		};
 		this.table = {};
 		this.forbid = {};
 		this.table[srcKlgRef] = {
@@ -55,7 +66,7 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 	transform: function(xpr) {
 		var dst;
 		if('local'== xpr.expression) {
-			if(dst = this.table[xpr.klgRef]) return new nul.obj.local(dst.klgRef, xpr.ndx+(dst.deltaLclNdx||0), xpr.dbgName);
+			if(dst = this.table[xpr.klgRef]) return new nul.obj.local(dst.klgRef, xpr.ndx+(dst.deltaLclNdx||0), xpr.dbgName).from(xpr);
 			this.forbid[xpr.klgRef] = true;
 		}
 		return nul.browser.bijectif.unchanged;
@@ -71,6 +82,14 @@ nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.repres
 	 * @param {Access} access The access to use to replace values
 	 */
 	initialize: function(klg) {
+		if(nul.action) {
+			this.toNode = function() {
+				return $('<span />')
+					.append($.text('Representing with '))
+					.append(this.klg.toNode());				
+			};
+			this.klg = klg;
+		}
 		nul.klg.is(klg);
 		this.tbl = klg.info();
 		this.dbgName = klg.name;
@@ -172,7 +191,7 @@ nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.repres
 			this.prepStack[n].setSelfRef = evl.value.ndx;
 		}
 
-		if(evl.hasChanged) nul.debugged.info('Represent')('Replacement', this.dbgName, evl.changed, xpr, p);
+		if(nul.debugged && evl.hasChanged) nul.debugged.info('Represent')('Replacement', this.dbgName, evl.changed, xpr, p);
 		return evl.changed;
 	}
 });

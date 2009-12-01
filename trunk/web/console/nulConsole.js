@@ -63,6 +63,7 @@ csl = {
 			},
 			resizeWhileDragging: true
 		});
+		csl.layout.allowOverflow('north');
 
 		csl.refreshGlobalKlgVw();
 		
@@ -237,7 +238,7 @@ csl = {
 	},
 	
 	knGlobs: {},
-	ignGlobs: {'getInterface':'firebug'},
+	ignGlobs: {'getInterface':'firebug', 'hasDuplicate':'jquery'},
 	assertSmGlobals: function() {
 		var nwGlb = [];
 		for(var i in window)

@@ -69,8 +69,14 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 			 * @constructs
 			 * @extends nul.browser.bijectif
 			 * @param {nul.data.context} context
+			 * @param {Object} prm Parameter given to the queried function
 			 */
 			initialize: function(context, prm) {
+				this.toNode = function() {
+					return $('<span />')
+						.append($.text('Querying '))
+						.append($('<span />').text(context.name));				
+				};
 				this.context = context;
 				this.prm = prm;
 				this.callSuper('querier:'+context.name);
