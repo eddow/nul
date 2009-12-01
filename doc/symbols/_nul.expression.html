@@ -199,6 +199,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.html">nul</a></li>
 	
+	<li><a href="../symbols/_nul.action.html">nul.action</a></li>
+	
 	<li><a href="../symbols/_nul.browser.html">nul.browser</a></li>
 	
 	<li><a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a></li>
@@ -206,8 +208,6 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.browser.bijectif.evolution.html">nul.browser.bijectif.evolution</a></li>
 	
 	<li><a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a></li>
-	
-	<li><a href="../symbols/_nul.clpsSstm.html">nul.clpsSstm</a></li>
 	
 	<li><a href="../symbols/_nul.compiled.html">nul.compiled</a></li>
 	
@@ -231,11 +231,25 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.data.time.html">nul.data.time</a></li>
 	
-	<li><a href="../symbols/_nul.debug.html">nul.debug</a></li>
+	<li><a href="../symbols/_nul.debugged.html">nul.debugged</a></li>
 	
 	<li><a href="../symbols/_nul.dependance.html">nul.dependance</a></li>
 	
-	<li><a href="../symbols/_nul.exception.html">nul.exception</a></li>
+	<li><a href="../symbols/_nul.ex.html">nul.ex</a></li>
+	
+	<li><a href="../symbols/_nul.ex.assert.html">nul.ex.assert</a></li>
+	
+	<li><a href="../symbols/_nul.ex.failure.html">nul.ex.failure</a></li>
+	
+	<li><a href="../symbols/_nul.ex.internal.html">nul.ex.internal</a></li>
+	
+	<li><a href="../symbols/_nul.ex.js.html">nul.ex.js</a></li>
+	
+	<li><a href="../symbols/_nul.ex.semantic.html">nul.ex.semantic</a></li>
+	
+	<li><a href="../symbols/_nul.ex.syntax.html">nul.ex.syntax</a></li>
+	
+	<li><a href="../symbols/_nul.ex.unk.html">nul.ex.unk</a></li>
 	
 	<li><a href="../symbols/_nul.execution.html">nul.execution</a></li>
 	
@@ -311,8 +325,6 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.undefnd.html">nul.obj.undefnd</a></li>
 	
-	<li><a href="../symbols/_nul.obj.whole.html">nul.obj.whole</a></li>
-	
 	<li><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></li>
 	
 	<li><a href="../symbols/_nul.txt.html">nul.txt</a></li>
@@ -324,6 +336,10 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.txt.html.html">nul.txt.html</a></li>
 	
 	<li><a href="../symbols/_nul.txt.html.draw.html">nul.txt.html.draw</a></li>
+	
+	<li><a href="../symbols/_nul.txt.node.html">nul.txt.node</a></li>
+	
+	<li><a href="../symbols/_nul.txt.node.draw.html">nul.txt.node.draw</a></li>
 	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
 	
@@ -474,15 +490,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#dbgHtml">dbgHtml</a></b>()
-								</div>
-								<div class="description">Gets a string to represent this for debug.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#dependance">dependance</a></b>()
 								</div>
 								<div class="description"><a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The dependances of this expression.</div>
@@ -495,6 +502,24 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#fix">fix</a></b>()
 								</div>
 								<div class="description">Modify internal representation : you won't be changed anymore</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#from">from</a></b>(frm)
+								</div>
+								<div class="description">Fix my origin profenance to frm</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#haveOrigin">haveOrigin</a></b>(frm)
+								</div>
+								<div class="description">Fix my origin from this actual action</div>
 							</td>
 						</tr>
 					
@@ -547,6 +572,15 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#nul.txt.html.draw.other">nul.txt.html.draw.other</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#nul.txt.node.draw.other">nul.txt.node.draw.other</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -618,6 +652,15 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#sum_nodeTxt">sum_nodeTxt</a></b>()
+								</div>
+								<div class="description"><a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of toNode</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#summarise">summarise</a></b>(smr)
 								</div>
 								<div class="description">Compute the summary of this expression.</div>
@@ -648,6 +691,15 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#toHtml">toHtml</a></b>()
 								</div>
 								<div class="description"><a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The HTML representation</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_nul.expression.html#toNode">toNode</a></b>()
+								</div>
+								<div class="description"><a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The NODE representation</div>
 							</td>
 						</tr>
 					
@@ -898,39 +950,6 @@ No return value, assume it returns this
 
 					<hr />
 				
-					<a name="dbgHtml"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{String}</span>
-					<b>dbgHtml</b>()
-					
-					</div>
-					<div class="description">
-						Gets a string to represent this for debug.
-Either HTML, either flat if it would be too big.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{String}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
 					<a name="dependance"> </a>
 					<div class="fixedFont">
 					
@@ -978,6 +997,78 @@ Either HTML, either flat if it would be too big.
 					
 					
 					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="from"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>from</b>(frm)
+					
+					</div>
+					<div class="description">
+						Fix my origin profenance to frm
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>frm</b>
+									
+								</dt>
+								<dd>The expression this is derived from</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="haveOrigin"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>haveOrigin</b>(frm)
+					
+					</div>
+					<div class="description">
+						Fix my origin from this actual action
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>frm</b>
+									
+								</dt>
+								<dd>The expression this is derived from</dd>
+							
+							</dl>
 						
 						
 						
@@ -1147,6 +1238,41 @@ Can be changed even for a built expression (doesn't change the meaning, just the
 						
 							<br />
 							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.html.js">/lng/txt/out/null.txt.html.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{HTML}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="nul.txt.node.draw.other"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{HTML}</span>
+					<b>nul.txt.node.draw.other</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.node.js">/lng/txt/out/null.txt.node.js</a>.
 						
 						
 					</div>
@@ -1375,6 +1501,31 @@ If not, it will be considered as a new self index</dd>
 
 					<hr />
 				
+					<a name="sum_nodeTxt"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>sum_nodeTxt</b>()
+					
+					</div>
+					<div class="description">
+						<a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of toNode
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="summarise"> </a>
 					<div class="fixedFont">
 					
@@ -1511,6 +1662,38 @@ If not, it will be considered as a new self index</dd>
 
 					<hr />
 				
+					<a name="toNode"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{NODE}</span>
+					<b>toNode</b>()
+					
+					</div>
+					<div class="description">
+						<a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The NODE representation
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{NODE}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="toString"> </a>
 					<div class="fixedFont">
 					
@@ -1623,7 +1806,7 @@ If not, it will be considered as a new self index</dd>
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Nov 24 2009 23:11:43 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Dec 01 2009 15:11:05 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

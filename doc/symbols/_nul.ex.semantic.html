@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - nul.txt.html.js</title>
+		<title>JsDoc Reference - nul.ex.semantic</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -199,6 +199,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.html">nul</a></li>
 	
+	<li><a href="../symbols/_nul.action.html">nul.action</a></li>
+	
 	<li><a href="../symbols/_nul.browser.html">nul.browser</a></li>
 	
 	<li><a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a></li>
@@ -206,8 +208,6 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.browser.bijectif.evolution.html">nul.browser.bijectif.evolution</a></li>
 	
 	<li><a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a></li>
-	
-	<li><a href="../symbols/_nul.clpsSstm.html">nul.clpsSstm</a></li>
 	
 	<li><a href="../symbols/_nul.compiled.html">nul.compiled</a></li>
 	
@@ -231,11 +231,25 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.data.time.html">nul.data.time</a></li>
 	
-	<li><a href="../symbols/_nul.debug.html">nul.debug</a></li>
+	<li><a href="../symbols/_nul.debugged.html">nul.debugged</a></li>
 	
 	<li><a href="../symbols/_nul.dependance.html">nul.dependance</a></li>
 	
-	<li><a href="../symbols/_nul.exception.html">nul.exception</a></li>
+	<li><a href="../symbols/_nul.ex.html">nul.ex</a></li>
+	
+	<li><a href="../symbols/_nul.ex.assert.html">nul.ex.assert</a></li>
+	
+	<li><a href="../symbols/_nul.ex.failure.html">nul.ex.failure</a></li>
+	
+	<li><a href="../symbols/_nul.ex.internal.html">nul.ex.internal</a></li>
+	
+	<li><a href="../symbols/_nul.ex.js.html">nul.ex.js</a></li>
+	
+	<li><a href="../symbols/_nul.ex.semantic.html">nul.ex.semantic</a></li>
+	
+	<li><a href="../symbols/_nul.ex.syntax.html">nul.ex.syntax</a></li>
+	
+	<li><a href="../symbols/_nul.ex.unk.html">nul.ex.unk</a></li>
 	
 	<li><a href="../symbols/_nul.execution.html">nul.execution</a></li>
 	
@@ -309,9 +323,7 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
 	
-	<li><a href="../symbols/_nul.obj.undefined.html">nul.obj.undefined</a></li>
-	
-	<li><a href="../symbols/_nul.obj.whole.html">nul.obj.whole</a></li>
+	<li><a href="../symbols/_nul.obj.undefnd.html">nul.obj.undefnd</a></li>
 	
 	<li><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></li>
 	
@@ -325,7 +337,9 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.txt.html.draw.html">nul.txt.html.draw</a></li>
 	
-	<li><a href="../symbols/_nul.txt.html.js.html">nul.txt.html.js</a></li>
+	<li><a href="../symbols/_nul.txt.node.html">nul.txt.node</a></li>
+	
+	<li><a href="../symbols/_nul.txt.node.draw.html">nul.txt.node.draw</a></li>
 	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
 	
@@ -354,24 +368,24 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace nul.txt.html.js
+				Class nul.ex.semantic
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
 			
-				Tiles managing events
 				
 				
-					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.html.js">/lng/txt/out/null.txt.html.js</a>.
+				
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//krnl/null.exception.js">/krnl/null.exception.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.txt.html.js.">
-				<caption>Namespace Summary</caption>
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.ex.semantic.">
+				<caption>Class Summary</caption>
 				<thead>
 					<tr>
 						<th scope="col">Constructor Attributes</th>
@@ -383,9 +397,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.txt.html.js.html#constructor">nul.txt.html.js</a></b>
+								<b><a href="../symbols/_nul.ex.semantic.html#constructor">nul.ex.semantic</a></b>(name, msg, xpr)
 							</div>
-							<div class="description"></div>
+							<div class="description">Exception thrown by the NUL interpreter when the semantic of the NUL text is wrong</div>
 						</td>
 					</tr>
 				</tbody>
@@ -397,35 +411,24 @@ ul.inheritsList
 
 <!-- ============================== methods summary ======================== -->
 			
-<!-- ============================== events summary ======================== -->
-			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the events documented in the class nul.txt.html.js.">
-					<caption>Event Summary</caption>
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.ex.semantic.">
+					<caption>Method Summary</caption>
 					<thead>
 						<tr>
-							<th scope="col">Event Attributes</th>
-							<th scope="col">Event Name and Description</th>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
 						</tr>
 					</thead>
 					<tbody>
 					
 						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.txt.html.js.<b><a href="../symbols/_nul.txt.html.js.html#event:.enter">enter</a></b>(elm, knd)
+								<div class="fixedFont"><b><a href="../symbols/_nul.ex.semantic.html#toString">toString</a></b>()
 								</div>
-								<div class="description">Event occuring when the mouse enters a tile</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.txt.html.js.<b><a href="../symbols/_nul.txt.html.js.html#event:.leave">leave</a></b>(elm, knd)
-								</div>
-								<div class="description">Event occuring when the mouse leaves a tile</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -435,26 +438,51 @@ ul.inheritsList
 				
 				
 			
+<!-- ============================== events summary ======================== -->
+			
 
 <!-- ============================== constructor details ==================== -->		
 			
 			<div class="details"><a name="constructor"> </a>
 				<div class="sectionTitle">
-					Namespace Detail
+					Class Detail
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.txt.html.js</b>
+						<b>nul.ex.semantic</b>(name, msg, xpr)
 				</div>
 				
 				<div class="description">
-					
+					Exception thrown by the NUL interpreter when the semantic of the NUL text is wrong
 					
 				</div>
 				
 				
 				
 				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								 <b>name</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								 <b>msg</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								 <b>xpr</b>
+								
+							</dt>
+								<dd></dd>
+						
+						</dl>
 					
 					
 					
@@ -471,87 +499,25 @@ ul.inheritsList
 
 <!-- ============================== method details ========================= -->		
 			
-			
-<!-- ============================== event details ========================= -->		
-			
 				<div class="sectionTitle">
-					Event Detail
+					Method Detail
 				</div>
 				
-					<a name="event:.enter"> </a>
-					<div class="fixedFont">&lt;static&gt; 
+					<a name="toString"> </a>
+					<div class="fixedFont">
 					
 					
-					<span class="light">nul.txt.html.js.</span><b>enter</b>(elm, knd)
-					
-					</div>
-					<div class="description">
-						Event occuring when the mouse enters a tile
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{HTMLElement}</span> <b>elm</b>
-									
-								</dt>
-								<dd>The element (expression span) this event applies to</dd>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>knd</b>
-									
-								</dt>
-								<dd>The kind of tile the mouse interract with</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="event:.leave"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.txt.html.js.</span><b>leave</b>(elm, knd)
+					<b>toString</b>()
 					
 					</div>
 					<div class="description">
-						Event occuring when the mouse leaves a tile
+						
 						
 						
 					</div>
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{HTMLElement}</span> <b>elm</b>
-									
-								</dt>
-								<dd>The element (expression span) this event applies to</dd>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>knd</b>
-									
-								</dt>
-								<dd>The kind of tile the mouse interract with</dd>
-							
-							</dl>
 						
 						
 						
@@ -562,6 +528,9 @@ ul.inheritsList
 
 					
 				
+			
+			
+<!-- ============================== event details ========================= -->		
 			
 			
 			<hr />
@@ -571,7 +540,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Wed Nov 11 2009 18:34:29 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Dec 01 2009 15:11:05 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

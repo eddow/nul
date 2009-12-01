@@ -6,10 +6,10 @@
  *
  *--------------------------------------------------------------------------*/
  
-nul.txt = new JS.Class(/** @lends nul.txt */{
+nul.txt = new JS.Class(/** @lends nul.txt# */{
 	/**
 	 * Text output kernel
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function() {
 		this.drawing = [];

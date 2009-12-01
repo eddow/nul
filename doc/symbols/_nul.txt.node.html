@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - nul.debug</title>
+		<title>JsDoc Reference - nul.txt.node</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -199,6 +199,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.html">nul</a></li>
 	
+	<li><a href="../symbols/_nul.action.html">nul.action</a></li>
+	
 	<li><a href="../symbols/_nul.browser.html">nul.browser</a></li>
 	
 	<li><a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a></li>
@@ -206,8 +208,6 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.browser.bijectif.evolution.html">nul.browser.bijectif.evolution</a></li>
 	
 	<li><a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a></li>
-	
-	<li><a href="../symbols/_nul.clpsSstm.html">nul.clpsSstm</a></li>
 	
 	<li><a href="../symbols/_nul.compiled.html">nul.compiled</a></li>
 	
@@ -231,11 +231,25 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.data.time.html">nul.data.time</a></li>
 	
-	<li><a href="../symbols/_nul.debug.html">nul.debug</a></li>
+	<li><a href="../symbols/_nul.debugged.html">nul.debugged</a></li>
 	
 	<li><a href="../symbols/_nul.dependance.html">nul.dependance</a></li>
 	
-	<li><a href="../symbols/_nul.exception.html">nul.exception</a></li>
+	<li><a href="../symbols/_nul.ex.html">nul.ex</a></li>
+	
+	<li><a href="../symbols/_nul.ex.assert.html">nul.ex.assert</a></li>
+	
+	<li><a href="../symbols/_nul.ex.failure.html">nul.ex.failure</a></li>
+	
+	<li><a href="../symbols/_nul.ex.internal.html">nul.ex.internal</a></li>
+	
+	<li><a href="../symbols/_nul.ex.js.html">nul.ex.js</a></li>
+	
+	<li><a href="../symbols/_nul.ex.semantic.html">nul.ex.semantic</a></li>
+	
+	<li><a href="../symbols/_nul.ex.syntax.html">nul.ex.syntax</a></li>
+	
+	<li><a href="../symbols/_nul.ex.unk.html">nul.ex.unk</a></li>
 	
 	<li><a href="../symbols/_nul.execution.html">nul.execution</a></li>
 	
@@ -311,8 +325,6 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.undefnd.html">nul.obj.undefnd</a></li>
 	
-	<li><a href="../symbols/_nul.obj.whole.html">nul.obj.whole</a></li>
-	
 	<li><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></li>
 	
 	<li><a href="../symbols/_nul.txt.html">nul.txt</a></li>
@@ -324,6 +336,10 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.txt.html.html">nul.txt.html</a></li>
 	
 	<li><a href="../symbols/_nul.txt.html.draw.html">nul.txt.html.draw</a></li>
+	
+	<li><a href="../symbols/_nul.txt.node.html">nul.txt.node</a></li>
+	
+	<li><a href="../symbols/_nul.txt.node.draw.html">nul.txt.node.draw</a></li>
 	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
 	
@@ -352,24 +368,26 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Namespace nul.debug
+				Class nul.txt.node
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
+				<br />Extends
+					<a href="../symbols/_nul.txt.html">nul.txt</a>.<br />
 				
 			
-				Debugging tools
+				Singleton
 				
 				
-					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//krnl/null.debug.js">/krnl/null.debug.js</a>.
+					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/out/null.txt.node.js">/lng/txt/out/null.txt.node.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.debug.">
-				<caption>Namespace Summary</caption>
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class nul.txt.node.">
+				<caption>Class Summary</caption>
 				<thead>
 					<tr>
 						<th scope="col">Constructor Attributes</th>
@@ -381,9 +399,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/_nul.debug.html#constructor">nul.debug</a></b>
+								<b><a href="../symbols/_nul.txt.node.html#constructor">nul.txt.node</a></b>()
 							</div>
-							<div class="description"></div>
+							<div class="description">Expression HTML node description building</div>
 						</td>
 					</tr>
 				</tbody>
@@ -392,12 +410,44 @@ ul.inheritsList
 
 <!-- ============================== properties summary ===================== -->
 			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class nul.txt.node.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &lt;constant&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								nul.txt.node.<b><a href="../symbols/_nul.txt.node.html#.recurStr">recurStr</a></b>
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+				<dl class="inheritsList">
+				
+				</dl>
+				
+			
 
 <!-- ============================== methods summary ======================== -->
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.debug.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class nul.txt.node.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -410,7 +460,25 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.applyTables">applyTables</a></b>()
+								<div class="fixedFont">nul.txt.node.<b><a href="../symbols/_nul.txt.node.html#.all">all</a></b>(ass, glu, b4, a9, flwr)
+								</div>
+								<div class="description">Shortcut to make a table of string out of a table of expressions</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.txt.node.<b><a href="../symbols/_nul.txt.node.html#.as">as</a></b>(obj)
+								</div>
+								<div class="description">Gets the object as a node - as best as we can</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.txt.node.<b><a href="../symbols/_nul.txt.node.html#.bigop">bigop</a></b>(os)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -419,16 +487,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.are">are</a></b>(cls, nm, cb)
-								</div>
-								<div class="description">Assert these objects has a member (use a member which name defines the class)</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.asserted">asserted</a></b>(str, obj)
+								<div class="fixedFont">nul.txt.node.<b><a href="../symbols/_nul.txt.node.html#.createDlg">createDlg</a></b>(xpr, ttl)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -437,7 +496,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.begin">begin</a></b>(nlcl)
+								<div class="fixedFont">nul.txt.node.<b><a href="../symbols/_nul.txt.node.html#.explain">explain</a></b>(xpr)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -446,7 +505,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.contract">contract</a></b>(str)
+								<div class="fixedFont">nul.txt.node.<b><a href="../symbols/_nul.txt.node.html#.op">op</a></b>(os)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -455,7 +514,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.ctxTable">ctxTable</a></b>(ctx)
+								<div class="fixedFont">nul.txt.node.<b><a href="../symbols/_nul.txt.node.html#.outp">outp</a></b>(xpr)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -464,81 +523,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.described">described</a></b>(name, dscr)
+								<div class="fixedFont">nul.txt.node.<b><a href="../symbols/_nul.txt.node.html#.wrap">wrap</a></b>(txt, xpr)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.fail">fail</a></b>(reason)
-								</div>
-								<div class="description">Draw a failure info</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.is">is</a></b>(cls, nm, cb)
-								</div>
-								<div class="description">Assert this object implements a class</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.log">log</a></b>(tp, endC)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.logCount">logCount</a></b>()
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.newLog">newLog</a></b>(logTbl)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.toLogText">toLogText</a></b>(v)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.trys">trys</a></b>(cb, name, obj, args)
-								</div>
-								<div class="description">Make a bunch of tries.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">nul.debug.<b><a href="../symbols/_nul.debug.html#.warnRecursion">warnRecursion</a></b>(v)
-								</div>
-								<div class="description"></div>
+								<div class="description">Called for each drawn expression to wrap it in common spans and add the tiles (for dependance, .</div>
 							</td>
 						</tr>
 					
@@ -546,6 +533,10 @@ ul.inheritsList
 				</table>
 				
 				
+				
+				<dl class="inheritsList">
+				<dt>Methods borrowed from class <a href="../symbols/_nul.txt.html">nul.txt</a>: </dt><dd><a href="../symbols/_nul.txt.html#beginDraw">beginDraw</a>, <a href="../symbols/_nul.txt.html#dispatchPair">dispatchPair</a>, <a href="../symbols/_nul.txt.html#endDraw">endDraw</a>, <a href="../symbols/_nul.txt.html#toText">toText</a></dd>
+				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -555,15 +546,15 @@ ul.inheritsList
 			
 			<div class="details"><a name="constructor"> </a>
 				<div class="sectionTitle">
-					Namespace Detail
+					Class Detail
 				</div>
 				
 				<div class="fixedFont">
-						<b>nul.debug</b>
+						<b>nul.txt.node</b>()
 				</div>
 				
 				<div class="description">
-					
+					Expression HTML node description building
 					
 				</div>
 				
@@ -583,6 +574,33 @@ ul.inheritsList
 
 <!-- ============================== field details ========================== -->		
 			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name=".recurStr"> </a>
+					<div class="fixedFont">&lt;static&gt; &lt;constant&gt; 
+					
+					
+					<span class="light">nul.txt.node.</span><b>recurStr</b>
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
 
 <!-- ============================== method details ========================= -->		
 			
@@ -590,40 +608,15 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name=".applyTables"> </a>
+					<a name=".all"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
-					<span class="light">nul.debug.</span><b>applyTables</b>()
+					<span class="light">{HTML[]}</span>
+					<span class="light">nul.txt.node.</span><b>all</b>(ass, glu, b4, a9, flwr)
 					
 					</div>
 					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".are"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.debug.</span><b>are</b>(cls, nm, cb)
-					
-					</div>
-					<div class="description">
-						Assert these objects has a member (use a member which name defines the class)
+						Shortcut to make a table of string out of a table of expressions
 						
 						
 					</div>
@@ -635,43 +628,45 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{Class}</span> <b>cls</b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>[]}</span> <b>ass</b>
 									
 								</dt>
-								<dd>The expected class</dd>
+								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{String}</span> <b>nm</b>
+									<b>glu</b>
 									
 								</dt>
-								<dd>[optional] The description of what is expected</dd>
+								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{function(obj) {Boolean}}</span> <b>cb</b>
+									<b>b4</b>
 									
 								</dt>
-								<dd>[optional] Cqll bqck to try on the tested objects</dd>
-							
-							</dl>
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Throws:</dt>
+								<dd></dd>
 							
 								<dt>
-									<span class="light fixedFont">{assertException}</span>  <b></b>
+									<b>a9</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>flwr</b>
+									
 								</dt>
 								<dd></dd>
 							
 							</dl>
+						
+						
+						
 						
 						
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>nothing</dd>
+								<dd><span class="light fixedFont">{HTML[]}</span> </dd>
 							
 							</dl>
 						
@@ -680,15 +675,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".asserted"> </a>
+					<a name=".as"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
-					<span class="light">nul.debug.</span><b>asserted</b>(str, obj)
+					<span class="light">{jQuery}</span>
+					<span class="light">nul.txt.node.</span><b>as</b>(obj)
 					
 					</div>
 					<div class="description">
-						
+						Gets the object as a node - as best as we can
 						
 						
 					</div>
@@ -700,13 +695,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>str</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>obj</b>
+									<span class="light fixedFont">{Object}</span> <b>obj</b>
 									
 								</dt>
 								<dd></dd>
@@ -715,256 +704,12 @@ ul.inheritsList
 						
 						
 						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".begin"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.debug.</span><b>begin</b>(nlcl)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>nlcl</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".contract"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.debug.</span><b>contract</b>(str)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>str</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".ctxTable"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.debug.</span><b>ctxTable</b>(ctx)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>ctx</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".described"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.debug.</span><b>described</b>(name, dscr)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>name</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>dscr</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".fail"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.debug.</span><b>fail</b>(reason)
-					
-					</div>
-					<div class="description">
-						Draw a failure info
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>reason</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".is"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.debug.</span><b>is</b>(cls, nm, cb)
-					
-					</div>
-					<div class="description">
-						Assert this object implements a class
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{Class}</span> <b>cls</b>
-									
-								</dt>
-								<dd>The expected class</dd>
-							
-								<dt>
-									<span class="light fixedFont">{String}</span> <b>nm</b>
-									
-								</dt>
-								<dd>[optional] The description of what is expected</dd>
-							
-								<dt>
-									<span class="light fixedFont">{function(obj) {Boolean}}</span> <b>cb</b>
-									
-								</dt>
-								<dd>[optional] Cqll bqck to try on the tested objects</dd>
-							
-							</dl>
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Throws:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{assertException}</span>  <b></b>
-								</dt>
-								<dd></dd>
-							
-							</dl>
 						
 						
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>nothing</dd>
+								<dd><span class="light fixedFont">{jQuery}</span> node</dd>
 							
 							</dl>
 						
@@ -973,11 +718,11 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".log"> </a>
+					<a name=".bigop"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.debug.</span><b>log</b>(tp, endC)
+					<span class="light">nul.txt.node.</span><b>bigop</b>(os)
 					
 					</div>
 					<div class="description">
@@ -993,13 +738,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>tp</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>endC</b>
+									<b>os</b>
 									
 								</dt>
 								<dd></dd>
@@ -1015,36 +754,11 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".logCount"> </a>
+					<a name=".createDlg"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.debug.</span><b>logCount</b>()
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".newLog"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">nul.debug.</span><b>newLog</b>(logTbl)
+					<span class="light">nul.txt.node.</span><b>createDlg</b>(xpr, ttl)
 					
 					</div>
 					<div class="description">
@@ -1060,7 +774,13 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>logTbl</b>
+									<b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>ttl</b>
 									
 								</dt>
 								<dd></dd>
@@ -1076,11 +796,11 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".toLogText"> </a>
+					<a name=".explain"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.debug.</span><b>toLogText</b>(v)
+					<span class="light">nul.txt.node.</span><b>explain</b>(xpr)
 					
 					</div>
 					<div class="description">
@@ -1096,7 +816,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>v</b>
+									<b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -1112,15 +832,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".trys"> </a>
+					<a name=".op"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.debug.</span><b>trys</b>(cb, name, obj, args)
+					<span class="light">nul.txt.node.</span><b>op</b>(os)
 					
 					</div>
 					<div class="description">
-						Make a bunch of tries. If none succed, report a failure
+						
 						
 						
 					</div>
@@ -1132,25 +852,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>cb</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>name</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>obj</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>args</b>
+									<b>os</b>
 									
 								</dt>
 								<dd></dd>
@@ -1166,11 +868,11 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name=".warnRecursion"> </a>
+					<a name=".outp"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">nul.debug.</span><b>warnRecursion</b>(v)
+					<span class="light">nul.txt.node.</span><b>outp</b>(xpr)
 					
 					</div>
 					<div class="description">
@@ -1186,7 +888,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>v</b>
+									<b>xpr</b>
 									
 								</dt>
 								<dd></dd>
@@ -1196,6 +898,55 @@ ul.inheritsList
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".wrap"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{HTML}</span>
+					<span class="light">nul.txt.node.</span><b>wrap</b>(txt, xpr)
+					
+					</div>
+					<div class="description">
+						Called for each drawn expression to wrap it in common spans and add the tiles (for dependance, ...)
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{HTML}</span> <b>txt</b>
+									
+								</dt>
+								<dd>The text specific to this expression</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/_nul.expression.html">nul.expression</a>}</span> <b>xpr</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{HTML}</span> </dd>
+							
+							</dl>
 						
 						
 						
@@ -1214,7 +965,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Nov 24 2009 23:11:43 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Dec 01 2009 15:11:06 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

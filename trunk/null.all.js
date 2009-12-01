@@ -5468,6 +5468,14 @@ jQuery.each([ "Height", "Width" ], function(i, name){
 			$.each(obj, function(k) {a.push(k); });
 			return a;
 		},
+		/**
+		 * For an url option specified in ptcl://url/path/file.ext?options#anchor,
+		 * retrieve the value given (if option looks like name=value),
+		 * true if the option was gicen without and argument (http://...html?...&ImHappy&...)
+		 * false if the option was not given
+		 * @param {String} opt The name of the option to retrieve
+		 * @return {Boolean|String} The value of the given option
+		 */
 		url: function(opt) {
 			var srch = (window.location.href.split('?')[1]||'').split('#')[0];
 			if(!srch) return;
@@ -5476,7 +5484,13 @@ jQuery.each([ "Height", "Width" ], function(i, name){
 			var mh = rx.exec(srch);
 			return mh?(mh[2]||true):false;
 		},
-		id: function(x) { return x; }
+		id: function(x) { return x; },
+		/**
+		 * Text node creation shortcut
+		 * @param {String} str
+		 * @return {jQuery} text node
+		 */
+		text: function(str) { return $(document.createTextNode(str)); }
 	});
 })(jQuery);
 
@@ -10337,16 +10351,18 @@ Function.prototype.asserted = function(){};
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * @namespace NUL Debugging tools
- */
 nul.action = new JS.Class(/** @lends nul.action# */{
 	/**
-	 * @construct
+	 * @param {String} Name
+	 * @param {Object} applied
+	 * @param {Object[]} args
+	 * @constructs
 	 */
 	initialize: function(name, applied, args) {
 		this.name = name;
 		this.applied = applied;
+		//TODO 1: this call f*cks the perfs
+		this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
 		this.args = args;
 		nul.action.begin(this);
 		this.isToLog = nul.action.isToLog(name);
@@ -10355,6 +10371,10 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 			console.log('Applied to', applied);
 			console.log('Arguments', args);
 		}
+	},
+	description: function() {
+		if(!nul.browser.def(this.applied)) return this.name;
+		return this.name + ' ' + this.applied.description;		
 	},
 	returns: function(value) {
 		nul.action.end(this);
@@ -10571,7 +10591,7 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 	//include: [JS.Observable],
 	/**
 	 * Exception thrown by NUL
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(name, msg) {
 		this.message = msg;
@@ -10582,7 +10602,8 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 	 * Throw this exception
 	 */
 	raise: function() { throw this; },
-	extend: {
+	extend: /** @lends nul.ex */{
+		//TODO C
 		be: function(x) {
 			if(window.console && x.fileName && x.stack && 'number'== typeof x.lineNumber) {
 				console.error(x);
@@ -10591,6 +10612,7 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 			if(!nul.ex.def(x)) return new nul.ex.unk(x);
 			return x;
 		},
+		//TODO C
 		hook: function(wnd) {
 			window.onerror = nul.ex.js.onerror;
 		}, 
@@ -10607,7 +10629,7 @@ nul.ex.js = new JS.Class(nul.ex, /** @lends nul.ex.js# */{
 	/**
 	 * Exception thrown by JavaScript interpreter on JavaScript error.
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(name, msg, url, ln) {
 		this.callSuper(name, msg);
@@ -10632,7 +10654,7 @@ nul.ex.semantic = new JS.Class(nul.ex, /** @lends nul.ex.semantic# */{
 	/**
 	 * Exception thrown by the NUL interpreter when the semantic of the NUL text is wrong
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(name, msg, xpr) {
 		this.callSuper();
@@ -10645,7 +10667,7 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 	/**
 	 * Exception thrown by the NUL interpreter when the syntax of the NUL text is wrong
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(name, msg, tknzr, type) {
 		this.callSuper();
@@ -10653,6 +10675,7 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 		this.until = { line: tknzr.line, clmn: tknzr.clmn };
 		this.type = type||'before';
 	},
+	//TODO C
 	select: function(editor) {
 		switch(this.type) {
 		case 'before': editor.selectLines(editor.nthLine(this.token.line+1), this.token.clmn); break;
@@ -10666,7 +10689,7 @@ nul.ex.unk = new JS.Class(nul.ex, /** @lends nul.ex.unk# */{
 	/**
 	 * Exception thrown by we don't know where 
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(obj) {
 		this.callSuper('wtf', obj.toString());
@@ -10679,7 +10702,7 @@ nul.ex.internal = new JS.Class(nul.ex, /** @lends nul.ex.internal# */{
 	/**
 	 * A bug in the NUL interpreter - ideally never raised
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(msg) {
 		this.callSuper('bug', msg);
@@ -10692,7 +10715,7 @@ nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 	/**
 	 * A bug in the NUL interpreter - ideally never raised
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(msg) {
 		this.callSuper('assertion', msg);
@@ -10704,7 +10727,7 @@ nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
 	/**
 	 * A failed evaluation
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(msg) {
 		this.callSuper('failure');
@@ -11903,10 +11926,10 @@ nul.understanding.base.set = new JS.Class(nul.understanding.base, /** @lends nul
  *
  *--------------------------------------------------------------------------*/
  
-nul.txt = new JS.Class(/** @lends nul.txt */{
+nul.txt = new JS.Class(/** @lends nul.txt# */{
 	/**
 	 * Text output kernel
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function() {
 		this.drawing = [];
@@ -12010,7 +12033,7 @@ nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
 		 */
 		local: function() {
 			if(nul.debugged) nul.assert(this.dbgName, 'Local has name if debug enabled'); 
-			return (this.dbgName||'') + '[' + this.klgRef + '|' + this.ndx + ']';
+			return (this.dbgName||'') + '[' + this.klgRef + '\\' + this.ndx + ']';
 		},
 		/**
 		 * @methodOf nul.obj.operation#
@@ -12525,13 +12548,8 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 
 		var rv = $('<span />').addClass(xpr.expression).addClass('xpr');
 		rv.append(tilesNode('explain', xpr.origin.toShort(), 0).click(nul.txt.node.explain(xpr)));
-				/*$('<a />')
-				.attr({'class':'explain _nul_xpr_tile', title: 'Explain'})
-				.css('margin-left', '0px')
-				.click(nul.txt.node.explain(xpr)));*/
 		var spos = 1;
 		for(var t in tiles) rv.append(tilesNode(t, tiles[t], spos++));
-		
 		for(var i=0; i<txt[''].length; ++i)
 			rv.append(txt[''][i]);
 		return rv;
@@ -12724,8 +12742,36 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 	explain: function(xpr) {
 		return function() {
 			nul.xpr.use(xpr);
-			alert(xpr.toFlat());
+			if(xpr.dialog) xpr.dialog.dialog('moveToTop');
+			else if(xpr.origin.action) nul.txt.node.createDlg(xpr, xpr.toFlat()).bind('dialogclose', function() { delete xpr.dialog; });
 		};
+	},
+	createDlg: function(xpr, ttl) {
+		var dlg = xpr.dialog = $('<div />');
+		if(xpr.origin.from) dlg
+			.append( $('<table class="transformation"/>').append( $('<tr />')
+					.append($('<th />').append(xpr.toNode()))
+					.append($('<td />').html('&lArr;'))
+					.append($('<td />').append(xpr.origin.from.toNode()))) );
+		else dlg.append(xpr.toNode());
+		dlg.append($('<div class="description" />').append(xpr.origin.action.description()));
+		dlg.append($('<div class="applied" />').append(xpr.origin.action.appliedNode.clone()));
+		for(var i=0; i<xpr.origin.action.args.length; ++i)
+			dlg.append($('<div class="argument" />').append(nul.txt.node.as(xpr.origin.action.args[i])));
+		return dlg.dialog({
+			closeOnEscape: false,
+			dialogClass: 'explain',
+			title: ttl
+		});
+	},
+	/**
+	 * Gets the object as a node - as best as we can
+	 * @param {Object} obj
+	 * @return {jQuery} node
+	 */
+	as: function(obj) {
+		if(obj.toNode) return obj.toNode();
+		return $('<span />').text(obj.toString());
 	}
 });
 
@@ -12771,6 +12817,15 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 */
  	haveOrigin: function(frm) {
 		if(nul.action) this.origin = new nul.origin(frm);
+		return this;
+ 	},
+
+	/**
+	 * Fix my origin profenance to frm
+	 * @param {nul.expression} frm The expression this is derived from
+	 */
+ 	from: function(frm) {
+		this.origin.from = frm;
 		return this;
  	},
  	/**
@@ -13022,8 +13077,11 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	
 });
 
-
-nul.xpr = nul.debugged?/** @namespace Expression helper */{
+/**
+ * Expression management helper
+ * @namespace 
+ */
+nul.xpr = nul.debugged?/** @lends nul.xpr */{
 	/**
 	 * Assert: 'x' are a collection of expression of type 't'
 	 * @param {nul.expression[]} x
@@ -13095,12 +13153,9 @@ nul.origin = new JS.Class({
 		this.from = frm;
 	},
 	toShort: function() {
-		if(!this.action) return 'Bereth ...';
-		var dspl = this.action.name;
-		if(nul.browser.def(this.action.applied))
-			dspl += ' ' + this.action.applied.description;
-		if(!this.from) return 'Created while ' + dspl + '.';
-		return 'Transformation while ' + dspl + ' of ' + this.from.toFlat();
+		if(!this.action) return 'Bereshit ...';
+		if(!this.from) return 'Created while ' + this.action.description() + '.';
+		return 'Transformation while ' + this.action.description() + ' of ' + this.from.toFlat();
 	}
 });
 /*
@@ -14341,10 +14396,10 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 	 * @param {nul.xpr.object} obj
 	 * @return {Number[]} The indexes of the equivalence classes defining obj in extension 
 	 */
-	extend: function(obj) {
+	extension: function(obj) {
 		var rv = {};
 		for(var ec=0; this.eqCls[ec]; ++ec) {
-			var b = this.eqCls[ec].extend(obj);
+			var b = this.eqCls[ec].extension(obj);
 			if(-1< b) rv[ec] = b;
 		}
 		return rv;
@@ -14535,6 +14590,17 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 	 * @param {nul.xpr.knowledge} dstKlg The knowledge whose space the expression is taken to
 	 */
 	initialize: function(srcKlgRef, dstKlg) {
+		var nl = dstKlg.nbrLocals();
+		this.toNode = function() {
+			return $('<span />')
+				.append($.text('StepUp from '))
+				.append($('<span />').text(srcKlgRef))
+				.append($.text(' to '))
+				.append($('<span />').text(dstKlg.name))
+				.append($.text(' whom has '))
+				.append($('<span />').text(nl))
+				.append($.text(' locals'));				
+		};
 		this.table = {};
 		this.forbid = {};
 		this.table[srcKlgRef] = {
@@ -14576,7 +14642,7 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 	transform: function(xpr) {
 		var dst;
 		if('local'== xpr.expression) {
-			if(dst = this.table[xpr.klgRef]) return new nul.obj.local(dst.klgRef, xpr.ndx+(dst.deltaLclNdx||0), xpr.dbgName);
+			if(dst = this.table[xpr.klgRef]) return new nul.obj.local(dst.klgRef, xpr.ndx+(dst.deltaLclNdx||0), xpr.dbgName).from(xpr);
 			this.forbid[xpr.klgRef] = true;
 		}
 		return nul.browser.bijectif.unchanged;
@@ -14592,6 +14658,14 @@ nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.repres
 	 * @param {Access} access The access to use to replace values
 	 */
 	initialize: function(klg) {
+		if(nul.action) {
+			this.toNode = function() {
+				return $('<span />')
+					.append($.text('Representing with '))
+					.append(this.klg.toNode());				
+			};
+			this.klg = klg;
+		}
 		nul.klg.is(klg);
 		this.tbl = klg.info();
 		this.dbgName = klg.name;
@@ -15026,7 +15100,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {nul.xpr.object} obj
 	 * @return {Number} Index in belongs or -1 if not found
 	 */
-	extend: function(obj) {
+	extension: function(obj) {
 		for(var b=0; this.belongs[b]; ++b)
 			if(obj.toString() == this.belongs[b].toString())
 				return b;
@@ -15362,6 +15436,13 @@ nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.ob
 	 * @param {nul.xpr.object|String} trgt The replacement value. If a string, will be a self-reference local.
 	 */
 	initialize: function(selfRef, trgt) {
+		this.toNode = function() {
+			return $('<span />')
+				.append($.text('Reselfing '))
+				.append($('<span />').text(selfRef))
+				.append($.text(' toward '))
+				.append(nul.txt.node.as(trgt));
+		};
 		this.selfRef = selfRef;
 		if(!trgt.expression) this.newRef = trgt;
 		this.trgt = trgt.expression?trgt:nul.obj.local.self(trgt);
@@ -15389,7 +15470,11 @@ nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.ob
 	}
 });
 
-nul.obj = nul.debugged?/** @namespace Object helper */{
+/**
+ * Object management helper
+ * @namespace 
+ */
+nul.obj = nul.debugged?/** @lends nul.obj */{
 	/**
 	 * Assert: 'x' are a collection of objects of type 't'
 	 * @param {nul.object[]} x
@@ -16743,8 +16828,14 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 			 * @constructs
 			 * @extends nul.browser.bijectif
 			 * @param {nul.data.context} context
+			 * @param {Object} prm Parameter given to the queried function
 			 */
 			initialize: function(context, prm) {
+				this.toNode = function() {
+					return $('<span />')
+						.append($.text('Querying '))
+						.append($('<span />').text(context.name));				
+				};
 				this.context = context;
 				this.prm = prm;
 				this.callSuper('querier:'+context.name);

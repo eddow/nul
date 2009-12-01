@@ -240,10 +240,10 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 	 * @param {nul.xpr.object} obj
 	 * @return {Number[]} The indexes of the equivalence classes defining obj in extension 
 	 */
-	extend: function(obj) {
+	extension: function(obj) {
 		var rv = {};
 		for(var ec=0; this.eqCls[ec]; ++ec) {
-			var b = this.eqCls[ec].extend(obj);
+			var b = this.eqCls[ec].extension(obj);
 			if(-1< b) rv[ec] = b;
 		}
 		return rv;

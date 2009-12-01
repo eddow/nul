@@ -12,13 +12,13 @@
 			<memberOf>{+method.memberOf+}</memberOf>
 			<isStatic>{+method.isStatic+}</isStatic>
 			<desc>{+method.desc+}</desc>
-			<params><for each="param" in="method.params"><if test="param.name != '$super'">
+			<params><for each="param" in="method.params">
 				<param>
 					<type>{+param.type+}</type>
 					<name>{+param.name+}</name>
 					<desc>{+param.desc+}</desc>
 					<defaultValue>{+param.defaultValue+}</defaultValue>
-				</param></if></for>
+				</param></for>
 			</params>
 		</method></for>
 	</methods>

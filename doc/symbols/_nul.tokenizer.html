@@ -199,6 +199,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.html">nul</a></li>
 	
+	<li><a href="../symbols/_nul.action.html">nul.action</a></li>
+	
 	<li><a href="../symbols/_nul.browser.html">nul.browser</a></li>
 	
 	<li><a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a></li>
@@ -206,8 +208,6 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.browser.bijectif.evolution.html">nul.browser.bijectif.evolution</a></li>
 	
 	<li><a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a></li>
-	
-	<li><a href="../symbols/_nul.clpsSstm.html">nul.clpsSstm</a></li>
 	
 	<li><a href="../symbols/_nul.compiled.html">nul.compiled</a></li>
 	
@@ -231,11 +231,25 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.data.time.html">nul.data.time</a></li>
 	
-	<li><a href="../symbols/_nul.debug.html">nul.debug</a></li>
+	<li><a href="../symbols/_nul.debugged.html">nul.debugged</a></li>
 	
 	<li><a href="../symbols/_nul.dependance.html">nul.dependance</a></li>
 	
-	<li><a href="../symbols/_nul.exception.html">nul.exception</a></li>
+	<li><a href="../symbols/_nul.ex.html">nul.ex</a></li>
+	
+	<li><a href="../symbols/_nul.ex.assert.html">nul.ex.assert</a></li>
+	
+	<li><a href="../symbols/_nul.ex.failure.html">nul.ex.failure</a></li>
+	
+	<li><a href="../symbols/_nul.ex.internal.html">nul.ex.internal</a></li>
+	
+	<li><a href="../symbols/_nul.ex.js.html">nul.ex.js</a></li>
+	
+	<li><a href="../symbols/_nul.ex.semantic.html">nul.ex.semantic</a></li>
+	
+	<li><a href="../symbols/_nul.ex.syntax.html">nul.ex.syntax</a></li>
+	
+	<li><a href="../symbols/_nul.ex.unk.html">nul.ex.unk</a></li>
 	
 	<li><a href="../symbols/_nul.execution.html">nul.execution</a></li>
 	
@@ -311,8 +325,6 @@ ul.inheritsList
 	
 	<li><a href="../symbols/_nul.obj.undefnd.html">nul.obj.undefnd</a></li>
 	
-	<li><a href="../symbols/_nul.obj.whole.html">nul.obj.whole</a></li>
-	
 	<li><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></li>
 	
 	<li><a href="../symbols/_nul.txt.html">nul.txt</a></li>
@@ -324,6 +336,10 @@ ul.inheritsList
 	<li><a href="../symbols/_nul.txt.html.html">nul.txt.html</a></li>
 	
 	<li><a href="../symbols/_nul.txt.html.draw.html">nul.txt.html.draw</a></li>
+	
+	<li><a href="../symbols/_nul.txt.node.html">nul.txt.node</a></li>
+	
+	<li><a href="../symbols/_nul.txt.node.draw.html">nul.txt.node.draw</a></li>
 	
 	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
 	
@@ -444,6 +460,15 @@ ul.inheritsList
 						</tr>
 					</thead>
 					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">nul.tokenizer.<b><a href="../symbols/_nul.tokenizer.html#.advance">advance</a></b>(n, txt)
+								</div>
+								<div class="description">Advance the token position</div>
+							</td>
+						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
@@ -634,6 +659,48 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
+					<a name=".advance"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">nul.tokenizer.</span><b>advance</b>(n, txt)
+					
+					</div>
+					<div class="description">
+						Advance the token position
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>n</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>txt</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".expect"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -674,7 +741,7 @@ ul.inheritsList
 							<dt class="heading">Throws:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{nul.synthaxException}</span>  <b></b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.ex.syntax.html">nul.ex.syntax</a>}</span>  <b></b>
 								</dt>
 								<dd>if the token is not the one expected.</dd>
 							
@@ -696,7 +763,7 @@ ul.inheritsList
 					<a name=".fly"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
+					<span class="light">{String}</span>
 					<span class="light">nul.tokenizer.</span><b>fly</b>(seeked)
 					
 					</div>
@@ -727,7 +794,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>the string until the bound.</dd>
+								<dd><span class="light fixedFont">{String}</span> the string until the bound, null if the bound is not found.</dd>
 							
 							</dl>
 						
@@ -806,7 +873,7 @@ ul.inheritsList
 					<a name=".peek"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
-					
+					<span class="light">{token}</span>
 					<span class="light">nul.tokenizer.</span><b>peek</b>(accepted)
 					
 					</div>
@@ -826,7 +893,7 @@ ul.inheritsList
 									<span class="light fixedFont">{String[]}</span> <b>accepted</b>
 									
 								</dt>
-								<dd>A list of accepted token type</dd>
+								<dd>A list of accepted token type or nothing if any token accepted</dd>
 							
 							</dl>
 						
@@ -837,7 +904,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>next token if accepted or null</dd>
+								<dd><span class="light fixedFont">{token}</span> next token if accepted or null</dd>
 							
 							</dl>
 						
@@ -929,7 +996,7 @@ ul.inheritsList
 							<dt class="heading">Throws:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{nul.synthaxException}</span>  <b></b>
+									<span class="light fixedFont">{<a href="../symbols/_nul.ex.syntax.html">nul.ex.syntax</a>}</span>  <b></b>
 								</dt>
 								<dd>if the characters were not found exactly</dd>
 							
@@ -982,7 +1049,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>true if the characters were found</dd>
+								<dd>true if the characters were found and taken</dd>
 							
 							</dl>
 						
@@ -1046,7 +1113,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Nov 24 2009 23:11:44 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Dec 01 2009 15:11:06 GMT+0200 (EET)
 		</div>
 	</body>
 </html>

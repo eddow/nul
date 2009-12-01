@@ -305,13 +305,13 @@
 					<if test="data.params.length">
 						<dl class="detailList">
 						<dt class="heading">Parameters:</dt>
-						<for each="item" in="data.params"><if test="item.name != '$super'">
+						<for each="item" in="data.params">
 							<dt>
 								{+((item.type)?""+("<span class=\"light fixedFont\">{"+(new Link().toSymbol(item.type)+"}</span> ")) : "")+} <b>{+item.name+}</b>
 								<if test="item.isOptional"><i>Optional<if test="item.defaultValue">, Default: {+item.defaultValue+}</if></i></if>
 							</dt>
 								<dd>{+resolveLinks(item.desc)+}</dd>
-						</if></for>
+						</for>
 						</dl>
 					</if>
 					<if test="data.deprecated">
@@ -470,13 +470,13 @@
 						<if test="member.params.length">
 							<dl class="detailList">
 							<dt class="heading">Parameters:</dt>
-							<for each="item" in="member.params"><if test="item.name != '$super'">
+							<for each="item" in="member.params">
 								<dt>
 									{+((item.type)?"<span class=\"light fixedFont\">{"+(new Link().toSymbol(item.type))+"}</span> " : "")+}<b>{+item.name+}</b>
 									<if test="item.isOptional"><i>Optional<if test="item.defaultValue">, Default: {+item.defaultValue+}</if></i></if>
 								</dt>
 								<dd>{+resolveLinks(item.desc)+}</dd>
-							</if></for>
+							</for>
 							</dl>
 						</if>
 						<if test="member.deprecated">

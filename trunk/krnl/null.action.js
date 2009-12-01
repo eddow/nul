@@ -6,12 +6,12 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * @namespace NUL Debugging tools
- */
 nul.action = new JS.Class(/** @lends nul.action# */{
 	/**
-	 * @construct
+	 * @param {String} Name
+	 * @param {Object} applied
+	 * @param {Object[]} args
+	 * @constructs
 	 */
 	initialize: function(name, applied, args) {
 		this.name = name;

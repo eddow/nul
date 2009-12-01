@@ -319,7 +319,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * @param {nul.xpr.object} obj
 	 * @return {Number} Index in belongs or -1 if not found
 	 */
-	extend: function(obj) {
+	extension: function(obj) {
 		for(var b=0; this.belongs[b]; ++b)
 			if(obj.toString() == this.belongs[b].toString())
 				return b;

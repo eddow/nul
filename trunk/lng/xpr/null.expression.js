@@ -293,8 +293,11 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	
 });
 
-
-nul.xpr = nul.debugged?/** @namespace Expression helper */{
+/**
+ * Expression management helper
+ * @namespace 
+ */
+nul.xpr = nul.debugged?/** @lends nul.xpr */{
 	/**
 	 * Assert: 'x' are a collection of expression of type 't'
 	 * @param {nul.expression[]} x
