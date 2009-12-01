@@ -1,4 +1,8 @@
-#NulLocal
+#summary TODO
+#labels Phase-Design
+#sidebar NulExpressionsTree
+
+Class [http://nul.googlecode.com/svn/doc/symbols/_nul.obj.local.html nul.xpr.object.local].
 
 = Introduction =
 

@@ -1,4 +1,8 @@
-#NulHardCoded
+#summary TODO
+#labels Phase-Design
+#sidebar NulExpressionsTree
+
+Class [http://nul.googlecode.com/svn/doc/symbols/_nul.obj.hc.html nul.xpr.object.hc].
 
 = Introduction =
 

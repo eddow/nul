@@ -1,4 +1,8 @@
-#NulLambda
+#summary TODO
+#labels Phase-Design
+#sidebar NulExpressionsTree
+
+Class [http://nul.googlecode.com/svn/doc/symbols/_nul.obj.lambda.html nul.xpr.object.lambda].
 
 = Introduction =
 
