@@ -11,7 +11,7 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 	//include: [JS.Observable],
 	/**
 	 * Exception thrown by NUL
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(name, msg) {
 		this.message = msg;
@@ -22,7 +22,8 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 	 * Throw this exception
 	 */
 	raise: function() { throw this; },
-	extend: {
+	extend: /** @lends nul.ex */{
+		//TODO C
 		be: function(x) {
 			if(window.console && x.fileName && x.stack && 'number'== typeof x.lineNumber) {
 				console.error(x);
@@ -31,6 +32,7 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 			if(!nul.ex.def(x)) return new nul.ex.unk(x);
 			return x;
 		},
+		//TODO C
 		hook: function(wnd) {
 			window.onerror = nul.ex.js.onerror;
 		}, 
@@ -47,7 +49,7 @@ nul.ex.js = new JS.Class(nul.ex, /** @lends nul.ex.js# */{
 	/**
 	 * Exception thrown by JavaScript interpreter on JavaScript error.
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(name, msg, url, ln) {
 		this.callSuper(name, msg);
@@ -72,7 +74,7 @@ nul.ex.semantic = new JS.Class(nul.ex, /** @lends nul.ex.semantic# */{
 	/**
 	 * Exception thrown by the NUL interpreter when the semantic of the NUL text is wrong
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(name, msg, xpr) {
 		this.callSuper();
@@ -85,7 +87,7 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 	/**
 	 * Exception thrown by the NUL interpreter when the syntax of the NUL text is wrong
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(name, msg, tknzr, type) {
 		this.callSuper();
@@ -93,6 +95,7 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 		this.until = { line: tknzr.line, clmn: tknzr.clmn };
 		this.type = type||'before';
 	},
+	//TODO C
 	select: function(editor) {
 		switch(this.type) {
 		case 'before': editor.selectLines(editor.nthLine(this.token.line+1), this.token.clmn); break;
@@ -106,7 +109,7 @@ nul.ex.unk = new JS.Class(nul.ex, /** @lends nul.ex.unk# */{
 	/**
 	 * Exception thrown by we don't know where 
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(obj) {
 		this.callSuper('wtf', obj.toString());
@@ -119,7 +122,7 @@ nul.ex.internal = new JS.Class(nul.ex, /** @lends nul.ex.internal# */{
 	/**
 	 * A bug in the NUL interpreter - ideally never raised
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(msg) {
 		this.callSuper('bug', msg);
@@ -132,7 +135,7 @@ nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 	/**
 	 * A bug in the NUL interpreter - ideally never raised
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(msg) {
 		this.callSuper('assertion', msg);
@@ -144,7 +147,7 @@ nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
 	/**
 	 * A failed evaluation
 	 * @extend nul.ex
-	 * @construct
+	 * @constructs
 	 */
 	initialize: function(msg) {
 		this.callSuper('failure');

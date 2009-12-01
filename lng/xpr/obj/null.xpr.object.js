@@ -92,7 +92,11 @@ nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.ob
 	}
 });
 
-nul.obj = nul.debugged?/** @namespace Object helper */{
+/**
+ * Object management helper
+ * @namespace 
+ */
+nul.obj = nul.debugged?/** @lends nul.obj */{
 	/**
 	 * Assert: 'x' are a collection of objects of type 't'
 	 * @param {nul.object[]} x
