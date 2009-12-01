@@ -16,6 +16,8 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 	initialize: function(name, applied, args) {
 		this.name = name;
 		this.applied = applied;
+		//TODO 1: this call f*cks the perfs
+		this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
 		this.args = args;
 		nul.action.begin(this);
 		this.isToLog = nul.action.isToLog(name);
@@ -24,6 +26,10 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 			console.log('Applied to', applied);
 			console.log('Arguments', args);
 		}
+	},
+	description: function() {
+		if(!nul.browser.def(this.applied)) return this.name;
+		return this.name + ' ' + this.applied.description;		
 	},
 	returns: function(value) {
 		nul.action.end(this);

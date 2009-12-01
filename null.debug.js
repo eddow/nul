@@ -5576,7 +5576,8 @@ $.extend(
 /*
  * START OF FILE - /trunk/null.loading.js
  */
-/*  NUL language JavaScript framework
+/*!
+ *  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
  *
  * NUL is freely distributable under the terms of GNU GPLv3 license.
@@ -5593,35 +5594,69 @@ nul = new JS.Singleton(/** @lends nul */{ load: {} });
 
 nul.rootPath = '';
 nul.loading = function() {
-	if (document.getElementsByTagName) {
-		nul.loading.head = document.getElementsByTagName("HEAD");
-		if (nul.loading.head) {
-			nul.loading.head = nul.loading.head[0];
-			var nss = nul.loading.head.getElementsByTagName("SCRIPT");
-			for(var i=0; i<nss.length; ++i) if(nss[i] && nss[i].src) {
-				var spl = nss[i].src.split('null.');
-				if(1< spl.length) {
-					nul.rootPath = spl[0];
-					nul.loading.nsn = nss[i];
-					if(!nss[i].getAttribute('noconsole')) nul.loading.scripts.push('web/console/null.console');
-					break;
-				}
-			}
-			
-			for(var i=0; nul.loading.scripts[i]; ++i) nul.loading.scripts[i] = nul.rootPath+nul.loading.scripts[i]+'.js';
-			for(var i=0; nul.loading.styles[i]; ++i) nul.loading.styles[i] = nul.rootPath+nul.loading.styles[i]+'.css';
-			$.include(nul.loading.styles);
-			$.chainclude(nul.loading.scripts, nul.loading.initiate);
+	$('head script').each(function(){
+		var spl = this.src.split('null.');
+		if(1< spl.length) {
+			nul.rootPath = spl[0];
+			nul.loading.fixConsole($(this).attr('noconsole'));
 		}
-	}
+	});
+
+	nul.loading.follow(function() {
+		if('complete'== document.readyState) nul.loading.initiate();
+		else $('body').ready(nul.loading.initiate);
+	});
 };
+nul.loading.initiate = function() {
+	var toProvide = {};
+	var toLoad = [];
+	for(var l in nul.load)
+		if(!function(){}[l]) {
+			if(!nul.load[l].provide) nul.load[l].provide = [];
+			if(0> $.inArray(l, nul.load[l].provide)) nul.load[l].provide.push(l);
+			for(var p=0; nul.load[l].provide[p]; ++p)
+				toProvide[nul.load[l].provide[p]] = 1+(toProvide[nul.load[l].provide[p]]||0);
+			nul.load[l].name = l;
+			toLoad.push(nul.load[l]);
+		}
+	while(toLoad.length) {
+		var nxtLd = toLoad.shift();
+		var cn = true;
+		if(nxtLd.use)
+			for(var u in nxtLd.use)
+				if(toProvide[u]) cn = false;
+		if(cn) {
+			nxtLd.apply(document);
+			for(var p=0; nxtLd.provide[p]; ++p)
+				--toProvide[nxtLd.provide[p]];
+		} else toLoad.push(nxtLd);
+	}
+	delete nul.loading;
+};
+
+
+
+/*
+ * END OF FILE - /trunk/null.loading.js
+ */
+
+/*
+ * START OF FILE - /trunk/null.import.js
+ */
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
 
 nul.loading.styles = [
 'web/null.page',
 'lng/txt/out/null.txt.html',
 '3rd/jquery/theme/ui',
 '3rd/jquery/theme/treeTable',
-'web/console/null.console'
 ];
 
 nul.loading.scripts = [
@@ -5687,38 +5722,23 @@ nul.loading.scripts = [
 'web/null.page'
 ];
 
-nul.loading.initiate = function() {
-	var toProvide = {};
-	var toLoad = [];
-	for(var l in nul.load)
-		if(!function(){}[l]) {
-			if(!nul.load[l].provide) nul.load[l].provide = [];
-			if(!nul.load[l].provide.include(l)) nul.load[l].provide.push(l);
-			for(var p=0; nul.load[l].provide[p]; ++p)
-				toProvide[nul.load[l].provide[p]] = 1+(toProvide[nul.load[l].provide[p]]||0);
-			nul.load[l].name = l;
-			toLoad.push(nul.load[l]);
-		}
-	while(toLoad.length) {
-		var nxtLd = toLoad.shift();
-		var cn = true;
-		if(nxtLd.use)
-			for(var u in nxtLd.use)
-				if(toProvide[u]) cn = false;
-		if(cn) {
-			nxtLd.apply(document);
-			for(var p=0; nxtLd.provide[p]; ++p)
-				--toProvide[nxtLd.provide[p]];
-		} else toLoad.push(nxtLd);
+nul.loading.fixConsole = function(ncd) {
+	if(!ncd) {
+		nul.loading.scripts.push('web/console/null.console');
+		nul.loading.styles.push('web/console/null.console');
 	}
-	delete nul.loading;
 };
+nul.loading.follow = function(f) {
+	for(var i=0; nul.loading.styles[i]; ++i) nul.loading.styles[i] = nul.rootPath+nul.loading.styles[i]+'.css';
+	$.include(nul.loading.styles);
 
+	for(var i=0; nul.loading.scripts[i]; ++i) nul.loading.scripts[i] = nul.rootPath+nul.loading.scripts[i]+'.js';
+	$.chainclude(nul.loading.scripts, f);
+};
 nul.loading();
 
-
 /*
- * END OF FILE - /trunk/null.loading.js
+ * END OF FILE - /trunk/null.import.js
  */
 
 /*

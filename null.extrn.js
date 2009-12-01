@@ -5475,7 +5475,8 @@ jQuery.each([ "Height", "Width" ], function(i, name){
 			var rx = new RegExp('\\&'+opt+'(\\=(.*?))?\\&');
 			var mh = rx.exec(srch);
 			return mh?(mh[2]||true):false;
-		}
+		},
+		id: function(x) { return x; }
 	});
 })(jQuery);
 

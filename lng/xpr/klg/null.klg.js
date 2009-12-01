@@ -57,6 +57,7 @@ nul.klg = {
 		maxXst: function() { return this.maxMult; }
 	}),
 	
+	//TODO 4: if(!nul.debugged) replace are/is/... by $.id
 	/**
 	 * Assert: 'x' are a collection of knowledges
 	 * @param {nul.object[]} x

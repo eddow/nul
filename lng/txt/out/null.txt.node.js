@@ -57,13 +57,8 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 
 		var rv = $('<span />').addClass(xpr.expression).addClass('xpr');
 		rv.append(tilesNode('explain', xpr.origin.toShort(), 0).click(nul.txt.node.explain(xpr)));
-				/*$('<a />')
-				.attr({'class':'explain _nul_xpr_tile', title: 'Explain'})
-				.css('margin-left', '0px')
-				.click(nul.txt.node.explain(xpr)));*/
 		var spos = 1;
 		for(var t in tiles) rv.append(tilesNode(t, tiles[t], spos++));
-		
 		for(var i=0; i<txt[''].length; ++i)
 			rv.append(txt[''][i]);
 		return rv;
@@ -82,7 +77,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 		 * @return {HTML}
 		 */
 		local: function() {
-			nul.assert(this.dbgName, 'Local has name if debug enabled');
+			if(nul.debugged) nul.assert(this.dbgName, 'Local has name if debug enabled');
 			
 			return {
 				'': [this.dbgName, $('<span class="desc"/>')
@@ -256,7 +251,35 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 	explain: function(xpr) {
 		return function() {
 			nul.xpr.use(xpr);
-			alert(xpr.toFlat());
+			if(xpr.dialog) xpr.dialog.dialog('moveToTop');
+			else if(xpr.origin.action) nul.txt.node.createDlg(xpr, xpr.toFlat()).bind('dialogclose', function() { delete xpr.dialog; });
 		};
+	},
+	createDlg: function(xpr, ttl) {
+		var dlg = xpr.dialog = $('<div />');
+		if(xpr.origin.from) dlg
+			.append( $('<table class="transformation"/>').append( $('<tr />')
+					.append($('<th />').append(xpr.toNode()))
+					.append($('<td />').html('&lArr;'))
+					.append($('<td />').append(xpr.origin.from.toNode()))) );
+		else dlg.append(xpr.toNode());
+		dlg.append($('<div class="description" />').append(xpr.origin.action.description()));
+		dlg.append($('<div class="applied" />').append(xpr.origin.action.appliedNode.clone()));
+		for(var i=0; i<xpr.origin.action.args.length; ++i)
+			dlg.append($('<div class="argument" />').append(nul.txt.node.as(xpr.origin.action.args[i])));
+		return dlg.dialog({
+			closeOnEscape: false,
+			dialogClass: 'explain',
+			title: ttl
+		});
+	},
+	/**
+	 * Gets the object as a node - as best as we can
+	 * @param {Object} obj
+	 * @return {jQuery} node
+	 */
+	as: function(obj) {
+		if(obj.toNode) return obj.toNode();
+		return $('<span />').text(obj.toString());
 	}
 });

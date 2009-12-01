@@ -5475,7 +5475,8 @@ jQuery.each([ "Height", "Width" ], function(i, name){
 			var rx = new RegExp('\\&'+opt+'(\\=(.*?))?\\&');
 			var mh = rx.exec(srch);
 			return mh?(mh[2]||true):false;
-		}
+		},
+		id: function(x) { return x; }
 	});
 })(jQuery);
 
@@ -9966,7 +9967,7 @@ $.expr.filter.ATTR = function(elem, match) {
  */
 
 /*
- * START OF FILE - /trunk/null.js
+ * START OF FILE - /trunk/null.loading.js
  */
 /*!
  *  NUL language JavaScript framework
@@ -9977,16 +9978,78 @@ $.expr.filter.ATTR = function(elem, match) {
  *
  *--------------------------------------------------------------------------*/
 
+/**
+ * @fileoverview
+ * This file just load the needed script files. 
+ */
+
 nul = new JS.Singleton(/** @lends nul */{ load: {} });
 
 nul.rootPath = '';
-$('head script').each(function(){
-	var spl = this.src.split('null.');
-	if(1< spl.length) nul.rootPath = spl[0];
-});
+nul.loading = function() {
+	$('head script').each(function(){
+		var spl = this.src.split('null.');
+		if(1< spl.length) {
+			nul.rootPath = spl[0];
+			nul.loading.fixConsole($(this).attr('noconsole'));
+		}
+	});
+
+	nul.loading.follow(function() {
+		if('complete'== document.readyState) nul.loading.initiate();
+		else $('body').ready(nul.loading.initiate);
+	});
+};
+nul.loading.initiate = function() {
+	var toProvide = {};
+	var toLoad = [];
+	for(var l in nul.load)
+		if(!function(){}[l]) {
+			if(!nul.load[l].provide) nul.load[l].provide = [];
+			if(0> $.inArray(l, nul.load[l].provide)) nul.load[l].provide.push(l);
+			for(var p=0; nul.load[l].provide[p]; ++p)
+				toProvide[nul.load[l].provide[p]] = 1+(toProvide[nul.load[l].provide[p]]||0);
+			nul.load[l].name = l;
+			toLoad.push(nul.load[l]);
+		}
+	while(toLoad.length) {
+		var nxtLd = toLoad.shift();
+		var cn = true;
+		if(nxtLd.use)
+			for(var u in nxtLd.use)
+				if(toProvide[u]) cn = false;
+		if(cn) {
+			nxtLd.apply(document);
+			for(var p=0; nxtLd.provide[p]; ++p)
+				--toProvide[nxtLd.provide[p]];
+		} else toLoad.push(nxtLd);
+	}
+	delete nul.loading;
+};
+
+
 
 /*
- * END OF FILE - /trunk/null.js
+ * END OF FILE - /trunk/null.loading.js
+ */
+
+/*
+ * START OF FILE - /trunk/null.inplace.js
+ */
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+nul.loading.fixConsole = function(ncd) { if(ncd) nul.console = false; };
+nul.loading.follow = function(f) {f();};
+nul.loading();
+
+/*
+ * END OF FILE - /trunk/null.inplace.js
  */
 
 /*
@@ -10369,11 +10432,6 @@ Function.prototype.describe = nul.action.described;
 
 nul.extend( /** @lends nul */{
 	/**
-	 * Failure object that is thrown and caught
-	 * @constant
-	 */
-	failure: 'failure',	//TODO 1: failure becomes a nul.ex
-	/**
 	 * List of failures that happened during these trys
 	 */
 	fails: [],
@@ -10382,8 +10440,8 @@ nul.extend( /** @lends nul */{
 	 * @param reason items to shape a sentence
 	 */
 	fail: function(reason) {
-		nul.debugged.fail(beArrg(arguments));
-		throw nul.failure;
+		if(nul.debugged) nul.debugged.fail(beArrg(arguments));
+		throw nul.ex.failure;
 	},
 	/**
 	 * Make several try/catch; accept some failures (debug purpose)
@@ -10396,7 +10454,7 @@ nul.extend( /** @lends nul */{
 	 * Catch only failure.
 	 */
 	failed: function(err) {
-		if(nul.failure!= err) throw nul.ex.be(err);
+		if(nul.ex.failure!== err) throw nul.ex.be(err);
 	},
 	
 	/**
@@ -10520,7 +10578,6 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 		this.code = name;
 		//this.fire();
 	},
-	present: function() { return this.message; },
 	/**
 	 * Throw this exception
 	 */
@@ -10557,11 +10614,6 @@ nul.ex.js = new JS.Class(nul.ex, /** @lends nul.ex.js# */{
 		this.file = url;
 		this.line = ln;
 	},
-	/**
-	 * 
-	 */
-	present: function() {
-	},
 	extend: /** @lends nul.ex.js */{
 		/**
 		 * window.onerror end-point
@@ -10595,13 +10647,17 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 	 * @extend nul.ex
 	 * @construct
 	 */
-	initialize: function(name, msg, tknzr) {
+	initialize: function(name, msg, tknzr, type) {
 		this.callSuper();
-		this.line = tknzr.token.ln;
-		this.clmn = tknzr.token.cl;
+		this.token = tknzr.token;
+		this.until = { line: tknzr.line, clmn: tknzr.clmn };
+		this.type = type||'before';
 	},
-	present: function() { 
-		return '[l'+this.line+'|c'+this.clmn+'] ' + this.message;
+	select: function(editor) {
+		switch(this.type) {
+		case 'before': editor.selectLines(editor.nthLine(this.token.line+1), this.token.clmn); break;
+		case 'token': editor.selectLines(editor.nthLine(this.token.line+1), this.token.clmn, editor.nthLine(this.until.line+1), this.until.clmn); break;
+		}
 	},
 	toString: function() { return 'Syntax error'; }
 });
@@ -10642,6 +10698,18 @@ nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 		this.callSuper('assertion', msg);
 	},
 	toString: function() { return 'Assertion failure'; }
+});
+
+nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
+	/**
+	 * A failed evaluation
+	 * @extend nul.ex
+	 * @construct
+	 */
+	initialize: function(msg) {
+		this.callSuper('failure');
+	},
+	toString: function() { return 'Failure'; }
 });
 
 
@@ -10958,6 +11026,8 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	 */
 	initialize: function(src) {
 		this.txt = src.replace(/\n\r/g,'\uffff').replace(/\n/g,'\uffff').replace(/\r/g,'\uffff');
+		this.line = 0;
+		this.clmn = 0;
 		this.next();
 	},
 	/**
@@ -10971,10 +11041,11 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		/** The text that produced this token */
 		raw: '',
 		/** Line coordinate */
-		ln: 0,
+		line: 0,
 		/** Row coordinate*/
-		cl: 0
+		clmn: 0
 	},
+	
 	/**
 	 * Consider the next token
 	 */
@@ -10984,7 +11055,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		do
 		{
 			if(''== this.txt)
-				return this.token = { value: '', type: 'eof' };
+				return this.token = { value: '', type: 'eof', clmn: this.clmn, line:this.line };
 			for(alphabet in nul.tokenizer.alphabets)
 				if(match = nul.tokenizer.isAB(this.txt, alphabet))
 				{
@@ -10992,18 +11063,16 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 						value: (1< match.length) ? match[1]: null,
 						type: alphabet,
 						raw: match[0],
-						ln: this.token.ln,
-						cl: this.token.cl};
-					this.advance(this.txt, match[0].length);
-					this.txt = this.txt.substr(match[0].length);
+						line: this.line,
+						clmn: this.clmn};
+					this.advance(match[0].length);
 					break;
 				}
 			if(!match)
 			{
 				this.token = this.txt.substr(0,1);
-				this.token = { value: this.token, type: 'other', raw:this.token };
-				this.advance(this.txt, 1);
-				this.txt = this.txt.substr(1);
+				this.token = { value: this.token, type: 'other', raw:this.token, cl: this.token.cl, ln:this.token.ln };
+				this.advance(1);
 			}
 		} while(null=== this.token.value);
 		
@@ -11071,8 +11140,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	{
 		var txt = this.token.raw + this.txt;
 		if( txt.substr(0,value.length) != value ) return false;
-		this.advance(txt, value.length);
-		this.txt = txt.substr(value.length);
+		this.advance(value.length, txt);
 		this.next();
 		return true;
 	},
@@ -11099,20 +11167,24 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 		var n = txt.indexOf(seeked);
 		if(-1== n) return null;
 		var rv = txt.substr(0, n);
-		this.advance(txt, n);
-		this.txt = txt.substr(n);
+		this.advance(n, txt);
 		this.next();
 		return rv;
 	},
 	/**
 	 * Advance the token position
 	 */
-	advance: function(origTxt, n) {
-		if(n>origTxt.length) {
-			this.token.ln += 1;
-			this.token.cl += n - origTxt.length;
+	advance: function(n, txt) {
+		if(!txt) txt = this.txt;
+		var advanced = txt.substr(0, n);
+		this.txt = txt.substr(n);
+		
+		advanced = advanced.split('\uffff');
+		if(1>= advanced.length) this.clmn += n;
+		else if(this.txt) {
+			this.line += advanced.length-1;
+			this.clmn = advanced.pop().length;
 		}
-		else this.token.cl += n;
 	}
 });
 
@@ -11430,7 +11502,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 			if(this.tknzr.rawTake('<(')) comps.push(this.tknzr.rawExpect(')>',this.expression()));
 			else if(this.tknzr.rawTake('</')) return comps;
 			else if(this.tknzr.rawTake('<')) comps.push(this.xml());
-			else nul.ex.syntax('UEI', "Don't know what to do with '"+this.tknzr.token.value+"'", this.tknzr);
+			else nul.ex.syntax('UEI', "Don't know what to do with '"+this.tknzr.token.value+"'", this.tknzr, 'token');
 		} while(true);
 	},
 	/**
@@ -11501,7 +11573,7 @@ nul.compile = function(txt)
 {
 	var rv = new nul.compiler(txt+'\n');
 	var ev = rv.expression();
-	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", rv.tknzr);
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", rv.tknzr, 'token');
 	return ev;
 };
 
@@ -11515,7 +11587,7 @@ nul.compile.xml = function(txt)
 {
 	var rv = new nul.compiler(txt+'</');
 	var ev = rv.innerXML();
-	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", this.tknzr);
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", this.tknzr, 'token');
 	return ev;
 };
 
@@ -12478,7 +12550,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 		 * @return {HTML}
 		 */
 		local: function() {
-			nul.assert(this.dbgName, 'Local has name if debug enabled');
+			if(nul.debugged) nul.assert(this.dbgName, 'Local has name if debug enabled');
 			
 			return {
 				'': [this.dbgName, $('<span class="desc"/>')
@@ -12523,11 +12595,11 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 		 */
 		range: function() {
 			var ltr = 0> this.lower ?
-				'&#x2124;':	//ℤ
-				'&#x2115;';	//ℕ
+				$('<span>&#x2124;</span>'):	//ℤ
+				$('<span>&#x2115;</span>');	//ℕ
 			if(pinf==this.upper) {
-				if(ninf==this.lower) return {'': ltr};
-				if(0== this.lower) return {'': ltr};
+				if(ninf==this.lower) return {'': [ltr]};
+				if(0== this.lower) return {'': [ltr]};
 			}
 			return {'': [ltr, $('<span class="desc" />')
 			             .append($('<span class="sup" />').text((pinf==this.upper)?'&infin;':this.upper))
@@ -12589,7 +12661,7 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 		 * @return {HTML}
 		 */
 		eqCls: function() {
-			var attrs = $('<table />');
+			var attrs = $('<table class="attributes" />');
 			for(var an in ownNdx(this.attribs))
 				attrs.append($('<tr />')
 						.append($('<th />').html(an))
@@ -12732,7 +12804,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 		if(!this.summarised) return this['sum_'+itm].apply(this);
 		//this.use();
 		if('undefined'== typeof this.summarised[itm]) {
-			nul.assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
+			if(nul.debugged) nul.assert(this['sum_'+itm],'Summary '+itm+' provided for '+this.expression);
 			this.summarised[itm] = this['sum_'+itm].apply(this);
 		}
 		return this.summarised[itm];
@@ -12950,8 +13022,8 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	
 });
 
-/** @namespace Expression helper */
-nul.xpr = {
+
+nul.xpr = nul.debugged?/** @namespace Expression helper */{
 	/**
 	 * Assert: 'x' are a collection of expression of type 't'
 	 * @param {nul.expression[]} x
@@ -12988,7 +13060,7 @@ nul.xpr = {
 		nul.debugged.is(t||'nul.expression', 'modifiable', function(o) { return !o.summarised; })(x);
 		return x;
 	}
-};
+}:/** @ignore */{ are: $.id, is: $.id, use: $.id, mod: $.id };
 
 /**
  * Retrieve an expression (and modifies the knowledge) to represent a value-taking
@@ -13351,7 +13423,7 @@ nul.solve = function() {
 			if(!better.enth) rv.push(tdst);	//No way to bring infos by distributing ... TODO O: modify 'distribuable' ?
 			else {	//if some information can be brouhht
 		
-				nul.debugged.info('Resolution')('Possibility', tdst.ior3[better.cases].choices[better.choice]);
+				if(nul.debugged) nul.debugged.info('Resolution')('Possibility', tdst.ior3[better.cases].choices[better.choice]);
 			
 				try {
 					var choosen = tdst.clone();		//The case when the choice is taken
@@ -14203,7 +14275,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	wrap: function(value) {
  		this.modify(); nul.obj.use(value);
 		var representer = new nul.klg.represent(this);
-		nul.debugged.info('Represent')('Representants', this.name, this);
+		if(nul.debugged) nul.debugged.info('Represent')('Representants', this.name, this);
 		for(var i=0; i<this.eqCls.length;) {
 			var ec = this.eqCls[i];
 			var nec = representer.subBrowse(ec);
@@ -14216,7 +14288,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 				//this.unification has effect on other equivalence classes that have to change in the representer
 				representer.invalidateCache();
 				
-				nul.debugged.info('Represent')('Representants', this.name, this);
+				if(nul.debugged) nul.debugged.info('Represent')('Representants', this.name, this);
 				i = 0;
 			}
 		}
@@ -14383,6 +14455,7 @@ nul.klg = {
 		maxXst: function() { return this.maxMult; }
 	}),
 	
+	//TODO 4: if(!nul.debugged) replace are/is/... by $.id
 	/**
 	 * Assert: 'x' are a collection of knowledges
 	 * @param {nul.object[]} x
@@ -14620,7 +14693,7 @@ nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.repres
 			this.prepStack[n].setSelfRef = evl.value.ndx;
 		}
 
-		if(evl.hasChanged) nul.debugged.info('Represent')('Replacement', this.dbgName, evl.changed, xpr, p);
+		if(nul.debugged && evl.hasChanged) nul.debugged.info('Represent')('Replacement', this.dbgName, evl.changed, xpr, p);
 		return evl.changed;
 	}
 });
@@ -15316,8 +15389,7 @@ nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.ob
 	}
 });
 
-/** @namespace Objects helper */
-nul.obj = {
+nul.obj = nul.debugged?/** @namespace Object helper */{
 	/**
 	 * Assert: 'x' are a collection of objects of type 't'
 	 * @param {nul.object[]} x
@@ -15342,7 +15414,7 @@ nul.obj = {
 	 * @param {String} t JS type name
 	 */
 	mod: function(x, t) { return nul.xpr.mod(x,t||'nul.xpr.object'); }
-};
+}:/** @ignore */{ are: $.id, is: $.id, use: $.id, mod: $.id };
 
 /*
  * END OF FILE - /trunk/lng/xpr/obj/null.xpr.object.js
@@ -16643,7 +16715,7 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 		 * Query what is needed to have the queried state of the object
 		 * @param {nul.xpr.object} obj
 		 * @return {nul.xpr.object} The same object without dependancies
-		 * @throw {nul.failure}
+		 * @throw {nul.ex.failure}
 		 * @throw {nul.ex.semantic}
 		 */
 		query: function(obj) {
@@ -17142,62 +17214,70 @@ nul.load.page.use = {'executionReady': true, 'console': true, 'HTML': true};
  *
  *--------------------------------------------------------------------------*/
 
-nul.load.console = function() {
-	nul.console.frame = $('<iframe id="_nul_console" src="javascript:false;" frameborder="0" scrolling="auto"></iframe>');
+if('undefined'== typeof nul.console) {
+//TODO 5: test for presence of nulConsole.html
+	nul.load.console = function() {
+		nul.console.frame = $('<iframe id="_nul_console" src="javascript:false;" frameborder="0" scrolling="auto"></iframe>');
+		
+		var bdy = $('body');
+		bdy.wrapInner('<div id="_nul_content" class="ui-layout-center" ></div>');
+		bdy.append(nul.console.frame);
+		nul.console.layout = bdy.layout({
+			south : {
+				paneSelector: '#_nul_console',
+				maskIframesOnResize: '#_nul_console',
+				resizable: true,
+				slidable: false,
+				closable: false,
+				
+				//togglerLength_open: 0,
+				//togglerLength_closed: 0,		
+				togglerContent_closed: 'BLAH',
+				
+				togglerTip_closed: 'NUL console',
+				
+				size: 300,
+				initClosed: false,
+				minSize: 150,
+				resizeWhileDragging: true,
+				fxName: "none",
+				onopen_end: nul.console.loadFrame
+			}
+		});
+	};
+	nul.load.console.use = {'operators': true, 'executionReady': true, 'HTML': true};
 	
-	var bdy = $('body');
-	bdy.wrapInner('<div id="_nul_content" class="ui-layout-center" ></div>');
-	bdy.append(nul.console.frame);
-	nul.console.layout = bdy.layout({
-		south : {
-			paneSelector: '#_nul_console',
-			maskIframesOnResize: '#_nul_console',
-			resizable: true,
-			slidable: false,
-			closable: true,
-			
-			//togglerLength_open: 0,
-			//togglerLength_closed: 0,		
-			togglerContent_closed: 'BLAH',
-			
-			togglerTip_closed: 'NUL console',
-			
-			size: 300,
-			initClosed: false,
-			minSize: 150,
-			resizeWhileDragging: true,
-			fxName: "none",
-			onopen_end: nul.console.loadFrame
+	nul.console = {
+		loadFrame: function(pane, $Pane) {
+			if(!nul.console.frame.loaded) {
+				nul.console.frame.attr('src', nul.rootPath + '/web/console/nulConsole.html'); 	//TODO 2: rel src
+				nul.console.frame.ready(nul.console.frameLoaded);
+				nul.console.frame.loaded = true;
+			}
+		},
+		frameLoaded: function() {
+			var cw = nul.console.frame[0].contentWindow;
+			var cde = nul.console.frame[0].contentDocument.documentElement;
+			cw.nul = nul;
+			nul.ex.js.hook(cw);
+			nul.status = nul.console.child.status;
+		},
+		close: function() {
+			nul.console.layout.hide('south');
+			//nul.status = my status line
+		},
+		open: function() {
+			nul.console.layout.show('south');
+			nul.status = nul.console.child.status;
+		},
+		extern: function(nwnd) {
+			nwnd.nul = nul;
+			nul.ex.hook(nwnd);
+			nul.console.layout.hide('south');
 		}
-	});
-};
-nul.load.console.use = {'operators': true, 'executionReady': true, 'HTML': true};
+	};
 
-nul.console = {
-	loadFrame: function(pane, $Pane) {
-		if(!nul.console.frame.loaded) {
-			nul.console.frame.attr('src', nul.rootPath + '/web/console/nulConsole.html'); 	//TODO 2: rel src
-			nul.console.frame.ready(nul.console.frameLoaded);
-			nul.console.frame.loaded = true;
-		}
-	},
-	frameLoaded: function() {
-		var cw = nul.console.frame[0].contentWindow;
-		var cde = nul.console.frame[0].contentDocument.documentElement;
-		cw.nul = nul;
-		nul.ex.js.hook(cw);
-	},
-	close: function() {
-		nul.console.layout.close('south');
-	},
-	extern: function(nwnd) {
-		nwnd.nul = nul;
-		nul.ex.hook(nwnd);
-		nul.console.layout.hide('south');
-	}
-};
-
-
+}
 /*
  * END OF FILE - /trunk/web/console/null.console.js
  */

@@ -167,3 +167,26 @@ a.dependances div {
 .dependances th {
 	border-right: 1px solid black;
 }
+
+.ui-dialog.explain .ui-dialog-titlebar {
+	font-size: 10px;
+	padding:0.1em 0.3em 0.1em 1em;
+}
+
+.explain table.transformation {
+	width: 100%;
+}
+
+.explain table.transformation th {
+	font-weight: normal;
+}
+
+.explain .description {
+	width: 100%;
+	text-align: center;
+}
+
+.explain .argument {
+	float: left;
+	border: 1px solid black;
+}

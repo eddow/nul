@@ -52,7 +52,7 @@ nul.solve = function() {
 			if(!better.enth) rv.push(tdst);	//No way to bring infos by distributing ... TODO O: modify 'distribuable' ?
 			else {	//if some information can be brouhht
 		
-				nul.debugged.info('Resolution')('Possibility', tdst.ior3[better.cases].choices[better.choice]);
+				if(nul.debugged) nul.debugged.info('Resolution')('Possibility', tdst.ior3[better.cases].choices[better.choice]);
 			
 				try {
 					var choosen = tdst.clone();		//The case when the choice is taken
