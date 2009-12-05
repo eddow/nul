@@ -4,6 +4,8 @@
 
 Class [http://nul.googlecode.com/svn/doc/symbols/_nul.xpr.object.html nul.xpr.object].
 
+= Introduction =
+
 The objects are the "values" NUL deal with. From simple object like {{{5}}} to complex ones like sets or {{{the attribute "length" of the unknown local "a"}}}, all the questions and knowledge is represented with Objects.
 
 NUL can deal with 'defined' and 'undefined' objects.
