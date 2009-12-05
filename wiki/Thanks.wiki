@@ -1,4 +1,4 @@
-#summary Special thanks to the developers of the tools and plugins we have used to create NUL
+#summary 3rd parties softwares used by NUL and for NUL
 #labels Featured
 
  * jQuery: jQuery is a fast and concise !JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. We have used jQuery in NUL Consol, NUL !UnitTest, NUL Custom Page Manipulation. More information at [http://jquery.com jQuery's official website].
