@@ -8,8 +8,8 @@
 
 nul.data = new JS.Class(/** @lends nul.data# */{
 	/**
-	 * @constructs
 	 * @class The data-source providing basic data interaction.
+	 * @constructs
 	 */
 	initialize: function(context, index, singleton) {
 		if(singleton) this.extend(singleton);
@@ -65,11 +65,11 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 
 		querier: new JS.Class(nul.browser.bijectif, /** @lends nul.data.querier */{
 			/**
-			 * @constructs
 			 * @class The browser to replace atomic query-dependant values by their queried value
 			 * @extends nul.browser.bijectif
 			 * @param {nul.data.context} context
 			 * @param {Object} prm Parameter given to the queried function
+			 * @constructs
 			 */
 			initialize: function(context, prm) {
 				this.toNode = function() {
@@ -95,8 +95,8 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 
 nul.data.context = new JS.Class(/** @lends nul.data.context# */{
 	/**
-	 * @constructs
 	 * @class The data-source provider
+	 * @constructs
 	 */
 	initialize: function(name, distance, singleton) {
 		/**

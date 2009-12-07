@@ -10358,8 +10358,8 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 	 * @param {String} Name
 	 * @param {Object} applied
 	 * @param {Object[]} args
-	 * @constructs
 	 * @class A described action made by the JavaScript interpreter
+	 * @constructs
 	 */
 	initialize: function(name, applied, args) {
 		this.name = name;
@@ -10633,8 +10633,8 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 	/** @ignore */
 	//include: [JS.Observable],
 	/**
-	 * @constructs
 	 * @class Exception thrown by NUL
+	 * @constructs
 	 */
 	initialize: function(name, msg) {
 		this.message = msg;
@@ -10677,9 +10677,9 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 
 nul.ex.js = new JS.Class(nul.ex, /** @lends nul.ex.js# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class Exception thrown by JavaScript interpreter on JavaScript error.
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(name, msg, url, ln) {
 		this.callSuper(name, msg);
@@ -10702,9 +10702,9 @@ nul.ex.hook(window);
 
 nul.ex.semantic = new JS.Class(nul.ex, /** @lends nul.ex.semantic# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class Exception thrown by the NUL interpreter when the semantic of the NUL text is wrong
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(name, msg, xpr) {
 		this.callSuper();
@@ -10715,9 +10715,9 @@ nul.ex.semantic = new JS.Class(nul.ex, /** @lends nul.ex.semantic# */{
 
 nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class Exception thrown by the NUL interpreter when the syntax of the NUL text is wrong
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(name, msg, tknzr, type) {
 		this.callSuper();
@@ -10740,9 +10740,9 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 
 nul.ex.unk = new JS.Class(nul.ex, /** @lends nul.ex.unk# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class Exception thrown from we don't know where - should never happend (throw assertion or internal then)
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(obj) {
 		this.callSuper('wtf', obj.toString());
@@ -10753,9 +10753,9 @@ nul.ex.unk = new JS.Class(nul.ex, /** @lends nul.ex.unk# */{
 
 nul.ex.internal = new JS.Class(nul.ex, /** @lends nul.ex.internal# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class A bug in the NUL interpreter - ideally never raised
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(msg) {
 		this.callSuper('bug', msg);
@@ -10766,9 +10766,9 @@ nul.ex.internal = new JS.Class(nul.ex, /** @lends nul.ex.internal# */{
 
 nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class A failed assertion - ideally never raised
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(msg) {
 		this.callSuper('assertion', msg);
@@ -10778,9 +10778,9 @@ nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 
 nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class A failed evaluation
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(msg) {
 		this.callSuper('failure');
@@ -10807,8 +10807,8 @@ nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
 //TODO O: don't feed back an object { local:{..deps..} } : directly feed back {..deps..} instead
 nul.dependance = new JS.Class(/** @lends nul.dependance# */{
 	/**
-	 * @constructs
 	 * @class A list of dependancies toward knowledges or external resources
+	 * @constructs
 	 * @param {nul.obj.local|nul.obj.data} dep
 	 */
 	initialize: function(dep) {
@@ -16853,8 +16853,8 @@ nul.obj.operation.Nary = new JS.Class(nul.obj.operation, {
 
 nul.data = new JS.Class(/** @lends nul.data# */{
 	/**
-	 * @constructs
 	 * @class The data-source providing basic data interaction.
+	 * @constructs
 	 */
 	initialize: function(context, index, singleton) {
 		if(singleton) this.extend(singleton);
@@ -16910,11 +16910,11 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 
 		querier: new JS.Class(nul.browser.bijectif, /** @lends nul.data.querier */{
 			/**
-			 * @constructs
 			 * @class The browser to replace atomic query-dependant values by their queried value
 			 * @extends nul.browser.bijectif
 			 * @param {nul.data.context} context
 			 * @param {Object} prm Parameter given to the queried function
+			 * @constructs
 			 */
 			initialize: function(context, prm) {
 				this.toNode = function() {
@@ -16940,8 +16940,8 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 
 nul.data.context = new JS.Class(/** @lends nul.data.context# */{
 	/**
-	 * @constructs
 	 * @class The data-source provider
+	 * @constructs
 	 */
 	initialize: function(name, distance, singleton) {
 		/**
@@ -17096,9 +17096,9 @@ nul.load.ajax.provide = ['nul.globals'];
 nul.data.time = new JS.Class(nul.obj.node, /** @lends nul.data.time# */{
 	/**
 	 * @extends nul.obj.node
-	 * @constructs
 	 * @class The DateTime object as a node with attributes
 	 * @param {Date} dto
+	 * @constructs
 	 */
 	initialize: function(dto) {
 		if(nul.debugged) nul.assert(dto.setFullYear, 'Expected a date as argument');
@@ -17219,10 +17219,10 @@ nul.data.dom = new nul.data.context('DOM', 10);
 
 nul.data.dom.doc = new JS.Class(nul.data,/** @lends nul.data.dom.doc# */{
 	/**
-	 * @constructs
 	 * @class Data access to an XML document
 	 * @extends nul.data
 	 * @param {URL | XMLdocument} doc
+	 * @constructs
 	 */
 	initialize: function(doc) {
 		this.document = doc;
@@ -17233,10 +17233,10 @@ nul.data.dom.doc = new JS.Class(nul.data,/** @lends nul.data.dom.doc# */{
 
 nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element */{
 	/**
-	 * @constructs
 	 * @class Data access to an XML element
 	 * @extends nul.obj.hc
 	 * @param {HTMLElement} element
+	 * @constructs
 	 */
 	initialize: function(element) {
 		this.element = $(element);

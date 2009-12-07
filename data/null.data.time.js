@@ -9,9 +9,9 @@
 nul.data.time = new JS.Class(nul.obj.node, /** @lends nul.data.time# */{
 	/**
 	 * @extends nul.obj.node
-	 * @constructs
 	 * @class The DateTime object as a node with attributes
 	 * @param {Date} dto
+	 * @constructs
 	 */
 	initialize: function(dto) {
 		if(nul.debugged) nul.assert(dto.setFullYear, 'Expected a date as argument');
