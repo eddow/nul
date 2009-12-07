@@ -170,6 +170,12 @@ ul.inheritsList
 	text-align: right;
 	font-size: 10px;
 }
+
+table.classList, tr, td {
+	width:100%;
+	height: 100%;
+	visibility: visible;
+}
 		</style>
 	</head>
 
@@ -186,180 +192,191 @@ ul.inheritsList
 			<div align="center"><a href="../index.html">Class Index</a>
 | <a href="../files.html">File Index</a></div>
 <hr />
+
+<link type="text/css" rel="stylesheet" href="../trunk/3rd/jquery/theme/treeTable.css"></link>
+<script type="text/javascript" src="../trunk/3rd/jquery/jquery.js"></script>
+<script type="text/javascript" src="../trunk/3rd/jquery/treeTable.js"></script>
+
 <h2>Classes</h2>
-<ul class="classList">
+<table class="classList">
 	
-	<li><i><a href="../symbols/__global_.html">_global_</a></i></li>
+	<tr id="_global_" ><td><i><a href="../symbols/__global_.html">_global_</a></i></td></tr>
 	
-	<li><a href="../symbols/_Array.html">Array</a></li>
+	<tr id="Array" ><td><a href="../symbols/_Array.html">Array</a></td></tr>
 	
-	<li><a href="../symbols/_Function.html">Function</a></li>
+	<tr id="Function" ><td><a href="../symbols/_Function.html">Function</a></td></tr>
 	
-	<li><a href="../symbols/_html.html">html</a></li>
+	<tr id="html" ><td><a href="../symbols/_html.html">html</a></td></tr>
 	
-	<li><a href="../symbols/_nul.html">nul</a></li>
+	<tr id="nul" ><td><a href="../symbols/_nul.html">nul</a></td></tr>
 	
-	<li><a href="../symbols/_nul.action.html">nul.action</a></li>
+	<tr id="nul_action" class="child-of-nul"><td><a href="../symbols/_nul.action.html">nul.action</a></td></tr>
 	
-	<li><a href="../symbols/_nul.browser.html">nul.browser</a></li>
+	<tr id="nul_browser" class="child-of-nul"><td><a href="../symbols/_nul.browser.html">nul.browser</a></td></tr>
 	
-	<li><a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a></li>
+	<tr id="nul_browser_bijectif" class="child-of-nul_browser"><td><a href="../symbols/_nul.browser.bijectif.html">nul.browser.bijectif</a></td></tr>
 	
-	<li><a href="../symbols/_nul.browser.bijectif.evolution.html">nul.browser.bijectif.evolution</a></li>
+	<tr id="nul_browser_bijectif_evolution" class="child-of-nul_browser_bijectif"><td><a href="../symbols/_nul.browser.bijectif.evolution.html">nul.browser.bijectif.evolution</a></td></tr>
 	
-	<li><a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a></li>
+	<tr id="nul_browser_cached" class="child-of-nul_browser"><td><a href="../symbols/_nul.browser.cached.html">nul.browser.cached</a></td></tr>
 	
-	<li><a href="../symbols/_nul.compiled.html">nul.compiled</a></li>
+	<tr id="nul_compiled" class="child-of-nul"><td><a href="../symbols/_nul.compiled.html">nul.compiled</a></td></tr>
 	
-	<li><a href="../symbols/_nul.compiler.html">nul.compiler</a></li>
+	<tr id="nul_compiler" class="child-of-nul"><td><a href="../symbols/_nul.compiler.html">nul.compiler</a></td></tr>
 	
-	<li><a href="../symbols/_nul.data.html">nul.data</a></li>
+	<tr id="nul_data" class="child-of-nul"><td><a href="../symbols/_nul.data.html">nul.data</a></td></tr>
 	
-	<li><a href="../symbols/_nul.data.ajax.html">nul.data.ajax</a></li>
+	<tr id="nul_data_ajax" class="child-of-nul_data"><td><a href="../symbols/_nul.data.ajax.html">nul.data.ajax</a></td></tr>
 	
-	<li><a href="../symbols/_nul.data.context.html">nul.data.context</a></li>
+	<tr id="nul_data_context" class="child-of-nul_data"><td><a href="../symbols/_nul.data.context.html">nul.data.context</a></td></tr>
 	
-	<li><a href="../symbols/_nul.data.context.local.html">nul.data.context.local</a></li>
+	<tr id="nul_data_context_local" class="child-of-nul_data_context"><td><a href="../symbols/_nul.data.context.local.html">nul.data.context.local</a></td></tr>
 	
-	<li><a href="../symbols/_nul.data.dom.html">nul.data.dom</a></li>
+	<tr id="nul_data_dom" class="child-of-nul_data"><td><a href="../symbols/_nul.data.dom.html">nul.data.dom</a></td></tr>
 	
-	<li><a href="../symbols/_nul.data.dom.element.html">nul.data.dom.element</a></li>
+	<tr id="nul_data_dom_doc" class="child-of-nul_data_dom"><td><a href="../symbols/_nul.data.dom.doc.html">nul.data.dom.doc</a></td></tr>
 	
-	<li><a href="../symbols/_nul.data.dom.url.html">nul.data.dom.url</a></li>
+	<tr id="nul_data_dom_element" class="child-of-nul_data_dom"><td><a href="../symbols/_nul.data.dom.element.html">nul.data.dom.element</a></td></tr>
 	
-	<li><a href="../symbols/_nul.data.querier.html">nul.data.querier</a></li>
+	<tr id="nul_data_querier" class="child-of-nul_data"><td><a href="../symbols/_nul.data.querier.html">nul.data.querier</a></td></tr>
 	
-	<li><a href="../symbols/_nul.data.time.html">nul.data.time</a></li>
+	<tr id="nul_data_time" class="child-of-nul_data"><td><a href="../symbols/_nul.data.time.html">nul.data.time</a></td></tr>
 	
-	<li><a href="../symbols/_nul.debugged.html">nul.debugged</a></li>
+	<tr id="nul_debugged" class="child-of-nul"><td><a href="../symbols/_nul.debugged.html">nul.debugged</a></td></tr>
 	
-	<li><a href="../symbols/_nul.dependance.html">nul.dependance</a></li>
+	<tr id="nul_dependance" class="child-of-nul"><td><a href="../symbols/_nul.dependance.html">nul.dependance</a></td></tr>
 	
-	<li><a href="../symbols/_nul.ex.html">nul.ex</a></li>
+	<tr id="nul_ex" class="child-of-nul"><td><a href="../symbols/_nul.ex.html">nul.ex</a></td></tr>
 	
-	<li><a href="../symbols/_nul.ex.assert.html">nul.ex.assert</a></li>
+	<tr id="nul_ex_assert" class="child-of-nul_ex"><td><a href="../symbols/_nul.ex.assert.html">nul.ex.assert</a></td></tr>
 	
-	<li><a href="../symbols/_nul.ex.failure.html">nul.ex.failure</a></li>
+	<tr id="nul_ex_failure" class="child-of-nul_ex"><td><a href="../symbols/_nul.ex.failure.html">nul.ex.failure</a></td></tr>
 	
-	<li><a href="../symbols/_nul.ex.internal.html">nul.ex.internal</a></li>
+	<tr id="nul_ex_internal" class="child-of-nul_ex"><td><a href="../symbols/_nul.ex.internal.html">nul.ex.internal</a></td></tr>
 	
-	<li><a href="../symbols/_nul.ex.js.html">nul.ex.js</a></li>
+	<tr id="nul_ex_js" class="child-of-nul_ex"><td><a href="../symbols/_nul.ex.js.html">nul.ex.js</a></td></tr>
 	
-	<li><a href="../symbols/_nul.ex.semantic.html">nul.ex.semantic</a></li>
+	<tr id="nul_ex_semantic" class="child-of-nul_ex"><td><a href="../symbols/_nul.ex.semantic.html">nul.ex.semantic</a></td></tr>
 	
-	<li><a href="../symbols/_nul.ex.syntax.html">nul.ex.syntax</a></li>
+	<tr id="nul_ex_syntax" class="child-of-nul_ex"><td><a href="../symbols/_nul.ex.syntax.html">nul.ex.syntax</a></td></tr>
 	
-	<li><a href="../symbols/_nul.ex.unk.html">nul.ex.unk</a></li>
+	<tr id="nul_ex_unk" class="child-of-nul_ex"><td><a href="../symbols/_nul.ex.unk.html">nul.ex.unk</a></td></tr>
 	
-	<li><a href="../symbols/_nul.execution.html">nul.execution</a></li>
+	<tr id="nul_execution" class="child-of-nul"><td><a href="../symbols/_nul.execution.html">nul.execution</a></td></tr>
 	
-	<li><a href="../symbols/_nul.execution.benchmark.html">nul.execution.benchmark</a></li>
+	<tr id="nul_execution_benchmark" class="child-of-nul_execution"><td><a href="../symbols/_nul.execution.benchmark.html">nul.execution.benchmark</a></td></tr>
 	
-	<li><a href="../symbols/_nul.execution.name.html">nul.execution.name</a></li>
+	<tr id="nul_execution_name" class="child-of-nul_execution"><td><a href="../symbols/_nul.execution.name.html">nul.execution.name</a></td></tr>
 	
-	<li><a href="../symbols/_nul.expression.html">nul.expression</a></li>
+	<tr id="nul_expression" class="child-of-nul"><td><a href="../symbols/_nul.expression.html">nul.expression</a></td></tr>
 	
-	<li><a href="../symbols/_nul.globals.library.html">nul.globals.library</a></li>
+	<tr id="nul_globals_library" class="child-of-nul_globals"><td><a href="../symbols/_nul.globals.library.html">nul.globals.library</a></td></tr>
 	
-	<li><a href="../symbols/_nul.globals.library.attributes.file.html">nul.globals.library.attributes.file</a></li>
+	<tr id="nul_globals_library_attributes_file" class="child-of-nul_globals_library_attributes"><td><a href="../symbols/_nul.globals.library.attributes.file.html">nul.globals.library.attributes.file</a></td></tr>
 	
-	<li><a href="../symbols/_nul.globals.time.html">nul.globals.time</a></li>
+	<tr id="nul_globals_time" class="child-of-nul_globals"><td><a href="../symbols/_nul.globals.time.html">nul.globals.time</a></td></tr>
 	
-	<li><a href="../symbols/_nul.globals.time.attributes.now.html">nul.globals.time.attributes.now</a></li>
+	<tr id="nul_globals_time#attributes_now" class="child-of-nul_globals_time#attributes"><td><a href="../symbols/_nul.globals.time%23attributes.now.html">nul.globals.time#attributes.now</a></td></tr>
 	
-	<li><a href="../symbols/_nul.globals.xml.html">nul.globals.xml</a></li>
+	<tr id="nul_globals_xml" class="child-of-nul_globals"><td><a href="../symbols/_nul.globals.xml.html">nul.globals.xml</a></td></tr>
 	
-	<li><a href="../symbols/_nul.klg.html">nul.klg</a></li>
+	<tr id="nul_klg" class="child-of-nul"><td><a href="../symbols/_nul.klg.html">nul.klg</a></td></tr>
 	
-	<li><a href="../symbols/_nul.klg.eqClass.html">nul.klg.eqClass</a></li>
+	<tr id="nul_klg_eqClass" class="child-of-nul_klg"><td><a href="../symbols/_nul.klg.eqClass.html">nul.klg.eqClass</a></td></tr>
 	
-	<li><a href="../symbols/_nul.klg.ior3.html">nul.klg.ior3</a></li>
+	<tr id="nul_klg_ior3" class="child-of-nul_klg"><td><a href="../symbols/_nul.klg.ior3.html">nul.klg.ior3</a></td></tr>
 	
-	<li><a href="../symbols/_nul.klg.ncndtnl.html">nul.klg.ncndtnl</a></li>
+	<tr id="nul_klg_ncndtnl" class="child-of-nul_klg"><td><a href="../symbols/_nul.klg.ncndtnl.html">nul.klg.ncndtnl</a></td></tr>
 	
-	<li><a href="../symbols/_nul.klg.represent.html">nul.klg.represent</a></li>
+	<tr id="nul_klg_represent" class="child-of-nul_klg"><td><a href="../symbols/_nul.klg.represent.html">nul.klg.represent</a></td></tr>
 	
-	<li><a href="../symbols/_nul.klg.stepUp.html">nul.klg.stepUp</a></li>
+	<tr id="nul_klg_stepUp" class="child-of-nul_klg"><td><a href="../symbols/_nul.klg.stepUp.html">nul.klg.stepUp</a></td></tr>
 	
-	<li><a href="../symbols/_nul.load.html">nul.load</a></li>
+	<tr id="nul_load" class="child-of-nul"><td><a href="../symbols/_nul.load.html">nul.load</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.html">nul.obj</a></li>
+	<tr id="nul_obj" class="child-of-nul"><td><a href="../symbols/_nul.obj.html">nul.obj</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.bool.html">nul.obj.bool</a></li>
+	<tr id="nul_obj_bool" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.bool.html">nul.obj.bool</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.data.html">nul.obj.data</a></li>
+	<tr id="nul_obj_data" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.data.html">nul.obj.data</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.defined.html">nul.obj.defined</a></li>
+	<tr id="nul_obj_defined" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.defined.html">nul.obj.defined</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.empty.html">nul.obj.empty</a></li>
+	<tr id="nul_obj_empty" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.empty.html">nul.obj.empty</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.hc.html">nul.obj.hc</a></li>
+	<tr id="nul_obj_hc" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.hc.html">nul.obj.hc</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.hcSet.html">nul.obj.hcSet</a></li>
+	<tr id="nul_obj_hcSet" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.hcSet.html">nul.obj.hcSet</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.lambda.html">nul.obj.lambda</a></li>
+	<tr id="nul_obj_lambda" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.lambda.html">nul.obj.lambda</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.list.html">nul.obj.list</a></li>
+	<tr id="nul_obj_list" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.list.html">nul.obj.list</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.litteral.html">nul.obj.litteral</a></li>
+	<tr id="nul_obj_litteral" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.litteral.html">nul.obj.litteral</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.litteral.boolean.html">nul.obj.litteral.boolean</a></li>
+	<tr id="nul_obj_litteral_boolean" class="child-of-nul_obj_litteral"><td><a href="../symbols/_nul.obj.litteral.boolean.html">nul.obj.litteral.boolean</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.litteral.number.html">nul.obj.litteral.number</a></li>
+	<tr id="nul_obj_litteral_number" class="child-of-nul_obj_litteral"><td><a href="../symbols/_nul.obj.litteral.number.html">nul.obj.litteral.number</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.litteral.string.html">nul.obj.litteral.string</a></li>
+	<tr id="nul_obj_litteral_string" class="child-of-nul_obj_litteral"><td><a href="../symbols/_nul.obj.litteral.string.html">nul.obj.litteral.string</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.local.html">nul.obj.local</a></li>
+	<tr id="nul_obj_local" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.local.html">nul.obj.local</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.node.html">nul.obj.node</a></li>
+	<tr id="nul_obj_node" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.node.html">nul.obj.node</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.number.html">nul.obj.number</a></li>
+	<tr id="nul_obj_number" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.number.html">nul.obj.number</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.operation.html">nul.obj.operation</a></li>
+	<tr id="nul_obj_operation" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.operation.html">nul.obj.operation</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.pair.html">nul.obj.pair</a></li>
+	<tr id="nul_obj_pair" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.pair.html">nul.obj.pair</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.range.html">nul.obj.range</a></li>
+	<tr id="nul_obj_range" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.range.html">nul.obj.range</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></li>
+	<tr id="nul_obj_string" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.string.html">nul.obj.string</a></td></tr>
 	
-	<li><a href="../symbols/_nul.obj.undefnd.html">nul.obj.undefnd</a></li>
+	<tr id="nul_obj_undefnd" class="child-of-nul_obj"><td><a href="../symbols/_nul.obj.undefnd.html">nul.obj.undefnd</a></td></tr>
 	
-	<li><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></li>
+	<tr id="nul_tokenizer" class="child-of-nul"><td><a href="../symbols/_nul.tokenizer.html">nul.tokenizer</a></td></tr>
 	
-	<li><a href="../symbols/_nul.txt.html">nul.txt</a></li>
+	<tr id="nul_txt" class="child-of-nul"><td><a href="../symbols/_nul.txt.html">nul.txt</a></td></tr>
 	
-	<li><a href="../symbols/_nul.txt.flat.html">nul.txt.flat</a></li>
+	<tr id="nul_txt_flat" class="child-of-nul_txt"><td><a href="../symbols/_nul.txt.flat.html">nul.txt.flat</a></td></tr>
 	
-	<li><a href="../symbols/_nul.txt.flat.draw.html">nul.txt.flat.draw</a></li>
+	<tr id="nul_txt_flat_draw" class="child-of-nul_txt_flat"><td><a href="../symbols/_nul.txt.flat.draw.html">nul.txt.flat.draw</a></td></tr>
 	
-	<li><a href="../symbols/_nul.txt.html.html">nul.txt.html</a></li>
+	<tr id="nul_txt_html" class="child-of-nul_txt"><td><a href="../symbols/_nul.txt.html.html">nul.txt.html</a></td></tr>
 	
-	<li><a href="../symbols/_nul.txt.html.draw.html">nul.txt.html.draw</a></li>
+	<tr id="nul_txt_html_draw" class="child-of-nul_txt_html"><td><a href="../symbols/_nul.txt.html.draw.html">nul.txt.html.draw</a></td></tr>
 	
-	<li><a href="../symbols/_nul.txt.node.html">nul.txt.node</a></li>
+	<tr id="nul_txt_node" class="child-of-nul_txt"><td><a href="../symbols/_nul.txt.node.html">nul.txt.node</a></td></tr>
 	
-	<li><a href="../symbols/_nul.txt.node.draw.html">nul.txt.node.draw</a></li>
+	<tr id="nul_txt_node_draw" class="child-of-nul_txt_node"><td><a href="../symbols/_nul.txt.node.draw.html">nul.txt.node.draw</a></td></tr>
 	
-	<li><a href="../symbols/_nul.understanding.html">nul.understanding</a></li>
+	<tr id="nul_understanding" class="child-of-nul"><td><a href="../symbols/_nul.understanding.html">nul.understanding</a></td></tr>
 	
-	<li><a href="../symbols/_nul.understanding.base.html">nul.understanding.base</a></li>
+	<tr id="nul_understanding_base" class="child-of-nul_understanding"><td><a href="../symbols/_nul.understanding.base.html">nul.understanding.base</a></td></tr>
 	
-	<li><a href="../symbols/_nul.understanding.base.set.html">nul.understanding.base.set</a></li>
+	<tr id="nul_understanding_base_set" class="child-of-nul_understanding_base"><td><a href="../symbols/_nul.understanding.base.set.html">nul.understanding.base.set</a></td></tr>
 	
-	<li><a href="../symbols/_nul.xpr.html">nul.xpr</a></li>
+	<tr id="nul_xpr" class="child-of-nul"><td><a href="../symbols/_nul.xpr.html">nul.xpr</a></td></tr>
 	
-	<li><a href="../symbols/_nul.xpr.failure.html">nul.xpr.failure</a></li>
+	<tr id="nul_xpr_failure" class="child-of-nul_xpr"><td><a href="../symbols/_nul.xpr.failure.html">nul.xpr.failure</a></td></tr>
 	
-	<li><a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a></li>
+	<tr id="nul_xpr_knowledge" class="child-of-nul_xpr"><td><a href="../symbols/_nul.xpr.knowledge.html">nul.xpr.knowledge</a></td></tr>
 	
-	<li><a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a></li>
+	<tr id="nul_xpr_object" class="child-of-nul_xpr"><td><a href="../symbols/_nul.xpr.object.html">nul.xpr.object</a></td></tr>
 	
-	<li><a href="../symbols/_nul.xpr.object.reself.html">nul.xpr.object.reself</a></li>
+	<tr id="nul_xpr_object_reself" class="child-of-nul_xpr_object"><td><a href="../symbols/_nul.xpr.object.reself.html">nul.xpr.object.reself</a></td></tr>
 	
-	<li><a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a></li>
+	<tr id="nul_xpr_possible" class="child-of-nul_xpr"><td><a href="../symbols/_nul.xpr.possible.html">nul.xpr.possible</a></td></tr>
 	
-</ul>
+</table>
+
+<script type="text/javascript">
+	$('table.classList').treeTable({ indent: 16, initialState: 'collapsed' });
+</script>
+
+
 <hr />
 			<!-- end publish.classesIndex -->
 		</div>
@@ -375,7 +392,7 @@ ul.inheritsList
 			<p class="description">
 				
 			
-				
+				Understanding context informations
 				
 				
 					<br /><i>Defined in: </i> <a href="http://code.google.com/p/nul/source/browse/trunk//lng/txt/in/null.understand.js">/lng/txt/in/null.understand.js</a>.
@@ -399,7 +416,7 @@ ul.inheritsList
 							<div class="fixedFont">
 								<b><a href="../symbols/_nul.understanding.base.html#constructor">nul.understanding.base</a></b>(prntUb, klgName)
 							</div>
-							<div class="description">Understanding context' informations</div>
+							<div class="description"></div>
 						</td>
 					</tr>
 				</tbody>
@@ -471,7 +488,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="description">
-					Understanding context' informations
+					
 					
 				</div>
 				
@@ -662,7 +679,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Tue Dec 01 2009 15:11:06 GMT+0200 (EET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.0 on Mon Dec 07 2009 13:53:56 GMT+0200 (EET)
 		</div>
 	</body>
 </html>
