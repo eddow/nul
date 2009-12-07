@@ -15,10 +15,10 @@ nul.data.dom = new nul.data.context('DOM', 10);
 
 nul.data.dom.doc = new JS.Class(nul.data,/** @lends nul.data.dom.doc# */{
 	/**
-	 * @constructs
 	 * @class Data access to an XML document
 	 * @extends nul.data
 	 * @param {URL | XMLdocument} doc
+	 * @constructs
 	 */
 	initialize: function(doc) {
 		this.document = doc;
@@ -29,10 +29,10 @@ nul.data.dom.doc = new JS.Class(nul.data,/** @lends nul.data.dom.doc# */{
 
 nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element */{
 	/**
-	 * @constructs
 	 * @class Data access to an XML element
 	 * @extends nul.obj.hc
 	 * @param {HTMLElement} element
+	 * @constructs
 	 */
 	initialize: function(element) {
 		this.element = $(element);

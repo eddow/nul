@@ -11,8 +11,8 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 	 * @param {String} Name
 	 * @param {Object} applied
 	 * @param {Object[]} args
-	 * @constructs
 	 * @class A described action made by the JavaScript interpreter
+	 * @constructs
 	 */
 	initialize: function(name, applied, args) {
 		this.name = name;

@@ -10,8 +10,8 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 	/** @ignore */
 	//include: [JS.Observable],
 	/**
-	 * @constructs
 	 * @class Exception thrown by NUL
+	 * @constructs
 	 */
 	initialize: function(name, msg) {
 		this.message = msg;
@@ -54,9 +54,9 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 
 nul.ex.js = new JS.Class(nul.ex, /** @lends nul.ex.js# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class Exception thrown by JavaScript interpreter on JavaScript error.
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(name, msg, url, ln) {
 		this.callSuper(name, msg);
@@ -79,9 +79,9 @@ nul.ex.hook(window);
 
 nul.ex.semantic = new JS.Class(nul.ex, /** @lends nul.ex.semantic# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class Exception thrown by the NUL interpreter when the semantic of the NUL text is wrong
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(name, msg, xpr) {
 		this.callSuper();
@@ -92,9 +92,9 @@ nul.ex.semantic = new JS.Class(nul.ex, /** @lends nul.ex.semantic# */{
 
 nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class Exception thrown by the NUL interpreter when the syntax of the NUL text is wrong
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(name, msg, tknzr, type) {
 		this.callSuper();
@@ -117,9 +117,9 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 
 nul.ex.unk = new JS.Class(nul.ex, /** @lends nul.ex.unk# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class Exception thrown from we don't know where - should never happend (throw assertion or internal then)
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(obj) {
 		this.callSuper('wtf', obj.toString());
@@ -130,9 +130,9 @@ nul.ex.unk = new JS.Class(nul.ex, /** @lends nul.ex.unk# */{
 
 nul.ex.internal = new JS.Class(nul.ex, /** @lends nul.ex.internal# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class A bug in the NUL interpreter - ideally never raised
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(msg) {
 		this.callSuper('bug', msg);
@@ -143,9 +143,9 @@ nul.ex.internal = new JS.Class(nul.ex, /** @lends nul.ex.internal# */{
 
 nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class A failed assertion - ideally never raised
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(msg) {
 		this.callSuper('assertion', msg);
@@ -155,9 +155,9 @@ nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 
 nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
 	/**
-	 * @extend nul.ex
-	 * @constructs
 	 * @class A failed evaluation
+	 * @constructs
+	 * @extend nul.ex
 	 */
 	initialize: function(msg) {
 		this.callSuper('failure');
