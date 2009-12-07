@@ -6,7 +6,6 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**@namespace*/
 nul.understanding = {
 	/** Used as return-value local naming @constant */
 	rvName : '&crarr;',
@@ -23,14 +22,11 @@ nul.understanding = {
 			try { return new nul.understanding.base(ub).understand(this); }
 			catch(err) { nul.failed(err); }
 		});
-	},
-	/**
-	 * Generic expression (operator and operands) understanding
-	 * @example a <b>+</b> b <b>+</b> c
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	expression: function(ub) {
+	}
+};
+
+nul.compiled.node.extend({
+	expression: new JS.Class (nul.compiled.node, {understand: function(ub) {
 		var ops;
 		if('[]'== this.operator)
 			return ub.klg.hesitate(nul.understanding.possibles(this.operands, ub));
@@ -38,7 +34,6 @@ nul.understanding = {
 		var ops = map(this.operands, function(n, o) {
 			return this.understand(ub);
 		});
-
 		switch(this.operator)
 		{
 		case '+':
@@ -65,39 +60,25 @@ nul.understanding = {
 			ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
 			return rv;
 		default:
-			nul.ex.internal('Unknown operator: "'+operator+'"');
+			nul.ex.internal('Unknown operator: "'+this.operator+'"');
 		}
-	}.describe('Understand'),
-	/**
-	 * Precedor understanding : a precedor and an operand
-	 * @example <b>++</b>operand
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	preceded: function(ub) {
+	}}),
+	preceded: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return ub.klg.attribute(this.operand.understand(ub), this.operator+' ');
-	}.describe('Understand'),
-	/**
-	 * Postcedor understanding : a postcedor and an operand
-	 * @example operand<b>++</b>
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	postceded: function(ub) {
+	}}),
+	postceded: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		switch(this.operator) {
 		case ',.': return nul.obj.pair.list(null, [this.operand.understand(ub)]);
 		default: return ub.klg.attribute(this.operand.understand(ub), ' '+this.operator);
 		}
-	}.describe('Understand'),
-	/**
-	 * Atom understanding : a type and a value
-	 * @example <b>"</b>quoted text<b>"</b>
-	 * @example 42
-	 * @example identifier
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	atom: function(ub) {
+	}}),
+	application: new JS.Class (nul.compiled.node, {understand: function(ub){
+		return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
+	}}),
+	taking: new JS.Class (nul.compiled.node, {understand: function (ub) {
+		return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
+	}}),
+	atom: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		var value;
 		switch(this.type)
 		{
@@ -119,89 +100,31 @@ nul.understanding = {
 			nul.ex.internal('unknown atom type: ' + this.type + ' - ' + this.value);
 		}
 		return nul.obj.litteral.make(value);
-	}.describe('Understand'),
-	/**
-	 * Application understanding : two symbols separated by a space
-	 * @example item applied
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	application: function(ub) {
-		return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
-	}.describe('Understand'),
-	/**
-	 * 'Taking' understanding
-	 * @example item<b>[</b>token<b>]</b>
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	taking: function(ub) {
-		return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
-	}.describe('Understand'),
-	/**
-	 * 'Set' understanding
-	 * @example <b>{</b>content<b>}</b>
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.obj.pair|nul.obj.empty}
-	 */
-	set: function(ub) {
- 		if(!this.content) return nul.obj.empty;
-		return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
-	}.describe('Understand'),
-
-	/**
-	 * Local-definition value understanding
-	 * @example <b>\/</b>decl value
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	definition: function(ub) {
+	}}),
+	definition: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		if('_'== this.decl) nul.ex.semantic('JKD', 'Cannot declare joker !');
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
-	}.describe('Understand'),
-
-	/**
-	 * XML-node understanding
-	 * @example <b>&lt;</b>node <b>/&gt</b>;
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.obj.node}
-	 */
-	xml: function(ub) {
+	}}),
+	set: new JS.Class (nul.compiled.node, {understand: function (ub) {
+		if(!this.content) return nul.obj.empty;
+		return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
+	}}),
+	xml: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return new nul.obj.node(this.node,												//tag
-			map(this.attributes, function() { return this.understand(ub); }),			//attributes
-			nul.obj.pair.list(null, nul.understanding.possibles(this.content, ub))		//content
-		);
-	}.describe('Understand'),
-
-	/**
-	 * Composition understanding
-	 * @example object <b>::</b>aName value
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	composed: function(ub) {
+		map(this.attributes, function() { return this.understand(ub); }),			//attributes
+		nul.obj.pair.list(null, nul.understanding.possibles(this.content, ub)));		//content
+	}}),
+	composed: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return ub.klg.attributed(this.object.understand(ub), this.aName, this.value.understand(ub));
-	}.describe('Understand'),
-	/**
-	 * Objective value understanding
-	 * @example applied<b>.</b>lcl
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	objectivity: function(ub) {
+	}}),
+	objectivity: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return ub.klg.attribute(this.applied.understand(ub), this.lcl);
-	}.describe('Understand'),
-	/**
-	 * Hardcoded JS value
-	 * @example <b><{</b> value = nul.obj.litteral.make(34) <b>}></b>
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	hardcode: function(ub) {
+	}}),
+	hardcode: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return this.value;
-	}.describe('Understand')
-};
+	}})
+});
 
 nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 	/**

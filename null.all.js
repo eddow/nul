@@ -10004,9 +10004,10 @@ nul.loading = function() {
 	$('head script').each(function(){
 		var spl = this.src.split('null.');
 		if(1< spl.length) {
-			nul.rootPath = spl[0].split('/');
+			nul.rootPath = spl[0];
+			                   /*.split('/');
 			nul.rootPath.pop(); nul.rootPath.pop();
-			nul.rootPath = nul.rootPath.join('/');
+			nul.rootPath = nul.rootPath.join('/');*/
 			nul.loading.fixConsole($(this).attr('noconsole'));
 		}
 	});
@@ -11315,117 +11316,6 @@ nul.load.operators = function() {
 //TODO 3: parser les CDATA et <!-- -->
 
 /**
- * Defines a set of compiled items
- * @class
- */
-nul.compiled = {
-	/**
-	 * @name understand
-	 * @function
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-		
-	/**
-	 * @param {String} oprtr
-	 * @param {nul.compiled[]} oprnds
-	 * @return {nul.compiled}
-	 */
-	expression: function(oprtr, oprnds) {
-		return { operator: oprtr, operands: oprnds, understand: nul.understanding.expression };
-	},
-	/**
-	 * @param {String} oprtr
-	 * @param {nul.compiled} oprnd
-	 * @return {nul.compiled}
-	 */
-	preceded: function(oprtr, oprnd) {
-		return { operator: oprtr, operand: oprnd, understand: nul.understanding.preceded };
-	},
-	/**
-	 * @param {String} oprtr
-	 * @param {nul.compiled} oprnd
-	 * @return {nul.compiled}
-	 */
-	postceded: function(oprtr, oprnd) {
-		return { operator: oprtr, operand: oprnd, understand: nul.understanding.postceded };
-	},
-	/**
-	 * @param {nul.compiled} item
-	 * @param {nul.compiled} applied
-	 * @return {nul.compiled}
-	 */
-	application: function(item, applied) {
-		return { item: item, applied: applied, understand: nul.understanding.application };
-	},
-	/**
-	 * @param {nul.compiled} item
-	 * @param {nul.compiled} token
-	 * @return {nul.compiled}
-	 */
-	taking: function(item, token) {
-		return { item: item, token: token, understand: nul.understanding.taking };
-	},
-	/**
-	 * @param {String} type
-	 * @param {Litteral} value
-	 * @return {nul.compiled}
-	 */
-	atom: function(type, value) {
-		return { type: type, value: value, understand: nul.understanding.atom };
-	},
-	/**
-	 * @param {String} decl
-	 * @param {nul.compiled} value
-	 * @return {nul.compiled}
-	 */
-	definition: function(decl, value) {
-		return { decl: decl, value: value, understand: nul.understanding.definition };
-	},
-	/**
-	 * @param {nul.compiled} content
-	 * @param {String} selfRef
-	 * @return {nul.compiled}
-	 */
-	set: function(content, selfRef) {
-		return { content: content, selfRef: selfRef, understand: nul.understanding.set };
-	},
-	/**
-	 * @param {String} node
-	 * @param {nul.compiled[String]} attrs
-	 * @param {nul.compiled[]} content
-	 * @return {nul.compiled}
-	 */
-	xml: function(node, attrs, content) {
-		return { node: node, attributes: attrs, content: content, understand: nul.understanding.xml };
-	},
-	/**
-	 * @param {nul.compiled} obj
-	 * @param {String} anm
-	 * @param {nul.compiled} v
-	 * @return {nul.compiled}
-	 */
-	composed: function(obj, anm, val) {
-		return { object: obj, aName: anm, value: val, understand: nul.understanding.composed };
-	},
-	/**
-	 * @param {nul.compiled} appl
-	 * @param {String} lcl
-	 * @return {nul.compiled}
-	 */
-	objectivity: function(appl, lcl) {
-		return { applied: appl, lcl: lcl, understand: nul.understanding.objectivity };
-	},
-	/**
-	 * @param {nul.xpr.object} val
-	 * @return {nul.compiled}
-	 */
-	hardcode: function(val) {
-		return { value: val, understand: nul.understanding.hardcode };
-	}
-};
-
-/**
  * Recognised operators sorted by precedance
  * @type [String,String][]
  * @constant
@@ -11460,6 +11350,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	 */
 	initialize: function(txt) {
 		this.tknzr = new nul.tokenizer(txt);
+		this.compiled = new nul.compiled.factory;
 	},
 	/**
 	 * Requires the next token to be an alphanumeric
@@ -11533,8 +11424,8 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 			if(0== rv.length) nul.ex.internal('No components and an operator');
 			if(1== rv.length && !rv.follow) return rv[0];
 			if('ceded'== rv[1]) firstOp = 
-				this.expression(0, nul.compiled.postceded(oprtr[0], rv[0]));
-			else firstOp = nul.compiled.expression(oprtr[0], rv);
+				this.expression(0, this.compiled.postceded(oprtr[0], rv[0]));
+			else firstOp = this.compiled.expression(oprtr[0], rv);
 		} while('l'== oprtr[1]);
 		return firstOp;
 	},
@@ -11549,15 +11440,15 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 		do
 		{
 			var tst;
-			if(this.tknzr.take('.')) rv = nul.compiled.objectivity(rv, this.alphanum()); 
+			if(this.tknzr.take('.')) rv = this.compiled.objectivity(rv, this.alphanum()); 
 			else if('[]'!= this.tknzr.token.value && this.tknzr.take('['))
-				rv = nul.compiled.taking(rv, this.tknzr.rawExpect(']', this.expression())); 				
-			else if(tst = this.applied('lax')) rv = nul.compiled.application(rv, tst);
+				rv = this.compiled.taking(rv, this.tknzr.rawExpect(']', this.expression())); 				
+			else if(tst = this.applied('lax')) rv = this.compiled.application(rv, tst);
 			else if(this.tknzr.take('::')) {
 				var anm = this.tknzr.rawTake('(') ?
 					this.tknzr.rawExpect(')', this.tknzr.fly(')')) :
 					this.alphanum();
-				rv = nul.compiled.composed(rv, anm, this.item());					
+				rv = this.compiled.composed(rv, anm, this.item());					
 			}
 			
 			else return rv;
@@ -11574,7 +11465,7 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 		{
 			var aTxt = this.tknzr.fly('<');
 			if(null=== aTxt) nul.ex.syntax('XML', 'XML node not closed', this.tknzr);
-			if(''!== aTxt) comps.push(nul.compiled.atom('string', aTxt.replace(/\uffff/g, '\n')));
+			if(''!== aTxt) comps.push(this.compiled.atom('string', aTxt.replace(/\uffff/g, '\n')));
 			if(this.tknzr.rawTake('<(')) comps.push(this.tknzr.rawExpect(')>',this.expression()));
 			else if(this.tknzr.rawTake('</')) return comps;
 			else if(this.tknzr.rawTake('<')) comps.push(this.xml());
@@ -11593,11 +11484,11 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 			this.tknzr.expect('=');
 			attrs[attr.value] = this.item();
 		}
-		if(this.tknzr.rawTake('/>')) return nul.compiled.xml(node, attrs, []);
+		if(this.tknzr.rawTake('/>')) return this.compiled.xml(node, attrs, []);
 		this.tknzr.rawExpect('>');
 		var comps = this.innerXML();
 		this.tknzr.expect(node);
-		return this.tknzr.rawExpect('>', nul.compiled.xml(node, attrs, comps));
+		return this.tknzr.rawExpect('>', this.compiled.xml(node, attrs, comps));
 	},
 	/**
 	 * Read an item without precedance
@@ -11609,19 +11500,19 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 		var rv;
 		if('eof'!= this.tknzr.token.type) {
 			//hard-code
-			if(this.tknzr.rawTake('<{')) return nul.compiled.hardcode(eval(this.tknzr.rawExpect('}>', this.tknzr.fly('}>'))));
+			if(this.tknzr.rawTake('<{')) return this.compiled.hardcode(eval(this.tknzr.rawExpect('}>', this.tknzr.fly('}>'))));
 			
 			//declaration
-			if(this.tknzr.take('\\/')) return nul.compiled.definition(this.alphanum(), this.expression());
+			if(this.tknzr.take('\\/')) return this.compiled.definition(this.alphanum(), this.expression());
 			//Singletons
 			if(this.tknzr.take('{')) {
-				if(this.tknzr.take('}')) return nul.compiled.set();
+				if(this.tknzr.take('}')) return this.compiled.set();
 				var sr;
 				if(this.tknzr.take(':')) sr = this.alphanum();
-				return this.tknzr.expect('}', nul.compiled.set(this.expression(), sr));
+				return this.tknzr.expect('}', this.compiled.set(this.expression(), sr));
 			}
 			//Global' attribute
-			if(this.tknzr.take('.')) return nul.compiled.objectivity(nul.compiled.atom('alphanum', ''), this.alphanum());
+			if(this.tknzr.take('.')) return this.compiled.objectivity(this.compiled.atom('alphanum', ''), this.alphanum());
 			//Parenthesis
 			if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
 			if(!lax) {
@@ -11629,13 +11520,13 @@ nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 				for(var p= 0; p<nul.operators.length; ++p) {
 					var oprtr = nul.operators[p];
 					if('p'== oprtr[1] && this.tknzr.take(oprtr[0]))
-						return nul.compiled.preceded(oprtr[0], this.expression(1+p));
+						return this.compiled.preceded(oprtr[0], this.expression(1+p));
 				}
 			}
 			rv = this.tknzr.pop(['alphanum', 'number', 'string']);
 		}
 		if(!rv && !lax) nul.ex.syntax('ITE', 'Item expected', this.tknzr);
-		if(rv) return nul.compiled.atom(rv.type, rv.value);
+		if(rv) return this.compiled.atom(rv.type, rv.value);
 	}
 });
 
@@ -11682,7 +11573,6 @@ nul.compile.xml = function(txt)
  *
  *--------------------------------------------------------------------------*/
 
-/**@namespace*/
 nul.understanding = {
 	/** Used as return-value local naming @constant */
 	rvName : '&crarr;',
@@ -11699,14 +11589,11 @@ nul.understanding = {
 			try { return new nul.understanding.base(ub).understand(this); }
 			catch(err) { nul.failed(err); }
 		});
-	},
-	/**
-	 * Generic expression (operator and operands) understanding
-	 * @example a <b>+</b> b <b>+</b> c
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	expression: function(ub) {
+	}
+};
+
+nul.compiled.node.extend({
+	expression: new JS.Class (nul.compiled.node, {understand: function(ub) {
 		var ops;
 		if('[]'== this.operator)
 			return ub.klg.hesitate(nul.understanding.possibles(this.operands, ub));
@@ -11714,7 +11601,6 @@ nul.understanding = {
 		var ops = map(this.operands, function(n, o) {
 			return this.understand(ub);
 		});
-
 		switch(this.operator)
 		{
 		case '+':
@@ -11741,39 +11627,25 @@ nul.understanding = {
 			ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
 			return rv;
 		default:
-			nul.ex.internal('Unknown operator: "'+operator+'"');
+			nul.ex.internal('Unknown operator: "'+this.operator+'"');
 		}
-	}.describe('Understand'),
-	/**
-	 * Precedor understanding : a precedor and an operand
-	 * @example <b>++</b>operand
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	preceded: function(ub) {
+	}}),
+	preceded: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return ub.klg.attribute(this.operand.understand(ub), this.operator+' ');
-	}.describe('Understand'),
-	/**
-	 * Postcedor understanding : a postcedor and an operand
-	 * @example operand<b>++</b>
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	postceded: function(ub) {
+	}}),
+	postceded: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		switch(this.operator) {
 		case ',.': return nul.obj.pair.list(null, [this.operand.understand(ub)]);
 		default: return ub.klg.attribute(this.operand.understand(ub), ' '+this.operator);
 		}
-	}.describe('Understand'),
-	/**
-	 * Atom understanding : a type and a value
-	 * @example <b>"</b>quoted text<b>"</b>
-	 * @example 42
-	 * @example identifier
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	atom: function(ub) {
+	}}),
+	application: new JS.Class (nul.compiled.node, {understand: function(ub){
+		return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
+	}}),
+	taking: new JS.Class (nul.compiled.node, {understand: function (ub) {
+		return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
+	}}),
+	atom: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		var value;
 		switch(this.type)
 		{
@@ -11795,89 +11667,31 @@ nul.understanding = {
 			nul.ex.internal('unknown atom type: ' + this.type + ' - ' + this.value);
 		}
 		return nul.obj.litteral.make(value);
-	}.describe('Understand'),
-	/**
-	 * Application understanding : two symbols separated by a space
-	 * @example item applied
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	application: function(ub) {
-		return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
-	}.describe('Understand'),
-	/**
-	 * 'Taking' understanding
-	 * @example item<b>[</b>token<b>]</b>
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	taking: function(ub) {
-		return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
-	}.describe('Understand'),
-	/**
-	 * 'Set' understanding
-	 * @example <b>{</b>content<b>}</b>
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.obj.pair|nul.obj.empty}
-	 */
-	set: function(ub) {
- 		if(!this.content) return nul.obj.empty;
-		return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
-	}.describe('Understand'),
-
-	/**
-	 * Local-definition value understanding
-	 * @example <b>\/</b>decl value
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	definition: function(ub) {
+	}}),
+	definition: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		if('_'== this.decl) nul.ex.semantic('JKD', 'Cannot declare joker !');
 		ub.createFreedom(this.decl);
 		return this.value.understand(ub);
-	}.describe('Understand'),
-
-	/**
-	 * XML-node understanding
-	 * @example <b>&lt;</b>node <b>/&gt</b>;
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.obj.node}
-	 */
-	xml: function(ub) {
+	}}),
+	set: new JS.Class (nul.compiled.node, {understand: function (ub) {
+		if(!this.content) return nul.obj.empty;
+		return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
+	}}),
+	xml: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return new nul.obj.node(this.node,												//tag
-			map(this.attributes, function() { return this.understand(ub); }),			//attributes
-			nul.obj.pair.list(null, nul.understanding.possibles(this.content, ub))		//content
-		);
-	}.describe('Understand'),
-
-	/**
-	 * Composition understanding
-	 * @example object <b>::</b>aName value
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	composed: function(ub) {
+		map(this.attributes, function() { return this.understand(ub); }),			//attributes
+		nul.obj.pair.list(null, nul.understanding.possibles(this.content, ub)));		//content
+	}}),
+	composed: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return ub.klg.attributed(this.object.understand(ub), this.aName, this.value.understand(ub));
-	}.describe('Understand'),
-	/**
-	 * Objective value understanding
-	 * @example applied<b>.</b>lcl
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	objectivity: function(ub) {
+	}}),
+	objectivity: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return ub.klg.attribute(this.applied.understand(ub), this.lcl);
-	}.describe('Understand'),
-	/**
-	 * Hardcoded JS value
-	 * @example <b><{</b> value = nul.obj.litteral.make(34) <b>}></b>
-	 * @param {nul.understanding.base} ub
-	 * @return {nul.xpr.object}
-	 */
-	hardcode: function(ub) {
+	}}),
+	hardcode: new JS.Class (nul.compiled.node, {understand: function (ub) {
 		return this.value;
-	}.describe('Understand')
-};
+	}})
+});
 
 nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 	/**
