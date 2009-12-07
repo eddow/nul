@@ -8,7 +8,7 @@
  
 nul.txt = new JS.Class(/** @lends nul.txt# */{
 	/**
-	 * Text output kernel
+	 * @class Text output kernel
 	 * @constructs
 	 */
 	initialize: function() {

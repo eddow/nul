@@ -8,7 +8,7 @@
 
 nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	/**
-	 * Define an object that is a value of a local
+	 * @class Define an object that has a local unknown value
 	 * @constructs
 	 * @extends nul.obj.undefnd
 	 * @param {String} klgRef The knowledge this local applies to

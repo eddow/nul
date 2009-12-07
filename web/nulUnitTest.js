@@ -27,13 +27,13 @@ nul.unitTest.tests = nul.unitTest('Unit testing', [
 		{xpr: '{ a, a } (1, _)',
 		rslt: '{(1, 1)}'},
 		{xpr: '.Q n',
-		rslt: '{n[g|@0]; ((n[g|@0]) &isin; &#x211a;)}'},
+		rslt: '{n[g\\@0]; ((n[g\\@0]) &isin; &#x211a;)}'},
 		{xpr: '{x => (x,x)}[1]',
 		rslt: '{(1, 1)}'},
 		{xpr: 'dec[4]; dec= {5 => 4 [] 4 => 3 [] 3 => 2 [] 2 => 1}',
 		rslt: '{3}'},
 		{xpr: 'S = (_,_); S 5',
-		rslt: '{(5, _[g|@0]) &#9633; (_[g|@1], 5)}'},
+		rslt: '{(5, _[g\\@0]) &#9633; (_[g\\@1], 5)}'},
 		{xpr: '<{ nul.obj.litteral.make(34) }>',
 		rslt: '{34}'}
 	]),
@@ -55,26 +55,25 @@ nul.unitTest.tests = nul.unitTest('Unit testing', [
 		{xpr: 'i[1..3] _ ; i = { _,. => {} [] (a,b,.. o) => ((a,b),.. i[b,.. o] ) }',
 		rslt: '((1, 2), (2, 3))'},
 		{xpr: '{:tp {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }',
-		rslt: '{{&phi; &rArr; &phi; &#9633; (T[@k|@0],.. Ts[@k|@1]) &rArr; (_[@k|@2],.. &crarr;[@k|@3]); ((_[@k|@2]) &isin; T[@k|@0] &and; (Ts[@k|@1] &rArr; &crarr;[@k|@3]) &isin; tp[&crarr;|@r])}}'},
+		rslt: '{{&phi; &rArr; &phi; &#9633; (T[@k\\@0],.. Ts[@k\\@1]) &rArr; (_[@k\\@2],.. &crarr;[@k\\@3]); ((_[@k\\@2]) &isin; T[@k\\@0] &and; (Ts[@k\\@1] &rArr; &crarr;[@k\\@3]) &isin; tp[&crarr;\\@r])}}'},
 		{xpr: '{:tp {} => {} [] (T,.. Ts) => ( T _,.. tp[Ts] ) }[.Q, .text]',
-		rslt: '{(_[g|@4], _[g|@8]); ((_[g|@4]) &isin; &#x211a; &and; (_[g|@8]) &isin; text)}'},
+		rslt: '{(_[g\\@4], _[g\\@8]); ((_[g\\@4]) &isin; &#x211a; &and; (_[g\\@8]) &isin; text)}'},
 		{xpr:'{:t {} => {{}} [] (T,.. Ts) => { T _,.. t[Ts] _ } }[.Q, .text]',
-		rslt:'{{(_[@k|@0], _[@k|@3]); ((_[@k|@0]) &isin; &#x211a; &and; (_[@k|@3]) &isin; text)}}'},
+		rslt:'{{(_[@k\\@0], _[@k\\@3]); ((_[@k\\@0]) &isin; &#x211a; &and; (_[@k\\@3]) &isin; text)}}'},
 		{xpr:'{:ap ({}, s) => s [] ((a,.. r), s) => (a,.. ap[r,s])}[(1,2,3), (4,5,6)]',
 		rslt:'{(1, 2, 3, 4, 5, 6)}'}
 	]),
 	nul.unitTest('Attributes', [
 		{xpr: '( u::n 1 ::f "u" ::e "o", d::n 2 ::f "d" ::e "t" ) (x ::f "u")',
-		rslt: '{u[g|@0]; (([e: "o", f: "u", n: 1]u[g|@0]))}'},
+		rslt: '{u[g\\@0]; (([e: "o", f: "u", n: 1]u[g\\@0]))}'},
 		{xpr: 'a; .Q (a.nbr)',
-		rslt: '{a[g|@0]; (([nbr: &rarr;nbr[g|@1]]a[g|@0]) &and; (&rarr;nbr[g|@1]) &isin; &#x211a;)}'},
+		rslt: '{a[g\\@0]; (([nbr: &rarr;nbr[g\\@1]]a[g\\@0]) &and; (&rarr;nbr[g\\@1]) &isin; &#x211a;)}'},
 		{xpr: '(cmplx c).pair ; c.real = 5 ; c.img = 3 ; cmplx = {_ ::real(Q r) ::img(Q i) ::pair(i,r)}',
 		rslt: '{(3, 5)}'}
 	]),
 	nul.unitTest('Nodes', [
-	    //TODO 1: use "node.text <= xpr" and not "node.html <= xpr", so that "<n>" draws "<n>"  
 	 	{xpr: '<n><a q="1" w="2" /><a q="3" e="4" /></n> [<a q="5" w="6" e="7" r="8" />]',
-	 	rslt: '{&crarr;[g|@1]; (([q: "1", w: "2", # : 0, e: "7", r: "8"]&crarr;[g|@1])) &#9633; &crarr;[g|@1]; (([q: "3", e: "4", # : 0, w: "6", r: "8"]&crarr;[g|@1]))}'}
+	 	rslt: '{&crarr;[g\\@1]; (([q: "1", w: "2", # : 0, e: "7", r: "8"]&crarr;[g\\@1])) &#9633; &crarr;[g\\@1]; (([q: "3", e: "4", # : 0, w: "6", r: "8"]&crarr;[g\\@1]))}'}
 	])	
 ]);
 
@@ -87,7 +86,7 @@ nul.unitTest.fcts = {
 		if('undefined'!= typeof pn) rv.addClass('child-of-node-'+pn);
 		rv.append('<td class="state"><input type="button" value="" onclick="nul.unitTest.launchTest('+tn+')" /></td>');
 	
-		if(rslt) rv.append($('<td class="comm"></td>').text(rslt));
+		if(rslt) rv.append($('<td class="comm"></td>').html(rslt));
 		else rv.append('<td />');
 	
 		rv[0].test = tst;

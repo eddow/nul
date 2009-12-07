@@ -148,8 +148,8 @@ nul.operators = [
 
 nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	/**
-	 * Compilation information
 	 * @constructs
+	 * @class The object managing compilation of a text
 	 * @param {String} txt Text to compile
 	 */
 	initialize: function(txt) {

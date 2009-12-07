@@ -8,9 +8,9 @@
 
 //TODO 2: "8x" should be an error, not "8 x" ... or not ?
 
-nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
+nul.tokenizer = new JS.Class(/** @lends nul.tokenizer# */{
 	/**
-	 * Text reader helper
+	 * @class Text reader helper
 	 * @constructs
 	 * @param {String} src The text content
 	 */
@@ -23,7 +23,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	/**
 	 * The next token to consider
 	 */
-	token: /** @lends nul.tokenizer.token# */{
+	token: /** @lends nul.tokenizer#token# */{
 		/** The alphabet that recognised this token */
 		type: '',
 		/** The computed token value */

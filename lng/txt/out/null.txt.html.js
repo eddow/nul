@@ -7,8 +7,8 @@
  *--------------------------------------------------------------------------*/
 
 /**
- * HTML expression building helper 
- * @class Singleton
+ * Singleton
+ * @class HTML expression building helper 
  */
 html = {
 	_attrd: function(a) {
@@ -63,9 +63,9 @@ html = {
 };
 
 /**
- * Expression HTML description building helper 
+ * Singleton
+ * @class Expression HTML description building helper 
  * @extends nul.txt
- * @class Singleton
  */
 nul.txt.html = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 	

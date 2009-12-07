@@ -8,7 +8,7 @@
 
 nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	/**
-	 * A value associated with a knowledge : A value that can be unified to several different defined object, along some conditions.
+	 * @class A value associated with a knowledge : A value that can be unified to several different defined object, along some conditions.
 	 * @extends nul.expression
 	 * @constructs
 	 * @param {nul.xpr.object} value
@@ -30,16 +30,16 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 //////////////// public
 
 	/**
-	 * 'klg' now knows all what this possible knows
+	 * The knowledge now knows all what this possible knows - gets the value expression then
 	 * @param {nul.xpr.knowledge} klg destination knowledge
-	 * @return nul.xpr.object This modified value (to refer the new knowledge)
+	 * @return {nul.xpr.object} This modified value (to refer the new knowledge)
 	 */
 	valueKnowing: function(klg) {
 		return klg.merge(this.knowledge, this.value);
 	},
 	
 	/**
-	 * Returns a possible, this unified to o.
+	 * Returns a possible, this unified to an object
 	 * @param {nul.xpr.object} o
 	 * @return {nul.xpr.possible}
 	 * @throws {nul.ex.failure}
@@ -141,10 +141,10 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 
 nul.xpr.failure = nul.xpr.possible.prototype.failure = new JS.Singleton(nul.xpr.possible, /** @lends nul.xpr.failure# */{
 	/**
-	 * Specific possible that never give any value.
+	 * Singleton
+	 * @class Specific possible that never give any value.
 	 * @extends nul.xpr.possible
 	 * @constructs
-	 * @class Singleton
 	 */
 	initialize: function() { this.callSuper(); },
 	/** @constant */

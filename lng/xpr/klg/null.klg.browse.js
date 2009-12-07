@@ -8,6 +8,7 @@
 
 nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# */{
 	/**
+	 * @class Browser to replace a erference to a knowledge to a reference to another knowledge and modifying the local names 
 	 * @extends nul.browser.bijectif
 	 * @constructs
 	 * @param {String} srcKlgRef The knowledge name whose space the expression is taken of
@@ -75,8 +76,7 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 
 nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.represent# */ {
 	/**
-	 * Special browser to modifies an expression, replacing any occurrence of an object that appears in an equivalence class
-	 * by the equivalence class representant
+	 * @class Browser to replace in an expression any occurrence of an object that appears in an equivalence class by the equivalence class representant
 	 * @extends nul.browser.bijectif
 	 * @constructs
 	 * @param {Access} access The access to use to replace values

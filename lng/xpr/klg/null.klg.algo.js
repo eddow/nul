@@ -249,7 +249,6 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 		return rv;
 	},
 
-	//TODO C
 	/**
 	 * @param {String} selfRef
 	 * @param {nul.xpr.object[]} alrEqs TODO 2: rename param

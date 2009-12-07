@@ -5,11 +5,11 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//doing
+
 /**
- * Expression HTML node description building 
+ * Singleton
+ * @class Expression HTML node description building 
  * @extends nul.txt
- * @class Singleton
  */
 nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 	

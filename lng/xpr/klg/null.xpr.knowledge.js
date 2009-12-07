@@ -8,7 +8,7 @@
 
 nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# */{
 	/**
-	 * Represent a bunch of information about locals and absolute values.
+	 * @class Represent a bunch of information about locals and absolute values.
 	 * @extends nul.expression
 	 * @constructs
 	 * @param {String} klgName [optional] Knowledge name

@@ -12,12 +12,13 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 	 * @param {Object} applied
 	 * @param {Object[]} args
 	 * @constructs
+	 * @class A described action made by the JavaScript interpreter
 	 */
 	initialize: function(name, applied, args) {
 		this.name = name;
 		this.applied = applied;
 		//TODO 1: this call f*cks the perfs
-		this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
+		//this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
 		this.args = args;
 		nul.action.begin(this);
 		this.isToLog = nul.action.isToLog(name);
@@ -27,10 +28,18 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 			console.log('Arguments', args);
 		}
 	},
+	/**
+	 * Retrieve the english string describing the better this peculiar action
+	 */
 	description: function() {
 		if(!nul.browser.def(this.applied)) return this.name;
 		return this.name + ' ' + this.applied.description;		
 	},
+	/**
+	 * Ends this action by specifying the produced value.
+	 * @param {Any} value
+	 * @return {Any} value
+	 */
 	returns: function(value) {
 		nul.action.end(this);
 		this.success = true;
@@ -41,6 +50,11 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 		}
 		return value;
 	},
+	/**
+	 * Ends this action specifying it didn't produce a value but raised an exception.
+	 * @param {Any} err
+	 * @return {nul.ex} err - as a NUL exception
+	 */
 	abort: function(err) {
 		nul.action.end(this);
 		this.success = false;
@@ -52,6 +66,11 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 		return this.error;
 	},
 	extend: /** @lends nul.action */{
+		/**
+		 * Describe a function
+		 * @param {String} name
+		 * @return this
+		 */
 		described: function(name) {
 			var ftc = this;
 			if(nul.debugged && !nul.debugged.possibleLogging.include(name)) nul.debugged.possibleLogging.push(name);
@@ -63,19 +82,41 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 			};
 		},
 
+		/**
+		 * The stacked list of begun actions
+		 * @type {mul.action[]}
+		 */
 		present: [],
+		/**
+		 * Create an action object given the name.
+		 * @param {String} action
+		 * @return {nul.action}
+		 */
 		begin: function(action) {
 			if(nul.debugged) nul.assert(!action.parent, 'Actions consistency');
 			action.parent = this.doing();
 			this.present.unshift(action);
 		},
+		/**
+		 * End a given action object
+		 * @param {nul.action} action
+		 */
 		end: function(action) {
 			if(nul.debugged) nul.assert(this.present[0]===action, 'Actions consistency');
 			this.present.shift();
 		},
+		/**
+		 * Retrieve the last begun action still occuring.
+		 * @return {nul.action}
+		 */
 		doing: function() {
 			return this.present[0];
 		},
+		/**
+		 * Retrieve weither this action has to produce Log in the browser console
+		 * @param {String} name
+		 * @return {Boolean}
+		 */
 		isToLog: function(name) {
 			return nul.debugged && window.console && console.groupCollapsed && nul.debugged.logging && nul.debugged.logging[name];
 		}		

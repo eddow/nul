@@ -10,37 +10,41 @@
  * Knowledge management helpers
  * @namespace
  */
-nul.klg = {
-	//TODO C
+nul.klg = /** @lends nul.klg */{
+	/**
+	 * Create or get an already-built unconditional
+	 * @param {Number} mul Multiplicity
+	 * @param {String} name Used only when creation is needed
+	 * @return {nul.klg.ncndtnl}
+	 */
 	unconditional: function(mul, name) {
 		if(!nul.klg.unconditionals[mul])
 			nul.klg.unconditionals[mul] = new nul.klg.ncndtnl(name, mul);
 		return nul.klg.unconditionals[mul];
 	},
-	//TODO C
+	/**
+	 * To avoid doubles, keep the built unconditionals in this table
+	 * @type {nul.klg.ncndtnl[]}
+	 */
 	unconditionals: {},
-	//TODO C
+
 	ncndtnl: new JS.Class(nul.xpr.knowledge, /** @lends nul.klg.ncndtnl# */{
 		/**
-		 * Unconditional knowledge : only characterised by a min/max existence, no real knowledge, condition
+		 * @class Unconditional knowledge : only characterised by a min/max existence without real knowledge, condition
 		 * @extends nul.xpr.knowledge
 		 * @constructs
-		 * @param {Number} min
-		 * @param {Number} max
+		 * @param {Number} mul Multiplicity
 		 */
 		initialize: function(name, mul) {
-			this.callSuper(name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']'));
-	        /*this.locals = this.emptyLocals();
-			this.minMult = mul;
-			this.maxMult = mul;
-			this.name = name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']');*/
+			this.callSuper(name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']'), mul);
 			this.alreadyBuilt();
 		},
-		//TODO C
+		/**
+		 * Create a brand new knowledge out of the sole multiplicity information
+		 */
 		modifiable: function() {
 			if(0== this.maxMult) nul.fail('No fewer than never');
-			//TODO 1: origin management ?
-			return new nul.xpr.knowledge(null, this.minMult, this.maxMult);
+			return new nul.xpr.knowledge(null, this.minMult, this.maxMult).from(this);
 		},
 		
 		/** @constant */
@@ -51,9 +55,15 @@ nul.klg = {
 		eqCls: [],
 		/** @constant */
 		veto: [],
-		//TODO C
+		/**
+		 * The minimum existance multiplicity is constant
+		 * @return {Number}
+		 */
 		minXst: function() { return this.minMult; },
-		//TODO C
+		/**
+		 * The maximum existance multiplicity is constant
+		 * @return {Number}
+		 */
 		maxXst: function() { return this.maxMult; }
 	}),
 	

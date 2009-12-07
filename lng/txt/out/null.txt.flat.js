@@ -7,9 +7,9 @@
  *--------------------------------------------------------------------------*/
 
 /**
- * Expression flat description building helper 
+ * Singleton
  * @extends nul.txt
- * @class Singleton
+ * @class Expression flat description building helper
  */
 nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
 	/**

@@ -8,7 +8,7 @@
 
 nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 	/**
-	 * The objects that is defined in javascript, along functions and/or set listing.
+	 * @class The objects that is defined in javascript, along functions and/or set listing.
 	 * @constructs
 	 * @extends nul.obj.defined
 	 * @param {Object} singleton Sub-class definition. Used when sub-classment is made for a singleton, to avoid new Class.create()()

@@ -9,7 +9,7 @@
 nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 //TODO 4: rename local when we have a non-anonymous name
 	/**
-	 * Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes 
+	 * @class Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes 
 	 * @extends nul.expression
 	 * @constructs
 	 * @param {nul.xpr.object} obj An object the class is initialised zith
@@ -216,7 +216,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	},
 	
 	/**
-	 * Try to see the intersections of these two sets - knowing that these two sets can have different 'oppinions' about it.
+	 * Try to see the programmed intersections of these two sets - knowing that these two sets can have different 'opinions' about it.
 	 * Fails when both intersection fail, gives nothing when both intersection give nothing, else give any of the result the intersection gave.
 	 * @param {nul.xpr.knowledge} klg
 	 * @param {nul.obj.defined} s1
@@ -253,6 +253,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * Compute the influence of this equivalence class (excluded 'exclElm')
 	 * @param {nul.xpr.knowledge} klg
 	 * @param {String: integer} excl Element to exclude, from the summary.components
+	 * @param {String: integer} only Element to filter, from the summary.components
 	 * @param {association(ndx=>infl)} already The influences already computed (modified by side-effect)
 	 * @return {association(ndx=>infl)} Where 'ndx' is a local index and 'infl' 1 or 2 
 	 */

@@ -30,7 +30,11 @@ nul.data.ajax = {
 		return objFct(rq);
 	},
 	
-	//TODO C
+	/**
+	 * Load a NUL library (written in NUL) from an URL
+	 * @param {String} url
+	 * @param {String} id optional : url is used if no id is provided.
+	 */
 	loadNul : function(url, id) {
 		nul.data.ajax.load(url,
 			function(t) { return nul.read(t.responseText, id || url); } );
@@ -42,16 +46,16 @@ nul.data.ajax = {
  */
 nul.load.ajax = function() {
 	/**
-	 * The 'library' global
-	 * @class Singleton
+	 * Singleton
+	 * @class The 'library' global
 	 * @extends nul.obj.node
 	 */
 	nul.globals.library = new nul.obj.hc(/** @lends nul.globals.library */{
 		
 		attributes: {
 			/**
-			 * AJAX library loader
-			 * @class Singleton
+			 * Singleton
+			 * @class AJAX library loader
 			 * @extends nul.obj.hc
 			 * @name attributes.file
 			 * @memberOf nul.globals.library

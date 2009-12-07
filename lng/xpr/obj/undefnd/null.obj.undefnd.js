@@ -8,7 +8,7 @@
 
 nul.obj.undefnd = new JS.Class(nul.xpr.object, /** @lends nul.obj.undefnd# */{
 	/**
-	 * Undefined object
+	 * @class Undefined object
 	 * @extends nul.xpr.object
 	 * @constructs
 	 */

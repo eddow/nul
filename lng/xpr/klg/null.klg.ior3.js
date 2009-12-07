@@ -8,7 +8,7 @@
 
 nul.klg.ior3 = new JS.Class(nul.expression, /** @lends nul.klg.ior3# */{
 	/**
-	 * Represent a list of possible knowledges 
+	 * @class Represent a list of possible knowledges 
 	 * @extends nul.expression
 	 * @constructs
 	 * @param {nul.xpr.knowledge[]} choices The possible cases

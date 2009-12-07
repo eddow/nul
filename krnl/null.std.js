@@ -114,7 +114,7 @@ nul.extend( /** @lends nul */{
 	}.describe('Knownation'),
 	
 	/**
-	 * Compile a text and understand it in a fresh execution context
+	 * Compile a text, understand, have it queried and known
 	 * @param {String} txt
 	 * @return {nul.expression}
 	 * @throw {nul.ex.semantic}

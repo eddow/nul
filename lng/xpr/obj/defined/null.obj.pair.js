@@ -8,7 +8,7 @@
 
 nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 	/**
-	 * Pair used to build lists : a head and a tail.
+	 * @class Pair used to build lists : a head and a tail.
 	 * @extends nul.obj.list
 	 * @constructs
 	 * @param {nul.xpr.possible} first List head
@@ -140,7 +140,7 @@ nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 		return this.callSuper();
 	},
 	
-	//TODO C
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link recursion} */
 	sum_recursion: function() {
 		if(!this.selfRef) this.selfRef = nul.execution.name.gen('obj.local.self');
 		var rv = [];

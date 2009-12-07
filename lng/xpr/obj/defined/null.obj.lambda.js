@@ -8,7 +8,7 @@
 
 nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 	/**
-	 * Represents the application of a point to an image.
+	 * @class Represents the application of a point to an image.
 	 * @example point &rArr; image
 	 * @constructs
 	 * @extends nul.obj.defined

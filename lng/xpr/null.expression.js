@@ -15,7 +15,7 @@ nul.summary = function(itm) {
 
 nul.expression = new JS.Class(/** @lends nul.expression# */{
 	/**
-	 * Expression
+	 * @class NUL expression
 	 * @constructs
 	 * @param {String} tp Type of expression
 	 */
@@ -28,7 +28,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
  	},
 
 	/**
-	 * Fix my origin from this actual action
+	 * Fix my origin from a new action
 	 * @param {nul.expression} frm The expression this is derived from
 	 */
  	haveOrigin: function(frm) {
@@ -37,7 +37,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
  	},
 
 	/**
-	 * Fix my origin profenance to frm
+	 * Fix my origin provenance to frm without changing the action
 	 * @param {nul.expression} frm The expression this is derived from
 	 */
  	from: function(frm) {
@@ -167,7 +167,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 //////////////// Public
 
 	/**
-	 * Change the summarised texts.
+	 * Change the summarised human-destinated texts
 	 * Can be changed even for a built expression (doesn't change the meaning, just the debug drawing)
 	 */
 	invalidateTexts: function() {
