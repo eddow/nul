@@ -9,7 +9,7 @@
 //TODO 3: express these as descendant from nul.obj.hc
 nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
 	/**
-	 * A set hard-coded in javascript
+	 * @class A set hard-coded in javascript
 	 * @extends nul.obj.defined
 	 * @constructs
 	 */
@@ -44,8 +44,8 @@ nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
 });
 
 /**
- * Empty set : &phi;
- * @class Singleton
+ * Singleton
+ * @class Empty set : &phi;
  * @extends nul.obj.hcSet
  */
 nul.obj.empty = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.empty# */{
@@ -66,8 +66,8 @@ nul.obj.empty = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.empty# */{
 });
 
 /**
- * Set of number litterals
- * @class Singleton
+ * Singleton
+ * @class Set of number litterals
  * @extends nul.obj.hcSet
  */
 nul.obj.number = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.number# */{
@@ -90,8 +90,8 @@ nul.obj.number = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.number# */{
 });
 
 /**
- * Set of string litterals
- * @class Singleton
+ * Singleton
+ * @class Set of string litterals
  * @extends nul.obj.hcSet
  */
 nul.obj.string = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.string# */{
@@ -104,8 +104,7 @@ nul.obj.string = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.string# */{
 });
 
 /**
- * Set of boolean litterals
- * @class Singleton
+ * @class Set of boolean litterals
  * @extends nul.obj.hcSet
  */
 nul.obj.bool = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.bool# */{
@@ -127,7 +126,7 @@ nul.obj.bool = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.bool# */{
 nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 	//TODO 4: solve or XML make them define as extension ?
 	/**
-	 * A range of integer numbers
+	 * @class A range of integer numbers
 	 * @extends nul.obj.hcSet
 	 * @constructs
 	 * @param {Number} lwr Lower bound of the set (or nothing for no bound)
@@ -143,7 +142,9 @@ nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 		
 		this.callSuper();
 	},
-	//TODO C
+	/**
+	 * {nul.obj.range} can intersect with {@link nul.obj.number} or with another range.
+	 */
 	intersect: function(o, klg) {
 		if('range'== o.expression) {
 			var lwr = this.lower<o.lower?o.lower:this.lower;
@@ -153,7 +154,9 @@ nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 		}
 		return this.callSuper();
 	},
-	//TODO C
+	/**
+	 * The given object is a number, integer and between the bounds.
+	 */
 	subHas: function(o, att) {
 		if(this.lower==this.upper && !o.isA(nul.obj.defined)) {
 			//TODO 3: return "o=nbr[this.bound]"
@@ -169,7 +172,9 @@ nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 
 //////////////// nul.obj.defined implementation
 
-	//TODO C
+	/**
+	 * Try to unify to a pair or to another range.
+	 */
 	subUnified: function(o, klg) {
 		this.use(); nul.obj.use(o); nul.klg.mod(klg);
 		
@@ -194,9 +199,13 @@ nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 	sum_index: function() { return this.indexedSub(this.lower, this.upper); }
 });
 
-//TODO C
+/** The set of numbers */
 nul.globals.Q = nul.obj.number;
+/** The set of integers */
 nul.globals.Z = new nul.obj.range();
+/** The set of natural numbers */
 nul.globals.N = new nul.obj.range(0);
+/** The set of texts/strings */
 nul.globals.text = nul.obj.string;
+/** The set of boolean (2 elements) */
 nul.globals.bool = nul.obj.bool;

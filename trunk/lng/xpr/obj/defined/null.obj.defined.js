@@ -8,7 +8,7 @@
 
 nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
-	 * Defined object : are defined its composition, its attributes, ...
+	 * @class Defined object : are defined by the object its composition, its attributes, ... not by the knowledge
 	 * @extends nul.xpr.object
 	 * @constructs
 	 */

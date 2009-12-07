@@ -160,3 +160,9 @@ ul.inheritsList
 	text-align: right;
 	font-size: 10px;
 }
+
+table.classList, tr, td {
+	width:100%;
+	height: 100%;
+	visibility: visible;
+}

@@ -205,7 +205,7 @@ nul.understanding = {
 
 nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 	/**
-	 * Understanding context' informations
+	 * @class Understanding context informations
 	 * @constructs
 	 * @param {nul.understanding.base} prntUb The parent understanding base
 	 * @param {String} klgName The name to give to the created context if any special (if not, one will be generated)
@@ -258,7 +258,7 @@ nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 
 nul.understanding.base.set = new JS.Class(nul.understanding.base, /** @lends nul.understanding.base.set# */{
 	/**
-	 * Understanding context' information inside brackets
+	 * @class Understanding context' information inside brackets
 	 * @extends nul.understanding.base
 	 * @constructs
 	 * @param {nul.understanding.base} prntUb The parent understanding base

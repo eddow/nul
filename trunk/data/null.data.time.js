@@ -8,9 +8,9 @@
 
 nul.data.time = new JS.Class(nul.obj.node, /** @lends nul.data.time# */{
 	/**
-	 * The DateTime object as a node with attributes
 	 * @extends nul.obj.node
 	 * @constructs
+	 * @class The DateTime object as a node with attributes
 	 * @param {Date} dto
 	 */
 	initialize: function(dto) {
@@ -44,8 +44,8 @@ nul.data.time.nul2js = {
  */
 nul.load.time = function() {
 	/**
-	 * The 'time' global
-	 * @class Singleton
+	 * Singleton
+	 * @class The 'time' global
 	 * @extends nul.obj.hc
 	 */
 	nul.globals.time = new nul.obj.hc(/** @lends nul.globals.time# */{
@@ -85,16 +85,16 @@ nul.load.time = function() {
 		},
 		/**
 		 * @constant
-		 * @name nul.globals.time.attributes
+		 * @name nul.globals.time#attributes
 		 */
 		attributes: {
 			/**
-			 * The 'time.now' global
-			 * @class Singleton
-			 * @name nul.globals.time.attributes.now
+			 * Singleton
+			 * @class The 'time.now' global
+			 * @name nul.globals.time#attributes.now
 			 * @extends nul.data
 			 */
-			now: new nul.data(nul.data.context.local, 'now', /** @lends nul.globals.time.attributes.now# */{
+			now: new nul.data(nul.data.context.local, 'now', /** @lends nul.globals.time#attributes.now# */{
 				/**
 				 * Get the time when queried
 				 */

@@ -8,8 +8,8 @@
 
 nul.browser = new JS.Class(/** @lends nul.browser# */{
 	/**
-	 * Generic expression browsing
 	 * @constructs
+	 * @class Generic expression browsing engine
 	 * @param {String} desc Text description
 	 */
 	initialize: function(desc) {
@@ -68,8 +68,8 @@ nul.browser = new JS.Class(/** @lends nul.browser# */{
 
 nul.browser.cached = new JS.Class(nul.browser, /** @lends nul.browser.cached# */{
 	/**
-	 * A browser that cache returns value in the expression JS object
 	 * @constructs
+	 * @class A browser that cache returns value in the expression JS object
 	 * @extends nul.browser
 	 * @param {String} desc Text description
 	 */
@@ -207,8 +207,8 @@ nul.browser.bijectif = new JS.Class(nul.browser.cached, /** @lends nul.browser.b
 
 		evolution: new JS.Class( /** @lends nul.browser.bijectif.evolution# */{
 			/**
-			 * @class An evolution object, where an expression is changed step by step
 			 * @constructs
+			 * @class An evolution object, where an expression is changed step by step
 			 * @param {nul.expression} xpr The first step of the evolution
 			 */
 			initialize: function(xpr) {

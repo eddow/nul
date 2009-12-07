@@ -8,7 +8,7 @@
 
 nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
 	/**
-	 * Any expression that act as a list or a set
+	 * @class Any expression that act as a list or a set
 	 * @extends nul.obj.defined
 	 * @constructs
 	 */
@@ -16,7 +16,9 @@ nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
 		this.callSuper();
 	},
 	
-	//TODO C
+	/**
+	 * Yes, it is a list.
+	 */
 	isList: function() { return true; },
 	/**
 	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The set who give, for each parameter, the recursive parameter applied

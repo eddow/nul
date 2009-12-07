@@ -12,7 +12,7 @@
 
 nul.obj.operation = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.operation# */{
 	/**
-	 * Define an operator applied to several objects
+	 * @class Define an operator applied to one or several objects
 	 * @constructs
 	 * @extends nul.obj.undefnd
 	 * @param {String} operator The operator binding

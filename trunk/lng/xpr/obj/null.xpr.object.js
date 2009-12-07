@@ -8,7 +8,7 @@
 
 nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
 	/**
-	 * Object
+	 * @class NUL object
 	 * @extends nul.expression
 	 * @constructs
 	 */
@@ -51,7 +51,7 @@ nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
 
 nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.object.reself# */{
 	/**
-	 * A browser to change the self-referant locals in an object definition
+	 * @class A browser to change the self-referant locals in an object definition
 	 * @constructs
 	 * @extends nul.browser.bijectif
 	 * @param {String} selfRef The self-reference to replace

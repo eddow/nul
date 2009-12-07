@@ -9,8 +9,8 @@
 //TODO O: don't feed back an object { local:{..deps..} } : directly feed back {..deps..} instead
 nul.dependance = new JS.Class(/** @lends nul.dependance# */{
 	/**
-	 * A list of dependancies toward knowledges or external resources
 	 * @constructs
+	 * @class A list of dependancies toward knowledges or external resources
 	 * @param {nul.obj.local|nul.obj.data} dep
 	 */
 	initialize: function(dep) {

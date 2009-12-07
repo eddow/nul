@@ -10004,7 +10004,9 @@ nul.loading = function() {
 	$('head script').each(function(){
 		var spl = this.src.split('null.');
 		if(1< spl.length) {
-			nul.rootPath = spl[0];
+			nul.rootPath = spl[0].split('/');
+			nul.rootPath.pop(); nul.rootPath.pop();
+			nul.rootPath = nul.rootPath.join('/');
 			nul.loading.fixConsole($(this).attr('noconsole'));
 		}
 	});
@@ -10357,12 +10359,13 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 	 * @param {Object} applied
 	 * @param {Object[]} args
 	 * @constructs
+	 * @class A described action made by the JavaScript interpreter
 	 */
 	initialize: function(name, applied, args) {
 		this.name = name;
 		this.applied = applied;
 		//TODO 1: this call f*cks the perfs
-		this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
+		//this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
 		this.args = args;
 		nul.action.begin(this);
 		this.isToLog = nul.action.isToLog(name);
@@ -10372,10 +10375,18 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 			console.log('Arguments', args);
 		}
 	},
+	/**
+	 * Retrieve the english string describing the better this peculiar action
+	 */
 	description: function() {
 		if(!nul.browser.def(this.applied)) return this.name;
 		return this.name + ' ' + this.applied.description;		
 	},
+	/**
+	 * Ends this action by specifying the produced value.
+	 * @param {Any} value
+	 * @return {Any} value
+	 */
 	returns: function(value) {
 		nul.action.end(this);
 		this.success = true;
@@ -10386,6 +10397,11 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 		}
 		return value;
 	},
+	/**
+	 * Ends this action specifying it didn't produce a value but raised an exception.
+	 * @param {Any} err
+	 * @return {nul.ex} err - as a NUL exception
+	 */
 	abort: function(err) {
 		nul.action.end(this);
 		this.success = false;
@@ -10397,6 +10413,11 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 		return this.error;
 	},
 	extend: /** @lends nul.action */{
+		/**
+		 * Describe a function
+		 * @param {String} name
+		 * @return this
+		 */
 		described: function(name) {
 			var ftc = this;
 			if(nul.debugged && !nul.debugged.possibleLogging.include(name)) nul.debugged.possibleLogging.push(name);
@@ -10408,19 +10429,41 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 			};
 		},
 
+		/**
+		 * The stacked list of begun actions
+		 * @type {mul.action[]}
+		 */
 		present: [],
+		/**
+		 * Create an action object given the name.
+		 * @param {String} action
+		 * @return {nul.action}
+		 */
 		begin: function(action) {
 			if(nul.debugged) nul.assert(!action.parent, 'Actions consistency');
 			action.parent = this.doing();
 			this.present.unshift(action);
 		},
+		/**
+		 * End a given action object
+		 * @param {nul.action} action
+		 */
 		end: function(action) {
 			if(nul.debugged) nul.assert(this.present[0]===action, 'Actions consistency');
 			this.present.shift();
 		},
+		/**
+		 * Retrieve the last begun action still occuring.
+		 * @return {nul.action}
+		 */
 		doing: function() {
 			return this.present[0];
 		},
+		/**
+		 * Retrieve weither this action has to produce Log in the browser console
+		 * @param {String} name
+		 * @return {Boolean}
+		 */
 		isToLog: function(name) {
 			return nul.debugged && window.console && console.groupCollapsed && nul.debugged.logging && nul.debugged.logging[name];
 		}		
@@ -10553,7 +10596,7 @@ nul.extend( /** @lends nul */{
 	}.describe('Knownation'),
 	
 	/**
-	 * Compile a text and understand it in a fresh execution context
+	 * Compile a text, understand, have it queried and known
 	 * @param {String} txt
 	 * @return {nul.expression}
 	 * @throw {nul.ex.semantic}
@@ -10590,8 +10633,8 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 	/** @ignore */
 	//include: [JS.Observable],
 	/**
-	 * Exception thrown by NUL
 	 * @constructs
+	 * @class Exception thrown by NUL
 	 */
 	initialize: function(name, msg) {
 		this.message = msg;
@@ -10603,7 +10646,11 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 	 */
 	raise: function() { throw this; },
 	extend: /** @lends nul.ex */{
-		//TODO C
+		/**
+		 * If the parameter has been thrown, gets the best matching {nul.ex} : either the parameter as is either the parameter wrapped in the correct descendant of {nul.ex}
+		 * @param {any} x
+		 * @return {nul.ex} 
+		 */
 		be: function(x) {
 			if(window.console && x.fileName && x.stack && 'number'== typeof x.lineNumber) {
 				console.error(x);
@@ -10612,7 +10659,10 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 			if(!nul.ex.def(x)) return new nul.ex.unk(x);
 			return x;
 		},
-		//TODO C
+		/**
+		 * Get the JS errors from the given window and manage them as NUL errors
+		 * @param {Window} wnd as the constant {window}, a given frame or the return value of a {window.open}
+		 */
 		hook: function(wnd) {
 			window.onerror = nul.ex.js.onerror;
 		}, 
@@ -10627,9 +10677,9 @@ nul.ex = new JS.Class(/** @lends nul.ex# */{
 
 nul.ex.js = new JS.Class(nul.ex, /** @lends nul.ex.js# */{
 	/**
-	 * Exception thrown by JavaScript interpreter on JavaScript error.
 	 * @extend nul.ex
 	 * @constructs
+	 * @class Exception thrown by JavaScript interpreter on JavaScript error.
 	 */
 	initialize: function(name, msg, url, ln) {
 		this.callSuper(name, msg);
@@ -10652,9 +10702,9 @@ nul.ex.hook(window);
 
 nul.ex.semantic = new JS.Class(nul.ex, /** @lends nul.ex.semantic# */{
 	/**
-	 * Exception thrown by the NUL interpreter when the semantic of the NUL text is wrong
 	 * @extend nul.ex
 	 * @constructs
+	 * @class Exception thrown by the NUL interpreter when the semantic of the NUL text is wrong
 	 */
 	initialize: function(name, msg, xpr) {
 		this.callSuper();
@@ -10665,9 +10715,9 @@ nul.ex.semantic = new JS.Class(nul.ex, /** @lends nul.ex.semantic# */{
 
 nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 	/**
-	 * Exception thrown by the NUL interpreter when the syntax of the NUL text is wrong
 	 * @extend nul.ex
 	 * @constructs
+	 * @class Exception thrown by the NUL interpreter when the syntax of the NUL text is wrong
 	 */
 	initialize: function(name, msg, tknzr, type) {
 		this.callSuper();
@@ -10675,7 +10725,10 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 		this.until = { line: tknzr.line, clmn: tknzr.clmn };
 		this.type = type||'before';
 	},
-	//TODO C
+	/**
+	 * Select the incriminated text in an editor window
+	 * @param {codeMirror.editor} editor
+	 */
 	select: function(editor) {
 		switch(this.type) {
 		case 'before': editor.selectLines(editor.nthLine(this.token.line+1), this.token.clmn); break;
@@ -10687,9 +10740,9 @@ nul.ex.syntax = new JS.Class(nul.ex, /** @lends nul.ex.syntax# */{
 
 nul.ex.unk = new JS.Class(nul.ex, /** @lends nul.ex.unk# */{
 	/**
-	 * Exception thrown by we don't know where 
 	 * @extend nul.ex
 	 * @constructs
+	 * @class Exception thrown from we don't know where - should never happend (throw assertion or internal then)
 	 */
 	initialize: function(obj) {
 		this.callSuper('wtf', obj.toString());
@@ -10700,9 +10753,9 @@ nul.ex.unk = new JS.Class(nul.ex, /** @lends nul.ex.unk# */{
 
 nul.ex.internal = new JS.Class(nul.ex, /** @lends nul.ex.internal# */{
 	/**
-	 * A bug in the NUL interpreter - ideally never raised
 	 * @extend nul.ex
 	 * @constructs
+	 * @class A bug in the NUL interpreter - ideally never raised
 	 */
 	initialize: function(msg) {
 		this.callSuper('bug', msg);
@@ -10713,9 +10766,9 @@ nul.ex.internal = new JS.Class(nul.ex, /** @lends nul.ex.internal# */{
 
 nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 	/**
-	 * A bug in the NUL interpreter - ideally never raised
 	 * @extend nul.ex
 	 * @constructs
+	 * @class A failed assertion - ideally never raised
 	 */
 	initialize: function(msg) {
 		this.callSuper('assertion', msg);
@@ -10725,9 +10778,9 @@ nul.ex.assert = new JS.Class(nul.ex, /** @lends nul.ex.assert# */{
 
 nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
 	/**
-	 * A failed evaluation
 	 * @extend nul.ex
 	 * @constructs
+	 * @class A failed evaluation
 	 */
 	initialize: function(msg) {
 		this.callSuper('failure');
@@ -10754,8 +10807,8 @@ nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
 //TODO O: don't feed back an object { local:{..deps..} } : directly feed back {..deps..} instead
 nul.dependance = new JS.Class(/** @lends nul.dependance# */{
 	/**
-	 * A list of dependancies toward knowledges or external resources
 	 * @constructs
+	 * @class A list of dependancies toward knowledges or external resources
 	 * @param {nul.obj.local|nul.obj.data} dep
 	 */
 	initialize: function(dep) {
@@ -11041,9 +11094,9 @@ nul.load.executionReady.use = {'nul.globals': true, 'globalKnowledge': true};
 
 //TODO 2: "8x" should be an error, not "8 x" ... or not ?
 
-nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
+nul.tokenizer = new JS.Class(/** @lends nul.tokenizer# */{
 	/**
-	 * Text reader helper
+	 * @class Text reader helper
 	 * @constructs
 	 * @param {String} src The text content
 	 */
@@ -11056,7 +11109,7 @@ nul.tokenizer = new JS.Class(/** @lends nul.tokenizer */{
 	/**
 	 * The next token to consider
 	 */
-	token: /** @lends nul.tokenizer.token# */{
+	token: /** @lends nul.tokenizer#token# */{
 		/** The alphabet that recognised this token */
 		type: '',
 		/** The computed token value */
@@ -11401,8 +11454,8 @@ nul.operators = [
 
 nul.compiler = new JS.Class(/** @lends nul.compiler# */{
 	/**
-	 * Compilation information
 	 * @constructs
+	 * @class The object managing compilation of a text
 	 * @param {String} txt Text to compile
 	 */
 	initialize: function(txt) {
@@ -11828,7 +11881,7 @@ nul.understanding = {
 
 nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 	/**
-	 * Understanding context' informations
+	 * @class Understanding context informations
 	 * @constructs
 	 * @param {nul.understanding.base} prntUb The parent understanding base
 	 * @param {String} klgName The name to give to the created context if any special (if not, one will be generated)
@@ -11881,7 +11934,7 @@ nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
 
 nul.understanding.base.set = new JS.Class(nul.understanding.base, /** @lends nul.understanding.base.set# */{
 	/**
-	 * Understanding context' information inside brackets
+	 * @class Understanding context' information inside brackets
 	 * @extends nul.understanding.base
 	 * @constructs
 	 * @param {nul.understanding.base} prntUb The parent understanding base
@@ -11928,7 +11981,7 @@ nul.understanding.base.set = new JS.Class(nul.understanding.base, /** @lends nul
  
 nul.txt = new JS.Class(/** @lends nul.txt# */{
 	/**
-	 * Text output kernel
+	 * @class Text output kernel
 	 * @constructs
 	 */
 	initialize: function() {
@@ -11997,9 +12050,9 @@ nul.txt = new JS.Class(/** @lends nul.txt# */{
  *--------------------------------------------------------------------------*/
 
 /**
- * Expression flat description building helper 
+ * Singleton
  * @extends nul.txt
- * @class Singleton
+ * @class Expression flat description building helper
  */
 nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
 	/**
@@ -12191,8 +12244,8 @@ nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
  *--------------------------------------------------------------------------*/
 
 /**
- * HTML expression building helper 
- * @class Singleton
+ * Singleton
+ * @class HTML expression building helper 
  */
 html = {
 	_attrd: function(a) {
@@ -12247,9 +12300,9 @@ html = {
 };
 
 /**
- * Expression HTML description building helper 
+ * Singleton
+ * @class Expression HTML description building helper 
  * @extends nul.txt
- * @class Singleton
  */
 nul.txt.html = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
 	
@@ -12496,11 +12549,11 @@ nul.txt.html = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//doing
+
 /**
- * Expression HTML node description building 
+ * Singleton
+ * @class Expression HTML node description building 
  * @extends nul.txt
- * @class Singleton
  */
 nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
 	
@@ -12799,7 +12852,7 @@ nul.summary = function(itm) {
 
 nul.expression = new JS.Class(/** @lends nul.expression# */{
 	/**
-	 * Expression
+	 * @class NUL expression
 	 * @constructs
 	 * @param {String} tp Type of expression
 	 */
@@ -12812,7 +12865,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
  	},
 
 	/**
-	 * Fix my origin from this actual action
+	 * Fix my origin from a new action
 	 * @param {nul.expression} frm The expression this is derived from
 	 */
  	haveOrigin: function(frm) {
@@ -12821,7 +12874,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
  	},
 
 	/**
-	 * Fix my origin profenance to frm
+	 * Fix my origin provenance to frm without changing the action
 	 * @param {nul.expression} frm The expression this is derived from
 	 */
  	from: function(frm) {
@@ -12951,7 +13004,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 //////////////// Public
 
 	/**
-	 * Change the summarised texts.
+	 * Change the summarised human-destinated texts
 	 * Can be changed even for a built expression (doesn't change the meaning, just the debug drawing)
 	 */
 	invalidateTexts: function() {
@@ -13175,8 +13228,8 @@ nul.origin = new JS.Class({
 
 nul.browser = new JS.Class(/** @lends nul.browser# */{
 	/**
-	 * Generic expression browsing
 	 * @constructs
+	 * @class Generic expression browsing engine
 	 * @param {String} desc Text description
 	 */
 	initialize: function(desc) {
@@ -13235,8 +13288,8 @@ nul.browser = new JS.Class(/** @lends nul.browser# */{
 
 nul.browser.cached = new JS.Class(nul.browser, /** @lends nul.browser.cached# */{
 	/**
-	 * A browser that cache returns value in the expression JS object
 	 * @constructs
+	 * @class A browser that cache returns value in the expression JS object
 	 * @extends nul.browser
 	 * @param {String} desc Text description
 	 */
@@ -13374,8 +13427,8 @@ nul.browser.bijectif = new JS.Class(nul.browser.cached, /** @lends nul.browser.b
 
 		evolution: new JS.Class( /** @lends nul.browser.bijectif.evolution# */{
 			/**
-			 * @class An evolution object, where an expression is changed step by step
 			 * @constructs
+			 * @class An evolution object, where an expression is changed step by step
 			 * @param {nul.expression} xpr The first step of the evolution
 			 */
 			initialize: function(xpr) {
@@ -13582,7 +13635,7 @@ nul.solve.information = function(dps, jgmnt, jgEC, choice, klg) {
 
 nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# */{
 	/**
-	 * Represent a bunch of information about locals and absolute values.
+	 * @class Represent a bunch of information about locals and absolute values.
 	 * @extends nul.expression
 	 * @constructs
 	 * @param {String} klgName [optional] Knowledge name
@@ -14405,7 +14458,6 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
 		return rv;
 	},
 
-	//TODO C
 	/**
 	 * @param {String} selfRef
 	 * @param {nul.xpr.object[]} alrEqs TODO 2: rename param
@@ -14463,37 +14515,41 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  * Knowledge management helpers
  * @namespace
  */
-nul.klg = {
-	//TODO C
+nul.klg = /** @lends nul.klg */{
+	/**
+	 * Create or get an already-built unconditional
+	 * @param {Number} mul Multiplicity
+	 * @param {String} name Used only when creation is needed
+	 * @return {nul.klg.ncndtnl}
+	 */
 	unconditional: function(mul, name) {
 		if(!nul.klg.unconditionals[mul])
 			nul.klg.unconditionals[mul] = new nul.klg.ncndtnl(name, mul);
 		return nul.klg.unconditionals[mul];
 	},
-	//TODO C
+	/**
+	 * To avoid doubles, keep the built unconditionals in this table
+	 * @type {nul.klg.ncndtnl[]}
+	 */
 	unconditionals: {},
-	//TODO C
+
 	ncndtnl: new JS.Class(nul.xpr.knowledge, /** @lends nul.klg.ncndtnl# */{
 		/**
-		 * Unconditional knowledge : only characterised by a min/max existence, no real knowledge, condition
+		 * @class Unconditional knowledge : only characterised by a min/max existence without real knowledge, condition
 		 * @extends nul.xpr.knowledge
 		 * @constructs
-		 * @param {Number} min
-		 * @param {Number} max
+		 * @param {Number} mul Multiplicity
 		 */
 		initialize: function(name, mul) {
-			this.callSuper(name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']'));
-	        /*this.locals = this.emptyLocals();
-			this.minMult = mul;
-			this.maxMult = mul;
-			this.name = name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']');*/
+			this.callSuper(name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']'), mul);
 			this.alreadyBuilt();
 		},
-		//TODO C
+		/**
+		 * Create a brand new knowledge out of the sole multiplicity information
+		 */
 		modifiable: function() {
 			if(0== this.maxMult) nul.fail('No fewer than never');
-			//TODO 1: origin management ?
-			return new nul.xpr.knowledge(null, this.minMult, this.maxMult);
+			return new nul.xpr.knowledge(null, this.minMult, this.maxMult).from(this);
 		},
 		
 		/** @constant */
@@ -14504,9 +14560,15 @@ nul.klg = {
 		eqCls: [],
 		/** @constant */
 		veto: [],
-		//TODO C
+		/**
+		 * The minimum existance multiplicity is constant
+		 * @return {Number}
+		 */
 		minXst: function() { return this.minMult; },
-		//TODO C
+		/**
+		 * The maximum existance multiplicity is constant
+		 * @return {Number}
+		 */
 		maxXst: function() { return this.maxMult; }
 	}),
 	
@@ -14584,6 +14646,7 @@ nul.xpr.knowledge.include({failure: nul.klg.never});
 
 nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# */{
 	/**
+	 * @class Browser to replace a erference to a knowledge to a reference to another knowledge and modifying the local names 
 	 * @extends nul.browser.bijectif
 	 * @constructs
 	 * @param {String} srcKlgRef The knowledge name whose space the expression is taken of
@@ -14651,8 +14714,7 @@ nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# *
 
 nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.represent# */ {
 	/**
-	 * Special browser to modifies an expression, replacing any occurrence of an object that appears in an equivalence class
-	 * by the equivalence class representant
+	 * @class Browser to replace in an expression any occurrence of an object that appears in an equivalence class by the equivalence class representant
 	 * @extends nul.browser.bijectif
 	 * @constructs
 	 * @param {Access} access The access to use to replace values
@@ -14790,7 +14852,7 @@ nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.repres
 nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 //TODO 4: rename local when we have a non-anonymous name
 	/**
-	 * Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes 
+	 * @class Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes 
 	 * @extends nul.expression
 	 * @constructs
 	 * @param {nul.xpr.object} obj An object the class is initialised zith
@@ -14997,7 +15059,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	},
 	
 	/**
-	 * Try to see the intersections of these two sets - knowing that these two sets can have different 'oppinions' about it.
+	 * Try to see the programmed intersections of these two sets - knowing that these two sets can have different 'opinions' about it.
 	 * Fails when both intersection fail, gives nothing when both intersection give nothing, else give any of the result the intersection gave.
 	 * @param {nul.xpr.knowledge} klg
 	 * @param {nul.obj.defined} s1
@@ -15034,6 +15096,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 	 * Compute the influence of this equivalence class (excluded 'exclElm')
 	 * @param {nul.xpr.knowledge} klg
 	 * @param {String: integer} excl Element to exclude, from the summary.components
+	 * @param {String: integer} only Element to filter, from the summary.components
 	 * @param {association(ndx=>infl)} already The influences already computed (modified by side-effect)
 	 * @return {association(ndx=>infl)} Where 'ndx' is a local index and 'infl' 1 or 2 
 	 */
@@ -15148,7 +15211,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 
 nul.klg.ior3 = new JS.Class(nul.expression, /** @lends nul.klg.ior3# */{
 	/**
-	 * Represent a list of possible knowledges 
+	 * @class Represent a list of possible knowledges 
 	 * @extends nul.expression
 	 * @constructs
 	 * @param {nul.xpr.knowledge[]} choices The possible cases
@@ -15213,7 +15276,7 @@ nul.klg.ior3 = new JS.Class(nul.expression, /** @lends nul.klg.ior3# */{
 
 nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	/**
-	 * A value associated with a knowledge : A value that can be unified to several different defined object, along some conditions.
+	 * @class A value associated with a knowledge : A value that can be unified to several different defined object, along some conditions.
 	 * @extends nul.expression
 	 * @constructs
 	 * @param {nul.xpr.object} value
@@ -15235,16 +15298,16 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 //////////////// public
 
 	/**
-	 * 'klg' now knows all what this possible knows
+	 * The knowledge now knows all what this possible knows - gets the value expression then
 	 * @param {nul.xpr.knowledge} klg destination knowledge
-	 * @return nul.xpr.object This modified value (to refer the new knowledge)
+	 * @return {nul.xpr.object} This modified value (to refer the new knowledge)
 	 */
 	valueKnowing: function(klg) {
 		return klg.merge(this.knowledge, this.value);
 	},
 	
 	/**
-	 * Returns a possible, this unified to o.
+	 * Returns a possible, this unified to an object
 	 * @param {nul.xpr.object} o
 	 * @return {nul.xpr.possible}
 	 * @throws {nul.ex.failure}
@@ -15346,10 +15409,10 @@ nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 
 nul.xpr.failure = nul.xpr.possible.prototype.failure = new JS.Singleton(nul.xpr.possible, /** @lends nul.xpr.failure# */{
 	/**
-	 * Specific possible that never give any value.
+	 * Singleton
+	 * @class Specific possible that never give any value.
 	 * @extends nul.xpr.possible
 	 * @constructs
-	 * @class Singleton
 	 */
 	initialize: function() { this.callSuper(); },
 	/** @constant */
@@ -15386,7 +15449,7 @@ nul.xpr.possible.cast = function(o) {
 
 nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
 	/**
-	 * Object
+	 * @class NUL object
 	 * @extends nul.expression
 	 * @constructs
 	 */
@@ -15429,7 +15492,7 @@ nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
 
 nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.object.reself# */{
 	/**
-	 * A browser to change the self-referant locals in an object definition
+	 * @class A browser to change the self-referant locals in an object definition
 	 * @constructs
 	 * @extends nul.browser.bijectif
 	 * @param {String} selfRef The self-reference to replace
@@ -15518,7 +15581,7 @@ nul.obj = nul.debugged?/** @lends nul.obj */{
 
 nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
-	 * Defined object : are defined its composition, its attributes, ...
+	 * @class Defined object : are defined by the object its composition, its attributes, ... not by the knowledge
 	 * @extends nul.xpr.object
 	 * @constructs
 	 */
@@ -15666,7 +15729,7 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 
 nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 	/**
-	 * The objects that is defined in javascript, along functions and/or set listing.
+	 * @class The objects that is defined in javascript, along functions and/or set listing.
 	 * @constructs
 	 * @extends nul.obj.defined
 	 * @param {Object} singleton Sub-class definition. Used when sub-classment is made for a singleton, to avoid new Class.create()()
@@ -15769,7 +15832,7 @@ nul.obj.hc.filter = function(objs, exp, att, wrp) {
 
 nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 	/**
-	 * Represents the application of a point to an image.
+	 * @class Represents the application of a point to an image.
 	 * @example point &rArr; image
 	 * @constructs
 	 * @extends nul.obj.defined
@@ -15841,7 +15904,7 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 
 nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
 	/**
-	 * Any expression that act as a list or a set
+	 * @class Any expression that act as a list or a set
 	 * @extends nul.obj.defined
 	 * @constructs
 	 */
@@ -15849,7 +15912,9 @@ nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
 		this.callSuper();
 	},
 	
-	//TODO C
+	/**
+	 * Yes, it is a list.
+	 */
 	isList: function() { return true; },
 	/**
 	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The set who give, for each parameter, the recursive parameter applied
@@ -15878,7 +15943,7 @@ nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
 
 nul.obj.litteral = new JS.Class(nul.obj.defined, /** @lends nul.obj.litteral# */ {
 	/**
-	 * Abstract litteral - hold a javascript litteral value
+	 * @class Abstract litteral - hold a javascript litteral value
 	 * @constructs
 	 * @extends nul.obj.defined
 	 * @param {Number|String|Boolean} val Javascript value to hold.
@@ -15943,8 +16008,9 @@ nul.obj.litteral.number = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litt
 
 //////////////// nul.xpr.object implementation
 
-	//TODO 3: {2[Q]} ==> ( Q _, Q _ ) ? 
-	//TODO C
+	/**
+	 * TODO 3: {2[Q]} ==> ( Q _, Q _ ) ?
+	 */ 
 	subHas: function(o) {
 		nul.fail('TODO 3: number has');
 	},
@@ -15997,13 +16063,17 @@ nul.obj.litteral.make = function(v) {
 	return new nul.obj.litteral[typeof v](v);
 };
 
-//TODO C
+/**
+ * Hard-coding of the booleans : no generic definition while they are two
+ */
 nul.obj.litteral['boolean']['true'] = new nul.obj.litteral['boolean'](true);
 nul.obj.litteral['boolean']['false'] = new nul.obj.litteral['boolean'](false);
 nul.obj.litteral['boolean']['true'].attributes['! '] = nul.obj.litteral['boolean']['false'];
 nul.obj.litteral['boolean']['false'].attributes['! '] = nul.obj.litteral['boolean']['true'];
 
-//TODO C
+/**
+ * Virtual 'tags' of litterals
+ */
 nul.obj.litteral.tag = {
 	string: new nul.obj.litteral.string('#text'),
 	number: new nul.obj.litteral.string('#number'),
@@ -16028,7 +16098,7 @@ nul.obj.litteral.tag = {
 
 nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 	/**
-	 * XML node : tag, attributes and list content. There are no restrictions on content and/or attributes.
+	 * @class XML-like node : tag, attributes and list content. There are no restrictions on content and/or attributes.
 	 * @extends nul.obj.defined
 	 * @constructs
 	 * @param {String} tag The tagName of the XML node
@@ -16055,7 +16125,11 @@ nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 
 //////////////// nul.obj.defined implementation
 
-	//TODO C
+	/**
+	 * Develop the unification of tag, attributes and content
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 */
 	subUnified: function(o, klg) {
 		if('node'!= o.expression) nul.fail(o, ' not a node');
 		var nattrs = merge(this.attributes, o.attributes, function(a, b, i) {
@@ -16064,7 +16138,10 @@ nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 		});
 		return new nul.obj.node(this.tag, nattrs, klg.unify(this.content, o.content));
 	},
-	//TODO C
+	/**
+	 * Generic node properties
+	 * @constant
+	 */
 	properties: {
 		'': function() { return new nul.obj.litteral.string(this.tag); },
 		'# ': function(klg) { return this.content.attribute('# ', klg); }
@@ -16180,7 +16257,7 @@ nul.obj.node.relativise = function(tpl, objs) {
 
 nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 	/**
-	 * Pair used to build lists : a head and a tail.
+	 * @class Pair used to build lists : a head and a tail.
 	 * @extends nul.obj.list
 	 * @constructs
 	 * @param {nul.xpr.possible} first List head
@@ -16312,7 +16389,7 @@ nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 		return this.callSuper();
 	},
 	
-	//TODO C
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link recursion} */
 	sum_recursion: function() {
 		if(!this.selfRef) this.selfRef = nul.execution.name.gen('obj.local.self');
 		var rv = [];
@@ -16358,7 +16435,7 @@ nul.obj.pair.list = function(/**nul.xpr.object|null*/flw, /**nul.xpr.possible[]*
 //TODO 3: express these as descendant from nul.obj.hc
 nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
 	/**
-	 * A set hard-coded in javascript
+	 * @class A set hard-coded in javascript
 	 * @extends nul.obj.defined
 	 * @constructs
 	 */
@@ -16393,8 +16470,8 @@ nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
 });
 
 /**
- * Empty set : &phi;
- * @class Singleton
+ * Singleton
+ * @class Empty set : &phi;
  * @extends nul.obj.hcSet
  */
 nul.obj.empty = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.empty# */{
@@ -16415,8 +16492,8 @@ nul.obj.empty = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.empty# */{
 });
 
 /**
- * Set of number litterals
- * @class Singleton
+ * Singleton
+ * @class Set of number litterals
  * @extends nul.obj.hcSet
  */
 nul.obj.number = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.number# */{
@@ -16439,8 +16516,8 @@ nul.obj.number = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.number# */{
 });
 
 /**
- * Set of string litterals
- * @class Singleton
+ * Singleton
+ * @class Set of string litterals
  * @extends nul.obj.hcSet
  */
 nul.obj.string = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.string# */{
@@ -16453,8 +16530,7 @@ nul.obj.string = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.string# */{
 });
 
 /**
- * Set of boolean litterals
- * @class Singleton
+ * @class Set of boolean litterals
  * @extends nul.obj.hcSet
  */
 nul.obj.bool = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.bool# */{
@@ -16476,7 +16552,7 @@ nul.obj.bool = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.bool# */{
 nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 	//TODO 4: solve or XML make them define as extension ?
 	/**
-	 * A range of integer numbers
+	 * @class A range of integer numbers
 	 * @extends nul.obj.hcSet
 	 * @constructs
 	 * @param {Number} lwr Lower bound of the set (or nothing for no bound)
@@ -16492,7 +16568,9 @@ nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 		
 		this.callSuper();
 	},
-	//TODO C
+	/**
+	 * {nul.obj.range} can intersect with {@link nul.obj.number} or with another range.
+	 */
 	intersect: function(o, klg) {
 		if('range'== o.expression) {
 			var lwr = this.lower<o.lower?o.lower:this.lower;
@@ -16502,7 +16580,9 @@ nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 		}
 		return this.callSuper();
 	},
-	//TODO C
+	/**
+	 * The given object is a number, integer and between the bounds.
+	 */
 	subHas: function(o, att) {
 		if(this.lower==this.upper && !o.isA(nul.obj.defined)) {
 			//TODO 3: return "o=nbr[this.bound]"
@@ -16518,7 +16598,9 @@ nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 
 //////////////// nul.obj.defined implementation
 
-	//TODO C
+	/**
+	 * Try to unify to a pair or to another range.
+	 */
 	subUnified: function(o, klg) {
 		this.use(); nul.obj.use(o); nul.klg.mod(klg);
 		
@@ -16543,11 +16625,15 @@ nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
 	sum_index: function() { return this.indexedSub(this.lower, this.upper); }
 });
 
-//TODO C
+/** The set of numbers */
 nul.globals.Q = nul.obj.number;
+/** The set of integers */
 nul.globals.Z = new nul.obj.range();
+/** The set of natural numbers */
 nul.globals.N = new nul.obj.range(0);
+/** The set of texts/strings */
 nul.globals.text = nul.obj.string;
+/** The set of boolean (2 elements) */
 nul.globals.bool = nul.obj.bool;
 
 /*
@@ -16567,7 +16653,7 @@ nul.globals.bool = nul.obj.bool;
 
 nul.obj.undefnd = new JS.Class(nul.xpr.object, /** @lends nul.obj.undefnd# */{
 	/**
-	 * Undefined object
+	 * @class Undefined object
 	 * @extends nul.xpr.object
 	 * @constructs
 	 */
@@ -16595,7 +16681,7 @@ nul.obj.data = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.data# */{
 	/**
 	 * @extends nul.obj.undefnd
 	 * @constructs
-	 * Refers to a data-source from nul.data...
+	 * @class Refers to a data-source from nul.data...
 	 */
 	initialize: function(ds) {
 		this.source = ds;
@@ -16633,7 +16719,7 @@ nul.obj.data = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.data# */{
 
 nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	/**
-	 * Define an object that is a value of a local
+	 * @class Define an object that has a local unknown value
 	 * @constructs
 	 * @extends nul.obj.undefnd
 	 * @param {String} klgRef The knowledge this local applies to
@@ -16722,7 +16808,7 @@ nul.obj.local.self.ref = '&crarr;';
 
 nul.obj.operation = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.operation# */{
 	/**
-	 * Define an operator applied to several objects
+	 * @class Define an operator applied to one or several objects
 	 * @constructs
 	 * @extends nul.obj.undefnd
 	 * @param {String} operator The operator binding
@@ -16767,8 +16853,8 @@ nul.obj.operation.Nary = new JS.Class(nul.obj.operation, {
 
 nul.data = new JS.Class(/** @lends nul.data# */{
 	/**
-	 * The data-source provide basic data queries : select, insert, update.
 	 * @constructs
+	 * @class The data-source providing basic data interaction.
 	 */
 	initialize: function(context, index, singleton) {
 		if(singleton) this.extend(singleton);
@@ -16824,8 +16910,8 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 
 		querier: new JS.Class(nul.browser.bijectif, /** @lends nul.data.querier */{
 			/**
-			 * The browser to replace atomic query-dependant values by their queried value
 			 * @constructs
+			 * @class The browser to replace atomic query-dependant values by their queried value
 			 * @extends nul.browser.bijectif
 			 * @param {nul.data.context} context
 			 * @param {Object} prm Parameter given to the queried function
@@ -16854,8 +16940,8 @@ nul.data = new JS.Class(/** @lends nul.data# */{
 
 nul.data.context = new JS.Class(/** @lends nul.data.context# */{
 	/**
-	 * The data-source provider
 	 * @constructs
+	 * @class The data-source provider
 	 */
 	initialize: function(name, distance, singleton) {
 		/**
@@ -16896,8 +16982,8 @@ nul.data.context = new JS.Class(/** @lends nul.data.context# */{
 });
 
 /**
- * The context used for all computations that doesn't require a connection
- * @class Singleton
+ * Singleton
+ * @class The context used for all computations that doesn't require a connection
  * @extends nul.data.context
  */
 nul.data.context.local = new nul.data.context('local');
@@ -16940,7 +17026,11 @@ nul.data.ajax = {
 		return objFct(rq);
 	},
 	
-	//TODO C
+	/**
+	 * Load a NUL library (written in NUL) from an URL
+	 * @param {String} url
+	 * @param {String} id optional : url is used if no id is provided.
+	 */
 	loadNul : function(url, id) {
 		nul.data.ajax.load(url,
 			function(t) { return nul.read(t.responseText, id || url); } );
@@ -16952,16 +17042,16 @@ nul.data.ajax = {
  */
 nul.load.ajax = function() {
 	/**
-	 * The 'library' global
-	 * @class Singleton
+	 * Singleton
+	 * @class The 'library' global
 	 * @extends nul.obj.node
 	 */
 	nul.globals.library = new nul.obj.hc(/** @lends nul.globals.library */{
 		
 		attributes: {
 			/**
-			 * AJAX library loader
-			 * @class Singleton
+			 * Singleton
+			 * @class AJAX library loader
 			 * @extends nul.obj.hc
 			 * @name attributes.file
 			 * @memberOf nul.globals.library
@@ -17005,9 +17095,9 @@ nul.load.ajax.provide = ['nul.globals'];
 
 nul.data.time = new JS.Class(nul.obj.node, /** @lends nul.data.time# */{
 	/**
-	 * The DateTime object as a node with attributes
 	 * @extends nul.obj.node
 	 * @constructs
+	 * @class The DateTime object as a node with attributes
 	 * @param {Date} dto
 	 */
 	initialize: function(dto) {
@@ -17041,8 +17131,8 @@ nul.data.time.nul2js = {
  */
 nul.load.time = function() {
 	/**
-	 * The 'time' global
-	 * @class Singleton
+	 * Singleton
+	 * @class The 'time' global
 	 * @extends nul.obj.hc
 	 */
 	nul.globals.time = new nul.obj.hc(/** @lends nul.globals.time# */{
@@ -17082,16 +17172,16 @@ nul.load.time = function() {
 		},
 		/**
 		 * @constant
-		 * @name nul.globals.time.attributes
+		 * @name nul.globals.time#attributes
 		 */
 		attributes: {
 			/**
-			 * The 'time.now' global
-			 * @class Singleton
-			 * @name nul.globals.time.attributes.now
+			 * Singleton
+			 * @class The 'time.now' global
+			 * @name nul.globals.time#attributes.now
 			 * @extends nul.data
 			 */
-			now: new nul.data(nul.data.context.local, 'now', /** @lends nul.globals.time.attributes.now# */{
+			now: new nul.data(nul.data.context.local, 'now', /** @lends nul.globals.time#attributes.now# */{
 				/**
 				 * Get the time when queried
 				 */
@@ -17121,15 +17211,16 @@ nul.load.time = function() {
  *--------------------------------------------------------------------------*/
 
 /**
- * The context of AJAX-accessible items
- * @class Singleton
+ * Singleton
+ * @class The context of AJAX-accessible items
  * @extends nul.data.context
  */
 nul.data.dom = new nul.data.context('DOM', 10);
 
-nul.data.dom.url = new JS.Class(nul.data,/** @lends nul.data.dom.url# */{
+nul.data.dom.doc = new JS.Class(nul.data,/** @lends nul.data.dom.doc# */{
 	/**
 	 * @constructs
+	 * @class Data access to an XML document
 	 * @extends nul.data
 	 * @param {URL | XMLdocument} doc
 	 */
@@ -17142,8 +17233,8 @@ nul.data.dom.url = new JS.Class(nul.data,/** @lends nul.data.dom.url# */{
 
 nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element */{
 	/**
-	 * A NUL object corresponding to a DOM element (XML or HTML)
 	 * @constructs
+	 * @class Data access to an XML element
 	 * @extends nul.obj.hc
 	 * @param {HTMLElement} element
 	 */
@@ -17208,22 +17299,22 @@ nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element 
  * Creates DOM and XML globals
  */
 nul.load.dom = function() {
-	nul.globals.document = new nul.data.dom.url(this).object;
+	nul.globals.document = new nul.data.dom.doc(this).object;
 	/**
-	 * The 'xml' global
-	 * @class Singleton
+	 * Singleton
+	 * @class The 'xml' global
 	 * @extends nul.obj.hc
 	 */
 	nul.globals.xml = new nul.obj.hc(/** @lends nul.globals.xml# */{
 		/**
 		 * Give an XML node out of an URL string
 		 * @param {nul.obj.defined} pnt
-		 * @return {nul.data.dom.url} The loaded document
+		 * @return {nul.data.dom.doc} The loaded document
 		 */
 		seek: function(pnt) {
 			if('string'!= pnt.expression) nul.ex.semantic('AJAX', 'Ajax retrieve XML documents only from a string URL', pnt);
 			return nul.data.ajax.load(pnt.value,
-					function(t) { return new nul.data.dom.url(t.responseXML); } );
+					function(t) { return new nul.data.dom.doc(t.responseXML); } );
 		},
 		//TODO 2: list nodes that fit for xml : string attributes and XMLnode/text content
 		/** @constant */

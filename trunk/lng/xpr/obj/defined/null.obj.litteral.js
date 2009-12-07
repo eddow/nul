@@ -8,7 +8,7 @@
 
 nul.obj.litteral = new JS.Class(nul.obj.defined, /** @lends nul.obj.litteral# */ {
 	/**
-	 * Abstract litteral - hold a javascript litteral value
+	 * @class Abstract litteral - hold a javascript litteral value
 	 * @constructs
 	 * @extends nul.obj.defined
 	 * @param {Number|String|Boolean} val Javascript value to hold.
@@ -73,8 +73,9 @@ nul.obj.litteral.number = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litt
 
 //////////////// nul.xpr.object implementation
 
-	//TODO 3: {2[Q]} ==> ( Q _, Q _ ) ? 
-	//TODO C
+	/**
+	 * TODO 3: {2[Q]} ==> ( Q _, Q _ ) ?
+	 */ 
 	subHas: function(o) {
 		nul.fail('TODO 3: number has');
 	},
@@ -127,13 +128,17 @@ nul.obj.litteral.make = function(v) {
 	return new nul.obj.litteral[typeof v](v);
 };
 
-//TODO C
+/**
+ * Hard-coding of the booleans : no generic definition while they are two
+ */
 nul.obj.litteral['boolean']['true'] = new nul.obj.litteral['boolean'](true);
 nul.obj.litteral['boolean']['false'] = new nul.obj.litteral['boolean'](false);
 nul.obj.litteral['boolean']['true'].attributes['! '] = nul.obj.litteral['boolean']['false'];
 nul.obj.litteral['boolean']['false'].attributes['! '] = nul.obj.litteral['boolean']['true'];
 
-//TODO C
+/**
+ * Virtual 'tags' of litterals
+ */
 nul.obj.litteral.tag = {
 	string: new nul.obj.litteral.string('#text'),
 	number: new nul.obj.litteral.string('#number'),

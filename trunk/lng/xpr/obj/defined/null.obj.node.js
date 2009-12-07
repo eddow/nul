@@ -8,7 +8,7 @@
 
 nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 	/**
-	 * XML node : tag, attributes and list content. There are no restrictions on content and/or attributes.
+	 * @class XML-like node : tag, attributes and list content. There are no restrictions on content and/or attributes.
 	 * @extends nul.obj.defined
 	 * @constructs
 	 * @param {String} tag The tagName of the XML node
@@ -35,7 +35,11 @@ nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 
 //////////////// nul.obj.defined implementation
 
-	//TODO C
+	/**
+	 * Develop the unification of tag, attributes and content
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 */
 	subUnified: function(o, klg) {
 		if('node'!= o.expression) nul.fail(o, ' not a node');
 		var nattrs = merge(this.attributes, o.attributes, function(a, b, i) {
@@ -44,7 +48,10 @@ nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 		});
 		return new nul.obj.node(this.tag, nattrs, klg.unify(this.content, o.content));
 	},
-	//TODO C
+	/**
+	 * Generic node properties
+	 * @constant
+	 */
 	properties: {
 		'': function() { return new nul.obj.litteral.string(this.tag); },
 		'# ': function(klg) { return this.content.attribute('# ', klg); }

@@ -10,7 +10,7 @@ nul.obj.data = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.data# */{
 	/**
 	 * @extends nul.obj.undefnd
 	 * @constructs
-	 * Refers to a data-source from nul.data...
+	 * @class Refers to a data-source from nul.data...
 	 */
 	initialize: function(ds) {
 		this.source = ds;

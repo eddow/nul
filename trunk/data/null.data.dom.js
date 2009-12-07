@@ -7,15 +7,16 @@
  *--------------------------------------------------------------------------*/
 
 /**
- * The context of AJAX-accessible items
- * @class Singleton
+ * Singleton
+ * @class The context of AJAX-accessible items
  * @extends nul.data.context
  */
 nul.data.dom = new nul.data.context('DOM', 10);
 
-nul.data.dom.url = new JS.Class(nul.data,/** @lends nul.data.dom.url# */{
+nul.data.dom.doc = new JS.Class(nul.data,/** @lends nul.data.dom.doc# */{
 	/**
 	 * @constructs
+	 * @class Data access to an XML document
 	 * @extends nul.data
 	 * @param {URL | XMLdocument} doc
 	 */
@@ -28,8 +29,8 @@ nul.data.dom.url = new JS.Class(nul.data,/** @lends nul.data.dom.url# */{
 
 nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element */{
 	/**
-	 * A NUL object corresponding to a DOM element (XML or HTML)
 	 * @constructs
+	 * @class Data access to an XML element
 	 * @extends nul.obj.hc
 	 * @param {HTMLElement} element
 	 */
@@ -94,22 +95,22 @@ nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element 
  * Creates DOM and XML globals
  */
 nul.load.dom = function() {
-	nul.globals.document = new nul.data.dom.url(this).object;
+	nul.globals.document = new nul.data.dom.doc(this).object;
 	/**
-	 * The 'xml' global
-	 * @class Singleton
+	 * Singleton
+	 * @class The 'xml' global
 	 * @extends nul.obj.hc
 	 */
 	nul.globals.xml = new nul.obj.hc(/** @lends nul.globals.xml# */{
 		/**
 		 * Give an XML node out of an URL string
 		 * @param {nul.obj.defined} pnt
-		 * @return {nul.data.dom.url} The loaded document
+		 * @return {nul.data.dom.doc} The loaded document
 		 */
 		seek: function(pnt) {
 			if('string'!= pnt.expression) nul.ex.semantic('AJAX', 'Ajax retrieve XML documents only from a string URL', pnt);
 			return nul.data.ajax.load(pnt.value,
-					function(t) { return new nul.data.dom.url(t.responseXML); } );
+					function(t) { return new nul.data.dom.doc(t.responseXML); } );
 		},
 		//TODO 2: list nodes that fit for xml : string attributes and XMLnode/text content
 		/** @constant */

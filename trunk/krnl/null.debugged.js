@@ -56,7 +56,7 @@ nul.debugged = {
 	 * Assert this object implements a class
 	 * @param {Class} cls The expected class
 	 * @param {String} nm [optional] The description of what is expected
-	 * @param {function(obj) {Boolean}} cb [optional] Cqll bqck to try on the tested objects
+	 * @param {function(obj) {Boolean}} cb [optional] Call back to try on the tested objects
 	 * @return nothing
 	 * @throws {assertException}
 	 */
@@ -79,7 +79,7 @@ nul.debugged = {
 	 * Assert these objects has a member (use a member which name defines the class)
 	 * @param {Class} cls The expected class
 	 * @param {String} nm [optional] The description of what is expected
-	 * @param {function(obj) {Boolean}} cb [optional] Cqll bqck to try on the tested objects
+	 * @param {function(obj) {Boolean}} cb [optional] Call back to try on the tested objects
 	 * @return nothing
 	 * @throws {assertException}
 	 */
