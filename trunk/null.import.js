@@ -30,9 +30,10 @@ nul.loading.scripts = [
 
 'lng/null.execution',
 
-'lng/txt/in/null.understand',
-'lng/txt/in/null.compile',
 'lng/txt/in/null.tokenizer',
+'lng/txt/in/null.compile',
+'lng/txt/in/null.compiled',
+'lng/txt/in/null.understand',
 
 'lng/txt/out/null.txt',
 'lng/txt/out/null.txt.flat',
