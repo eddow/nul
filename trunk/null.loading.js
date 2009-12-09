@@ -7,11 +7,6 @@
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * @fileoverview
- * This file just load the needed script files. 
- */
-
 nul = new JS.Singleton(/** @lends nul */{ load: {} });
 
 nul.rootPath = '';

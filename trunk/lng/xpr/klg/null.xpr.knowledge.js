@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=uses: /src/lng/xpr/klg/nul.klg.ior3, /src/lng/xpr/klg/nul.klg.eqCls, /src/lng/xpr/klg/nul.klg.browse, /src/lng/xpr/klg/nul.klg.algo
 
 nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# */{
 	/**
@@ -560,11 +561,17 @@ if(nul.action) nul.localsMdl = new JS.Module(/** @lends nul.xpr.knowledge# */{
  	}
  	
 }); else nul.localsMdl = new JS.Module(/** @ignore */{
+	/** @ignore */
 	useLocalNames: function() {},
+	/** @ignore */
 	emptyLocals: function() { return 0; },
+	/** @ignore */
 	concatLocals: function(klg) { this.locals += klg.locals; },
+	/** @ignore */
 	freeLastLocal: function() { --this.locals; },
+	/** @ignore */
 	nbrLocals: function() { return this.locals; },
+	/** @ignore */
  	newLocal: function(name, ndx) {
  		if('undefined'== typeof ndx) ndx = this.locals++;
  		return new nul.obj.local(this.name, ndx);

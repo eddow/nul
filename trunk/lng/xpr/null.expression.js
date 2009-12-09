@@ -5,6 +5,13 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+/*=
+ * requires: /src/lng/null.execution
+ * uses:
+ * /src/txt/out/null.txt.node, /src/txt/out/null.txt.flat
+ * /src/lng/algo/null.browse, /src/lng/algo/null.recur, /src/lng/algo/null.solve
+ * /src/krnl/null.dependance
+ */
 
 /**
  * Shortcut to build expression summary items

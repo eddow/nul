@@ -70,6 +70,8 @@ nul.loading.scripts = [
 'lng/xpr/obj/undefnd/null.obj.local',
 'lng/xpr/obj/undefnd/null.obj.operation',
 
+'lng/algo/null.recur',
+
 'data/null.data',
 'data/null.data.ajax',
 'data/null.data.time',

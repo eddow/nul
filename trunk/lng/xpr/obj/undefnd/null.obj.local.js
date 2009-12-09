@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/undefnd/null.obj.undefnd
 
 nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	/**

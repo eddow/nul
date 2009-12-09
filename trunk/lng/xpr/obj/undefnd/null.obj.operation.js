@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/undefnd/null.obj.undefnd
 
 //TODO 4: ((a + b) + (c + d)) => (a + b + c + d)
 //TODO 4: ((a - b) - c) =?> (a - (b + c)) 

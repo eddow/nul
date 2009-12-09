@@ -31,10 +31,9 @@ function isClsNdx(obj, ndx) {
 }
 
 /**
- * Gets weither the index is defined in the class definition
- * @param obj
- * @param ndx
- * @return {Boolean}
+ * Creates an empty object having the same class as a given one
+ * @param {Object} obj Object to mimic
+ * @return {Object}
  */
 function newEmpty(obj) {
 	if('object' != typeof obj) return obj;
@@ -55,7 +54,7 @@ function newEmpty(obj) {
  * @return
  */
 function ownNdx(itm, fct) {
-	//TODO 3: use yield
+	//TODO 3: use yield?
 	if(fct) {
 		var rv = newEmpty(itm);
 		for(var ndx in itm)

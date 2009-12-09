@@ -16,17 +16,19 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 	 */
 	initialize: function(name, applied, args) {
 		this.name = name;
-		this.applied = applied;
-		//TODO 1: this call f*cks the perfs
-		//this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
-		this.args = args;
-		nul.action.begin(this);
-		this.isToLog = nul.action.isToLog(name);
-		if(this.isToLog) {
-			console.groupCollapsed(name);
-			console.log('Applied to', applied);
-			console.log('Arguments', args);
+		if(applied) {
+			this.applied = applied;
+			//TODO 1: this call f*cks the perfs
+			//this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
+			this.args = args;
+			this.isToLog = nul.action.isToLog(name);
+			if(this.isToLog) {
+				console.groupCollapsed(name);
+				console.log('Applied to', applied);
+				console.log('Arguments', args);
+			}
 		}
+		nul.action.begin(this);
 	},
 	/**
 	 * Retrieve the english string describing the better this peculiar action
@@ -125,3 +127,4 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 
 Function.prototype.describe = nul.action.described;
 
+new nul.action('Bereshit');

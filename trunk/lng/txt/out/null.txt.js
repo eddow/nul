@@ -5,7 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
+
 nul.txt = new JS.Class(/** @lends nul.txt# */{
 	/**
 	 * @class Text output kernel

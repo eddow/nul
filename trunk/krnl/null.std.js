@@ -10,7 +10,6 @@
  * @name nul
  * @namespace
  */
-
 nul.extend( /** @lends nul */{
 	/**
 	 * List of failures that happened during these trys

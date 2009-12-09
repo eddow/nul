@@ -9992,11 +9992,6 @@ $.expr.filter.ATTR = function(elem, match) {
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * @fileoverview
- * This file just load the needed script files. 
- */
-
 nul = new JS.Singleton(/** @lends nul */{ load: {} });
 
 nul.rootPath = '';
@@ -10105,10 +10100,9 @@ function isClsNdx(obj, ndx) {
 }
 
 /**
- * Gets weither the index is defined in the class definition
- * @param obj
- * @param ndx
- * @return {Boolean}
+ * Creates an empty object having the same class as a given one
+ * @param {Object} obj Object to mimic
+ * @return {Object}
  */
 function newEmpty(obj) {
 	if('object' != typeof obj) return obj;
@@ -10129,7 +10123,7 @@ function newEmpty(obj) {
  * @return
  */
 function ownNdx(itm, fct) {
-	//TODO 3: use yield
+	//TODO 3: use yield?
 	if(fct) {
 		var rv = newEmpty(itm);
 		for(var ndx in itm)
@@ -10364,17 +10358,19 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 	 */
 	initialize: function(name, applied, args) {
 		this.name = name;
-		this.applied = applied;
-		//TODO 1: this call f*cks the perfs
-		//this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
-		this.args = args;
-		nul.action.begin(this);
-		this.isToLog = nul.action.isToLog(name);
-		if(this.isToLog) {
-			console.groupCollapsed(name);
-			console.log('Applied to', applied);
-			console.log('Arguments', args);
+		if(applied) {
+			this.applied = applied;
+			//TODO 1: this call f*cks the perfs
+			//this.appliedNode = applied.toNode?applied.toNode():$.text('TODO 1: unnoded');
+			this.args = args;
+			this.isToLog = nul.action.isToLog(name);
+			if(this.isToLog) {
+				console.groupCollapsed(name);
+				console.log('Applied to', applied);
+				console.log('Arguments', args);
+			}
 		}
+		nul.action.begin(this);
 	},
 	/**
 	 * Retrieve the english string describing the better this peculiar action
@@ -10473,7 +10469,7 @@ nul.action = new JS.Class(/** @lends nul.action# */{
 
 Function.prototype.describe = nul.action.described;
 
-
+new nul.action('Bereshit');
 /*
  * END OF FILE - /trunk/krnl/null.action.js
  */
@@ -10493,7 +10489,6 @@ Function.prototype.describe = nul.action.described;
  * @name nul
  * @namespace
  */
-
 nul.extend( /** @lends nul */{
 	/**
 	 * List of failures that happened during these trys
@@ -11312,6 +11307,7 @@ nul.load.operators = function() {
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/txt/in/null.compiled, /src/txt/in/null.tokenizer
 
 //TODO 3: parser les CDATA et <!-- -->
 
@@ -11572,7 +11568,11 @@ nul.compile.xml = function(txt)
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/txt/in/null.compiled
 
+/**
+ * @namespace
+ */
 nul.understanding = {
 	/** Used as return-value local naming @constant */
 	rvName : '&crarr;',
@@ -11592,105 +11592,177 @@ nul.understanding = {
 	}
 };
 
-nul.compiled.node.extend({
-	expression: new JS.Class (nul.compiled.node, {understand: function(ub) {
-		var ops;
-		if('[]'== this.operator)
-			return ub.klg.hesitate(nul.understanding.possibles(this.operands, ub));
-
-		var ops = map(this.operands, function(n, o) {
-			return this.understand(ub);
-		});
-		switch(this.operator)
-		{
-		case '+':
-		case '*':
-			return new nul.obj.operation.Nary(this.operator, ops);
-		case '-':
-		case '/':
-		case '%':
-			return nul.obj.operation.binary(this.operator, ops);
-		//TODO 3: > < >= <=
-		case '=>': return new nul.obj.lambda(ops[0], ops[1]);
-		case ',': return nul.obj.pair.list(ops.follow, ops);
-		case '=': return ub.klg.unify(ops);
-		case '!=': ub.klg.oppose(nul.klg.unification(ops));
-			return ops[0];
-		case ';': return ops[0];
-		case '?': return ops[1];
-		case '..':
-			if('number'!= ops[0].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[0]);
-			if('number'!= ops[1].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[1]);
-			return new nul.obj.range(ops[0].value, ops[1].value);
-		case ':': 
-			var rv = ub.createFreedom(nul.understanding.rvName, false);
-			ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
-			return rv;
-		default:
-			nul.ex.internal('Unknown operator: "'+this.operator+'"');
-		}
-	}}),
-	preceded: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		return ub.klg.attribute(this.operand.understand(ub), this.operator+' ');
-	}}),
-	postceded: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		switch(this.operator) {
-		case ',.': return nul.obj.pair.list(null, [this.operand.understand(ub)]);
-		default: return ub.klg.attribute(this.operand.understand(ub), ' '+this.operator);
-		}
-	}}),
-	application: new JS.Class (nul.compiled.node, {understand: function(ub){
-		return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
-	}}),
-	taking: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
-	}}),
-	atom: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		var value;
-		switch(this.type)
-		{
-		case "string":
-			value = ''+this.value;
-			break;
-		case "number":
-			value = 1*this.value;
-			break;
-		case "alphanum" :
-			if(!this.value) return nul.execution.uberLocal;
-			try { return ub.resolve(this.value); }
-			catch(err) {
-				if(nul.understanding.unresolvable!= err) throw err;
-				return ub.createFreedom(this.value);
+nul.compiled.extend(/** @lends nul.compiled */{
+	/**
+	 * @class Standard infix expression : one operator and several operands
+	 * @extends nul.compiled
+	 */
+	expression: new JS.Class (nul.compiled, /** @lends nul.compiled.expression */{
+		understand: function(ub) {
+			var ops;
+			if('[]'== this.operator)
+				return ub.klg.hesitate(nul.understanding.possibles(this.operands, ub));
+	
+			var ops = map(this.operands, function(n, o) {
+				return this.understand(ub);
+			});
+			switch(this.operator)
+			{
+			case '+':
+			case '*':
+				return new nul.obj.operation.Nary(this.operator, ops);
+			case '-':
+			case '/':
+			case '%':
+				return nul.obj.operation.binary(this.operator, ops);
+			//TODO 3: > < >= <=
+			case '=>': return new nul.obj.lambda(ops[0], ops[1]);
+			case ',': return nul.obj.pair.list(ops.follow, ops);
+			case '=': return ub.klg.unify(ops);
+			case '!=': ub.klg.oppose(nul.klg.unification(ops));
+				return ops[0];
+			case ';': return ops[0];
+			case '?': return ops[1];
+			case '..':
+				if('number'!= ops[0].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[0]);
+				if('number'!= ops[1].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[1]);
+				return new nul.obj.range(ops[0].value, ops[1].value);
+			case ':': 
+				var rv = ub.createFreedom(nul.understanding.rvName, false);
+				ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
+				return rv;
+			default:
+				nul.ex.internal('Unknown operator: "'+this.operator+'"');
 			}
-			break;
-		default:
-			nul.ex.internal('unknown atom type: ' + this.type + ' - ' + this.value);
 		}
-		return nul.obj.litteral.make(value);
-	}}),
-	definition: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		if('_'== this.decl) nul.ex.semantic('JKD', 'Cannot declare joker !');
-		ub.createFreedom(this.decl);
-		return this.value.understand(ub);
-	}}),
-	set: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		if(!this.content) return nul.obj.empty;
-		return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
-	}}),
-	xml: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		return new nul.obj.node(this.node,												//tag
-		map(this.attributes, function() { return this.understand(ub); }),			//attributes
-		nul.obj.pair.list(null, nul.understanding.possibles(this.content, ub)));		//content
-	}}),
-	composed: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		return ub.klg.attributed(this.object.understand(ub), this.aName, this.value.understand(ub));
-	}}),
-	objectivity: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		return ub.klg.attribute(this.applied.understand(ub), this.lcl);
-	}}),
-	hardcode: new JS.Class (nul.compiled.node, {understand: function (ub) {
-		return this.value;
-	}})
+	}),
+	/**
+	 * @class Standard prefix expression : one operator and one operand
+	 * @extends nul.compiled
+	 */
+	preceded: new JS.Class(nul.compiled, /** @lends nul.compiled.preceded */{
+		understand: function (ub) {
+			return ub.klg.attribute(this.operand.understand(ub), this.operator+' ');
+		}
+	}),
+	/**
+	 * @class Standard postfix expression : one operand and one operator
+	 * @extends nul.compiled
+	 */
+	postceded: new JS.Class(nul.compiled, /** @lends nul.compiled.postceded */{
+		understand: function (ub) {
+			switch(this.operator) {
+			case ',.': return nul.obj.pair.list(null, [this.operand.understand(ub)]);
+			default: return ub.klg.attribute(this.operand.understand(ub), ' '+this.operator);
+			}
+		}
+	}),
+	/**
+	 * @class Set belonging assertion : one set and one item
+	 * @extends nul.compiled
+	 */
+	application: new JS.Class(nul.compiled, /** @lends nul.compiled.application */{
+		understand: function(ub){
+			return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
+		}
+	}),
+	/**
+	 * @class Value retrieval through set transformation : one set and one point
+	 * @extends nul.compiled
+	 */
+	taking: new JS.Class(nul.compiled, /** @lends nul.compiled.taking */{
+		understand: function (ub) {
+			return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
+		}
+	}),
+	/**
+	 * @class A undivisible expression : number, string, identifier, ...
+	 * @extends nul.compiled
+	 */
+	atom: new JS.Class(nul.compiled, /** @lends nul.compiled.atom */{
+		understand: function (ub) {
+			var value;
+			switch(this.type)
+			{
+			case "string":
+				value = ''+this.value;
+				break;
+			case "number":
+				value = 1*this.value;
+				break;
+			case "alphanum" :
+				if(!this.value) return nul.execution.uberLocal;
+				try { return ub.resolve(this.value); }
+				catch(err) {
+					if(nul.understanding.unresolvable!= err) throw err;
+					return ub.createFreedom(this.value);
+				}
+				break;
+			default:
+				nul.ex.internal('unknown atom type: ' + this.type + ' - ' + this.value);
+			}
+			return nul.obj.litteral.make(value);
+		}
+	}),
+	/**
+	 * @class An expression for which a local is defined here : just an item finally
+	 * @extends nul.compiled
+	 */
+	definition: new JS.Class(nul.compiled, /** @lends nul.compiled.definition */{
+		understand: function (ub) {
+			if('_'== this.decl) nul.ex.semantic('JKD', 'Cannot declare joker !');
+			ub.createFreedom(this.decl);
+			return this.value.understand(ub);
+		}
+	}),
+	/**
+	 * @class Set building. An expression surrounded by { }
+	 * @extends nul.compiled
+	 */
+	set: new JS.Class(nul.compiled, /** @lends nul.compiled.set */{
+		understand: function (ub) {
+			if(!this.content) return nul.obj.empty;
+			return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
+		}
+	}),
+	/**
+	 * @class XML node : tag, attributes, content
+	 * @extends nul.compiled
+	 */
+	xml: new JS.Class(nul.compiled, /** @lends nul.compiled.xml */{
+		understand: function (ub) {
+			return new nul.obj.node(this.node,												//tag
+					map(this.attributes, function() { return this.understand(ub); }),			//attributes
+					nul.obj.pair.list(null, nul.understanding.possibles(this.content, ub)));		//content
+		}
+	}),
+	/**
+	 * @class An item asserting one of his attribute : one item, one attribute name, one attribute value
+	 * @extends nul.compiled
+	 */
+	composed: new JS.Class(nul.compiled, /** @lends nul.compiled.composed */{
+		understand: function (ub) {
+			return ub.klg.attributed(this.object.understand(ub), this.aName, this.value.understand(ub));
+		}
+	}),
+	/**
+	 * @class An item' attribute : one item and one attribute name
+	 * @extends nul.compiled
+	 */
+	objectivity: new JS.Class(nul.compiled, /** @lends nul.compiled.objectivity */{
+		understand: function (ub) {
+			return ub.klg.attribute(this.applied.understand(ub), this.lcl);
+		}
+	}),
+	/**
+	 * @class An expression given in JavaScript
+	 * @extends nul.compiled
+	 */
+	hardcode: new JS.Class(nul.compiled, /** @lends nul.compiled.hardcode */{
+		understand: function (ub) {
+			return this.value;
+		}
+	})
 });
 
 nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
@@ -11792,7 +11864,7 @@ nul.understanding.base.set = new JS.Class(nul.understanding.base, /** @lends nul
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
- 
+
 nul.txt = new JS.Class(/** @lends nul.txt# */{
 	/**
 	 * @class Text output kernel
@@ -11862,6 +11934,7 @@ nul.txt = new JS.Class(/** @lends nul.txt# */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/txt/out/null.txt
 
 /**
  * Singleton
@@ -12056,6 +12129,7 @@ nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/txt/out/null.txt
 
 /**
  * Singleton
@@ -12363,6 +12437,7 @@ nul.txt.html = new JS.Singleton(nul.txt, /** @lends nul.txt.html */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/txt/out/null.txt
 
 /**
  * Singleton
@@ -12656,6 +12731,13 @@ nul.txt.node = new JS.Singleton(nul.txt, /** @lends nul.txt.node */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+/*=
+ * requires: /src/lng/null.execution
+ * uses:
+ * /src/txt/out/null.txt.node, /src/txt/out/null.txt.flat
+ * /src/lng/algo/null.browse, /src/lng/algo/null.recur, /src/lng/algo/null.solve
+ * /src/krnl/null.dependance
+ */
 
 /**
  * Shortcut to build expression summary items
@@ -13013,6 +13095,7 @@ nul.xpr.application = function(set, itm, klg) {
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/krnl/null.action
 
 nul.origin = new JS.Class({
 	initialize: function(frm) {
@@ -13020,7 +13103,7 @@ nul.origin = new JS.Class({
 		this.from = frm;
 	},
 	toShort: function() {
-		if(!this.action) return 'Bereshit ...';
+		if(nul.debugged) nul.assert(this.action, 'Origin action initialised');
 		if(!this.from) return 'Created while ' + this.action.description() + '.';
 		return 'Transformation while ' + this.action.description() + ' of ' + this.from.toFlat();
 	}
@@ -13446,6 +13529,7 @@ nul.solve.information = function(dps, jgmnt, jgEC, choice, klg) {
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=uses: /src/lng/xpr/klg/nul.klg.ior3, /src/lng/xpr/klg/nul.klg.eqCls, /src/lng/xpr/klg/nul.klg.browse, /src/lng/xpr/klg/nul.klg.algo
 
 nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# */{
 	/**
@@ -14001,11 +14085,17 @@ if(nul.action) nul.localsMdl = new JS.Module(/** @lends nul.xpr.knowledge# */{
  	}
  	
 }); else nul.localsMdl = new JS.Module(/** @ignore */{
+	/** @ignore */
 	useLocalNames: function() {},
+	/** @ignore */
 	emptyLocals: function() { return 0; },
+	/** @ignore */
 	concatLocals: function(klg) { this.locals += klg.locals; },
+	/** @ignore */
 	freeLastLocal: function() { --this.locals; },
+	/** @ignore */
 	nbrLocals: function() { return this.locals; },
+	/** @ignore */
  	newLocal: function(name, ndx) {
  		if('undefined'== typeof ndx) ndx = this.locals++;
  		return new nul.obj.local(this.name, ndx);
@@ -14028,6 +14118,7 @@ nul.xpr.knowledge.include(nul.localsMdl);
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/klg/null.xpr.knowledge
 
 nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	/**
@@ -14324,6 +14415,7 @@ nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/klg/null.xpr.knowledge
 
 /**
  * Knowledge management helpers
@@ -14457,6 +14549,7 @@ nul.xpr.knowledge.include({failure: nul.klg.never});
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/klg/null.klg, /src/lng/algo/null.browse
 
 nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# */{
 	/**
@@ -14662,6 +14755,7 @@ nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.repres
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/null.expression
 
 nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 //TODO 4: rename local when we have a non-anonymous name
@@ -15022,6 +15116,7 @@ nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/null.expression
 
 nul.klg.ior3 = new JS.Class(nul.expression, /** @lends nul.klg.ior3# */{
 	/**
@@ -15087,6 +15182,7 @@ nul.klg.ior3 = new JS.Class(nul.expression, /** @lends nul.klg.ior3# */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/null.expression, uses: /src/lng/xpr/klg/null.klg
 
 nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	/**
@@ -15260,6 +15356,7 @@ nul.xpr.possible.cast = function(o) {
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/null.expression, /src/lng/algo/null.browse
 
 nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
 	/**
@@ -15392,6 +15489,7 @@ nul.obj = nul.debugged?/** @lends nul.obj */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/null.xpr.object
 
 nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	/**
@@ -15540,6 +15638,7 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/defined/null.obj.defined
 
 nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
 	/**
@@ -15643,6 +15742,7 @@ nul.obj.hc.filter = function(objs, exp, att, wrp) {
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/defined/null.obj.defined
 
 nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
 	/**
@@ -15715,6 +15815,7 @@ nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/defined/null.obj.defined
 
 nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
 	/**
@@ -15754,6 +15855,7 @@ nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/defined/null.obj.defined
 
 nul.obj.litteral = new JS.Class(nul.obj.defined, /** @lends nul.obj.litteral# */ {
 	/**
@@ -15909,6 +16011,7 @@ nul.obj.litteral.tag = {
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/defined/null.obj.defined
 
 nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 	/**
@@ -16068,6 +16171,7 @@ nul.obj.node.relativise = function(tpl, objs) {
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/defined/null.obj.defined
 
 nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 	/**
@@ -16245,6 +16349,7 @@ nul.obj.pair.list = function(/**nul.xpr.object|null*/flw, /**nul.xpr.possible[]*
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/defined/null.obj.defined
 
 //TODO 3: express these as descendant from nul.obj.hc
 nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
@@ -16464,6 +16569,7 @@ nul.globals.bool = nul.obj.bool;
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/null.xpr.object
 
 nul.obj.undefnd = new JS.Class(nul.xpr.object, /** @lends nul.obj.undefnd# */{
 	/**
@@ -16490,6 +16596,7 @@ nul.obj.undefnd = new JS.Class(nul.xpr.object, /** @lends nul.obj.undefnd# */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/undefnd/null.obj.undefnd
 
 nul.obj.data = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.data# */{
 	/**
@@ -16530,6 +16637,7 @@ nul.obj.data = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.data# */{
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/undefnd/null.obj.undefnd
 
 nul.obj.local = new JS.Class(nul.obj.undefnd, /** @lends nul.obj.local# */{
 	/**
@@ -16615,6 +16723,7 @@ nul.obj.local.self.ref = '&crarr;';
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/undefnd/null.obj.undefnd
 
 //TODO 4: ((a + b) + (c + d)) => (a + b + c + d)
 //TODO 4: ((a - b) - c) =?> (a - (b + c)) 
@@ -16664,6 +16773,7 @@ nul.obj.operation.Nary = new JS.Class(nul.obj.operation, {
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//= requires: /src/lng/algo/null.browse
 
 nul.data = new JS.Class(/** @lends nul.data# */{
 	/**
@@ -16815,6 +16925,7 @@ nul.data.context.local = new nul.data.context('local');
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/data/null.data
 
 /** @namespace */
 nul.data.ajax = {
@@ -16906,6 +17017,7 @@ nul.load.ajax.provide = ['nul.globals'];
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/data/null.data
 
 nul.data.time = new JS.Class(nul.obj.node, /** @lends nul.data.time# */{
 	/**
@@ -17023,6 +17135,7 @@ nul.load.time = function() {
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/data/null.data
 
 /**
  * Singleton

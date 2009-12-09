@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/klg/null.xpr.knowledge
 
 nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
  	/**
