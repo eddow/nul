@@ -5585,11 +5585,6 @@ $.extend(
  *
  *--------------------------------------------------------------------------*/
 
-/**
- * @fileoverview
- * This file just load the needed script files. 
- */
-
 nul = new JS.Singleton(/** @lends nul */{ load: {} });
 
 nul.rootPath = '';
@@ -5717,6 +5712,8 @@ nul.loading.scripts = [
 'lng/xpr/obj/undefnd/null.obj.data',
 'lng/xpr/obj/undefnd/null.obj.local',
 'lng/xpr/obj/undefnd/null.obj.operation',
+
+'lng/algo/null.recur',
 
 'data/null.data',
 'data/null.data.ajax',

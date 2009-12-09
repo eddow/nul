@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/null.expression, uses: /src/lng/xpr/klg/null.klg
 
 nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
 	/**

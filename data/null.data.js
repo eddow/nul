@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//= requires: /src/lng/algo/null.browse
 
 nul.data = new JS.Class(/** @lends nul.data# */{
 	/**

@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/null.expression
 
 nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
 //TODO 4: rename local when we have a non-anonymous name

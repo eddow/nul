@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/data/null.data
 
 nul.data.time = new JS.Class(nul.obj.node, /** @lends nul.data.time# */{
 	/**

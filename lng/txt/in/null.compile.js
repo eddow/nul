@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/txt/in/null.compiled, /src/txt/in/null.tokenizer
 
 //TODO 3: parser les CDATA et <!-- -->
 

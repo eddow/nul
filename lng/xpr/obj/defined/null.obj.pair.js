@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/obj/defined/null.obj.defined
 
 nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
 	/**

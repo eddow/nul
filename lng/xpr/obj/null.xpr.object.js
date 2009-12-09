@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//=requires: /src/lng/xpr/null.expression, /src/lng/algo/null.browse
 
 nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
 	/**
