@@ -1,0 +1,7 @@
+//just a comment
+ghi789
+/*to load ghi.txt*/
+def456
+//to load def.txt
+
+abc123
