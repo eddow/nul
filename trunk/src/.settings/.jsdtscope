@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="lng/xpr/obj/defined/|lng/algo/|lng/txt/in/|data/|web/|krnl/|lng/xpr/obj/undefnd/|lng/xpr/obj/|lng/txt/out/|lng/xpr/|lng/|lng/xpr/klg/" kind="src" path=""/>
+	<classpathentry kind="src" path="data"/>
+	<classpathentry kind="src" path="krnl"/>
+	<classpathentry excluding="xpr/obj/defined/|algo/|txt/in/|xpr/obj/undefnd/|xpr/obj/|txt/out/|xpr/|xpr/klg/" kind="src" path="lng"/>
+	<classpathentry kind="src" path="lng/algo"/>
+	<classpathentry kind="src" path="lng/txt/in"/>
+	<classpathentry kind="src" path="lng/txt/out"/>
+	<classpathentry excluding="obj/defined/|obj/undefnd/|obj/|klg/" kind="src" path="lng/xpr"/>
+	<classpathentry kind="src" path="lng/xpr/klg"/>
+	<classpathentry excluding="defined/|undefnd/" kind="src" path="lng/xpr/obj"/>
+	<classpathentry kind="src" path="lng/xpr/obj/defined"/>
+	<classpathentry kind="src" path="lng/xpr/obj/undefnd"/>
+	<classpathentry kind="src" path="web"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+</classpath>
