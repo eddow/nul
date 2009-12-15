@@ -1,0 +1,5 @@
+<familly>
+	<person name="John" father="Luke" />
+	<person name="Luke" father="Andrei" />
+	<person name="Peter" father="Luke" />
+</familly>
