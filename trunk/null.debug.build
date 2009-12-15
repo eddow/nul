@@ -1,0 +1,2 @@
+output = bin/null.debug.js
+input = bin/null.3rd, src/null.inplace, src/xpr/null.origin, bin/null.core, src/web/null.console

@@ -8,6 +8,8 @@
  *--------------------------------------------------------------------------*/
 
 nul = new JS.Singleton(/** @lends nul */{ load: {} });
+Function.prototype.describe = function() { return this; };
+Function.prototype.contract = function() { return function() {}; };
 
 nul.rootPath = '';
 nul.loading = function() {
