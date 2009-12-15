@@ -6,8 +6,7 @@
  *
  *--------------------------------------------------------------------------*/
 
-
-nul.loading.styles = [
+/*
 'web/null.page',
 'lng/txt/out/null.txt.html',
 '3rd/jquery/theme/ui',
@@ -78,7 +77,8 @@ nul.loading.scripts = [
 'data/null.data.dom',
 
 'web/null.page'
-];
+*/
+nul.loading.styles = [ /*#include: bin/null.core.list*/ ''];
 
 nul.loading.fixConsole = function(ncd) {
 	if(!ncd) {

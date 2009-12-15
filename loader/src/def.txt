@@ -1,3 +1,0 @@
-/*=ghi.txt
-/*to load ghi.txt*/
-def456

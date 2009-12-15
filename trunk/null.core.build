@@ -1,0 +1,3 @@
+output = bin/null.core.js
+list = bin/null.core.list.js
+input = src/krnl/null.std
