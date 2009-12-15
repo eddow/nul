@@ -1,0 +1,21 @@
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+@namespace nul "http://nul.googlecode.com/";
+
+nul {
+	height: 32px;
+	width: 32px;
+	border: 1px solid blue;
+	background-image: url('images/loading.gif');
+	display: inline-block;
+	text-indent: -99999px;
+	overflow: hidden;
+	background-repeat: no-repeat;
+	-moz-border-radius: 4px; -webkit-border-radius: 4px;
+}

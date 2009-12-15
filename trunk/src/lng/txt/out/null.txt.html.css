@@ -1,0 +1,192 @@
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+table.attributes {
+	display: inline-block;
+	border-width: 0 1px;
+	border-color: black;
+	border-style: solid;
+	vertical-align: middle;
+}
+.attributes th {
+	text-align: center;
+	border-bottom: 1px black dotted;
+}
+
+span.op {
+	color: #400000;
+	font-weight: bolder;
+	vertical-align: middle;
+}
+span.op.big {
+	font-weight: 100;
+	font-size: 40px;
+}
+.xpr {
+	border: 1px blue dotted;
+	display: inline-block;
+	margin: 3px;
+	position: relative;
+	vertical-align: middle;
+}
+.xpr.freedom {
+	border: 0;
+	margin: 4px;
+}
+td.freedom {
+	text-align: center;
+	border-bottom: 2px groove;
+}
+th.freedom {
+	text-align: center;
+	font-weight: lighter;
+}
+
+.xpr.lined {
+	border: 2px blue solid;
+	margin: 2px;
+}
+
+span.local {
+	font-size: large;
+	color: #004000;
+}
+span.native {
+	font-size: large;
+	color: #600060;
+}
+span.failure {
+	font-size: large;
+	color: #800020;
+}
+
+.desc {
+	font-size: xx-small;
+	color: #004040;
+	vertical-align: middle;
+	display: inline-table;
+}
+
+.desc span {
+	display: table-row;
+}
+
+.desc .sup {
+	vertical-align: text-top;
+}
+
+.desc .sub {
+	vertical-align: text-bottom;
+}
+
+/* Decorqtive tiles */
+
+a._nul_xpr_tile {
+	display: block;
+	cursor: help;
+	position: absolute;
+	z-index: 50000;
+	height: 3px;
+	width: 3px;
+	border-width: 1px;
+	border-style: solid;
+	vertical-align: top;
+}
+
+a._nul_xpr_tile div {
+	display: none;
+	font-family: monospace;
+	font-size: 10pt;
+	padding: 0 5px;
+	white-space:nowrap;	
+}
+
+a._nul_xpr_tile:hover {
+	margin-top: -20px;
+	height: 24px;
+	width: auto;
+	z-index: 45000;
+}
+
+a._nul_xpr_tile:hover div {
+	display: inline;
+}
+
+a.shortStr {
+	border-color: blue;
+	background-color: lightblue;
+}
+
+a.index {
+	border-color: darkgrey;
+	background-color: lightgrey;
+}
+
+a.locals {
+	border-color: red;
+	background-color: orange;
+}
+
+a.dependances {
+	border-color: darkmagenta;
+	background-color: darkorchid;
+}
+
+a.reference {
+	border-color: black;
+	background-color: grey;
+}
+
+a.arbitre {
+	border-color: darkgreen;
+	background-color: lightgreen;
+}
+
+a.explain {
+	border-color: red;
+	background-color: pink;
+}
+
+a._nul_xpr_tile.dependances:hover {
+	margin-top: 0;
+	height: auto;
+}
+
+a.dependances div {
+	padding-top: 2.5em;
+}
+
+.dependances table {
+	empty-cells: show;
+}
+.dependances th {
+	border-right: 1px solid black;
+}
+
+.ui-dialog.explain .ui-dialog-titlebar {
+	font-size: 10px;
+	padding:0.1em 0.3em 0.1em 1em;
+}
+
+.explain table.transformation {
+	width: 100%;
+}
+
+.explain table.transformation th {
+	font-weight: normal;
+}
+
+.explain .description {
+	width: 100%;
+	text-align: center;
+}
+
+.explain .argument {
+	float: left;
+	border: 1px solid black;
+}
