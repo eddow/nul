@@ -1,3 +1,303 @@
+/*FILE: src/web/null.helper.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+/**
+ * Determines weither this number is an integer
+ * @param {Number} n
+ * @return {Boolean}
+ */
+
+(function($) {
+	$.extend({
+		keys: function(obj) {
+			var a = [];
+			$.each(obj, function(k) {a.push(k); });
+			return a;
+		},
+		/**
+		 * For an url option specified in ptcl://url/path/file.ext?options#anchor,
+		 * retrieve the value given (if option looks like name=value),
+		 * true if the option was gicen without and argument (http://...html?...&ImHappy&...)
+		 * false if the option was not given
+		 * @param {String} opt The name of the option to retrieve
+		 * @return {Boolean|String} The value of the given option
+		 */
+		url: function(opt) {
+			var srch = (window.location.href.split('?')[1]||'').split('#')[0];
+			if(!srch) return;
+			srch = '&'+srch+'&';
+			var rx = new RegExp('\\&'+opt+'(\\=(.*?))?\\&');
+			var mh = rx.exec(srch);
+			return mh?(mh[2]||true):false;
+		},
+		id: function(x) { return x; },
+		/**
+		 * Text node creation shortcut
+		 * @param {String} str
+		 * @return {jQuery} text node
+		 */
+		text: function(str) { return $(document.createTextNode(str)); }
+	});
+})(jQuery);
+
+function isJsInt(n) {
+	return n== Math.floor(n);
+}
+
+/**
+ * Gets weither the index is defined in the class definition
+ * @param obj
+ * @param ndx
+ * @return {Boolean}
+ */
+function isClsNdx(obj, ndx) {
+	if(!obj || 'object'!= typeof obj) return false;
+	if('constructor'== ndx) return true;
+	for(var c = obj.constructor; c; c = c.superclass)
+		if('undefined'!= typeof c.prototype[ndx])
+			return c.prototype[ndx] === obj[ndx];
+	return false;
+}
+
+/**
+ * Creates an empty object having the same class as a given one
+ * @param {Object} obj Object to mimic
+ * @return {Object}
+ */
+function newEmpty(obj) {
+	if('object' != typeof obj) return obj;
+	if(!obj.constructor) return {};
+	var nativeTypes = [Array, Boolean, Date, String, Number];
+
+	var c = obj.constructor;
+	var rv = nativeTypes.include(c) ? c() : {constructor: c, toString: obj.toString};
+	for(; c; c = c.superclass) for(var i in c.prototype) if(c.prototype[i]===obj[i]) rv[i] = c.prototype[i];
+
+	return rv;
+}
+
+/**
+ * Return all the elements that are owned by the object, not his prototype or such
+ * @param itm
+ * @param fct function(dst, src, ndx)
+ * @return
+ */
+function ownNdx(itm, fct) {
+	//TODO 3: use yield?
+	if(fct) {
+		var rv = newEmpty(itm);
+		for(var ndx in itm)
+			if(!isClsNdx(itm, ndx))
+				fct(rv, itm, reTyped(ndx));
+		return rv;
+	}
+	var rv = {};
+	for(var ndx in itm)
+		if(!isClsNdx(itm, ndx))
+			rv[ndx] = itm[ndx];
+	return rv;
+}
+
+/**
+ * Internal (helper) use for mapping functions
+ * @private
+ */
+function mapCb(fct, ndx, itm) {
+	return fct?fct.apply( ['object','function'].include(typeof itm)?itm:null, [reTyped(ndx), itm]):itm;
+}
+
+/**
+ * Returns the first of 'itm' for which the function 'fct' returned a value evaluated to true
+ * @param {Object} itm
+ * @param {MapCallBack} fct
+ */
+function trys(itm, fct) {
+	var rv;
+	for(var i in ownNdx(itm))
+		if(rv = mapCb(fct, i, itm[i])) return rv;
+}
+
+/**
+ * Returns the sum of the returns value (or 1 if not-false and not-number)
+ * @param {Object} itm
+ * @param {MapCallBack} fct
+ */
+function cnt(itm, fct) {
+	var rv = 0;
+	
+	for(var i in ownNdx(itm)) { 
+		var trv = mapCb(fct, i, itm[i]);
+		if('number'== typeof trv) rv += trv;
+		else if(trv) ++rv;
+	}
+	return rv;
+}
+
+/**
+ * Returns the same item as 'itm' where each member went through 'fct'.
+ * @param {Object} itm
+ * @param {MapCallBack} fct
+ */
+function map(itm, fct) {
+	return ownNdx(itm, function(dst, src, ndx) {
+		dst[ndx] = mapCb(fct, ndx, itm[ndx]);
+	});
+}
+
+
+/**
+ * Returns the same item as 'itm' where each member went through 'fct'.
+ * Each members returning an empty value are not added
+ * @param {Object} itm
+ * @param {MapCallBack} fct
+ */
+function maf(itm, fct) {
+	return ownNdx(itm, function(dst, src, ndx) {
+		var trv = mapCb(fct, ndx, itm[ndx]);
+		if('undefined'!= typeof trv && null!== trv) {
+			if('number'== typeof ndx) dst.push(trv);
+			else dst[ndx] = trv;
+		}
+	});
+}
+
+/**
+ * Escape a string for it to be displayable as text in a HTML page
+ * @param {String} str
+ * @return {HTML}
+ */
+function escapeHTML(str) {
+	return $('<div />').text(str).html();
+};
+
+/**
+ * Is 'o' an empty association ? (beside the values contained in array 'b')
+ * @param {Object} o
+ * @param {param array} b
+ * @return {Boolean}
+ */ 
+function isEmpty(o, b) {
+	b = beArrg(arguments, 1);
+	for(var i in o) if(!b || !b.include(i)) return false;
+	return true;
+}
+
+/**
+ * If a string is '5', get it as the number 5
+ * @param {String|Number} v
+ * @return {String|Number}
+ */
+function reTyped(v) {
+	if('string'!= typeof v) return v;
+	if((new RegExp('^(\\d+)$', 'g')).exec(v)) return parseInt(v);
+	return v;
+}
+
+/**
+ * Take the 'param array' parameters of the function
+ * @param {Arguments} args The given "arguments"
+ * @param ndx The argument-index where the param-array begind
+ * @return {any[]}
+ */
+function beArrg(args, ndx) {
+	if(!ndx) ndx = 0;
+	if(ndx >= args.length) return [];
+	if(1+ndx== args.length && $.isArray(args[ndx])) return map(args[ndx]);
+	return $.makeArray(args).slice(ndx);
+}
+
+/**
+ * Modifies the components of an Object (dst) along the components of another Object {src}
+ * @param {Object} dst The destination Object
+ * @param {Object} src The modifying Object
+ * @param {function(srcElement,dstElement) {any}} cb Call-back to compute the new value
+ * @return {Object} dst
+ */
+function merge(dst, src, cb) {
+	for(var i in ownNdx(src)) dst[i] = cb?cb(dst[i],src[i], i):src[i];
+	if(cb) for(var i in ownNdx(dst)) if('undefined'== typeof src[i]) dst[i] = cb(dst[i], null, i);
+	return dst; 
+}
+
+//TODO 2: use prototype addMethod ?
+[].pushs || (Array.prototype.pushs =
+	/**
+	 * Concatenate array(s) to this one
+	 * @memberOf Array#
+	 * @param {Array} [paramarray]
+	 * @name pushs
+	 */
+	function(){
+		for(var j=0; j<arguments.length; ++j) {
+			var o = arguments[j];
+			if(this===o) nul.ex.internal('Catenating self');
+			if(!$.isArray(o)) this.push(o);
+			else for(var i=0; i<o.length; ++i) this.push(o[i]);
+		}
+		return this; 
+	});
+
+[].union || (Array.prototype.union = 
+	/**
+	 * Add elements from an array if they're not already present
+	 * @memberOf Array#
+	 * @param {Array} [paramarray]
+	 * @name union
+	 */
+	function(){
+		for(var j=0; j<arguments.length; ++j) {
+			var o = arguments[j];
+			for(var i=0; i<o.length; ++i) {
+				var s;
+				for(s=0; s<this.length; ++s) if(this[s]===o[i]) break;
+				if(s>=this.length) this.push(o[i]);
+			}
+		}
+		return this; 
+	});
+
+[].mar || (Array.prototype.mar = 
+	/**
+	 * Returns an array whose elements are the return values of <fct> taken for each item of <itm>
+	 * <fct> return an array of element to add in the return list
+	 * @memberOf Array#
+	 * @param {MapCallBack} fct
+	 * @name mar
+	 */
+	function(fct) {
+		var rv = [];
+		for(var i in ownNdx(this)) rv.pushs(mapCb(fct, i, this[i]));
+		return rv;
+	});
+
+[].include || (Array.prototype.include = 
+	function(itm) { return -1< $.inArray(itm, this); });
+
+[].indexOf || (Array.prototype.indexOf = 
+	function(itm) { return $.inArray(itm, this); });
+
+
+/** @constant */
+pinf = Number.POSITIVE_INFINITY;
+/** @constant */
+ninf = Number.NEGATIVE_INFINITY;
+
+$o = {
+	clone: function(o) {
+		var rv = {};
+		for(var a in o) rv[a] = o[a];
+		return rv;
+	}
+};
+
+Function.prototype.contract = function(){ return function(){}; };
+Function.prototype.asserted = function(){};
 /*FILE: src/krnl/null.std.js*/
 /*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
@@ -802,6 +1102,58 @@ nul.ex.failure = new JS.Singleton(nul.ex, /** @lends nul.ex.failure# */{
 	toString: function() { return 'Failure'; }
 });
 
+/*FILE: src/web/null.page.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+/**
+ * Interract with the page
+ * @namespace
+ */
+nul.page = {
+	/**
+	 * Called when the webpage contains a NUL error
+	 * @param msg Error message
+	 * @return nothing
+	 */
+	error: function(/**nul.ex*/ex) {
+		alert(ex.name + ' : ' + ex.present());
+	}
+};
+
+nul.load.page = function() {
+	try {
+		var elm = $(this.documentElement);
+		var nulScripts = elm.find('script[type="text/nul"]');
+		for(var s=0; nulScripts[s]; ++s) {
+			if(nulScripts[s].src) nul.data.ajax.loadNul(nulScripts[s].src, nulScripts[s].readAttribute('id'));
+			else nul.read(nulScripts[s].text,
+				nulScripts[s].readAttribute('id') || 'script'+nul.execution.name.gen('nul.page.outline'));
+			//We don't really use the value afterward
+		}
+		return;
+		var nulNodes = elm.find('nul');
+		var exts = {}, ints= {};
+		var nds = {};
+		for(var n=0; nulNodes[n]; ++n) {
+			var nnid = nulNodes[s].readAttribute('id');
+			if(!nnid) nulNodes[s].writeAttribute('id', nnid = ('inline'+nul.execution.name.gen('nul.page.inline')));
+			nds[nnid] = $(nulNodes[s]);
+			if(nulNodes[s].src) exts[nnid] = nulNodes[s].src;
+			else ints[nnid] = nulNodes[s].textContent;
+		}
+
+		for(var n in ints) nds[n].replaceWith(nul.read(ints[n], n).XML(this));
+		for(var n in exts) nds[n].replaceWith(nul.data.ajax.loadNul(exts[n], n).XML(this));
+		nul.execution.existOnce();
+	} catch(x) { nul.page.error(nul.ex.be(x)); }
+};
+nul.load.page.use = {'executionReady': true, 'console': true, 'HTML': true};
 /*FILE: src/lng/txt/out/null.txt.js*/
 /*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
@@ -1120,6 +1472,613 @@ nul.browser.bijectif = new JS.Class(nul.browser.cached, /** @lends nul.browser.b
 
 	}
 });
+/*FILE: src/lng/xpr/obj/null.xpr.object.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
+	/**
+	 * @class NUL object
+	 * @extends nul.expression
+	 * @constructs
+	 */
+	initialize: function() {
+		this.callSuper(null);
+	},
+
+	/**
+	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {nul.xpr.possible[]}
+	 */
+	having: function(o) {
+		var klg = new nul.xpr.knowledge();
+		klg.belong(o, this);
+		return [klg.wrap(o)];
+	},
+	
+	/**
+	 * Abstract defined also by nul.xpr.possible
+	 */
+	valueKnowing: function(klg) { return this; },
+	
+////////////////	Generic summary providers
+	
+	/** @private */
+	sum_dependance: function() {
+		var rv = this.callSuper();
+		if(this.selfRef) {
+			if(rv.usages[nul.obj.local.self.ref] && rv.usages[nul.obj.local.self.ref].local[this.selfRef]) {
+				delete rv.usages[nul.obj.local.self.ref].local[this.selfRef];
+				if(isEmpty(rv.usages[nul.obj.local.self.ref].local))
+					delete rv.usages[nul.obj.local.self.ref];
+			} else delete this.selfRef;
+		}
+		return rv;
+	}
+});
+
+nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.object.reself# */{
+	/**
+	 * @class A browser to change the self-referant locals in an object definition
+	 * @constructs
+	 * @extends nul.browser.bijectif
+	 * @param {String} selfRef The self-reference to replace
+	 * @param {nul.xpr.object|String} trgt The replacement value. If a string, will be a self-reference local.
+	 */
+	initialize: function(selfRef, trgt) {
+		this.toNode = function() {
+			return $('<span />')
+				.append($.text('Reselfing '))
+				.append($('<span />').text(selfRef))
+				.append($.text(' toward '))
+				.append(nul.txt.node.as(trgt));
+		};
+		this.selfRef = selfRef;
+		if(!trgt.expression) this.newRef = trgt;
+		this.trgt = trgt.expression?trgt:nul.obj.local.self(trgt);
+		this.callSuper('SelfRef');
+	},
+	/**
+	 * Removes or change the self-reference of this expression if it was self-refered
+	 * @param {nul.expression} xpr
+	 */
+	build: function(xpr) {
+		if(xpr.selfRef == this.selfRef) {
+			if(this.newRef) xpr.selfRef = this.newRef;
+			else delete xpr.selfRef;
+		}
+		return this.callSuper();
+	},
+	/**
+	 * Gets a replacement value if xpr is a concerned self-reference
+	 * @param {nul.expression} xpr
+	 */
+	transform: function(xpr) {
+		if('local'== xpr.expression && nul.obj.local.self.ref == xpr.klgRef && xpr.ndx == this.selfRef)
+			return this.trgt;
+		return nul.browser.bijectif.unchanged;
+	}
+});
+
+/**
+ * Object management helper
+ * @namespace 
+ */
+nul.obj = nul.debugged?/** @lends nul.obj */{
+	/**
+	 * Assert: 'x' are a collection of objects of type 't'
+	 * @param {nul.object[]} x
+	 * @param {String} t JS type name
+	 */
+	are: function(x, t) { return nul.xpr.are(x,t||'nul.xpr.object'); },
+	/**
+	 * Assert: 'x' is an object of type 't'
+	 * @param {nul.object} x
+	 * @param {String} t JS type name
+	 */
+	is: function(x, t) { return nul.xpr.is(x,t||'nul.xpr.object'); },
+	/**
+	 * Assert: 'x' is an object of type 't'. 'x' is summarised.
+	 * @param {nul.object} x
+	 * @param {String} t JS type name
+	 */
+	use: function(x, t) { return nul.xpr.use(x,t||'nul.xpr.object'); },
+	/**
+	 * Assert: 'x' is an object of type 't'. 'x' is not summarised.
+	 * @param {nul.object} x
+	 * @param {String} t JS type name
+	 */
+	mod: function(x, t) { return nul.xpr.mod(x,t||'nul.xpr.object'); }
+}:/** @ignore */{ are: $.id, is: $.id, use: $.id, mod: $.id };
+/*FILE: src/lng/xpr/obj/defined/null.obj.defined.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
+	/**
+	 * @class Defined object : are defined by the object its composition, its attributes, ... not by the knowledge
+	 * @extends nul.xpr.object
+	 * @constructs
+	 */
+	initialize: function() {
+		this.cachedProperties = {};
+		this.callSuper();
+	},
+	
+//////////////// public
+
+	/**
+	 * Unify two defined objects
+	 * @return {nul.obj.defined}
+	 * @throws {nul.ex.failure}
+	 */
+	unified: function(o, klg) {
+		this.use(); nul.obj.use(o); nul.klg.mod(klg);
+		
+		if(o.toString() == this.toString()) return true;
+		if(this.subUnified) {
+			var e = [this, o];
+			var rv = 0;
+			if(e[0].selfRef && e[1].selfRef) {
+				var nwSelf = nul.execution.name.gen('obj.local.self');
+				e[0] = e[0].reself(nwSelf);
+				e[1] = e[1].reself(nwSelf);
+			}
+			if(e[1].selfRef) {
+				e.unshift(e.pop());
+				rv = 1-rv;
+			}
+			if(e[0].selfRef) e[0] = e[0].reself(e[1]);
+			return e[rv].subUnified(e[1-rv], klg);
+		}
+		nul.fail(this, ' does not unify to ', o);
+	},
+	
+	/**
+	 * Intersect two defined objects
+	 * @return nul.obj.defined
+	 * @throws {nul.ex.failure}
+	 * TODO 2: refaire le meme systeme qu'avec unified : subIntersect de deux defined
+	 */
+	intersect: function(o, klg) {
+		this.use(); nul.obj.use(o); nul.klg.mod(klg);
+		if(o == this) return true;
+	},
+	
+	
+	/**
+	 * Bunch of named attributes
+	 * @type {nul.xpr.object[String]}
+	 * @constant
+	 */
+	attributes: {},
+	
+	/**
+	 * Bunch of instant-made attributes
+	 * @type {function() {nul.xpr.object} [String]}
+	 * @constant
+	 */
+	properties: {
+		'': function() { throw 'abstract'; }
+	},
+	
+	/**
+	 * Retrieve an attribute
+	 * @param {String} an Attribute Name
+	 * @return {nul.xpr.object}
+	 * @throws {nul.ex.failure}
+	 */
+	attribute: function(anm, klg) {
+		var af = this.attributes[anm] || this.cachedProperties[anm];
+		if(af) return af;
+		af = this.properties[anm];
+		if(af) return this.cachedProperties[anm] = af.apply(this, [klg, anm]);
+		nul.fail(this, 'doesnt have the attribute "'+anm+'"');
+	},
+	
+	/**
+	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
+	 * Or nothing if nothing can be simplified
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.object[]} attrs
+	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
+	 */
+	has: function(o, attrs) {
+		if(this.subHas) {
+			if(!this.selfRef) return this.subHas(o, attrs);
+			return;	//TODO R: recursion at the end, return a knowledge knowing he needs to make recursion
+			return nul.trys(function() {
+				var psbl = this.subHas(o, attrs);
+				var dp = [];
+				while(psbl.length) dp.pushs(psbl.pop().distribute());
+				switch(dp.length) {
+				case 0: nul.fail('No convenient recursive base-case');
+				case 1: return dp[0].beself(this).distribute();	//TODO O: see which equivls[0] appears in (&isin; &uArr;) to determine recursive argument
+				default:
+					return;
+					var klg = new nul.xpr.knowledge();
+					var srcLcl = klg.newLocal('&uArr;');
+					klg.unify(srcLcl, this);
+					var sRef = this.selfRef;
+					dp = map(dp, function() { return this.beself(srcLcl, sRef); });
+					return [klg.wrap(klg.hesitate(dp))];
+				}
+			}, 'Recursion', this, [o, this]);
+		}
+	},
+
+	/**
+	 * The set who give, for each parameter, the recursive parameter applied
+	 * @return {nul.obj.list}
+	 */
+	recursion: function() { return nul.obj.empty; },
+	
+////////////////nul.xpr.object implementation
+
+	/**
+	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
+	 * Try first an assertion of 'this.has'. If nothing is possible, just let the belonging assertion.
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {nul.xpr.possible[]}
+	 */
+	having: function(o, attr) {
+		return this.has(o, attr||{}) || this.callSuper();
+	}
+});
+/*FILE: src/lng/xpr/obj/defined/null.obj.pair.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
+	/**
+	 * @class Pair used to build lists : a head and a tail.
+	 * @extends nul.obj.list
+	 * @constructs
+	 * @param {nul.xpr.possible} first List head
+	 * @param {nul.xpr.object} second List tail
+	 */
+	initialize: function(first, second) {
+		nul.xpr.use(first); nul.obj.use(second);
+		/** @type nul.xpr.possible */
+		this.first = nul.xpr.possible.cast(first);
+		/** @type nul.xpr.object */
+		this.second = second;
+		this.callSuper();
+	},
+	
+//////////////// Summary
+	
+	/**
+	 * Summary: Specific pair summary to retrieve the list corresponding to the trailing pair values.
+	 * @function
+	 * @returns {nul.xpr.possible[]}
+	 */
+	listed: nul.summary('listed'),
+
+	/**
+	 * Summary calculation of 
+	 * @function
+	 * @returns {nul.xpr.possible[]}
+	 */
+	sum_listed: function() {
+		var rv = [];
+		var brwsr = this;
+		do {
+			rv.push(brwsr.first);
+			brwsr = brwsr.second;
+		} while('pair'== brwsr.expression);
+		if('&phi;'!= brwsr.expression) rv.follow = brwsr;
+		return rv;
+	},
+
+//////////////// nul.obj.defined implementation
+
+	/**
+	 * Try to unify elements
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {nul.xpr.object}
+	 */
+	subUnified: function(o, klg) {
+		if('&phi;'== o.expression) {
+			klg.oppose(this.first.knowledge);
+			return klg.unify(this.second, o);
+		}
+		if('pair'!= o.expression) nul.fail(o, ' not a pair');
+		if(this === o) return true;
+		if(this.first.knowledge === o.first.knowledge)
+			return (new nul.obj.pair(
+				klg.unify(this.first.value, o.first.value),
+				klg.unify(this.second, o.second))).built();
+		nul.debugged.warn('error')('Pair fuzzy comparison not yet implemented');
+		if(this.toString() === o.toString()) return true;
+		nul.fail(o, ' not unifiable pair');
+	},
+	
+	/**
+	 * Extract an object o that fit one of these possibles (either the first possible, either subHas from second)
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.object[]} attrs
+	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
+	 */
+	subHas: function(o, attrs) {
+		this.use(); nul.obj.use(o);
+		//TODO 2: use attrs?
+		//TODO 3: summarise a tree of fixed values (=> ram db)
+		//make a table fct also
+		var rv = [];
+		try { rv.push(this.first.extract(o)); }
+		catch(err) { nul.failed(err); }
+		return rv.pushs(this.second.having(o, attrs));
+	},
+
+//////////////// nul.xpr.object implementation
+
+	/** @constant */
+	properties: {
+		'$ ': function() {
+			return this.recursion();
+		},
+		'# ': function(klg) {
+			var flw = klg.attribute(this.second, '# ');
+			var mn = this.first.knowledge.minXst();
+			var mx = this.first.knowledge.maxXst();
+			var tl; 
+			if(mn == mx) tl = new nul.obj.litteral.number(mn);
+			else {
+				tl = klg.newLocal('#');
+				klg.belong(tl, new nul.obj.range(mn, mx));
+			}
+			return new nul.obj.operation.Nary('+', [tl, flw]);
+		},
+		'': function() { return nul.obj.litteral.tag.set; }
+	},
+
+//////////////// nul.expression implementation
+
+	/** @constant */
+	expression: 'pair',
+	/** @constant */
+	components: {
+		'first': {type: 'nul.xpr.possible', bunch: false},
+		'second': {type: 'nul.xpr.object', bunch: false}
+	},
+	/**
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: Weither this pair is a list
+	 * @function
+	 * @return {Boolean}
+	 */
+	isList: nul.summary('isList'),
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link isList} */
+	sum_isList: function() {
+		return this.first.knowledge.isA(nul.klg.ncndtnl) && (!this.second.isList || this.second.isList());
+	},
+	/** Build this set so that it is a following of pairs which values are most simplified as possible */
+	built: function() {
+		if(this.first.distribuable()) {
+			var dList = this.first.distribute();
+			if(1!= dList.length) return nul.obj.pair.list(this.second, dList);
+			this.first = dList[0];
+		}
+		return this.callSuper();
+	},
+	
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link recursion} */
+	sum_recursion: function() {
+		if(!this.selfRef) this.selfRef = nul.execution.name.gen('obj.local.self');
+		var rv = [];
+		for(var p=this; p.isA(nul.obj.pair); p=p.second)
+			rv.pushs(p.first.knowledge.modifiable().sumRecursion(this.selfRef, [], p.first.value));
+		return nul.obj.pair.list(null, rv);
+	}
+
+});
+
+/**
+ * Helper to create triling pairs from a list
+ * @param flw Trail of this list. Will be the empty set if not specified
+ * @param elms The elements that will be the 'first' of each pairs.
+ * @return {nul.obj.pair} The built pair
+ * @throws {nul.ex.failure}
+ */
+nul.obj.pair.list = function(/**nul.xpr.object|null*/flw, /**nul.xpr.possible[]*/elms) {
+	elms = beArrg(arguments, 1);
+	var rv = flw || nul.obj.empty;
+	while(elms.length) {
+		var elm = elms.pop();
+		nul.xpr.use(elm);
+		rv = (new nul.obj.pair(elm, rv)).built();
+	}
+	return rv;
+};
+/*FILE: src/lng/xpr/klg/null.xpr.possible.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.xpr.possible = new JS.Class(nul.expression, /** @lends nul.xpr.possible# */{
+	/**
+	 * @class A value associated with a knowledge : A value that can be unified to several different defined object, along some conditions.
+	 * @extends nul.expression
+	 * @constructs
+	 * @param {nul.xpr.object} value
+	 * @param {nul.xpr.knowledge} knowledge
+	 */
+	initialize: function(value, knowledge) {
+		this.callSuper(null, null);
+		if(value) {
+			if(!knowledge) knowledge = nul.klg.always;
+			nul.obj.use(value); nul.klg.use(knowledge);
+			/** @type nul.xpr.object */
+			this.value = value;
+			/** @type nul.xpr.knowledge */
+			this.knowledge = knowledge;
+		}
+		this.alreadyBuilt();
+	},
+
+//////////////// public
+
+	/**
+	 * The knowledge now knows all what this possible knows - gets the value expression then
+	 * @param {nul.xpr.knowledge} klg destination knowledge
+	 * @return {nul.xpr.object} This modified value (to refer the new knowledge)
+	 */
+	valueKnowing: function(klg) {
+		return klg.merge(this.knowledge, this.value);
+	},
+	
+	/**
+	 * Returns a possible, this unified to an object
+	 * @param {nul.xpr.object} o
+	 * @return {nul.xpr.possible}
+	 * @throws {nul.ex.failure}
+	 */
+	extract: function(o) {
+		//var klg = this.knowledge.modifiable();
+		var klg = new nul.xpr.knowledge();
+		//Merge because we need to create a new context reference in case of half-recursion
+		var rv = klg.wrap(klg.unify(klg.merge(this.knowledge, this.value), o));
+		if(nul.debugged) nul.assert(!rv.dependance().usages[klg.name], 'Out of knowledge, no more deps');
+		return rv;
+	}.describe('Extraction'),
+	
+	/**
+	 * Determine wether the resolution engine can distribute anything
+	 * @return {Boolean}
+	 */
+	distribuable: function() {
+		return this.knowledge.distribuable();
+	},
+	
+	/**
+	 * Use the resolution engine : make several possibles without ior3
+	 * @return {nul.xpr.possible[]}
+	 */
+	distribute: function() {
+		if(!this.knowledge.distribuable()) return [this];
+		var val = this.value;
+		return maf(this.knowledge.distribute(), function() {
+			try { return this.wrap(val); } catch(e) { nul.failed(e); }
+		});
+	},
+	
+	/**
+	 * @param {document} doc
+	 * @return {XMLElement}
+	 * @throw {nul.ex.semantic}
+	 * TODO 2 returns Element
+	 */
+	XML: function(doc) {
+		if(nul.klg.always != this.knowledge) //TODO 2: if possible too fuzzy, get a "loading" node 
+			nul.ex.semantic('XML', 'No XML fixed representation for fuzzy expression', this);
+		return this.value.XML(doc);
+	},	
+	
+//////////////// nul.expression summaries
+
+	sum_dependance: function() {
+		var rv = this.callSuper();
+		this.usage = rv.use(this.knowledge);
+		return rv;
+	},
+
+//////////////// nul.expression implementation
+	
+	/** @constant */
+	expression: 'possible',
+	/** @constant */
+	components: {
+		'value': {type: 'nul.xpr.object', bunch: false},
+		'knowledge': {type: 'nul.xpr.knowledge', bunch: false}
+	},
+	chew: function() {
+		nul.klg.use(this.knowledge);
+		return this.knowledge.modifiable().wrap(this.value);
+	}.describe('Possible reformulation'),
+
+////////////////	Internals
+
+	/**
+	* Change self references to the given self-refered object
+	* @param {nul.obj.defined} recursion The object that contains 'this' and makes recursion
+	*/
+	beself: function(recursion) {
+		var fz = this;	//TODO 2: possible#beself
+		//1 - remove in knowledge : x in y : x is value and y self-ref
+		//TODO O: ne faire cela que si dependance de selfref
+		/*var klg = this.knowledge.modifiable();
+		var ec = klg.access[this.value];
+		if(ec) {
+			nul.xpr.use(ec, 'nul.klg.eqClass');
+			ec = klg.freeEC(ec);
+			for(var b=0; ec.belongs[b]; ++b) {
+				var blg = ec.belongs[b];
+				if(nul.obj.local.is(blg) && nul.obj.local.self.ref == blg.klgRef && slf.selfRef== blg.ndx) {
+					ec.belongs.splice(b,1);
+					klg.minMult = 0;
+					break;
+				}
+			}
+			klg.ownEC(ec);
+			fz = klg.wrap(this.value);
+		}*/
+		//2 - replace the self-reference by the set
+		return new nul.xpr.object.reself(recursion.selfRef, recursion).browse(fz);	//TODO 2: reself other fct ?
+		//return fz.reself(slf, selfRef); slf.reself(..., fz) ?
+	}
+});
+
+nul.xpr.failure = nul.xpr.possible.prototype.failure = new JS.Singleton(nul.xpr.possible, /** @lends nul.xpr.failure# */{
+	/**
+	 * Singleton
+	 * @class Specific possible that never give any value.
+	 * @extends nul.xpr.possible
+	 * @constructs
+	 */
+	initialize: function() { this.callSuper(); },
+	/** @constant */
+	expression: 'possible',
+	/** @constant */
+	components: {},
+	distribuable: function() { return true; },
+	distribute: function() { return []; }
+});
+
+/**
+ * Have a possible for sure. Made with nul.klg.always if an object is given
+ * @param {nul.xpr.possible|nul.xpr.object} o
+ */
+nul.xpr.possible.cast = function(o) {
+	if('possible'== o.expression) return o;
+	return new nul.xpr.possible(o);
+};
 /*FILE: src/lng/algo/null.recur.js*/
 /*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
@@ -1422,132 +2381,6 @@ nul.dependance = new JS.Class(/** @lends nul.dependance# */{
  * @type {nul.data.context[String]} 
  */
 nul.dependance.contexts = {};
-/*FILE: src/lng/xpr/obj/null.xpr.object.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-nul.xpr.object = new JS.Class(nul.expression, /** @lends nul.xpr.object# */{
-	/**
-	 * @class NUL object
-	 * @extends nul.expression
-	 * @constructs
-	 */
-	initialize: function() {
-		this.callSuper(null);
-	},
-
-	/**
-	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
-	 * @param {nul.xpr.object} o
-	 * @param {nul.xpr.knowledge} klg
-	 * @return {nul.xpr.possible[]}
-	 */
-	having: function(o) {
-		var klg = new nul.xpr.knowledge();
-		klg.belong(o, this);
-		return [klg.wrap(o)];
-	},
-	
-	/**
-	 * Abstract defined also by nul.xpr.possible
-	 */
-	valueKnowing: function(klg) { return this; },
-	
-////////////////	Generic summary providers
-	
-	/** @private */
-	sum_dependance: function() {
-		var rv = this.callSuper();
-		if(this.selfRef) {
-			if(rv.usages[nul.obj.local.self.ref] && rv.usages[nul.obj.local.self.ref].local[this.selfRef]) {
-				delete rv.usages[nul.obj.local.self.ref].local[this.selfRef];
-				if(isEmpty(rv.usages[nul.obj.local.self.ref].local))
-					delete rv.usages[nul.obj.local.self.ref];
-			} else delete this.selfRef;
-		}
-		return rv;
-	}
-});
-
-nul.xpr.object.reself = new JS.Class(nul.browser.bijectif, /** @lends nul.xpr.object.reself# */{
-	/**
-	 * @class A browser to change the self-referant locals in an object definition
-	 * @constructs
-	 * @extends nul.browser.bijectif
-	 * @param {String} selfRef The self-reference to replace
-	 * @param {nul.xpr.object|String} trgt The replacement value. If a string, will be a self-reference local.
-	 */
-	initialize: function(selfRef, trgt) {
-		this.toNode = function() {
-			return $('<span />')
-				.append($.text('Reselfing '))
-				.append($('<span />').text(selfRef))
-				.append($.text(' toward '))
-				.append(nul.txt.node.as(trgt));
-		};
-		this.selfRef = selfRef;
-		if(!trgt.expression) this.newRef = trgt;
-		this.trgt = trgt.expression?trgt:nul.obj.local.self(trgt);
-		this.callSuper('SelfRef');
-	},
-	/**
-	 * Removes or change the self-reference of this expression if it was self-refered
-	 * @param {nul.expression} xpr
-	 */
-	build: function(xpr) {
-		if(xpr.selfRef == this.selfRef) {
-			if(this.newRef) xpr.selfRef = this.newRef;
-			else delete xpr.selfRef;
-		}
-		return this.callSuper();
-	},
-	/**
-	 * Gets a replacement value if xpr is a concerned self-reference
-	 * @param {nul.expression} xpr
-	 */
-	transform: function(xpr) {
-		if('local'== xpr.expression && nul.obj.local.self.ref == xpr.klgRef && xpr.ndx == this.selfRef)
-			return this.trgt;
-		return nul.browser.bijectif.unchanged;
-	}
-});
-
-/**
- * Object management helper
- * @namespace 
- */
-nul.obj = nul.debugged?/** @lends nul.obj */{
-	/**
-	 * Assert: 'x' are a collection of objects of type 't'
-	 * @param {nul.object[]} x
-	 * @param {String} t JS type name
-	 */
-	are: function(x, t) { return nul.xpr.are(x,t||'nul.xpr.object'); },
-	/**
-	 * Assert: 'x' is an object of type 't'
-	 * @param {nul.object} x
-	 * @param {String} t JS type name
-	 */
-	is: function(x, t) { return nul.xpr.is(x,t||'nul.xpr.object'); },
-	/**
-	 * Assert: 'x' is an object of type 't'. 'x' is summarised.
-	 * @param {nul.object} x
-	 * @param {String} t JS type name
-	 */
-	use: function(x, t) { return nul.xpr.use(x,t||'nul.xpr.object'); },
-	/**
-	 * Assert: 'x' is an object of type 't'. 'x' is not summarised.
-	 * @param {nul.object} x
-	 * @param {String} t JS type name
-	 */
-	mod: function(x, t) { return nul.xpr.mod(x,t||'nul.xpr.object'); }
-}:/** @ignore */{ are: $.id, is: $.id, use: $.id, mod: $.id };
 /*FILE: src/lng/txt/out/null.txt.node.js*/
 /*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
@@ -2021,148 +2854,6 @@ nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
 			if(!klgStr) return valStr;
 			return valStr + '; ' + klgStr;
 		}
-	}
-});
-/*FILE: src/lng/xpr/obj/defined/null.obj.defined.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
-	/**
-	 * @class Defined object : are defined by the object its composition, its attributes, ... not by the knowledge
-	 * @extends nul.xpr.object
-	 * @constructs
-	 */
-	initialize: function() {
-		this.cachedProperties = {};
-		this.callSuper();
-	},
-	
-//////////////// public
-
-	/**
-	 * Unify two defined objects
-	 * @return {nul.obj.defined}
-	 * @throws {nul.ex.failure}
-	 */
-	unified: function(o, klg) {
-		this.use(); nul.obj.use(o); nul.klg.mod(klg);
-		
-		if(o.toString() == this.toString()) return true;
-		if(this.subUnified) {
-			var e = [this, o];
-			var rv = 0;
-			if(e[0].selfRef && e[1].selfRef) {
-				var nwSelf = nul.execution.name.gen('obj.local.self');
-				e[0] = e[0].reself(nwSelf);
-				e[1] = e[1].reself(nwSelf);
-			}
-			if(e[1].selfRef) {
-				e.unshift(e.pop());
-				rv = 1-rv;
-			}
-			if(e[0].selfRef) e[0] = e[0].reself(e[1]);
-			return e[rv].subUnified(e[1-rv], klg);
-		}
-		nul.fail(this, ' does not unify to ', o);
-	},
-	
-	/**
-	 * Intersect two defined objects
-	 * @return nul.obj.defined
-	 * @throws {nul.ex.failure}
-	 * TODO 2: refaire le meme systeme qu'avec unified : subIntersect de deux defined
-	 */
-	intersect: function(o, klg) {
-		this.use(); nul.obj.use(o); nul.klg.mod(klg);
-		if(o == this) return true;
-	},
-	
-	
-	/**
-	 * Bunch of named attributes
-	 * @type {nul.xpr.object[String]}
-	 * @constant
-	 */
-	attributes: {},
-	
-	/**
-	 * Bunch of instant-made attributes
-	 * @type {function() {nul.xpr.object} [String]}
-	 * @constant
-	 */
-	properties: {
-		'': function() { throw 'abstract'; }
-	},
-	
-	/**
-	 * Retrieve an attribute
-	 * @param {String} an Attribute Name
-	 * @return {nul.xpr.object}
-	 * @throws {nul.ex.failure}
-	 */
-	attribute: function(anm, klg) {
-		var af = this.attributes[anm] || this.cachedProperties[anm];
-		if(af) return af;
-		af = this.properties[anm];
-		if(af) return this.cachedProperties[anm] = af.apply(this, [klg, anm]);
-		nul.fail(this, 'doesnt have the attribute "'+anm+'"');
-	},
-	
-	/**
-	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
-	 * Or nothing if nothing can be simplified
-	 * @param {nul.xpr.object} o
-	 * @param {nul.xpr.object[]} attrs
-	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
-	 */
-	has: function(o, attrs) {
-		if(this.subHas) {
-			if(!this.selfRef) return this.subHas(o, attrs);
-			return;	//TODO R: recursion at the end, return a knowledge knowing he needs to make recursion
-			return nul.trys(function() {
-				var psbl = this.subHas(o, attrs);
-				var dp = [];
-				while(psbl.length) dp.pushs(psbl.pop().distribute());
-				switch(dp.length) {
-				case 0: nul.fail('No convenient recursive base-case');
-				case 1: return dp[0].beself(this).distribute();	//TODO O: see which equivls[0] appears in (&isin; &uArr;) to determine recursive argument
-				default:
-					return;
-					var klg = new nul.xpr.knowledge();
-					var srcLcl = klg.newLocal('&uArr;');
-					klg.unify(srcLcl, this);
-					var sRef = this.selfRef;
-					dp = map(dp, function() { return this.beself(srcLcl, sRef); });
-					return [klg.wrap(klg.hesitate(dp))];
-				}
-			}, 'Recursion', this, [o, this]);
-		}
-	},
-
-	/**
-	 * The set who give, for each parameter, the recursive parameter applied
-	 * @return {nul.obj.list}
-	 */
-	recursion: function() { return nul.obj.empty; },
-	
-////////////////nul.xpr.object implementation
-
-	/**
-	 * Return a list of possibles[nul.xpr.possible] 'o' once it is known that 'o' is in this 'set'
-	 * Try first an assertion of 'this.has'. If nothing is possible, just let the belonging assertion.
-	 * @param {nul.xpr.object} o
-	 * @param {nul.xpr.knowledge} klg
-	 * @return {nul.xpr.possible[]}
-	 */
-	having: function(o, attr) {
-		return this.has(o, attr||{}) || this.callSuper();
 	}
 });
 /*FILE: src/lng/xpr/obj/undefnd/null.obj.undefnd.js*/
@@ -2686,178 +3377,6 @@ nul.obj.node.relativise = function(tpl, objs) {
 	});
 	//TODO 3: manage 'content'
 }.describe('Relativise');
-/*FILE: src/lng/xpr/obj/defined/null.obj.pair.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-nul.obj.pair = new JS.Class(nul.obj.list, /** @lends nul.obj.pair# */{
-	/**
-	 * @class Pair used to build lists : a head and a tail.
-	 * @extends nul.obj.list
-	 * @constructs
-	 * @param {nul.xpr.possible} first List head
-	 * @param {nul.xpr.object} second List tail
-	 */
-	initialize: function(first, second) {
-		nul.xpr.use(first); nul.obj.use(second);
-		/** @type nul.xpr.possible */
-		this.first = nul.xpr.possible.cast(first);
-		/** @type nul.xpr.object */
-		this.second = second;
-		this.callSuper();
-	},
-	
-//////////////// Summary
-	
-	/**
-	 * Summary: Specific pair summary to retrieve the list corresponding to the trailing pair values.
-	 * @function
-	 * @returns {nul.xpr.possible[]}
-	 */
-	listed: nul.summary('listed'),
-
-	/**
-	 * Summary calculation of 
-	 * @function
-	 * @returns {nul.xpr.possible[]}
-	 */
-	sum_listed: function() {
-		var rv = [];
-		var brwsr = this;
-		do {
-			rv.push(brwsr.first);
-			brwsr = brwsr.second;
-		} while('pair'== brwsr.expression);
-		if('&phi;'!= brwsr.expression) rv.follow = brwsr;
-		return rv;
-	},
-
-//////////////// nul.obj.defined implementation
-
-	/**
-	 * Try to unify elements
-	 * @param {nul.xpr.object} o
-	 * @param {nul.xpr.knowledge} klg
-	 * @return {nul.xpr.object}
-	 */
-	subUnified: function(o, klg) {
-		if('&phi;'== o.expression) {
-			klg.oppose(this.first.knowledge);
-			return klg.unify(this.second, o);
-		}
-		if('pair'!= o.expression) nul.fail(o, ' not a pair');
-		if(this === o) return true;
-		if(this.first.knowledge === o.first.knowledge)
-			return (new nul.obj.pair(
-				klg.unify(this.first.value, o.first.value),
-				klg.unify(this.second, o.second))).built();
-		nul.debugged.warn('error')('Pair fuzzy comparison not yet implemented');
-		if(this.toString() === o.toString()) return true;
-		nul.fail(o, ' not unifiable pair');
-	},
-	
-	/**
-	 * Extract an object o that fit one of these possibles (either the first possible, either subHas from second)
-	 * @param {nul.xpr.object} o
-	 * @param {nul.xpr.object[]} attrs
-	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
-	 */
-	subHas: function(o, attrs) {
-		this.use(); nul.obj.use(o);
-		//TODO 2: use attrs?
-		//TODO 3: summarise a tree of fixed values (=> ram db)
-		//make a table fct also
-		var rv = [];
-		try { rv.push(this.first.extract(o)); }
-		catch(err) { nul.failed(err); }
-		return rv.pushs(this.second.having(o, attrs));
-	},
-
-//////////////// nul.xpr.object implementation
-
-	/** @constant */
-	properties: {
-		'$ ': function() {
-			return this.recursion();
-		},
-		'# ': function(klg) {
-			var flw = klg.attribute(this.second, '# ');
-			var mn = this.first.knowledge.minXst();
-			var mx = this.first.knowledge.maxXst();
-			var tl; 
-			if(mn == mx) tl = new nul.obj.litteral.number(mn);
-			else {
-				tl = klg.newLocal('#');
-				klg.belong(tl, new nul.obj.range(mn, mx));
-			}
-			return new nul.obj.operation.Nary('+', [tl, flw]);
-		},
-		'': function() { return nul.obj.litteral.tag.set; }
-	},
-
-//////////////// nul.expression implementation
-
-	/** @constant */
-	expression: 'pair',
-	/** @constant */
-	components: {
-		'first': {type: 'nul.xpr.possible', bunch: false},
-		'second': {type: 'nul.xpr.object', bunch: false}
-	},
-	/**
-	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: Weither this pair is a list
-	 * @function
-	 * @return {Boolean}
-	 */
-	isList: nul.summary('isList'),
-	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link isList} */
-	sum_isList: function() {
-		return this.first.knowledge.isA(nul.klg.ncndtnl) && (!this.second.isList || this.second.isList());
-	},
-	/** Build this set so that it is a following of pairs which values are most simplified as possible */
-	built: function() {
-		if(this.first.distribuable()) {
-			var dList = this.first.distribute();
-			if(1!= dList.length) return nul.obj.pair.list(this.second, dList);
-			this.first = dList[0];
-		}
-		return this.callSuper();
-	},
-	
-	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link recursion} */
-	sum_recursion: function() {
-		if(!this.selfRef) this.selfRef = nul.execution.name.gen('obj.local.self');
-		var rv = [];
-		for(var p=this; p.isA(nul.obj.pair); p=p.second)
-			rv.pushs(p.first.knowledge.modifiable().sumRecursion(this.selfRef, [], p.first.value));
-		return nul.obj.pair.list(null, rv);
-	}
-
-});
-
-/**
- * Helper to create triling pairs from a list
- * @param flw Trail of this list. Will be the empty set if not specified
- * @param elms The elements that will be the 'first' of each pairs.
- * @return {nul.obj.pair} The built pair
- * @throws {nul.ex.failure}
- */
-nul.obj.pair.list = function(/**nul.xpr.object|null*/flw, /**nul.xpr.possible[]*/elms) {
-	elms = beArrg(arguments, 1);
-	var rv = flw || nul.obj.empty;
-	while(elms.length) {
-		var elm = elms.pop();
-		nul.xpr.use(elm);
-		rv = (new nul.obj.pair(elm, rv)).built();
-	}
-	return rv;
-};
 /*FILE: src/lng/xpr/obj/defined/null.obj.sets.js*/
 /*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
@@ -3071,6 +3590,715 @@ nul.globals.N = new nul.obj.range(0);
 nul.globals.text = nul.obj.string;
 /** The set of boolean (2 elements) */
 nul.globals.bool = nul.obj.bool;
+/*FILE: src/lng/xpr/klg/null.xpr.knowledge.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# */{
+	/**
+	 * @class Represent a bunch of information about locals and absolute values.
+	 * @extends nul.expression
+	 * @constructs
+	 * @param {String} klgName [optional] Knowledge name
+	 */
+	initialize: function(klgName, n, x) {
+		this.callSuper(null);
+ 		/**
+ 		 * Describe the used localspace
+ 		 * @type String[]
+ 		 */
+        this.locals = this.emptyLocals();
+ 		/**
+ 		 * List of all the knowledge that oppose to this knowledge satisfaction
+ 		 * @type nul.xpr.knowledge[]
+ 		 */
+        this.veto = [];
+ 		/**
+ 		 * List of equivalence classes this knowledge assert
+ 		 * @type nul.klg.eqClass[]
+ 		 */
+ 		this.eqCls = [];		//Array of equivalence classes.
+ 		/**
+ 		 * List of all the object this knowledge knows (their index is the key) about and the equivalence class they belong to
+ 		 * @type Access
+ 		 */
+ 		this.access = {};		//{nul.xpr.object} object => {nul.klg.eqClass} eqClass
+ 		/**
+ 		 * List of all the ior3s that still have to be choosen
+ 		 * @type nul.klg.ior3[]
+ 		 */
+ 		this.ior3 = [];			//List of unchoosed IOR3
+ 		/**
+ 		 * Unique name given to the knowledge
+ 		 * @type String
+ 		 */
+ 		this.name = klgName || nul.execution.name.gen('klg');
+		if('undefined'== typeof n) n = 1;
+		if('undefined'== typeof x) x = n;
+		if(!n.expression) n = { minMult:n, maxMult: x };
+		this.minMult = n.minMult;
+		this.maxMult = n.maxMult;
+ 	},
+
+	//TODO C
+	arythm: function(op, n, x) {
+		this.modify();
+		if(!n.expression) n = { minMult:n, maxMult: x || n };
+		this.minMult = eval(this.minMult + op + n.minMult);
+		this.maxMult = eval(this.maxMult + op + n.maxMult);
+	},
+	//TODO C
+	add: function(n, x) { return this.arythm('+', n, x); },
+	//TODO C
+	mul: function(n, x) { return this.arythm('*', n, x); },
+
+	/**
+	 * Retrieve the equivalence class that describe obj
+	 * @param {nul.xpr.object|null} obj
+	 * @return {nul.xpr.eqClass|null} if obj was specified
+	 * @return {nul.xpr.eqClass[String]} if obj was not specified
+	 */
+	info: function(obj) {
+		var atbl = this.summarised?this.summarised.access:this.access;
+		return obj?atbl[obj]:atbl;
+	},
+	
+//////////////// privates
+ 	
+ 	/**
+ 	 * Remove the 'access' data used for knowledge modification.
+ 	 * Debug asserts
+ 	 */
+ 	clearAccess: function() {
+ 		if(!this.access) return;
+		if(nul.debugged) {
+			for(var i in ownNdx(this.access))
+				nul.assert(this.access[i].summarised && 0<= this.eqCls.indexOf(this.access[i]),
+		 			'Knowledge access consistence');
+			for(var i in ownNdx(this.eqCls))
+				for(var e in ownNdx(this.eqCls[i].equivls))
+					nul.assert(this.access[this.eqCls[i].equivls[e]] === this.eqCls[i],
+		 				'Knowledge access consistence');
+		}
+		delete this.access;
+ 	},
+ 	
+	/**
+	 * Modify eqCls and set accesses
+	 */
+ 	accede: function(ec) {
+		this.modify(); nul.xpr.use(ec, 'nul.klg.eqClass');
+		if(ec) ec = ec.placed(this);
+		if(ec) {
+	 		this.eqCls.push(ec);
+			for(var unfd in ownNdx(ec.equivls)) {
+				if(nul.debugged) nul.assert(!this.access[ec.equivls[unfd]], 'No double access');
+				this.access[ec.equivls[unfd]] = ec;
+			}
+		}
+		return ec;
+ 	},
+ 	
+	/**
+	 * Free ec from this.eqCls if it's not free
+	 * @param {nul.klg.eqClass} ec
+	 * @return {nul.klg.eqClass} ec
+	 */
+	freeEC: function(ec) {
+ 		if(!ec.summarised) return ec;
+		var i = this.eqCls.indexOf(ec);
+ 		if(nul.debugged) nul.assert(0<=i, 'Unaccede accessed class');
+		this.eqCls.splice(i, 1);
+ 		var rv = ec.modifiable();
+		for(var i in this.access) if(this.access[i] === ec) this.access[i] = rv;
+ 		return rv;
+ 	},
+
+	/**
+	 * Own ec from this.eqCls
+	 * @param {nul.klg.eqClass} ec
+	 * @return {nul.klg.eqClass} ec
+	 */
+	ownEC: function(ec) {
+		var rec = ec.built().placed(this);
+		if(rec) this.eqCls.push(rec);
+		else this.unaccede(ec);
+ 	},
+
+ 	/**
+	 * The eqCls ec is removed : remove access and remove from classes
+	 * @param {nul.klg.eqClass} ec
+	 * @return {nul.klg.eqClass} ec
+	 */
+	removeEC: function(ec) {
+ 		this.modify(); nul.xpr.use(ec, 'nul.klg.eqClass');
+		var i = this.eqCls.indexOf(ec);
+ 		if(nul.debugged) nul.assert(0<=i, 'Unaccede accessed class');
+		this.eqCls.splice(i, 1);
+		return this.unaccede(ec);
+	},
+	
+ 	/**
+	 * The eqCls ec has been removed : remove access
+	 * @param {nul.klg.eqClass} ec
+	 * @return {nul.klg.eqClass} ec
+	 */
+	unaccede: function(ec) {
+ 		this.modify(); nul.xpr.is(ec, nul.klg.eqClass);
+ 		//TODO O: only goes through the access of ec' equivalents
+		for(var i in this.access) if(this.access[i] === ec) delete this.access[i];
+		return ec;
+	},
+ 	
+ 	/**
+ 	 * Add the given equivalence classes in this knowledge
+ 	 * @param {nul.klg.eqClass[]} eqCls
+ 	 * @throws {nul.ex.failure}
+ 	 */
+ 	addEqCls: function(eqCls) {
+ 		for(var ec in ownNdx(eqCls)) this.unify(nul.xpr.use(eqCls[ec], 'nul.klg.eqClass'));
+ 	},
+ 	
+ 	/**
+ 	 * Gets the dependance of an hypothetic possible while this knowledge is not summarised.
+ 	 */
+ 	usage: function(value) {
+ 		//TODO O: use summary if possible.
+		var rv = new nul.dependance();
+		var comps = value?[value]:[];
+		comps.pushs(this.eqCls, this.ior3);
+		for(var c=0; c<comps.length; ++c)
+			rv.also(comps[c].dependance());
+		return rv.use(this);
+	},
+
+ //////////////// publics
+
+ 	/**
+ 	 * Gets a value out of these choices
+ 	 * @param {nul.xpr.possible[]} choices of nul.xpr.possible
+ 	 * @return nul.xpr.object
+ 	 */
+ 	hesitate: function(choices) {
+ 		choices = beArrg(arguments);
+ 		this.modify();
+		switch(choices.length) {
+		case 0:
+			nul.fail('No choices');
+		case 1:
+			return choices[0].valueKnowing(this);
+		default:
+			var rv = this.newLocal('&otimes;');
+			var klgs = [];
+			map(choices, function() {
+				var p = this;
+				var klg;
+				if(p.isA(nul.xpr.possible)) {
+					klg = p.knowledge.modifiable();
+					nul.klg.mod(klg);
+					p = p.value;
+				} else klg = new nul.xpr.knowledge();				
+				klg.unify(p, rv);
+				klgs.push(klg.built());	//TODO 2: prune ?
+			});
+	 		this.ior3.push(new nul.klg.ior3(klgs));
+	 		return rv;
+		}
+	}.describe('Hesitation'),
+ 	
+ 	/**
+ 	 * Know all what klg knows
+ 	 * @param {nul.xpr.knowledge} klg
+ 	 * @param {nul.xpr.object} val [optional] Value to modify too
+ 	 * @return {nul.xpr.object} Value expressed under this knowledge if 
+ 	 * @return {nul.klg.stepUp} Browser to parse further values if no value were specified
+ 	 * @throws {nul.ex.failure}
+ 	 */
+ 	merge: function(klg, val) {
+ 		if(nul.klg.never== klg) nul.fail('Merging failure');
+ 		this.mul(klg);
+ 		if(klg.isA(nul.klg.ncndtnl)) return val;
+ 		
+ 		this.modify(); nul.klg.use(klg);
+
+ 		var brwsr = new nul.klg.stepUp(klg.name, this);
+		
+ 		this.concatLocals(klg);
+
+		klg = brwsr.browse(klg);
+		
+		this.addEqCls(klg.eqCls);
+		this.ior3.pushs(klg.ior3);
+ 		this.veto.pushs(klg.veto);
+ 		if(val) return brwsr.browse(val);
+ 		return brwsr;
+ 	},
+
+ 	/**
+ 	 * Know that all the arguments are unifiable
+ 	 * Modifies the knowledge
+ 	 * @param {nul.xpr.object} and {nul.klg.eqClass}
+ 	 * @return nul.xpr.object The replacement value for all the given values
+ 	 * @throws {nul.ex.failure}
+ 	 */
+ 	unify: function(a, b) {
+ 		return this.unification(beArrg(arguments)).represent();
+ 	},
+ 	 	
+	/**
+ 	 * Know that 'e' is in the sets 'ss'.
+ 	 * Modifies the knowledge
+ 	 * @return The replacement value for 'e' or nothing if inclusion failed.
+ 	 * @throws {nul.ex.failure}
+ 	 */
+ 	belong: function(e, ss) {
+ 		ss = beArrg(arguments, 1);
+ 		this.modify(); nul.obj.use(e);
+		
+ 		var ec = new nul.klg.eqClass(e);
+ 		ec.belongs = ss;
+ 		return this.unify(ec.built());
+ 	},
+ 	
+ 	/**
+ 	 * States that 'e.anm = vl'
+ 	 * @param {nul.xpr.object} e
+ 	 * @param {String} anm
+ 	 * @param {nul.xpr.object} vl
+ 	 * @return {nul.xpr.object}
+ 	 * @throws {nul.ex.failure}
+ 	 */
+ 	attributed: function(e, anm, vl) {
+ 		this.modify(); nul.obj.use(e);
+ 		var attrs = {};
+ 		if(vl) attrs[anm] = vl;
+ 		else attrs = anm;
+ 		
+ 		var ec = new nul.klg.eqClass(e, attrs).built();
+ 		return this.unify(ec);
+ 	},
+
+ 	/**
+ 	 * Retrieve the attributes stated for 'e'
+ 	 * @param {nul.xpr.object} e
+ 	 * @return {nul.xpr.object[]}
+ 	 * @throws {nul.ex.failure}
+ 	 */
+ 	attributes: function(e) {
+ 		nul.obj.use(e);
+ 		if(e.isA(nul.obj.defined)) return e.attribute;	//TODO 2 : Special defined case : list needed
+		var ec = this.access[e];
+		if(!ec) return {};
+ 		return ec.attribs;
+ 	},
+ 	
+ 	/**
+ 	 * Retrieve the attribute we know for 'e'
+ 	 * @param {nul.xpr.object} e
+ 	 * @param {nul.xpr.String} anm
+ 	 * @return {nul.xpr.object} The attribute 'anm' stated for e 
+ 	 * @return {null} There is no information about this attribute 
+ 	 * @throws {nul.ex.failure}
+ 	 */
+ 	attribute: function(e, anm) {
+ 		nul.obj.use(e);
+ 		if(e.isA(nul.obj.defined)) return e.attribute(anm, this);
+		var ec = this.info(e);
+		if(ec && ec.attribs[anm]) return ec.attribs[anm];
+		var rv = this.newLocal('&rarr;'+anm);
+		this.attributed(e, anm, rv);
+		return rv;
+ 	},
+ 	
+ 	/**
+ 	 * Simplifies oneself knowing the attribute table
+ 	 * @param {access} dTbl
+ 	 * @return {String[]} The list of used attributions : xpr indexes
+ 	 */
+ 	define: function(acsTbl) {
+		this.modify();
+		var rv = [];
+//		return rv;
+		acsTbl = $o.clone(acsTbl);
+		var used;
+		do {
+			used = false;
+			for(var v in this.access) {
+				if(acsTbl[v]) {
+					var ownClass = !!this.access[v].summarised;	//TODO 4: une interface pour pas trimballer un boolean ownClass a l'air
+					var nec = this.freeEC(this.access[v]);
+					if(nec.define(acsTbl[v], this)) {
+						rv.push(v);
+						used = true;
+					}
+					//for(var a in nec.attribs) 
+					//	if(nul.obj.local.is(nec.attribs[a]) && nul.obj.local.self.ref == nec.attribs[a].klgRef)
+					//		delete nec.attribs[a];
+					if(ownClass) this.ownEC(nec);
+					delete acsTbl[v];
+					break;
+				}
+			}
+		} while(used);
+		return rv;
+ 	}.describe('Sub-knowledge definition'),
+ 	
+	/**
+	 * Brings a knowledge in opposition
+	 * @param {nul.xpr.knowledge} klg
+	 * @throws {nul.ex.failure}
+	 */
+	oppose: function(klg) {
+		this.modify(); nul.klg.use(klg);
+		if(0< klg.minXst()) nul.fail('Opposition : ', klg);
+		if(nul.klg.never!= klg) this.veto.push(klg);
+		return this;
+	},
+
+//////////////// Existence summaries
+
+	/**
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: Maximum existance cases of this knowledge
+	 * @function
+	 * @return {Number}
+	 */
+	maxXst: nul.summary('maxXst'), 	
+	/**
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: Minimum existance cases of this knowledge
+	 * @function
+	 * @return {Number}
+	 */
+	minXst: nul.summary('minXst'), 	
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link maxXst} */
+	sum_maxXst: function() {
+		if(0<this.nbrLocals()) return pinf;
+		var rv = 1;
+		for(var h in ownNdx(this.ior3))
+			rv *= this.ior3[h].maxXst();
+		return rv * this.maxMult;
+	},
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link minXst} */
+	sum_minXst: function() {
+		if(this.eqCls.length || this.veto.length) return 0;
+		if(0<this.nbrLocals()) return pinf;
+		var rv = 1;
+		for(var h in ownNdx(this.ior3))
+			rv *= this.ior3[h].minXst();
+		return rv * this.minMult;
+	},
+
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
+	sum_index: function() {
+		return this.indexedSub(this.name);
+	},
+	
+//////////////// nul.expression implementation
+	
+	/** @constant */
+	expression: 'klg',
+	/** @constant */
+	components: {
+		'eqCls': {type: 'nul.klg.eqClass', bunch: true},
+		'ior3': {type: 'nul.klg.ior3', bunch: true},
+		'veto': {type: 'nul.xpr.knowledge', bunch: true}
+	},
+
+	/**
+	 * Re-built the access for the new modifiable knowledge.
+	 */
+	modifiable: function() {
+		var rv = this.callSuper();
+		rv.eqCls = [];
+		rv.access = {};
+		for(var i in ownNdx(this.eqCls)) rv.accede(this.eqCls[i]);
+		return rv;
+	},
+	
+	/**
+	 * Clone taking care to shallow clone access and locals (not refered as components)
+	 */
+	clone: function() {
+		var rv = this.callSuper(beArrg(arguments));
+		if(rv.access) rv.access = $o.clone(rv.access);
+		rv.locals = this.emptyLocals();
+		rv.concatLocals(this);
+		return rv;
+	},
+
+	/**
+	 * When equivalence classes were modified by a browser, re-accede them for the access to be valid and for equivalence class to be consistant.
+	 */
+	reAccede: function() {
+		var nwEqCls = this.eqCls;
+		var nwOppstn = this.veto;
+		this.veto = [];
+		this.eqCls = [];
+		this.access = {};
+		this.addEqCls(nwEqCls);
+		while(nwOppstn.length) this.oppose(nwOppstn.shift());
+		return this;
+	},
+
+	/**
+	 * Reaccede the equivalence classes and build.
+	 */
+	chew: function() {
+		this.reAccede();
+		return this.callSuper();
+	},
+	
+	/**
+	 * Remove the redundant values. Ensure that the structured is simplified at maximum (no 1-choice IOR3 and no veto's vetos)
+	 */
+	simplify: function() {
+		this.modify();
+		//Reduce vetos of vetos into ior3s
+		var veto;
+		for(var v=0; veto = this.veto[v];)
+			if(veto.veto.length) {
+				this.veto.splice(v, 1);
+				//TODO 4: care about multiplicity 
+				var unvetoed = veto.modify();
+				unvetoed.veto = [];
+				
+				var choices = map(veto.veto, function() {
+					return unvetoed.clone().merge(this).built();
+				});
+				var tklg = new nul.xpr.knowledge();
+				tklg.oppose(unvetoed.built());
+				choices.push(tklg);
+				
+				this.ior3.push(new nul.klg.ior3(choices));
+			} else ++v;
+
+		//Reduce IOR3s : if one has one choice, just merge this choice and forget about ior3
+ 		for(i=0; this.ior3[i];) switch(this.ior3[i].choices.length) {
+ 		case 0: nul.ex.internal('IOR3 Always has a first unconditional');
+ 		case 1:
+ 			this.merge(this.ior3[0]);
+ 			this.ior3.splice(i, 1);
+ 			break;
+ 		default: ++i; break;
+ 		}
+ 		return this;
+	},
+	
+	/**
+	 * {@link simplify} and regular build. Return an unconditional global if not conditional.
+	 */
+ 	built: function() {
+ 		this.simplify();
+		var acs = this.access;
+		this.clearAccess();
+ 		if(
+ 				!this.isA(nul.klg.ncndtnl) &&	//This is not already an unconditional
+ 				!this.eqCls.length &&			//There are no equivalence/belonging/attribute constraints
+ 				!this.nbrLocals() &&			//There are no locals involved
+ 				!this.ior3.length &&			//There are no choices to make
+ 				!this.veto.length &&			//Nothing oppose to this knowledge
+ 				this.minMult == this.maxMult)	//This is not an undefined knowledge
+ 			return nul.klg.unconditional(this.minMult);
+ 		//if(this.minMult < this.maxMult) this.undefined = nul.execution.name.gen('klg.undefined');
+ 		//No need : name differenciate different knowledges already
+ 		var rv = this.callSuper();
+ 		if(rv === this) rv.summarised.access = acs;
+ 		return rv;
+ 	}
+});
+
+if(nul.action) nul.localsMdl = new JS.Module(/** @lends nul.xpr.knowledge# */{
+	/**
+	 * Remove the names of the unused locals.
+	 * Use the local names to textualise locals references.
+	 */
+	useLocalNames: function(keep) {
+		for(var i=0; i<this.locals.length; ++i)
+			if(!keep[i]) this.locals[i] = null;
+			else for(var l = 0; l<keep[i].length; ++l)		//TODO O: useful ? locals should have correct dbgName now
+				keep[i][l].invalidateTexts(this.locals[i]);
+	},
+
+	/**
+	 * An empty set of managed locals
+	 */
+	emptyLocals: function() { return []; },
+
+	/**
+	 * This knowledge now manage this new knowledge locals too
+	 */
+	concatLocals: function(klg) { this.locals.pushs(klg.locals); },
+	
+	/**
+	 * Unallocate the last local
+	 */
+	freeLastLocal: function() { this.locals.pop(); },
+	
+	/**
+	 * Get the number of locals this knowledge manage
+	 */
+	nbrLocals: function() { return this.locals.length; },
+	
+	/**
+	 * Register a new local
+	 */
+ 	newLocal: function(name, ndx) {
+ 		if('undefined'== typeof ndx) ndx = this.locals.length;
+		this.locals[ndx] = name;
+ 		return new nul.obj.local(this.name, ndx, name);
+ 	}
+ 	
+}); else nul.localsMdl = new JS.Module(/** @ignore */{
+	/** @ignore */
+	useLocalNames: function() {},
+	/** @ignore */
+	emptyLocals: function() { return 0; },
+	/** @ignore */
+	concatLocals: function(klg) { this.locals += klg.locals; },
+	/** @ignore */
+	freeLastLocal: function() { --this.locals; },
+	/** @ignore */
+	nbrLocals: function() { return this.locals; },
+	/** @ignore */
+ 	newLocal: function(name, ndx) {
+ 		if('undefined'== typeof ndx) ndx = this.locals++;
+ 		return new nul.obj.local(this.name, ndx);
+ 	}
+});
+
+nul.xpr.knowledge.include(nul.localsMdl);
+/*FILE: src/lng/xpr/klg/null.klg.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+/**
+ * Knowledge management helpers
+ * @namespace
+ */
+nul.klg = /** @lends nul.klg */{
+	/**
+	 * Create or get an already-built unconditional
+	 * @param {Number} mul Multiplicity
+	 * @param {String} name Used only when creation is needed
+	 * @return {nul.klg.ncndtnl}
+	 */
+	unconditional: function(mul, name) {
+		if(!nul.klg.unconditionals[mul])
+			nul.klg.unconditionals[mul] = new nul.klg.ncndtnl(name, mul);
+		return nul.klg.unconditionals[mul];
+	},
+	/**
+	 * To avoid doubles, keep the built unconditionals in this table
+	 * @type {nul.klg.ncndtnl[]}
+	 */
+	unconditionals: {},
+
+	ncndtnl: new JS.Class(nul.xpr.knowledge, /** @lends nul.klg.ncndtnl# */{
+		/**
+		 * @class Unconditional knowledge : only characterised by a min/max existence without real knowledge, condition
+		 * @extends nul.xpr.knowledge
+		 * @constructs
+		 * @param {Number} mul Multiplicity
+		 */
+		initialize: function(name, mul) {
+			this.callSuper(name || ('['+ (mul==pinf?'&infin;':mul.toString()) +']'), mul);
+			this.alreadyBuilt();
+		},
+		/**
+		 * Create a brand new knowledge out of the sole multiplicity information
+		 */
+		modifiable: function() {
+			if(0== this.maxMult) nul.fail('No fewer than never');
+			return new nul.xpr.knowledge(null, this.minMult, this.maxMult).from(this);
+		},
+		
+		/** @constant */
+		components: {},
+		/** @constant */
+		ior3: [],
+		/** @constant */
+		eqCls: [],
+		/** @constant */
+		veto: [],
+		/**
+		 * The minimum existance multiplicity is constant
+		 * @return {Number}
+		 */
+		minXst: function() { return this.minMult; },
+		/**
+		 * The maximum existance multiplicity is constant
+		 * @return {Number}
+		 */
+		maxXst: function() { return this.maxMult; }
+	}),
+	
+	//TODO 4: if(!nul.debugged) replace are/is/... by $.id
+	/**
+	 * Assert: 'x' are a collection of knowledges
+	 * @param {nul.object[]} x
+	 */
+	are: function(x) { return nul.xpr.are(x,'nul.xpr.knowledge'); },
+	/**
+	 * Assert: 'x' is a knowledge
+	 * @param {nul.object} x
+	 */
+	is: function(x) { return nul.xpr.is(x,'nul.xpr.knowledge'); },
+	/**
+	 * Assert: 'x' is a knowledge. 'x' is summarised.
+	 * @param {nul.object} x
+	 */
+	use: function(x) { return nul.xpr.use(x,'nul.xpr.knowledge'); },
+	/**
+	 * Assert: 'x' is a knowledge. 'x' is not summarised.
+	 * @param {nul.object} x
+	 */
+	mod: function(x) { return nul.xpr.mod(x,'nul.xpr.knowledge'); }
+};
+/**
+ * Unconditional knowledge meaning something that is never verified
+ */
+nul.klg.never = new nul.klg.unconditional(0, 'Never');
+
+/**
+ * Unconditional knowledge meaning something that is always verified
+ */
+nul.klg.always = new nul.klg.unconditional(1, 'Always');
+
+
+/**
+ * Return the knowledge knowing all that ops are equal
+ */
+nul.klg.unification = function(objs) {
+	objs = beArrg(arguments);
+	var klg = new nul.xpr.knowledge();
+	klg.unify(objs);
+	return klg.built();
+};
+
+/**
+ * Return the wrapped singleton when o is val
+ * @param {nul.xpr.object} o
+ * @param {nul.xpr.object} val
+ * @return {nul.xpr.possible[]}
+ * @throws {nul.ex.failure}
+ */
+nul.klg.has = function(o, val) {
+	var klg = new nul.xpr.knowledge();
+	return [klg.wrap(klg.unify(o, val))];
+};
+
+nul.xpr.knowledge.include({failure: nul.klg.never});
 /*FILE: src/lng/xpr/obj/undefnd/null.obj.data.js*/
 /*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
@@ -3228,3 +4456,7 @@ nul.obj.operation.binary = new JS.Class(nul.obj.operation, {
 nul.obj.operation.Nary = new JS.Class(nul.obj.operation, {
 	//TODO 3
 });
+/*FILE: src/lng/xpr/klg/nul.klg.ior3.js*/
+/*FILE: src/lng/xpr/klg/nul.klg.eqCls.js*/
+/*FILE: src/lng/xpr/klg/nul.klg.browse.js*/
+/*FILE: src/lng/xpr/klg/nul.klg.algo.js*/

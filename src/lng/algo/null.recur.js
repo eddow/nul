@@ -5,7 +5,11 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//#requires: src/lng/xpr/null.expression
+/*#requires:
+ * src/lng/xpr/null.expression
+ * src/lng/xpr/obj/defined/null.obj.pair
+ * src/lng/xpr/klg/null.xpr.possible
+ */
 
 nul.expression.include(/** @lends nul.expression# */{
 	/**

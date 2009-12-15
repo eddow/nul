@@ -11,6 +11,5 @@ nul.loading.follow = function(f) {f();};
 nul.loading();
 
 /*#
- * requires: bin/null.3rd.js, src/null.import
- * uses: bin/null.core
+ * requires: src/null.loading
  */

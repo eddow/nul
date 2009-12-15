@@ -1,0 +1,2 @@
+output = bin/null.all.js
+input = bin/null.3rd, src/null.inplace, bin/null.core 

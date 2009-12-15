@@ -5,8 +5,8 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-/*# uses:
- * src/lng/xpr/null.expression, src/krnl/null.exception
+/*# uses: src/lng/xpr/null.expression, src/krnl/null.exception, src/web/null.page
+ * requires: src/web/null.helper
  */
 
 /**
