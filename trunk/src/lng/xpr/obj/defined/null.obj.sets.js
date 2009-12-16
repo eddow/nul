@@ -5,7 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//#requires: src/lng/xpr/obj/defined/null.obj.defined
+//#requires: src/lng/xpr/obj/defined/null.obj.list
 
 //TODO 3: express these as descendant from nul.obj.hc
 nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{

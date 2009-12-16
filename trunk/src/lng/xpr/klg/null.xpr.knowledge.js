@@ -5,7 +5,12 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//#uses: src/lng/xpr/klg/nul.klg.ior3, src/lng/xpr/klg/nul.klg.eqCls, src/lng/xpr/klg/nul.klg.browse, src/lng/xpr/klg/nul.klg.algo
+/*#	uses:
+ *		src/lng/xpr/klg/null.klg.algo, 
+ *		src/lng/xpr/klg/null.klg.browse
+ *		src/lng/xpr/klg/null.klg.eqClass
+ *		src/lng/xpr/klg/null.klg.ior3
+ */
 
 nul.xpr.knowledge = new JS.Class(nul.expression, /** @lends nul.xpr.knowledge# */{
 	/**

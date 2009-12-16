@@ -5,7 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//#requires: src/lng/xpr/obj/defined/null.obj.defined
+//#requires: src/lng/xpr/obj/defined/null.obj.hc
 
 nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
 	/**

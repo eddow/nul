@@ -5,7 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//#requires: src/lng/xpr/klg/null.xpr.knowledge
+//#	requires: src/lng/xpr/klg/null.xpr.knowledge
 
 /**
  * Knowledge management helpers

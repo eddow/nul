@@ -21,11 +21,13 @@ nul.data.ajax = {
 			type: "get",
 			url: url,
 			async: false,
-			error: function(rq, x) {
+			error: function(xhr, opts, x) {
+				var msg; 
 				switch(x.code) {
-					case 1012: alert('AJAX', 'Ajax failure : Not respecting the <a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>');
-					default: alert('AJAX', 'Ajax failure : '+x);
+					case 1012: msg = 'Ajax failure : Not respecting the <a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>'; break;
+					default: msg = 'Ajax failure : '+x; break;
 				}
+				nul.ex.semantic('AJAX', msg);
 			}
 		});
 		return objFct(rq);
