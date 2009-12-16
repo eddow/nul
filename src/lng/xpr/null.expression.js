@@ -49,7 +49,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * @param {nul.expression} frm The expression this is derived from
 	 */
  	from: function(frm) {
-		this.origin.from = frm;
+ 		if(nul.action) this.origin.from = frm;
 		return this;
  	},
  	/**

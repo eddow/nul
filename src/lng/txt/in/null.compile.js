@@ -5,12 +5,12 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//#requires: src/txt/in/null.compiled, src/txt/in/null.tokenizer
+//#requires: src/lng/txt/in/null.compiled, src/lng/txt/in/null.tokenizer
 
 //TODO 3: parser les CDATA et <!-- -->
 
 /**
- * Recognised operators sorted by precedance
+ * Recognised operators sorted by precedence
  * @type [String,String][]
  * @constant
  */

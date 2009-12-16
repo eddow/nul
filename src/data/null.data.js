@@ -5,7 +5,9 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//#requires: src/lng/algo/null.browse
+/*#requires: src/lng/algo/null.browse, src/lng/xpr/obj/defined/null.obj.node
+ * uses: src/data/null.data.ajax, src/data/null.data.dom, src/data/null.data.time
+ */
 
 nul.data = new JS.Class(/** @lends nul.data# */{
 	/**

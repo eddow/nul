@@ -5,7 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
-//#requires: src/txt/in/null.compiled
+//#requires: src/lng/txt/in/null.compiled
 
 /**
  * @namespace

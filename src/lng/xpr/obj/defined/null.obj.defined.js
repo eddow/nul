@@ -7,10 +7,9 @@
  *--------------------------------------------------------------------------*/
 /*#
  * requires: src/lng/xpr/obj/null.xpr.object
- * uses: src/lng/xpr/obj/defined/null.obj.hc, src/lng/xpr/obj/defined/null.obj.lambda,
- * src/lng/xpr/obj/defined/null.obj.list, src/lng/xpr/obj/defined/null.obj.litteral,
- * src/lng/xpr/obj/defined/null.obj.node, src/lng/xpr/obj/defined/null.obj.pair,
- * src/lng/xpr/obj/defined/null.obj.sets
+ * uses: src/lng/xpr/obj/defined/null.obj.hc, src/lng/xpr/obj/defined/null.obj.lambda
+ * src/lng/xpr/obj/defined/null.obj.litteral, src/lng/xpr/obj/defined/null.obj.sets
+ * src/lng/xpr/obj/defined/null.obj.node, src/lng/xpr/obj/defined/null.obj.pair
  */
 
 nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{

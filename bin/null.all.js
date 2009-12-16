@@ -6463,7 +6463,7 @@ nul.expression = new JS.Class(/** @lends nul.expression# */{
 	 * @param {nul.expression} frm The expression this is derived from
 	 */
  	from: function(frm) {
-		this.origin.from = frm;
+ 		if(nul.action) this.origin.from = frm;
 		return this;
  	},
  	/**
@@ -6989,72 +6989,6 @@ nul.load.page = function() {
 	} catch(x) { nul.page.error(nul.ex.be(x)); }
 };
 nul.load.page.use = {'executionReady': true, 'console': true, 'HTML': true};
-/*FILE: src/lng/txt/out/null.txt.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-
-
-nul.txt = new JS.Class(/** @lends nul.txt# */{
-	/**
-	 * @class Text output kernel
-	 * @constructs
-	 */
-	initialize: function() {
-		this.drawing = [];
-	},
-	/**
-	 * Main function, making a string out of an expression
-	 * @param {nul.expression} xpr
-	 */
-	toText: function(xpr) {
-		if(!this.beginDraw(xpr)) return this.recurStr;
-		try {
-			return this.wrap(
-				(this.draw[xpr.expression]||this.draw.other)
-					.apply(this.outp(xpr)),
-				xpr);
-		}
-		finally { this.endDraw(xpr); }
-	},
-	/**
-	 * Pairs can have several writing depending on their constitution : singleton { 1 }, list (1, 2, 3) or set { 1 [] 2 [] 3 }.
-	 * This function call one of the three sub-function.
-	 * @param {nul.expression} xpr
-	 */
-	dispatchPair: function(xpr) {
-		var lstd = xpr.listed();
-		if(xpr.isList()) {
-			if(1== lstd.length && !lstd.follow)
-				return this.draw.singleton.apply(xpr, []);
-			return this.draw.list.apply(xpr, [lstd]);
-		} 
-		return this.draw.set.apply(xpr, [lstd]);
-	},
-	/**
-	 * Called when an expression is about to be drawn
-	 * @param {nul.expression} xpr
-	 */
-	beginDraw: function(xpr) {
-		if(this.drawing.include(xpr)) return false;
-		this.drawing.push(xpr);
-		return true;
-	},
-	/**
-	 * Called for each expression that have been drawn
-	 * @param {nul.expression} xpr
-	 */
-	endDraw: function(xpr) {
-		if(nul.debugged) nul.assert(xpr==this.drawing.pop(), 'Drawing consistency');
-		else this.drawing.pop();
-	}
-});
 /*FILE: src/lng/algo/null.browse.js*/
 /*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
@@ -7574,6 +7508,1096 @@ nul.obj.defined = new JS.Class(nul.xpr.object, /** @lends nul.obj.defined# */{
 	having: function(o, attr) {
 		return this.has(o, attr||{}) || this.callSuper();
 	}
+});
+/*FILE: src/lng/xpr/obj/defined/null.obj.hc.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
+	/**
+	 * @class The objects that is defined in javascript, along functions and/or set listing.
+	 * @constructs
+	 * @extends nul.obj.defined
+	 * @param {Object} singleton Sub-class definition. Used when sub-classment is made for a singleton, to avoid new Class.create()()
+	 */
+	initialize: function(singleton) {
+		if(singleton) this.extend(singleton);
+		this.callSuper();
+		this.alreadyBuilt();
+	},
+	
+	/**
+	 * Abstract : Retrieve a value from a key (use the container as a function, key is the argument)
+	 * @param {nul.obj.defined} key
+	 * @return {nul.xpr.object|nul.data|nul.xpr.possible[]}
+	 */
+	seek: function(key) { nul.ex.semantic('CNT', this.expression+' cannot retrieve items', this); },
+	/**
+	 * Abstract : List the direct values of this set (the values that are not lambdas)
+	 * @return {nul.xpr.object|nul.data|nul.xpr.possible[]}
+	 */
+	listed: function() { nul.ex.semantic('CNT', this.expression+' cannot select items', this); },
+	
+	/**
+	 * {@link nul.obj.hc.filter} the {@link nul.obj.hc#.seek} along the expected object to select
+	 * @param {nul.obj.defined} pnt 'Arguments' of the function call. Have no dependance.
+	 * @param {nul.xpr.object} img 'Return value' of the function call.
+	 * @param {nul.xpr.object[String]} att Attributes of the 'return value' of the function call.
+	 * @return {nul.xpr.possible[]}
+	 */
+	retrieve: function(pnt, img, att) {
+		return nul.obj.hc.filter(
+				this.seek(pnt),
+				img, att,
+				function(v) { return new nul.obj.lambda(pnt, v); }
+			);
+	}.describe('Retrieval'),
+	/**
+	 * {@link nul.obj.hc.filter} the {@link nul.obj.hc#.list} along the expected object to select
+	 * @param {nul.xpr.object} obj 'Return value' of the function call.
+	 * @param {nul.xpr.object[String]} att Attributes of the 'return value' of the function call.
+	 * @return {nul.xpr.possible[]}
+	 */
+	select: function(obj, att) {
+		return nul.obj.hc.filter(this.listed(), obj, att);
+	}.describe('Selection'),	
+	
+	/**
+	 * Delegate extraction to specific function-call or listing
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.object[]} attrs
+	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
+	 */
+	subHas: function(o, attrs) {
+		if(o.isA(nul.obj.lambda) && isEmpty(o.point.dependance().usages)) return this.retrieve(o.point, o.image, attrs);
+		else if((o.isA(nul.obj.defined) && !o.isA(nul.obj.lambda)) || !isEmpty(attrs)) return this.select(o, attrs);
+	}
+});
+
+/**
+ * Used to bind pure data obj.hc can give to a knowledge and, therefore, possibles.
+ * @param {nul.xpr.object|nul.data|nul.xpr.possible[]} objs The given objects
+ * @param {nul.xpr.object} exp The expected object
+ * @param {nul.xpr.object[String]} exp The attributes of the expected object
+ * @param {function(any) nul.xpr.object} wrp Function used to build a return object out of 'exp' for instance 
+ */
+nul.obj.hc.filter = function(objs, exp, att, wrp) {
+	if(!$.isArray(objs)) objs = [objs];
+	return maf(objs, function(n, orv) {
+		try {
+			if(orv.isA(nul.data)) orv = orv.object;
+			var klg;
+			if(orv.isA(nul.xpr.possible)) {
+				klg = orv.knowledge.modifiable();
+				nul.klg.mod(klg);
+				orv = orv.value;
+			} else klg = new nul.xpr.knowledge();
+			nul.obj.use(orv);
+			var vl = klg.unify(orv, exp);
+			vl = klg.attributed(vl, att);
+			if(wrp) vl = wrp(vl);
+			return klg.wrap(vl);
+		} catch(e) { nul.failed(e); }
+	});
+}.describe('Local filtering');
+/*FILE: src/lng/xpr/obj/defined/null.obj.node.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
+	/**
+	 * @class XML-like node : tag, attributes and list content. There are no restrictions on content and/or attributes.
+	 * @extends nul.obj.defined
+	 * @constructs
+	 * @param {String} tag The tagName of the XML node
+	 * @param {nul.xpr.object[String]} attributes The named attributes
+	 * @param {nul.xpr.object[]} content The list of contained elements
+	 */
+	initialize: function(tag, attributes, content) {
+		this.tag = tag;
+		var dupProp = null;
+		this.attributes = attributes || {};
+		for(var anm in this.attributes)
+			if('function'== typeof this.attributes[anm]) {
+				if(!dupProp) dupProp = $o.clone(this.properties);
+				dupProp[anm] = this.attributes[anm];
+				delete this.attributes[anm];
+			}
+		if(dupProp) this.properties = dupProp;
+
+		this.content = content || nul.obj.empty;	//TODO 2: assert content #set
+		nul.obj.use(this.content, 'nul.obj.list');
+		
+		return this.callSuper(null);
+	},
+
+//////////////// nul.obj.defined implementation
+
+	/**
+	 * Develop the unification of tag, attributes and content
+	 * @param {nul.xpr.object} o
+	 * @param {nul.xpr.knowledge} klg
+	 */
+	subUnified: function(o, klg) {
+		if('node'!= o.expression) nul.fail(o, ' not a node');
+		var nattrs = merge(this.attributes, o.attributes, function(a, b, i) {
+			if(!a || !b) nul.fail('Attribute not common : '+i);
+			return klg.unify(a, b); 
+		});
+		return new nul.obj.node(this.tag, nattrs, klg.unify(this.content, o.content));
+	},
+	/**
+	 * Generic node properties
+	 * @constant
+	 */
+	properties: {
+		'': function() { return new nul.obj.litteral.string(this.tag); },
+		'# ': function(klg) { return this.content.attribute('# ', klg); }
+	},
+	
+	/**
+	 * Find out a function who, for an argument, tells which recursive arguments will be given to this
+	 * $ factorial -> { 0 => {} [] N n > 1 => { n-1 } }
+	 */
+	recursion: function() { return this.content.recursion(); },
+
+	/**
+	 * @param {document} doc
+	 * @return {XMLElement}
+	 * @throw {nul.ex.semantic}
+	 * TODO 2 returns Element
+	 */
+	XML: function(doc) {
+		var rv = doc.createElement(this.tag);
+		for(var a in this.attributes) {
+			//TODO 3: check a as attribute name
+			if(!this.attributes[a].isA(nul.obj.litteral.string))
+				nul.ex.semantic('XML', 'This doesnt fit for XML attribute', this.attributes[a]);
+			rv.setAttribute(a, this.attributes[a].value);
+		}
+		var lst = this.content.listed();
+		for(var c=0; lst[c]; ++c)
+			rv.appendChild(lst[c].XML(doc));
+		return rv;
+	},
+
+//////////////// nul.obj.hc implementation
+
+	/**
+	 * Gets a node from a selector. The selector can be :
+	 * TODO 3- a string tag name (simple CSS selector)
+	 * - another node as a template
+	 * @param {nul.obj.defined} key
+	 */
+	seek: function(key) {
+		switch(key.expression) {
+		case 'node':
+			return nul.obj.node.relativise(key, this.listed());
+		default:
+			nul.ex.semantic('NODE', 'NODE elements can only be indexed [by CSS selector or ]by defaulting node', key);
+		}
+	},
+	
+	/**
+	 * List the content
+	 * @return {nul.xpr.possible[]}
+	 */
+	listed: function() {
+		return this.content.listed();
+	},
+	
+//////////////// nul.expression implementation
+
+	/** @constant */
+	expression: 'node',
+	/** @constant */
+	components: {
+		'attributes': {type: 'nul.xpr.object', bunch: true},
+		'content': {type: 'nul.xpr.object', bunch: false}
+	}
+});
+
+/**
+ * If the template and the node have the same tag, returns an object who :
+ * - have all the attributes fixed like obj
+ * - have the attributes fixed by tpl and not obj fixed to the value specified by tpl (default value system)
+ * - is undefined and, therefore can have other attributes
+ * @param {nul.obj.defined} tpl Template
+ * @param {nul.obj.defined[]} objs Objects
+ * @return {nul.obj.possible[]}
+ */
+nul.obj.node.relativise = function(tpl, objs) {
+	nul.obj.is(tpl, 'nul.obj.defined');
+	return maf(objs, function(n, obj) {
+		var klg;
+		if(obj.isA(nul.xpr.possible)) {
+			klg = obj.knowledge;
+			obj = obj.value;
+		} else klg = nul.klg.always;
+		nul.obj.is(obj, 'nul.obj.defined');
+		if(tpl.tag == obj.tag) {
+			var rAtt = $o.clone(obj.attributes);
+			merge(rAtt, obj.properties, function(a, b, n) { return a || obj.attribute(n); });
+			merge(rAtt, tpl.attributes, function(a, b, n) { return a || b; });
+			merge(rAtt, tpl.properties, function(a, b, n) { return a || tpl.attribute(n); });
+			klg = klg.modifiable();
+			var trv = klg.newLocal(tpl.tag);
+			klg.attributed(trv, rAtt);
+			return klg.wrap(trv);
+		}
+	});
+	//TODO 3: manage 'content'
+}.describe('Relativise');
+/*FILE: src/data/null.data.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.data = new JS.Class(/** @lends nul.data# */{
+	/**
+	 * @class The data-source providing basic data interaction.
+	 * @constructs
+	 */
+	initialize: function(context, index, singleton) {
+		if(singleton) this.extend(singleton);
+		/**
+		 * @type {nul.data.context}
+		 */
+		if(context) this.context = context;
+		/**
+		 * @type string
+		 * Index in this context : URL path, server, ...
+		 */
+		if(index) this.index = index;
+		/**
+		 * @type {nul.obj.data}
+		 * The object refering this data
+		 */
+		this.object = new nul.obj.data(this);
+	},
+	
+	/**
+	 * Retrieve an object from a data-point
+	 * @param {any} prm Parameter given to the querier
+	 * @return {nul.obj.defined}
+	 */
+	extract: function(prm) { throw 'abstract'; },
+	
+	extend: /** @lends nul.data */{
+		/**
+		 * Query what is needed to have the queried state of the object
+		 * @param {nul.xpr.object} obj
+		 * @return {nul.xpr.object} The same object without dependancies
+		 * @throw {nul.ex.failure}
+		 * @throw {nul.ex.semantic}
+		 */
+		query: function(obj) {
+			nul.obj.use(obj);
+			var usg = obj.dependance().usages;
+			while(!isEmpty(usg, 'global')) {
+				var chsdCtx = null;
+				for(var d in ownNdx(usg)) {
+					var ctx = nul.dependance.contexts[d];
+					if(nul.debugged) nul.assert(nul.data.context.def(ctx), 'Context queried');
+					if(!chsdCtx || ctx.distance < chsdCtx.distance)
+						chsdCtx = ctx;
+				}
+				//chsdCtx is fixed as minimum distance
+				if(!chsdCtx) nul.ex.internal('Cannot query : ' + $.keys(usg).join(', '));
+				obj = chsdCtx.query(obj);
+				usg = obj.dependance().usages;
+			}
+			return obj;
+		},
+
+		querier: new JS.Class(nul.browser.bijectif, /** @lends nul.data.querier */{
+			/**
+			 * @class The browser to replace atomic query-dependant values by their queried value
+			 * @extends nul.browser.bijectif
+			 * @param {nul.data.context} context
+			 * @param {Object} prm Parameter given to the queried function
+			 * @constructs
+			 */
+			initialize: function(context, prm) {
+				this.toNode = function() {
+					return $('<span />')
+						.append($.text('Querying '))
+						.append($('<span />').text(context.name));				
+				};
+				this.context = context;
+				this.prm = prm;
+				this.callSuper('querier:'+context.name);
+			},
+			/**
+			 * Gets the expression-specific queried value if the expression is a data from the queried context
+			 */
+			transform: function(xpr) {
+				if('data'== xpr.expression && this.context.name == xpr.source.context.name)
+					return $.isFunction(xpr.source.extract)?xpr.source.extract(this.prm):xpr.source.extract;
+				return nul.browser.bijectif.unchanged;
+			}
+		})
+	}
+});
+
+nul.data.context = new JS.Class(/** @lends nul.data.context# */{
+	/**
+	 * @class The data-source provider
+	 * @constructs
+	 */
+	initialize: function(name, distance, singleton) {
+		/**
+		 * @type String
+		 * Context name : protocol, ...
+		 */
+		this.name = name;
+		/**
+		 * Number stating how intimate the local script is to the data source.
+		 * 0 = total intimacy, 100 = no intimacy at all
+		 * Query always try to solve by querying the most intimate dataSource
+		 * @type Number
+		 */
+		this.distance = distance || 0;
+		if(singleton) this.extend(singleton);
+	},
+
+	toString: function() { return this.name; },
+
+	/**
+	 * Gets an object image no more dependant from this context
+	 * @param {nul.xpr.object} obj
+	 * @return {nul.browser.bijectif}
+	 * @throws {nul.ex.failure}
+	 */
+	query: function(obj) {
+		return this.querier().browse(obj);
+	}.describe('Query'),
+	
+	/**
+	 * Build a querier to browse and replace 'data' object from an expression.
+	 * @param {any} the parameter given to 'extract' functions
+	 * @return {nul.browser.bijectif}
+	 */
+	querier: function(prm) {
+		return new nul.data.querier(this, prm);
+	}
+});
+
+/**
+ * Singleton
+ * @class The context used for all computations that doesn't require a connection
+ * @extends nul.data.context
+ */
+nul.data.context.local = new nul.data.context('local');
+/*FILE: src/lng/txt/in/null.compiled.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.compiled = new JS.Class (/** @lends nul.compiled# */{
+		/**
+		 * @constructs
+		 * @class Compiled expression tree node
+		 * @param {Object} props Properties of the node
+		 */
+		initialize: function(props) {
+			this.extend(props);
+		},
+		
+		extend: /** @lends nul.compiled */{
+			/**
+			 * @class Nodes factory : as {@link nul.compile#compiled}
+			 */
+			factory: new JS.Class (/** @lends nul.compiled.factory# */{
+				/**
+				 * @param {String} oprtr
+				 * @param {nul.compiled[]} oprnds
+				 * @return {nul.compiled}
+				 */
+				expression: function(oprtr, oprnds) {
+					return new nul.compiled.expression({ operator: oprtr, operands: oprnds});
+				},
+				/**
+				 * @param {String} oprtr
+				 * @param {nul.compiled} oprnd
+				 * @return {nul.compiled}
+				 */
+				preceded: function(oprtr, oprnd) {
+					return new nul.compiled.preceded({ operator: oprtr, operand: oprnd});
+				},
+				/**
+				 * @param {String} oprtr
+				 * @param {nul.compiled} oprnd
+				 * @return {nul.compiled}
+				 */
+				postceded: function(oprtr, oprnd) {
+					return new nul.compiled.postceded({ operator: oprtr, operand: oprnd});
+				},
+				/**
+				 * @param {nul.compiled} item
+				 * @param {nul.compiled} applied
+				 * @return {nul.compiled}
+				 */
+				application: function(item, applied) {
+					return new nul.compiled.application({ item: item, applied: applied});
+				},
+				/**
+				 * @param {nul.compiled} item
+				 * @param {nul.compiled} token
+				 * @return {nul.compiled}
+				 */
+				taking: function(item, token) {
+					return new nul.compiled.taking({ item: item, token: token});
+				},
+				/**
+				 * @param {String} type
+				 * @param {Litteral} value
+				 * @return {nul.compiled}
+				 */
+				atom: function(type, value) {
+					return new nul.compiled.atom({ type: type, value: value});
+				},
+				/**
+				 * @param {String} decl
+				 * @param {nul.compiled} value
+				 * @return {nul.compiled}
+				 */
+				definition: function(decl, value) {
+					return new nul.compiled.definition({ decl: decl, value: value});
+				},
+				/**
+				 * @param {nul.compiled} content
+				 * @param {String} selfRef
+				 * @return {nul.compiled}
+				 */
+				set: function(content, selfRef) {
+					return new nul.compiled.set({ content: content, selfRef: selfRef});
+				},
+				/**
+				 * @param {String} node
+				 * @param {nul.compiled[String]} attrs
+				 * @param {nul.compiled[]} content
+				 * @return {nul.compiled}
+				 */
+				xml: function(node, attrs, content) {
+					return new nul.compiled.xml({ node: node, attributes: attrs, content: content});
+				},
+				/**
+				 * @param {nul.compiled} obj
+				 * @param {String} anm
+				 * @param {nul.compiled} v
+				 * @return {nul.compiled}
+				 */
+				composed: function(obj, anm, val) {
+					return new nul.compiled.composed({ object: obj, aName: anm, value: val});
+				},
+				/**
+				 * @param {nul.compiled} appl
+				 * @param {String} lcl
+				 * @return {nul.compiled}
+				 */
+				objectivity: function(appl, lcl) {
+					return new nul.compiled.objectivity({ applied: appl, lcl: lcl});
+				},
+				/**
+				 * @param {nul.xpr.object} val
+				 * @return {nul.compiled}
+				 */
+				hardcode: function(val) {
+					return new nul.compiled.hardcode({ value: val});
+				}
+			})
+	}
+});
+/*FILE: src/lng/txt/in/null.tokenizer.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+//TODO 2: "8x" should be an error, not "8 x" ... or not ?
+
+nul.tokenizer = new JS.Class(/** @lends nul.tokenizer# */{
+	/**
+	 * @class Text reader helper
+	 * @constructs
+	 * @param {String} src The text content
+	 */
+	initialize: function(src) {
+		this.txt = src.replace(/\n\r/g,'\uffff').replace(/\n/g,'\uffff').replace(/\r/g,'\uffff');
+		this.line = 0;
+		this.clmn = 0;
+		this.next();
+	},
+	/**
+	 * The next token to consider
+	 */
+	token: /** @lends nul.tokenizer#token# */{
+		/** The alphabet that recognised this token */
+		type: '',
+		/** The computed token value */
+		value: '',
+		/** The text that produced this token */
+		raw: '',
+		/** Line coordinate */
+		line: 0,
+		/** Row coordinate*/
+		clmn: 0
+	},
+	
+	/**
+	 * Consider the next token
+	 */
+	next: function()
+	{
+		var match, alphabet;
+		do
+		{
+			if(''== this.txt)
+				return this.token = { value: '', type: 'eof', clmn: this.clmn, line:this.line };
+			for(alphabet in nul.tokenizer.alphabets)
+				if(match = nul.tokenizer.isAB(this.txt, alphabet))
+				{
+					this.token = {
+						value: (1< match.length) ? match[1]: null,
+						type: alphabet,
+						raw: match[0],
+						line: this.line,
+						clmn: this.clmn};
+					this.advance(match[0].length);
+					break;
+				}
+			if(!match)
+			{
+				this.token = this.txt.substr(0,1);
+				this.token = { value: this.token, type: 'other', raw:this.token, cl: this.token.cl, ln:this.token.ln };
+				this.advance(1);
+			}
+		} while(null=== this.token.value);
+		
+		return this.token;
+	},
+	/**
+	 * Compare and return next token
+	 * @param {String[]} accepted A list of accepted token type or nothing if any token accepted
+	 * @return {token} next token if accepted or null
+	 */
+	peek: function(accepted)
+	{
+		if(accepted)	//if specified
+		{
+			var argx;
+			for(argx=0; argx<accepted.length; ++argx)
+				if(accepted[argx]== this.token.type)
+					break;
+			if( argx >= accepted.length )
+				return null;
+		}
+		return this.token;
+	},
+	/**
+	 * Gets next token and advance if accepted.
+	 * @param {String[]} accepted A list of accepted token type
+	 * @return next token if accepted or null
+	 */
+	pop: function(accepted)
+	{
+		if('eof'== this.token.type) nul.ex.syntax('EOF', 'End of file reached.', this);
+		var rv = this.peek(accepted);
+		if(rv) this.next();
+		return rv;
+	},
+	/**
+	 * Gets next token and advance if accepted.
+	 * @param {String} value The only accepted token value
+	 * @return true if token was token, false if nothing changed
+	 */
+	take: function(value)
+	{
+		var rv = this.token.value == value;
+		if( rv ) this.next();
+		return rv;
+	},
+	/**
+	 * Take next token, asserts its value
+	 * @param {String} value The expected value of the next token
+	 * @param {any} rv The return value of this function
+	 * @return the parameter 'rv'
+	 * @throws {nul.ex.syntax} if the token is not the one expected.
+	 */
+	expect: function(value, rv)
+	{
+		if(!this.take(value)) nul.ex.syntax('EXP', '"'+value+'" expected', this);
+		return rv;
+	},
+	/**
+	 * Gets next characters and advance if accepted.
+	 * @param {String} value The characters expected to de found
+	 * @return true if the characters were found and taken
+	 */
+	rawTake: function(value)
+	{
+		var txt = this.token.raw + this.txt;
+		if( txt.substr(0,value.length) != value ) return false;
+		this.advance(value.length, txt);
+		this.next();
+		return true;
+	},
+	/**
+	 * Take some characters, asserts their value
+	 * @param {String} value The expected string to find
+	 * @param {any} rv The return value of this function
+	 * @return the parameter 'rv'
+	 * @throws {nul.ex.syntax} if the characters were not found exactly
+	 */
+	rawExpect: function(value, rv)
+	{
+		if(!this.rawTake(value)) nul.ex.syntax('EXP', '"'+value+'" expected', this);
+		return rv;
+	},
+	/**
+	 * Get a string until some character
+	 * @param {String} seeked The bound for seeking
+	 * @return {String} the string until the bound, null if the bound is not found.
+	 */
+	fly: function(seeked)
+	{
+		var txt = this.token.raw + this.txt;
+		var n = txt.indexOf(seeked);
+		if(-1== n) return null;
+		var rv = txt.substr(0, n);
+		this.advance(n, txt);
+		this.next();
+		return rv;
+	},
+	/**
+	 * Advance the token position
+	 */
+	advance: function(n, txt) {
+		if(!txt) txt = this.txt;
+		var advanced = txt.substr(0, n);
+		this.txt = txt.substr(n);
+		
+		advanced = advanced.split('\uffff');
+		if(1>= advanced.length) this.clmn += n;
+		else if(this.txt) {
+			this.line += advanced.length-1;
+			this.clmn = advanced.pop().length;
+		}
+	}
+});
+
+/**
+ * Try to recognize the string as from an alphabet
+ * @param {String} v The string to recognise
+ * @param {String} alphabet The alphabet name
+ */
+nul.tokenizer.isAB = function(v, alphabet) {
+	return (new RegExp('^'+nul.tokenizer.alphabets[alphabet], 'g')).exec(v);
+};
+
+/**
+ * Alphabets used by the tokenizer given by name
+ * @type RegExp[String]
+ */
+nul.tokenizer.alphabets = {
+		number:		'(\\d+(\\.\\d+)?)',
+		alphanum:	'([\\w@]+)',
+		string:		'"([^"\\uffff]*)"',
+		space:		'[\\s\\uffff]+',
+		comm1:		'\\/\\/.*?\\uffff',
+		comm2:		'\\/\\*.*?\\*\\/',
+		oprtr:		[',..', '{', '}', '::', '[', ']', '(', ')', '\\/', '.']
+	};
+/**
+ * Load the operators defined in the compiler to create an alphabet
+ */
+nul.load.operators = function() {
+	var escaper = function(n, s) { return '\\' + s.split('').join('\\'); };
+	var ops = map(nul.operators, function() { return this[0];});
+	ops.pushs(nul.tokenizer.alphabets.oprtr);
+	ops.sort(function(a,b){ return b.length-a.length; });
+	nul.tokenizer.operators = ops;	//Useful for outer use, like editArea
+	nul.tokenizer.alphabets.oprtr = '(' + map(ops,escaper).join('|') + ')';
+};
+/*FILE: src/lng/txt/in/null.compile.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+//TODO 3: parser les CDATA et <!-- -->
+
+/**
+ * Recognised operators sorted by precedence
+ * @type [String,String][]
+ * @constant
+ */
+//l => left built ((a . b) . c)
+//r => right built (a . (b . c))
+//m => multi (a , b , c)
+//p => preceder (- a)
+//s => postceder (a !)
+//k => kept (a , b , c ,.. d)
+nul.operators = [
+	['[]','m'],								//booleans:meta OR
+	[';','m'],								//booleans:meta AND
+	[',','k'],				 				//list
+	[',.','s'],				 				//list singleton
+	['=>','r'],								//lambda
+	['!','p'],
+	['?','l'],
+	['=','m'], ['!=','r'],					//unify
+	['<','r'], ['>','r'], ['<=','r'], ['>=','r'],
+	['+','m'], ['-','l'],
+	['-','p'], ['#','p'], ['$','p'],
+	['*','m'], ['/','l'], ['%','l'],
+	['..','l']
+];
+
+nul.compiler = new JS.Class(/** @lends nul.compiler# */{
+	/**
+	 * @constructs
+	 * @class The object managing compilation of a text
+	 * @param {String} txt Text to compile
+	 */
+	initialize: function(txt) {
+		this.tknzr = new nul.tokenizer(txt);
+		this.compiled = new nul.compiled.factory;
+	},
+	/**
+	 * Requires the next token to be an alphanumeric
+	 * @return {String} The alphanumeric value
+	 * @throw {nul.ex.syntax}
+	 */
+	alphanum: function() {
+		var rv = this.tknzr.pop(['alphanum']);
+		if(!rv) nul.ex.syntax('IDE', 'Identifier expected', this.tknzr);
+		return rv.value;
+	},
+	/**
+	 * Requires the next token to be a number
+	 * @return {Number} The number value
+	 * @throw {nul.ex.syntax}
+	 */
+	number: function() {
+		var rv = this.tknzr.pop(['number']);
+		if(!rv) nul.ex.syntax('IDE', 'Number expected', this.tknzr);
+		return rv.value;
+	},
+	/**
+	 * Takes the list of operands for an expression on the n-th operator level
+	 * @param {nul.compiled} firstOp The already-red operand
+	 * @param {String} oprtr The expected operator
+	 * @param {Number} oprtrLvl tThe operator-level : index in {@link nul.operators}
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.ex.syntax}
+	 */
+	list: function(firstOp, oprtr, oprtrLvl) {
+		var rv = [firstOp];
+		switch(oprtr[1])
+		{
+			case 'k':
+				while( this.tknzr.take(oprtr[0]) ) rv.push(this.expression(oprtrLvl));
+				if(this.tknzr.take(oprtr[0]+'..')) rv.follow = this.expression(oprtrLvl);
+				break;
+			case 'm':
+				while( this.tknzr.take(oprtr[0]) ) rv.push(this.expression(oprtrLvl));
+				break;
+			case 'l':
+				if( this.tknzr.take(oprtr[0]) ) rv.push(this.expression(oprtrLvl));
+				break;
+			case 'r':
+				if( this.tknzr.take(oprtr[0]) ) rv.push(this.expression(oprtrLvl-1));
+				break;
+			case 's':
+				if( this.tknzr.take(oprtr[0]) ) rv.push('ceded');
+				break;
+			default: nul.ex.internal('Bad operator type');
+		}
+		return rv;
+	},
+	/**
+	 * Gets the compiled expression on the sepcified operator-level
+	 * @param {Number} oprtrLvl tThe operator-level : index in {@link nul.operators}
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.ex.syntax}
+	 */
+	expression: function(oprtrLvl, firstOp) {
+		if('undefined'== typeof oprtrLvl) oprtrLvl = 0; 
+		if(nul.operators.length <= oprtrLvl) return firstOp || this.applied();
+		var oprtr = nul.operators[oprtrLvl];
+		if(!firstOp) firstOp = this.expression(1+oprtrLvl);
+		else firstOp = this.expression(1+oprtrLvl, firstOp);
+		if('p'== oprtr[1]) return firstOp;	//don't manage preceders here but in .item
+		var rv = [firstOp];
+		do
+		{
+			rv = this.list(firstOp, oprtr, 1+oprtrLvl);
+			if(0== rv.length) nul.ex.internal('No components and an operator');
+			if(1== rv.length && !rv.follow) return rv[0];
+			if('ceded'== rv[1]) firstOp = 
+				this.expression(0, this.compiled.postceded(oprtr[0], rv[0]));
+			else firstOp = this.compiled.expression(oprtr[0], rv);
+		} while('l'== oprtr[1]);
+		return firstOp;
+	},
+	/**
+	 * Gather a compiled value and all its post-fixes 
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.ex.syntax}
+	 */	
+	applied: function(lax) {
+		var rv = this.item(lax);
+		if(!rv) return;
+		do
+		{
+			var tst;
+			if(this.tknzr.take('.')) rv = this.compiled.objectivity(rv, this.alphanum()); 
+			else if('[]'!= this.tknzr.token.value && this.tknzr.take('['))
+				rv = this.compiled.taking(rv, this.tknzr.rawExpect(']', this.expression())); 				
+			else if(tst = this.applied('lax')) rv = this.compiled.application(rv, tst);
+			else if(this.tknzr.take('::')) {
+				var anm = this.tknzr.rawTake('(') ?
+					this.tknzr.rawExpect(')', this.tknzr.fly(')')) :
+					this.alphanum();
+				rv = this.compiled.composed(rv, anm, this.item());					
+			}
+			
+			else return rv;
+		} while(true);
+	},
+	/**
+	 * Read inside an XML node 
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.ex.syntax}
+	 */	
+	innerXML: function() {
+		var comps = [];
+		do
+		{
+			var aTxt = this.tknzr.fly('<');
+			if(null=== aTxt) nul.ex.syntax('XML', 'XML node not closed', this.tknzr);
+			if(''!== aTxt) comps.push(this.compiled.atom('string', aTxt.replace(/\uffff/g, '\n')));
+			if(this.tknzr.rawTake('<(')) comps.push(this.tknzr.rawExpect(')>',this.expression()));
+			else if(this.tknzr.rawTake('</')) return comps;
+			else if(this.tknzr.rawTake('<')) comps.push(this.xml());
+			else nul.ex.syntax('UEI', "Don't know what to do with '"+this.tknzr.token.value+"'", this.tknzr, 'token');
+		} while(true);
+	},
+	/**
+	 * Read an XML node 
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.ex.syntax}
+	 */	
+	xml: function() {
+		var node = this.alphanum(), attr, attrs = {};
+		while(attr = this.tknzr.pop(['alphanum']))
+		{
+			this.tknzr.expect('=');
+			attrs[attr.value] = this.item();
+		}
+		if(this.tknzr.rawTake('/>')) return this.compiled.xml(node, attrs, []);
+		this.tknzr.rawExpect('>');
+		var comps = this.innerXML();
+		this.tknzr.expect(node);
+		return this.tknzr.rawExpect('>', this.compiled.xml(node, attrs, comps));
+	},
+	/**
+	 * Read an item without precedance
+	 * @param {Boolean} lax Prevent to read an item that should be understood as an operation
+	 * @return {nul.compiled} The compiled value
+	 * @throw {nul.ex.syntax}
+	 */	
+	item: function(lax) {
+		var rv;
+		if('eof'!= this.tknzr.token.type) {
+			//hard-code
+			if(this.tknzr.rawTake('<{')) return this.compiled.hardcode(eval(this.tknzr.rawExpect('}>', this.tknzr.fly('}>'))));
+			
+			//declaration
+			if(this.tknzr.take('\\/')) return this.compiled.definition(this.alphanum(), this.expression());
+			//Singletons
+			if(this.tknzr.take('{')) {
+				if(this.tknzr.take('}')) return this.compiled.set();
+				var sr;
+				if(this.tknzr.take(':')) sr = this.alphanum();
+				return this.tknzr.expect('}', this.compiled.set(this.expression(), sr));
+			}
+			//Global' attribute
+			if(this.tknzr.take('.')) return this.compiled.objectivity(this.compiled.atom('alphanum', ''), this.alphanum());
+			//Parenthesis
+			if(this.tknzr.take('(')) return this.tknzr.expect(')', this.expression());
+			if(!lax) {
+				if(this.tknzr.take('<')) return this.xml();
+				for(var p= 0; p<nul.operators.length; ++p) {
+					var oprtr = nul.operators[p];
+					if('p'== oprtr[1] && this.tknzr.take(oprtr[0]))
+						return this.compiled.preceded(oprtr[0], this.expression(1+p));
+				}
+			}
+			rv = this.tknzr.pop(['alphanum', 'number', 'string']);
+		}
+		if(!rv && !lax) nul.ex.syntax('ITE', 'Item expected', this.tknzr);
+		if(rv) return this.compiled.atom(rv.type, rv.value);
+	}
+});
+
+/**
+ * Make a compiled value out of a text.
+ * @param {String} txt
+ * @return {nul.compiled}
+ * @throw {nul.ex.syntax}
+ */
+nul.compile = function(txt)
+{
+	var rv = new nul.compiler(txt+'\n');
+	var ev = rv.expression();
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", rv.tknzr, 'token');
+	return ev;
+};
+
+/**
+ * Make a compiled value out of an XML content.
+ * @param {XML} txt
+ * @return {nul.compiled}
+ * @throw {nul.ex.syntax}
+ */
+nul.compile.xml = function(txt)
+{
+	var rv = new nul.compiler(txt+'</');
+	var ev = rv.innerXML();
+	if(rv.tknzr.token.type != 'eof') nul.ex.syntax('TOE', 'Unexpected: "'+rv.tknzr.token.value+"'.", this.tknzr, 'token');
+	return ev;
+};
+/*FILE: src/lng/txt/out/null.txt.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+
+
+nul.txt = new JS.Class(/** @lends nul.txt# */{
+	/**
+	 * @class Text output kernel
+	 * @constructs
+	 */
+	initialize: function() {
+		this.drawing = [];
+	},
+	/**
+	 * Main function, making a string out of an expression
+	 * @param {nul.expression} xpr
+	 */
+	toText: function(xpr) {
+		if(!this.beginDraw(xpr)) return this.recurStr;
+		try {
+			return this.wrap(
+				(this.draw[xpr.expression]||this.draw.other)
+					.apply(this.outp(xpr)),
+				xpr);
+		}
+		finally { this.endDraw(xpr); }
+	},
+	/**
+	 * Pairs can have several writing depending on their constitution : singleton { 1 }, list (1, 2, 3) or set { 1 [] 2 [] 3 }.
+	 * This function call one of the three sub-function.
+	 * @param {nul.expression} xpr
+	 */
+	dispatchPair: function(xpr) {
+		var lstd = xpr.listed();
+		if(xpr.isList()) {
+			if(1== lstd.length && !lstd.follow)
+				return this.draw.singleton.apply(xpr, []);
+			return this.draw.list.apply(xpr, [lstd]);
+		} 
+		return this.draw.set.apply(xpr, [lstd]);
+	},
+	/**
+	 * Called when an expression is about to be drawn
+	 * @param {nul.expression} xpr
+	 */
+	beginDraw: function(xpr) {
+		if(this.drawing.include(xpr)) return false;
+		this.drawing.push(xpr);
+		return true;
+	},
+	/**
+	 * Called for each expression that have been drawn
+	 * @param {nul.expression} xpr
+	 */
+	endDraw: function(xpr) {
+		if(nul.debugged) nul.assert(xpr==this.drawing.pop(), 'Drawing consistency');
+		else this.drawing.pop();
+	}
+});
+/*FILE: src/lng/xpr/obj/defined/null.obj.list.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
+	/**
+	 * @class Any expression that act as a list or a set
+	 * @extends nul.obj.defined
+	 * @constructs
+	 */
+	initialize: function() {
+		this.callSuper();
+	},
+	
+	/**
+	 * Yes, it is a list.
+	 */
+	isList: function() { return true; },
+	/**
+	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The set who give, for each parameter, the recursive parameter applied
+	 * @function
+	 * @return {nul.obj.list}
+	 */
+	recursion: nul.summary('recursion').describe('Recursion analyse'),
+	
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link recursion} */
+	sum_recursion: function() { return nul.obj.empty; }
 });
 /*FILE: src/lng/xpr/obj/defined/null.obj.pair.js*/
 /*  NUL language JavaScript framework
@@ -8216,6 +9240,1065 @@ nul.dependance = new JS.Class(/** @lends nul.dependance# */{
  * @type {nul.data.context[String]} 
  */
 nul.dependance.contexts = {};
+/*FILE: src/lng/xpr/obj/undefnd/null.obj.undefnd.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.obj.undefnd = new JS.Class(nul.xpr.object, /** @lends nul.obj.undefnd# */{
+	/**
+	 * @class Undefined object
+	 * @extends nul.xpr.object
+	 * @constructs
+	 */
+	initialize: function() {
+		this.callSuper();
+	},
+	defined: false
+});
+/*FILE: src/lng/xpr/obj/defined/null.obj.lambda.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
+	/**
+	 * @class Represents the application of a point to an image.
+	 * @example point &rArr; image
+	 * @constructs
+	 * @extends nul.obj.defined
+	 * @param {nul.xpr.object} point
+	 * @param {nul.xpr.object} image
+	 */
+	initialize: function(point, image) {
+		/** @type nul.xpr.object */
+		this.point = point;
+		/** @type nul.xpr.object */
+		this.image = image;
+		this.callSuper();
+		this.alreadyBuilt();
+	},
+
+//////////////// nul.obj.defined implementation
+
+	/**
+	 * Lambdas have no attributes
+	 * @throws {nul.ex.failure}
+	 */
+	attribute: function() { nul.fail('Lambdas have no attributes'); },
+	
+	/**
+	 * Unify component by component
+	 * @param {nul.obj.defined} o The other object to unify to
+	 * @param {nul.xpr.knowledge} klg
+	 * @returns {nul.obj.lambda} The lambda of unified components
+	 * @throws {nul.ex.failure}
+	 */
+	subUnified: function(o, klg) {
+		if('lambda'!= o.expression) nul.fail(o, ' not a lambda');
+		return new nul.obj.lambda(
+			klg.unify(this.point, o.point),
+			klg.unify(this.image, o.image));
+	},
+
+	/**
+	 * Lambdas contain nothing
+	 * @throws {nul.ex.failure}
+	 */
+	subHas: function() { nul.fail('Lambdas contains nothing'); },
+		
+//////////////// nul.expression implementation
+
+	/** @constant */
+	expression: 'lambda',
+	/** @constant */
+	components: {
+		'point': {type: 'nul.xpr.object', bunch: false},
+		'image': {type: 'nul.xpr.object', bunch: false}
+	}
+});
+/*FILE: src/lng/xpr/obj/defined/null.obj.litteral.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.obj.litteral = new JS.Class(nul.obj.defined, /** @lends nul.obj.litteral# */ {
+	/**
+	 * @class Abstract litteral - hold a javascript litteral value
+	 * @constructs
+	 * @extends nul.obj.defined
+	 * @param {Number|String|Boolean} val Javascript value to hold.
+	 */
+	initialize: function(val) {
+		this.callSuper();
+		/** @constant */
+		this.value = val;
+		this.alreadyBuilt();
+	}
+});
+
+/**
+ * @class
+ * @extends nul.obj.litteral
+*/
+nul.obj.litteral.string = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.string# */{
+
+////////////////	nul.xpr.defined implementation
+	
+	/** @constant */
+	properties: {
+		'# ': function() { return new nul.obj.litteral.number(this.value.length); },
+		'': function() { return nul.obj.litteral.tag.string; }
+	},
+	
+	/**
+	 * @param {document} doc
+	 * @return {XMLElement}
+	 * TODO 2 returns Element
+	 */
+	XML: function(doc) {
+		return doc.createTextNode(this.value);	//TODO 2: remplacer par des &...; ?
+	},
+	
+//////////////// nul.xpr.object implementation
+
+	/** Strings contain nothing */
+	subHas: function() { nul.fail('Strings contain nothing'); },
+
+//////////////// nul.expression implementation
+
+	/** @constant */
+	expression: 'string',
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
+	sum_index: function() { return this.indexedSub(this.value.replace(']','[|]')); }
+});
+
+/**
+ * @class
+ * @extends nul.obj.litteral
+*/
+nul.obj.litteral.number = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.number# */{
+
+////////////////	nul.xpr.defined implementation
+	
+	/** @constant */
+	properties: {
+		'text': function() { return nul.obj.litteral.make(this.value.toString()); },
+		'': function() { return nul.obj.litteral.tag.number; }
+	},
+
+//////////////// nul.xpr.object implementation
+
+	/**
+	 * TODO 3: {2[Q]} ==> ( Q _, Q _ ) ?
+	 */ 
+	subHas: function(o) {
+		nul.fail('TODO 3: number has');
+	},
+	
+//////////////// nul.expression implementation
+
+	/** @constant */
+	expression: 'number',
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
+	sum_index: function() { return this.indexedSub(this.value.toString().replace(']','[|]')); }
+});
+
+/**
+ * @class
+ * @name nul.obj.litteral.boolean 
+ * @extends nul.obj.litteral 
+ */
+nul.obj.litteral['boolean'] = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.boolean# */{
+	
+////////////////	nul.xpr.defined implementation
+	
+	/** @constant */
+	properties: {
+		'# ': function() { return nul.obj.litteral.make(this.value.length); },
+		'': function() { return nul.obj.litteral.tag['boolean']; }
+	},
+	
+	/** @constant */
+	attributes: {},
+	
+//////////////// nul.xpr.object implementation
+
+	/** Booleans contain nothing */
+	subHas: function() { nul.fail('Booleans contain nothing'); },
+
+//////////////// nul.expression implementation
+
+	/** @constant */
+	expression: 'boolean',
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
+	sum_index: function() { return this.indexedSub(this.value?'T':'F'); }
+});
+
+/**
+ * Make a litteral from a javascript value - choose the wright class
+ */
+nul.obj.litteral.make = function(v) {
+	if(nul.debugged) nul.assert(nul.obj.litteral[typeof v], (typeof v)+' is a litteral type');
+	if('boolean'== typeof v) return nul.obj.litteral['boolean'][v?'true':'false'];
+	return new nul.obj.litteral[typeof v](v);
+};
+
+/**
+ * Hard-coding of the booleans : no generic definition while they are two
+ */
+nul.obj.litteral['boolean']['true'] = new nul.obj.litteral['boolean'](true);
+nul.obj.litteral['boolean']['false'] = new nul.obj.litteral['boolean'](false);
+nul.obj.litteral['boolean']['true'].attributes['! '] = nul.obj.litteral['boolean']['false'];
+nul.obj.litteral['boolean']['false'].attributes['! '] = nul.obj.litteral['boolean']['true'];
+
+/**
+ * Virtual 'tags' of litterals
+ */
+nul.obj.litteral.tag = {
+	string: new nul.obj.litteral.string('#text'),
+	number: new nul.obj.litteral.string('#number'),
+	'boolean': new nul.obj.litteral.string('#boolean'),
+	set: new nul.obj.litteral.string('#set')
+};
+/*FILE: src/lng/xpr/obj/defined/null.obj.sets.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+//TODO 3: express these as descendant from nul.obj.hc
+nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
+	/**
+	 * @class A set hard-coded in javascript
+	 * @extends nul.obj.defined
+	 * @constructs
+	 */
+	initialize: function() {
+		this.callSuper();
+		this.alreadyBuilt();
+	},
+	
+	/**
+	 * Consider this set is not a transformation
+	 */
+	subHas: function(o, att, typeAttr) {
+		nul.obj.use(o);
+		if(o.isA(nul.obj.defined)) return [];
+		if(!att[''] || 'string'!= att[''].expression || typeAttr != att[''].value) {
+			var klg = new nul.xpr.knowledge();
+			klg.attributed(o, '', new nul.obj.litteral.string(typeAttr));
+			klg.belong(o, this);
+			return [klg.wrap(o)];
+		}
+	},
+
+	length: pinf,
+
+//////////////// nul.obj.defined implementation
+
+	/** @constant */
+	properties: {
+		'# ': function() { return nul.obj.litteral.make(this.length); },
+		'': function() { return nul.obj.litteral.tag.set; }
+	}
+});
+
+/**
+ * Singleton
+ * @class Empty set : &phi;
+ * @extends nul.obj.hcSet
+ */
+nul.obj.empty = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.empty# */{
+	listed: function() { return []; },
+	
+	intersect: function(o) {
+		nul.fail('No intersection with ', this);
+	},
+	subHas: function() { return []; },
+	
+	/** @constant */
+	expression: '&phi;',
+//////////////// nul.obj.defined implementation
+
+	/** @constant */
+	length: 0
+	
+});
+
+/**
+ * Singleton
+ * @class Set of number litterals
+ * @extends nul.obj.hcSet
+ */
+nul.obj.number = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.number# */{
+	intersect: function(o, klg) {
+		if('range'== o.expression) return o;
+		return this.callSuper(o, klg);
+	},
+	subHas: function(o, att) {
+		if('number'== o.expression) return isFinite(o.value)?[o]:[];
+		if(nul.obj.defined.def(att.text)) {
+			if('string'!= att.text.expression) return [];	//The attribute text is not a string
+			var nbr = parseInt(att.text.value);
+			if(nbr.toString() != att.text.value) return [];	//The attribute text is not a good numeric string
+			return nul.klg.has(o, new nul.obj.litteral.number(nbr));
+		}
+		return this.callSuper(o, att, '#number');
+	},
+	/** @constant */
+	expression: '&#x211a;'
+});
+
+/**
+ * Singleton
+ * @class Set of string litterals
+ * @extends nul.obj.hcSet
+ */
+nul.obj.string = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.string# */{
+	subHas: function(o, att) {
+		if('string'== o.expression) return [o];
+		return this.callSuper(o, att, '#text');
+	},
+	expression: 'text'
+
+});
+
+/**
+ * @class Set of boolean litterals
+ * @extends nul.obj.hcSet
+ */
+nul.obj.bool = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.bool# */{
+	subHas: function(o, att) {
+		var kt = new nul.xpr.knowledge();
+		var kf = new nul.xpr.knowledge();
+		return [kt.wrap(kt.unify(nul.obj.litteral.make(true), o)),
+		        kf.wrap(kf.unify(nul.obj.litteral.make(false), o)) ];
+	},
+	/** @constant */
+	expression: 'bool',
+
+////////////////	nul.obj.hcSet implementation
+
+	/** @constant */
+	length: 2
+});
+
+nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
+	//TODO 4: solve or XML make them define as extension ?
+	/**
+	 * @class A range of integer numbers
+	 * @extends nul.obj.hcSet
+	 * @constructs
+	 * @param {Number} lwr Lower bound of the set (or nothing for no bound)
+	 * @param {Number} upr Upper bound of the set (or nothing for no bound)
+	 */
+	initialize: function(lwr, upr) {
+		var specBnd = function(s, inf) { return ('undefined'== typeof s)?inf:('string'== typeof s)?parseInt(s):s; };
+		this.lower = specBnd(lwr, ninf);
+		this.upper = specBnd(upr, pinf);
+		//if(ninf== this.lower || pinf== this.upper) this.length = pinf;
+		//else if(pinf== this.lower) this.length = 0;
+		//else this.length = this.upper-this.lower+1;
+		
+		this.callSuper();
+	},
+	/**
+	 * {nul.obj.range} can intersect with {@link nul.obj.number} or with another range.
+	 */
+	intersect: function(o, klg) {
+		if('range'== o.expression) {
+			var lwr = this.lower<o.lower?o.lower:this.lower;
+			var upr = this.upper>o.upper?o.upper:this.upper;
+			if(lwr > upr) return [];
+			return new nul.obj.range(lwr, upr);
+		}
+		return this.callSuper();
+	},
+	/**
+	 * The given object is a number, integer and between the bounds.
+	 */
+	subHas: function(o, att) {
+		if(this.lower==this.upper && !o.isA(nul.obj.defined)) {
+			//TODO 3: return "o=nbr[this.bound]"
+		}
+		var nbr = (o.isA(nul.obj.defined))?nul.obj.number.subHas(o, att):false;
+		if(!nbr) return this.callSuper(o, att, '#number');		//dunno if number
+		if(!nbr.length) return [];						//failure to be a number
+		o = nbr[0];	//it's a number !
+		if(!isJsInt(o.value)) return [];
+		if( o.value < this.lower || o.value > this.upper) return [];
+		return [o];
+	},
+
+//////////////// nul.obj.defined implementation
+
+	/**
+	 * Try to unify to a pair or to another range.
+	 */
+	subUnified: function(o, klg) {
+		this.use(); nul.obj.use(o); nul.klg.mod(klg);
+		
+		if('range'== o.expression) return (o.lower==this.lower && o.upper==this.upper);
+		if('pair'!= o.expression) nul.fail(o, ' is not a range nor a pair');
+		if(ninf== this.lower) nul.fail(this, ' has no first');
+		//TODO O: warn if(pinf== this.upper) : queue infinie
+		klg.unify(nul.obj.litteral.make(this.lower), o.first.value);
+		klg.unify(
+			(this.lower == this.upper) ?
+				nul.obj.empty :
+				new nul.obj.range(this.lower+1, this.upper),
+			o.second);
+		return this;
+	},
+
+//////////////// nul.expression implementation
+
+	/** @constant */
+	expression: 'range',
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
+	sum_index: function() { return this.indexedSub(this.lower, this.upper); }
+});
+
+/** The set of numbers */
+nul.globals.Q = nul.obj.number;
+/** The set of integers */
+nul.globals.Z = new nul.obj.range();
+/** The set of natural numbers */
+nul.globals.N = new nul.obj.range(0);
+/** The set of texts/strings */
+nul.globals.text = nul.obj.string;
+/** The set of boolean (2 elements) */
+nul.globals.bool = nul.obj.bool;
+/*FILE: src/data/null.data.ajax.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+/** @namespace */
+nul.data.ajax = {
+	/**
+	 * Load a file from an URL and build an object through objFct
+	 * @param {URL} url
+	 * @param {function(transport) nul.xpr.object} objFct
+	 * @return {nul.xpr.object} as objFct returned it
+	 * @return {nul.xpr.object} An undefined object, meaning "Not yet loaded" that will be replaced later. [TODO O]
+	 */
+	load: function(url, objFct) {
+		var rq = $.ajax({
+			type: "get",
+			url: url,
+			async: false,
+			error: function(xhr, opts, x) {
+				var msg; 
+				switch(x.code) {
+					case 1012: msg = 'Ajax failure : Not respecting the <a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>'; break;
+					default: msg = 'Ajax failure : '+x; break;
+				}
+				nul.ex.semantic('AJAX', msg);
+			}
+		});
+		return objFct(rq);
+	},
+	
+	/**
+	 * Load a NUL library (written in NUL) from an URL
+	 * @param {String} url
+	 * @param {String} id optional : url is used if no id is provided.
+	 */
+	loadNul : function(url, id) {
+		nul.data.ajax.load(url,
+			function(t) { return nul.read(t.responseText, id || url); } );
+	}
+};
+
+/**
+ * Creates the 'library' global
+ */
+nul.load.ajax = function() {
+	/**
+	 * Singleton
+	 * @class The 'library' global
+	 * @extends nul.obj.node
+	 */
+	nul.globals.library = new nul.obj.hc(/** @lends nul.globals.library */{
+		
+		attributes: {
+			/**
+			 * Singleton
+			 * @class AJAX library loader
+			 * @extends nul.obj.hc
+			 * @name attributes.file
+			 * @memberOf nul.globals.library
+			 */
+			file: new nul.obj.hc(/** @lends nul.globals.library.attributes.file# */{
+				/**
+				 * Load the 'pnt' library' value into 'img'
+				 * @param {nul.obj.litteral.string} pnt
+				 * @param {nul.xpr.object} img
+				 * @return {nul.xpr.possible}
+				 */
+				retrieve: function(pnt, img) {
+					if('string'!= pnt.expression) nul.ex.semantic('LIB', 'Libraries files are retrieved from a string URL', pnt);
+					var libSet = nul.data.ajax.loadNul(pnt.value);
+					var klg = new nul.xpr.knowledge();
+					klg.belong(img, libSet);
+					return [klg.wrap(new nul.obj.lambda(pnt,img))];
+				},
+				/** @constant */
+				expression: 'library.file'
+			})
+		},
+		expression: 'library'
+	});
+};
+nul.load.ajax.provide = ['nul.globals'];
+/*FILE: src/data/null.data.dom.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+/**
+ * Singleton
+ * @class The context of AJAX-accessible items
+ * @extends nul.data.context
+ */
+nul.data.dom = new nul.data.context('DOM', 10);
+
+nul.data.dom.doc = new JS.Class(nul.data,/** @lends nul.data.dom.doc# */{
+	/**
+	 * @class Data access to an XML document
+	 * @extends nul.data
+	 * @param {URL | XMLdocument} doc
+	 * @constructs
+	 */
+	initialize: function(doc) {
+		this.document = doc;
+		this.extract = new nul.data.dom.element($(doc.documentElement));
+		this.callSuper(nul.data.dom, doc.documentURI);
+	}
+});
+
+nul.data.dom.element = new JS.Class(nul.obj.hc, /** @lends nul.data.dom.element */{
+	/**
+	 * @class Data access to an XML element
+	 * @extends nul.obj.hc
+	 * @param {HTMLElement} element
+	 * @constructs
+	 */
+	initialize: function(element) {
+		this.element = $(element);
+		if(!this.element[0].nulId) this.element[0].nulId = nul.execution.name.gen('element.nulId');
+		this.callSuper(null);
+		this.tag = this.element[0].tagName;
+		this.properties = {
+			'': function() { return new nul.obj.litteral.string(this.element[0].tagName); },
+			'# ': function() { return new nul.obj.litteral.number(this.element.children().length); }
+		};
+		for(var a=0; this.element[0].attributes[a]; ++a) this.properties[this.element[0].attributes[a].name] = function(klg, anm) {
+			return new nul.obj.litteral.string(this.element.attr(anm)); };
+	},
+////////////////nul.obj.hc implementation
+	
+	/**
+	 * Gets a node from a selector. The selector can be :
+	 * - a string CSS selector (only for HTML element) 
+	 * - a string tag name (simple CSS selector)
+	 * - another node as a template
+	 * @param {nul.obj.defined} key
+	 */
+	seek: function(key) {
+		switch(key.expression) {
+		case 'string':
+			//TODO 2: essayer avec getElementsByTagName si en profondeur et simple CSS selector
+			if(!this.element.find) nul.ex.semantic('DOM', 'Element is not HTML - no CSS selection', this, key);
+			var els = $.makeArray(this.element.find(key.value));
+			return map(els, function() { return new nul.data.dom.element($(this)); });
+		case 'node':
+			return nul.obj.node.relativise(key, this.listed());
+		default:
+			nul.ex.semantic('DOM', 'DOM elements can only be indexed by CSS selector or by defaulting node', key);
+		}
+	},
+	
+	/**
+	 * List all the sub-nodes as nul objects
+	 * @return {nul.xpr.object[]}
+	 */
+	listed: function() {
+		var rv = [];
+		for(var chld = this.element[0].firstChild; chld; chld = chld.nextSibling) switch(chld.nodeName) {
+			case '#text': rv.push(new nul.obj.litteral.string(chld.data)); break;
+			default: rv.push(new nul.data.dom.element(chld)); break;
+		}
+		return rv;
+	},
+
+//////////////// nul.expression implementation
+
+	/** @constant */
+	expression: 'dom',
+
+	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
+	sum_index: function() { return this.indexedSub(this.element[0].nulId); }
+});
+
+/**
+ * Creates DOM and XML globals
+ */
+nul.load.dom = function() {
+	nul.globals.document = new nul.data.dom.doc(this).object;
+	/**
+	 * Singleton
+	 * @class The 'xml' global
+	 * @extends nul.obj.hc
+	 */
+	nul.globals.xml = new nul.obj.hc(/** @lends nul.globals.xml# */{
+		/**
+		 * Give an XML node out of an URL string
+		 * @param {nul.obj.defined} pnt
+		 * @return {nul.data.dom.doc} The loaded document
+		 */
+		seek: function(pnt) {
+			if('string'!= pnt.expression) nul.ex.semantic('AJAX', 'Ajax retrieve XML documents only from a string URL', pnt);
+			return nul.data.ajax.load(pnt.value,
+					function(t) { return new nul.data.dom.doc(t.responseXML); } );
+		},
+		//TODO 2: list nodes that fit for xml : string attributes and XMLnode/text content
+		/** @constant */
+		expression: 'xml'
+	});
+};
+nul.load.dom.provide = ['nul.globals'];
+/*FILE: src/data/null.data.time.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.data.time = new JS.Class(nul.obj.node, /** @lends nul.data.time# */{
+	/**
+	 * @extends nul.obj.node
+	 * @class The DateTime object as a node with attributes
+	 * @param {Date} dto
+	 * @constructs
+	 */
+	initialize: function(dto) {
+		if(nul.debugged) nul.assert(dto.setFullYear, 'Expected a date as argument');
+		this.dto = dto;
+		this.callSuper('DateTime', map(nul.data.time.nul2js, function() { return function(klg, anm) {
+			anm = nul.data.time.nul2js[anm];
+			return new nul.obj.litteral.number(this.dto[anm].apply(this.dto));
+		}; }));
+	}
+});
+
+/**
+ * The NUL properties are JS methods
+ * @constant
+ */
+nul.data.time.nul2js = {
+	year: 'getFullYear',
+	month: 'getMonth',
+	day: 'getDate',
+	hours: 'getHours',
+	minutes: 'getMinutes',
+	seconds: 'getSeconds',
+	milliseconds: 'getMilliseconds',
+	dof: 'getDay',
+	stamp: 'getTime'
+};
+
+/**
+ * Creates the 'time' global
+ */
+nul.load.time = function() {
+	/**
+	 * Singleton
+	 * @class The 'time' global
+	 * @extends nul.obj.hc
+	 */
+	nul.globals.time = new nul.obj.hc(/** @lends nul.globals.time# */{
+		/**
+		 * Try to accept the value if the object is 'Now' data. If not, use the regular behaviour
+		 * @param {nul.xpr.object} obj
+		 * @param {nul.xpr.object[]} att
+		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
+		 */
+		subHas: function(obj, att) {
+			if(nul.obj.data.def(obj) && 
+					['now'].include(obj.source.index) &&
+					obj.source.context == nul.data.context.local )
+				return [obj];
+			return nul.obj.hc.prototype.subHas.apply(this,[obj, att]);
+		},
+		/**
+		 * Try to build a time object if we have enough specifications in attributes
+		 * @param {nul.xpr.object} obj
+		 * @param {nul.xpr.object[]} att
+		 * @return {nul.xpr.object[]|nul.xpr.possible[]}
+		 */
+		select: function(obj, att) {
+			if(nul.data.time.def(obj)) return [obj];
+			if(nul.obj.defined.def(obj)) return [];
+			//TODO 3: try to see with the attributes if we can discover the date. If yes, return [built date]
+		},
+		/**
+		 * dateTime.parse(key)
+		 * @param {nul.obj.litteral.string} key
+		 */
+		seek: function(key) {
+			if('string'!= key.expression) nul.ex.semantic('Time', 'Time element can only be retrieved from a string', key);
+			var t = Date.parse(key.value);
+			if(isNaN(t)) return [];
+			return new nul.data.time(new Date(t));
+		},
+		/**
+		 * @constant
+		 * @name nul.globals.time#attributes
+		 */
+		attributes: {
+			/**
+			 * Singleton
+			 * @class The 'time.now' global
+			 * @name nul.globals.time#attributes.now
+			 * @extends nul.data
+			 */
+			now: new nul.data(nul.data.context.local, 'now', /** @lends nul.globals.time#attributes.now# */{
+				/**
+				 * Get the time when queried
+				 */
+				extract: function() {
+					return new nul.data.time(new Date());
+				}
+			}).object
+		},
+		/** @constant */
+		expression: 'time'
+	});
+};
+/*FILE: src/lng/txt/in/null.understand.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+/**
+ * @namespace
+ */
+nul.understanding = {
+	/** Used as return-value local naming @constant */
+	rvName : '&crarr;',
+	/** Exception used when a local need to be created @constant */
+	unresolvable: 'unresolved identifier',
+	/**
+	 * Understand each 'ops' in a freshly created understand.base
+	 * @param {nul.compiled[]} objs
+	 * @param {nul.understanding.base} ub
+	 * @return {nul.xpr.possible[]}
+	 */
+	possibles: function(ops, ub) {
+		return maf(ops, function() {
+			try { return new nul.understanding.base(ub).understand(this); }
+			catch(err) { nul.failed(err); }
+		});
+	}
+};
+
+nul.compiled.extend(/** @lends nul.compiled */{
+	/**
+	 * @class Standard infix expression : one operator and several operands
+	 * @extends nul.compiled
+	 */
+	expression: new JS.Class (nul.compiled, /** @lends nul.compiled.expression */{
+		understand: function(ub) {
+			var ops;
+			if('[]'== this.operator)
+				return ub.klg.hesitate(nul.understanding.possibles(this.operands, ub));
+	
+			var ops = map(this.operands, function(n, o) {
+				return this.understand(ub);
+			});
+			switch(this.operator)
+			{
+			case '+':
+			case '*':
+				return new nul.obj.operation.Nary(this.operator, ops);
+			case '-':
+			case '/':
+			case '%':
+				return nul.obj.operation.binary(this.operator, ops);
+			//TODO 3: > < >= <=
+			case '=>': return new nul.obj.lambda(ops[0], ops[1]);
+			case ',': return nul.obj.pair.list(ops.follow, ops);
+			case '=': return ub.klg.unify(ops);
+			case '!=': ub.klg.oppose(nul.klg.unification(ops));
+				return ops[0];
+			case ';': return ops[0];
+			case '?': return ops[1];
+			case '..':
+				if('number'!= ops[0].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[0]);
+				if('number'!= ops[1].expression) nul.ex.semantic('RNG', 'Range can only be defined with immediates', ops[1]);
+				return new nul.obj.range(ops[0].value, ops[1].value);
+			case ':': 
+				var rv = ub.createFreedom(nul.understanding.rvName, false);
+				ub.klg.hesitate(ops[0].having(new nul.obj.lambda(rv, ops[1])));
+				return rv;
+			default:
+				nul.ex.internal('Unknown operator: "'+this.operator+'"');
+			}
+		}
+	}),
+	/**
+	 * @class Standard prefix expression : one operator and one operand
+	 * @extends nul.compiled
+	 */
+	preceded: new JS.Class(nul.compiled, /** @lends nul.compiled.preceded */{
+		understand: function (ub) {
+			return ub.klg.attribute(this.operand.understand(ub), this.operator+' ');
+		}
+	}),
+	/**
+	 * @class Standard postfix expression : one operand and one operator
+	 * @extends nul.compiled
+	 */
+	postceded: new JS.Class(nul.compiled, /** @lends nul.compiled.postceded */{
+		understand: function (ub) {
+			switch(this.operator) {
+			case ',.': return nul.obj.pair.list(null, [this.operand.understand(ub)]);
+			default: return ub.klg.attribute(this.operand.understand(ub), ' '+this.operator);
+			}
+		}
+	}),
+	/**
+	 * @class Set belonging assertion : one set and one item
+	 * @extends nul.compiled
+	 */
+	application: new JS.Class(nul.compiled, /** @lends nul.compiled.application */{
+		understand: function(ub){
+			return ub.klg.hesitate(this.item.understand(ub).having(this.applied.understand(ub)));
+		}
+	}),
+	/**
+	 * @class Value retrieval through set transformation : one set and one point
+	 * @extends nul.compiled
+	 */
+	taking: new JS.Class(nul.compiled, /** @lends nul.compiled.taking */{
+		understand: function (ub) {
+			return nul.xpr.application(this.item.understand(ub), this.token.understand(ub), ub.klg);
+		}
+	}),
+	/**
+	 * @class A undivisible expression : number, string, identifier, ...
+	 * @extends nul.compiled
+	 */
+	atom: new JS.Class(nul.compiled, /** @lends nul.compiled.atom */{
+		understand: function (ub) {
+			var value;
+			switch(this.type)
+			{
+			case "string":
+				value = ''+this.value;
+				break;
+			case "number":
+				value = 1*this.value;
+				break;
+			case "alphanum" :
+				if(!this.value) return nul.execution.uberLocal;
+				try { return ub.resolve(this.value); }
+				catch(err) {
+					if(nul.understanding.unresolvable!= err) throw err;
+					return ub.createFreedom(this.value);
+				}
+				break;
+			default:
+				nul.ex.internal('unknown atom type: ' + this.type + ' - ' + this.value);
+			}
+			return nul.obj.litteral.make(value);
+		}
+	}),
+	/**
+	 * @class An expression for which a local is defined here : just an item finally
+	 * @extends nul.compiled
+	 */
+	definition: new JS.Class(nul.compiled, /** @lends nul.compiled.definition */{
+		understand: function (ub) {
+			if('_'== this.decl) nul.ex.semantic('JKD', 'Cannot declare joker !');
+			ub.createFreedom(this.decl);
+			return this.value.understand(ub);
+		}
+	}),
+	/**
+	 * @class Set building. An expression surrounded by { }
+	 * @extends nul.compiled
+	 */
+	set: new JS.Class(nul.compiled, /** @lends nul.compiled.set */{
+		understand: function (ub) {
+			if(!this.content) return nul.obj.empty;
+			return new nul.understanding.base.set(ub, this.selfRef).understand(this.content);
+		}
+	}),
+	/**
+	 * @class XML node : tag, attributes, content
+	 * @extends nul.compiled
+	 */
+	xml: new JS.Class(nul.compiled, /** @lends nul.compiled.xml */{
+		understand: function (ub) {
+			return new nul.obj.node(this.node,												//tag
+					map(this.attributes, function() { return this.understand(ub); }),			//attributes
+					nul.obj.pair.list(null, nul.understanding.possibles(this.content, ub)));		//content
+		}
+	}),
+	/**
+	 * @class An item asserting one of his attribute : one item, one attribute name, one attribute value
+	 * @extends nul.compiled
+	 */
+	composed: new JS.Class(nul.compiled, /** @lends nul.compiled.composed */{
+		understand: function (ub) {
+			return ub.klg.attributed(this.object.understand(ub), this.aName, this.value.understand(ub));
+		}
+	}),
+	/**
+	 * @class An item' attribute : one item and one attribute name
+	 * @extends nul.compiled
+	 */
+	objectivity: new JS.Class(nul.compiled, /** @lends nul.compiled.objectivity */{
+		understand: function (ub) {
+			return ub.klg.attribute(this.applied.understand(ub), this.lcl);
+		}
+	}),
+	/**
+	 * @class An expression given in JavaScript
+	 * @extends nul.compiled
+	 */
+	hardcode: new JS.Class(nul.compiled, /** @lends nul.compiled.hardcode */{
+		understand: function (ub) {
+			return this.value;
+		}
+	})
+});
+
+nul.understanding.base = new JS.Class(/** @lends nul.understanding.base# */{
+	/**
+	 * @class Understanding context informations
+	 * @constructs
+	 * @param {nul.understanding.base} prntUb The parent understanding base
+	 * @param {String} klgName The name to give to the created context if any special (if not, one will be generated)
+	 */
+	initialize: function(prntUb, klgName) {
+		this.prntUb = prntUb;
+		this.parms = {};
+		this.klg = new nul.xpr.knowledge(klgName);
+	},
+	/**
+	 * Gets the value associated with an identifier
+	 * @param {String} identifier
+	 * @return {nul.xpr.object}
+	 * @throw {nul.understanding.unresolvable}
+	 */
+	resolve: function(identifier) {
+		if('undefined'!= typeof this.parms[identifier])
+			return this.parms[identifier];
+		if(this.prntUb) return this.prntUb.resolve(identifier);
+		throw nul.understanding.unresolvable;
+	},
+	/**
+	 * Associate an identifier to a value.
+	 * If no value is specified, a local is created
+	 * If value is specified explicitely as 'false', a local is created and the name is not remembered
+	 * @param {String} name
+	 * @param {nul.xpr.object} value
+	 * @return {nul.xpr.object}
+	 * @throw {nul.ex.semantic}
+	 */
+	createFreedom: function(name, value) {
+		if(this.parms[name]) nul.ex.semantic('FDT', 'Freedom declared twice: '+name);
+		var uniqueName = true;
+		if(false===value) uniqueName = false;
+		if(!value) value = this.klg.newLocal(name);
+		if('_'== name) uniqueName = false;
+		if(uniqueName) this.parms[name] = value;
+		return value;
+	},
+	/**
+	 * Applies the understandment process to a compiled node
+	 * @param {nul.compiled} cnt
+	 * @return {nul.xpr.object}
+	 * @throw {nul.ex.semantic}
+	 */
+	understand: function(cnt) {
+		return this.klg.wrap(cnt.understand(this));
+	}
+});
+
+nul.understanding.base.set = new JS.Class(nul.understanding.base, /** @lends nul.understanding.base.set# */{
+	/**
+	 * @class Understanding context' information inside brackets
+	 * @extends nul.understanding.base
+	 * @constructs
+	 * @param {nul.understanding.base} prntUb The parent understanding base
+	 * @param {String} selfName The name to use internally (understanding this value) to give to the created value.
+	 * @param {String} klgName The name to give to the created context if any special (if not, one will be generated)
+	 */
+	initialize: function(prntUb, selfName, klgName) {
+		this.callSuper(prntUb, klgName);
+		if(selfName) this.setSelfRef = (this.parms[selfName] = nul.obj.local.self(null, selfName)).ndx;
+	},
+	/**
+	 * Applies the understandment process to a compiled node
+	 * @param {nul.compiled} cnt
+	 * @return {nul.obj.pair|nul.obj.empty}
+	 * @throw {nul.ex.semantic}
+	 */
+	understand: function(cnt) {
+		var rv;
+		try {
+			rv = nul.obj.pair.list(null, this.klg.wrap(cnt.understand(this)));
+		} catch(err) {
+			nul.failed(err);
+			return nul.obj.empty;
+		}
+		if(this.setSelfRef) rv.selfRef = this.setSelfRef;
+		return rv;
+	}
+});
 /*FILE: src/lng/txt/out/null.txt.node.js*/
 /*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
@@ -8691,740 +10774,6 @@ nul.txt.flat = new JS.Singleton(nul.txt, /** @lends nul.txt.flat */{
 		}
 	}
 });
-/*FILE: src/lng/xpr/obj/undefnd/null.obj.undefnd.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-nul.obj.undefnd = new JS.Class(nul.xpr.object, /** @lends nul.obj.undefnd# */{
-	/**
-	 * @class Undefined object
-	 * @extends nul.xpr.object
-	 * @constructs
-	 */
-	initialize: function() {
-		this.callSuper();
-	},
-	defined: false
-});
-/*FILE: src/lng/xpr/obj/defined/null.obj.hc.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-nul.obj.hc = new JS.Class(nul.obj.defined, /** @lends nul.obj.hc# */{
-	/**
-	 * @class The objects that is defined in javascript, along functions and/or set listing.
-	 * @constructs
-	 * @extends nul.obj.defined
-	 * @param {Object} singleton Sub-class definition. Used when sub-classment is made for a singleton, to avoid new Class.create()()
-	 */
-	initialize: function(singleton) {
-		if(singleton) this.extend(singleton);
-		this.callSuper();
-		this.alreadyBuilt();
-	},
-	
-	/**
-	 * Abstract : Retrieve a value from a key (use the container as a function, key is the argument)
-	 * @param {nul.obj.defined} key
-	 * @return {nul.xpr.object|nul.data|nul.xpr.possible[]}
-	 */
-	seek: function(key) { nul.ex.semantic('CNT', this.expression+' cannot retrieve items', this); },
-	/**
-	 * Abstract : List the direct values of this set (the values that are not lambdas)
-	 * @return {nul.xpr.object|nul.data|nul.xpr.possible[]}
-	 */
-	listed: function() { nul.ex.semantic('CNT', this.expression+' cannot select items', this); },
-	
-	/**
-	 * {@link nul.obj.hc.filter} the {@link nul.obj.hc#.seek} along the expected object to select
-	 * @param {nul.obj.defined} pnt 'Arguments' of the function call. Have no dependance.
-	 * @param {nul.xpr.object} img 'Return value' of the function call.
-	 * @param {nul.xpr.object[String]} att Attributes of the 'return value' of the function call.
-	 * @return {nul.xpr.possible[]}
-	 */
-	retrieve: function(pnt, img, att) {
-		return nul.obj.hc.filter(
-				this.seek(pnt),
-				img, att,
-				function(v) { return new nul.obj.lambda(pnt, v); }
-			);
-	}.describe('Retrieval'),
-	/**
-	 * {@link nul.obj.hc.filter} the {@link nul.obj.hc#.list} along the expected object to select
-	 * @param {nul.xpr.object} obj 'Return value' of the function call.
-	 * @param {nul.xpr.object[String]} att Attributes of the 'return value' of the function call.
-	 * @return {nul.xpr.possible[]}
-	 */
-	select: function(obj, att) {
-		return nul.obj.hc.filter(this.listed(), obj, att);
-	}.describe('Selection'),	
-	
-	/**
-	 * Delegate extraction to specific function-call or listing
-	 * @param {nul.xpr.object} o
-	 * @param {nul.xpr.object[]} attrs
-	 * @return {nul.xpr.object[]|nul.xpr.possible[]}
-	 */
-	subHas: function(o, attrs) {
-		if(o.isA(nul.obj.lambda) && isEmpty(o.point.dependance().usages)) return this.retrieve(o.point, o.image, attrs);
-		else if((o.isA(nul.obj.defined) && !o.isA(nul.obj.lambda)) || !isEmpty(attrs)) return this.select(o, attrs);
-	}
-});
-
-/**
- * Used to bind pure data obj.hc can give to a knowledge and, therefore, possibles.
- * @param {nul.xpr.object|nul.data|nul.xpr.possible[]} objs The given objects
- * @param {nul.xpr.object} exp The expected object
- * @param {nul.xpr.object[String]} exp The attributes of the expected object
- * @param {function(any) nul.xpr.object} wrp Function used to build a return object out of 'exp' for instance 
- */
-nul.obj.hc.filter = function(objs, exp, att, wrp) {
-	if(!$.isArray(objs)) objs = [objs];
-	return maf(objs, function(n, orv) {
-		try {
-			if(orv.isA(nul.data)) orv = orv.object;
-			var klg;
-			if(orv.isA(nul.xpr.possible)) {
-				klg = orv.knowledge.modifiable();
-				nul.klg.mod(klg);
-				orv = orv.value;
-			} else klg = new nul.xpr.knowledge();
-			nul.obj.use(orv);
-			var vl = klg.unify(orv, exp);
-			vl = klg.attributed(vl, att);
-			if(wrp) vl = wrp(vl);
-			return klg.wrap(vl);
-		} catch(e) { nul.failed(e); }
-	});
-}.describe('Local filtering');
-/*FILE: src/lng/xpr/obj/defined/null.obj.lambda.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-nul.obj.lambda = new JS.Class(nul.obj.defined, /** @lends nul.obj.lambda# */{
-	/**
-	 * @class Represents the application of a point to an image.
-	 * @example point &rArr; image
-	 * @constructs
-	 * @extends nul.obj.defined
-	 * @param {nul.xpr.object} point
-	 * @param {nul.xpr.object} image
-	 */
-	initialize: function(point, image) {
-		/** @type nul.xpr.object */
-		this.point = point;
-		/** @type nul.xpr.object */
-		this.image = image;
-		this.callSuper();
-		this.alreadyBuilt();
-	},
-
-//////////////// nul.obj.defined implementation
-
-	/**
-	 * Lambdas have no attributes
-	 * @throws {nul.ex.failure}
-	 */
-	attribute: function() { nul.fail('Lambdas have no attributes'); },
-	
-	/**
-	 * Unify component by component
-	 * @param {nul.obj.defined} o The other object to unify to
-	 * @param {nul.xpr.knowledge} klg
-	 * @returns {nul.obj.lambda} The lambda of unified components
-	 * @throws {nul.ex.failure}
-	 */
-	subUnified: function(o, klg) {
-		if('lambda'!= o.expression) nul.fail(o, ' not a lambda');
-		return new nul.obj.lambda(
-			klg.unify(this.point, o.point),
-			klg.unify(this.image, o.image));
-	},
-
-	/**
-	 * Lambdas contain nothing
-	 * @throws {nul.ex.failure}
-	 */
-	subHas: function() { nul.fail('Lambdas contains nothing'); },
-		
-//////////////// nul.expression implementation
-
-	/** @constant */
-	expression: 'lambda',
-	/** @constant */
-	components: {
-		'point': {type: 'nul.xpr.object', bunch: false},
-		'image': {type: 'nul.xpr.object', bunch: false}
-	}
-});
-/*FILE: src/lng/xpr/obj/defined/null.obj.list.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-nul.obj.list = new JS.Class(nul.obj.defined, /** @lends nul.obj.list */{
-	/**
-	 * @class Any expression that act as a list or a set
-	 * @extends nul.obj.defined
-	 * @constructs
-	 */
-	initialize: function() {
-		this.callSuper();
-	},
-	
-	/**
-	 * Yes, it is a list.
-	 */
-	isList: function() { return true; },
-	/**
-	 * <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a>: The set who give, for each parameter, the recursive parameter applied
-	 * @function
-	 * @return {nul.obj.list}
-	 */
-	recursion: nul.summary('recursion').describe('Recursion analyse'),
-	
-	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link recursion} */
-	sum_recursion: function() { return nul.obj.empty; }
-});
-/*FILE: src/lng/xpr/obj/defined/null.obj.litteral.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-nul.obj.litteral = new JS.Class(nul.obj.defined, /** @lends nul.obj.litteral# */ {
-	/**
-	 * @class Abstract litteral - hold a javascript litteral value
-	 * @constructs
-	 * @extends nul.obj.defined
-	 * @param {Number|String|Boolean} val Javascript value to hold.
-	 */
-	initialize: function(val) {
-		this.callSuper();
-		/** @constant */
-		this.value = val;
-		this.alreadyBuilt();
-	}
-});
-
-/**
- * @class
- * @extends nul.obj.litteral
-*/
-nul.obj.litteral.string = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.string# */{
-
-////////////////	nul.xpr.defined implementation
-	
-	/** @constant */
-	properties: {
-		'# ': function() { return new nul.obj.litteral.number(this.value.length); },
-		'': function() { return nul.obj.litteral.tag.string; }
-	},
-	
-	/**
-	 * @param {document} doc
-	 * @return {XMLElement}
-	 * TODO 2 returns Element
-	 */
-	XML: function(doc) {
-		return doc.createTextNode(this.value);	//TODO 2: remplacer par des &...; ?
-	},
-	
-//////////////// nul.xpr.object implementation
-
-	/** Strings contain nothing */
-	subHas: function() { nul.fail('Strings contain nothing'); },
-
-//////////////// nul.expression implementation
-
-	/** @constant */
-	expression: 'string',
-	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
-	sum_index: function() { return this.indexedSub(this.value.replace(']','[|]')); }
-});
-
-/**
- * @class
- * @extends nul.obj.litteral
-*/
-nul.obj.litteral.number = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.number# */{
-
-////////////////	nul.xpr.defined implementation
-	
-	/** @constant */
-	properties: {
-		'text': function() { return nul.obj.litteral.make(this.value.toString()); },
-		'': function() { return nul.obj.litteral.tag.number; }
-	},
-
-//////////////// nul.xpr.object implementation
-
-	/**
-	 * TODO 3: {2[Q]} ==> ( Q _, Q _ ) ?
-	 */ 
-	subHas: function(o) {
-		nul.fail('TODO 3: number has');
-	},
-	
-//////////////// nul.expression implementation
-
-	/** @constant */
-	expression: 'number',
-	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
-	sum_index: function() { return this.indexedSub(this.value.toString().replace(']','[|]')); }
-});
-
-/**
- * @class
- * @name nul.obj.litteral.boolean 
- * @extends nul.obj.litteral 
- */
-nul.obj.litteral['boolean'] = new JS.Class(nul.obj.litteral, /** @lends nul.obj.litteral.boolean# */{
-	
-////////////////	nul.xpr.defined implementation
-	
-	/** @constant */
-	properties: {
-		'# ': function() { return nul.obj.litteral.make(this.value.length); },
-		'': function() { return nul.obj.litteral.tag['boolean']; }
-	},
-	
-	/** @constant */
-	attributes: {},
-	
-//////////////// nul.xpr.object implementation
-
-	/** Booleans contain nothing */
-	subHas: function() { nul.fail('Booleans contain nothing'); },
-
-//////////////// nul.expression implementation
-
-	/** @constant */
-	expression: 'boolean',
-	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
-	sum_index: function() { return this.indexedSub(this.value?'T':'F'); }
-});
-
-/**
- * Make a litteral from a javascript value - choose the wright class
- */
-nul.obj.litteral.make = function(v) {
-	if(nul.debugged) nul.assert(nul.obj.litteral[typeof v], (typeof v)+' is a litteral type');
-	if('boolean'== typeof v) return nul.obj.litteral['boolean'][v?'true':'false'];
-	return new nul.obj.litteral[typeof v](v);
-};
-
-/**
- * Hard-coding of the booleans : no generic definition while they are two
- */
-nul.obj.litteral['boolean']['true'] = new nul.obj.litteral['boolean'](true);
-nul.obj.litteral['boolean']['false'] = new nul.obj.litteral['boolean'](false);
-nul.obj.litteral['boolean']['true'].attributes['! '] = nul.obj.litteral['boolean']['false'];
-nul.obj.litteral['boolean']['false'].attributes['! '] = nul.obj.litteral['boolean']['true'];
-
-/**
- * Virtual 'tags' of litterals
- */
-nul.obj.litteral.tag = {
-	string: new nul.obj.litteral.string('#text'),
-	number: new nul.obj.litteral.string('#number'),
-	'boolean': new nul.obj.litteral.string('#boolean'),
-	set: new nul.obj.litteral.string('#set')
-};
-/*FILE: src/lng/xpr/obj/defined/null.obj.node.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-nul.obj.node = new JS.Class(nul.obj.hc, /** @lends nul.obj.node# */{
-	/**
-	 * @class XML-like node : tag, attributes and list content. There are no restrictions on content and/or attributes.
-	 * @extends nul.obj.defined
-	 * @constructs
-	 * @param {String} tag The tagName of the XML node
-	 * @param {nul.xpr.object[String]} attributes The named attributes
-	 * @param {nul.xpr.object[]} content The list of contained elements
-	 */
-	initialize: function(tag, attributes, content) {
-		this.tag = tag;
-		var dupProp = null;
-		this.attributes = attributes || {};
-		for(var anm in this.attributes)
-			if('function'== typeof this.attributes[anm]) {
-				if(!dupProp) dupProp = $o.clone(this.properties);
-				dupProp[anm] = this.attributes[anm];
-				delete this.attributes[anm];
-			}
-		if(dupProp) this.properties = dupProp;
-
-		this.content = content || nul.obj.empty;	//TODO 2: assert content #set
-		nul.obj.use(this.content, 'nul.obj.list');
-		
-		return this.callSuper(null);
-	},
-
-//////////////// nul.obj.defined implementation
-
-	/**
-	 * Develop the unification of tag, attributes and content
-	 * @param {nul.xpr.object} o
-	 * @param {nul.xpr.knowledge} klg
-	 */
-	subUnified: function(o, klg) {
-		if('node'!= o.expression) nul.fail(o, ' not a node');
-		var nattrs = merge(this.attributes, o.attributes, function(a, b, i) {
-			if(!a || !b) nul.fail('Attribute not common : '+i);
-			return klg.unify(a, b); 
-		});
-		return new nul.obj.node(this.tag, nattrs, klg.unify(this.content, o.content));
-	},
-	/**
-	 * Generic node properties
-	 * @constant
-	 */
-	properties: {
-		'': function() { return new nul.obj.litteral.string(this.tag); },
-		'# ': function(klg) { return this.content.attribute('# ', klg); }
-	},
-	
-	/**
-	 * Find out a function who, for an argument, tells which recursive arguments will be given to this
-	 * $ factorial -> { 0 => {} [] N n > 1 => { n-1 } }
-	 */
-	recursion: function() { return this.content.recursion(); },
-
-	/**
-	 * @param {document} doc
-	 * @return {XMLElement}
-	 * @throw {nul.ex.semantic}
-	 * TODO 2 returns Element
-	 */
-	XML: function(doc) {
-		var rv = doc.createElement(this.tag);
-		for(var a in this.attributes) {
-			//TODO 3: check a as attribute name
-			if(!this.attributes[a].isA(nul.obj.litteral.string))
-				nul.ex.semantic('XML', 'This doesnt fit for XML attribute', this.attributes[a]);
-			rv.setAttribute(a, this.attributes[a].value);
-		}
-		var lst = this.content.listed();
-		for(var c=0; lst[c]; ++c)
-			rv.appendChild(lst[c].XML(doc));
-		return rv;
-	},
-
-//////////////// nul.obj.hc implementation
-
-	/**
-	 * Gets a node from a selector. The selector can be :
-	 * TODO 3- a string tag name (simple CSS selector)
-	 * - another node as a template
-	 * @param {nul.obj.defined} key
-	 */
-	seek: function(key) {
-		switch(key.expression) {
-		case 'node':
-			return nul.obj.node.relativise(key, this.listed());
-		default:
-			nul.ex.semantic('NODE', 'NODE elements can only be indexed [by CSS selector or ]by defaulting node', key);
-		}
-	},
-	
-	/**
-	 * List the content
-	 * @return {nul.xpr.possible[]}
-	 */
-	listed: function() {
-		return this.content.listed();
-	},
-	
-//////////////// nul.expression implementation
-
-	/** @constant */
-	expression: 'node',
-	/** @constant */
-	components: {
-		'attributes': {type: 'nul.xpr.object', bunch: true},
-		'content': {type: 'nul.xpr.object', bunch: false}
-	}
-});
-
-/**
- * If the template and the node have the same tag, returns an object who :
- * - have all the attributes fixed like obj
- * - have the attributes fixed by tpl and not obj fixed to the value specified by tpl (default value system)
- * - is undefined and, therefore can have other attributes
- * @param {nul.obj.defined} tpl Template
- * @param {nul.obj.defined[]} objs Objects
- * @return {nul.obj.possible[]}
- */
-nul.obj.node.relativise = function(tpl, objs) {
-	nul.obj.is(tpl, 'nul.obj.defined');
-	return maf(objs, function(n, obj) {
-		var klg;
-		if(obj.isA(nul.xpr.possible)) {
-			klg = obj.knowledge;
-			obj = obj.value;
-		} else klg = nul.klg.always;
-		nul.obj.is(obj, 'nul.obj.defined');
-		if(tpl.tag == obj.tag) {
-			var rAtt = $o.clone(obj.attributes);
-			merge(rAtt, obj.properties, function(a, b, n) { return a || obj.attribute(n); });
-			merge(rAtt, tpl.attributes, function(a, b, n) { return a || b; });
-			merge(rAtt, tpl.properties, function(a, b, n) { return a || tpl.attribute(n); });
-			klg = klg.modifiable();
-			var trv = klg.newLocal(tpl.tag);
-			klg.attributed(trv, rAtt);
-			return klg.wrap(trv);
-		}
-	});
-	//TODO 3: manage 'content'
-}.describe('Relativise');
-/*FILE: src/lng/xpr/obj/defined/null.obj.sets.js*/
-/*  NUL language JavaScript framework
- *  (c) 2009 E-med Ware
- *
- * NUL is freely distributable under the terms of GNU GPLv3 license.
- *  For details, see the NUL project site : http://code.google.com/p/nul/
- *
- *--------------------------------------------------------------------------*/
-
-
-//TODO 3: express these as descendant from nul.obj.hc
-nul.obj.hcSet = new JS.Class(nul.obj.list, /** @lends nul.obj.hcSet */{
-	/**
-	 * @class A set hard-coded in javascript
-	 * @extends nul.obj.defined
-	 * @constructs
-	 */
-	initialize: function() {
-		this.callSuper();
-		this.alreadyBuilt();
-	},
-	
-	/**
-	 * Consider this set is not a transformation
-	 */
-	subHas: function(o, att, typeAttr) {
-		nul.obj.use(o);
-		if(o.isA(nul.obj.defined)) return [];
-		if(!att[''] || 'string'!= att[''].expression || typeAttr != att[''].value) {
-			var klg = new nul.xpr.knowledge();
-			klg.attributed(o, '', new nul.obj.litteral.string(typeAttr));
-			klg.belong(o, this);
-			return [klg.wrap(o)];
-		}
-	},
-
-	length: pinf,
-
-//////////////// nul.obj.defined implementation
-
-	/** @constant */
-	properties: {
-		'# ': function() { return nul.obj.litteral.make(this.length); },
-		'': function() { return nul.obj.litteral.tag.set; }
-	}
-});
-
-/**
- * Singleton
- * @class Empty set : &phi;
- * @extends nul.obj.hcSet
- */
-nul.obj.empty = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.empty# */{
-	listed: function() { return []; },
-	
-	intersect: function(o) {
-		nul.fail('No intersection with ', this);
-	},
-	subHas: function() { return []; },
-	
-	/** @constant */
-	expression: '&phi;',
-//////////////// nul.obj.defined implementation
-
-	/** @constant */
-	length: 0
-	
-});
-
-/**
- * Singleton
- * @class Set of number litterals
- * @extends nul.obj.hcSet
- */
-nul.obj.number = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.number# */{
-	intersect: function(o, klg) {
-		if('range'== o.expression) return o;
-		return this.callSuper(o, klg);
-	},
-	subHas: function(o, att) {
-		if('number'== o.expression) return isFinite(o.value)?[o]:[];
-		if(nul.obj.defined.def(att.text)) {
-			if('string'!= att.text.expression) return [];	//The attribute text is not a string
-			var nbr = parseInt(att.text.value);
-			if(nbr.toString() != att.text.value) return [];	//The attribute text is not a good numeric string
-			return nul.klg.has(o, new nul.obj.litteral.number(nbr));
-		}
-		return this.callSuper(o, att, '#number');
-	},
-	/** @constant */
-	expression: '&#x211a;'
-});
-
-/**
- * Singleton
- * @class Set of string litterals
- * @extends nul.obj.hcSet
- */
-nul.obj.string = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.string# */{
-	subHas: function(o, att) {
-		if('string'== o.expression) return [o];
-		return this.callSuper(o, att, '#text');
-	},
-	expression: 'text'
-
-});
-
-/**
- * @class Set of boolean litterals
- * @extends nul.obj.hcSet
- */
-nul.obj.bool = new JS.Singleton(nul.obj.hcSet, /** @lends nul.obj.bool# */{
-	subHas: function(o, att) {
-		var kt = new nul.xpr.knowledge();
-		var kf = new nul.xpr.knowledge();
-		return [kt.wrap(kt.unify(nul.obj.litteral.make(true), o)),
-		        kf.wrap(kf.unify(nul.obj.litteral.make(false), o)) ];
-	},
-	/** @constant */
-	expression: 'bool',
-
-////////////////	nul.obj.hcSet implementation
-
-	/** @constant */
-	length: 2
-});
-
-nul.obj.range = new JS.Class(nul.obj.hcSet, /** @lends nul.obj.range# */{
-	//TODO 4: solve or XML make them define as extension ?
-	/**
-	 * @class A range of integer numbers
-	 * @extends nul.obj.hcSet
-	 * @constructs
-	 * @param {Number} lwr Lower bound of the set (or nothing for no bound)
-	 * @param {Number} upr Upper bound of the set (or nothing for no bound)
-	 */
-	initialize: function(lwr, upr) {
-		var specBnd = function(s, inf) { return ('undefined'== typeof s)?inf:('string'== typeof s)?parseInt(s):s; };
-		this.lower = specBnd(lwr, ninf);
-		this.upper = specBnd(upr, pinf);
-		//if(ninf== this.lower || pinf== this.upper) this.length = pinf;
-		//else if(pinf== this.lower) this.length = 0;
-		//else this.length = this.upper-this.lower+1;
-		
-		this.callSuper();
-	},
-	/**
-	 * {nul.obj.range} can intersect with {@link nul.obj.number} or with another range.
-	 */
-	intersect: function(o, klg) {
-		if('range'== o.expression) {
-			var lwr = this.lower<o.lower?o.lower:this.lower;
-			var upr = this.upper>o.upper?o.upper:this.upper;
-			if(lwr > upr) return [];
-			return new nul.obj.range(lwr, upr);
-		}
-		return this.callSuper();
-	},
-	/**
-	 * The given object is a number, integer and between the bounds.
-	 */
-	subHas: function(o, att) {
-		if(this.lower==this.upper && !o.isA(nul.obj.defined)) {
-			//TODO 3: return "o=nbr[this.bound]"
-		}
-		var nbr = (o.isA(nul.obj.defined))?nul.obj.number.subHas(o, att):false;
-		if(!nbr) return this.callSuper(o, att, '#number');		//dunno if number
-		if(!nbr.length) return [];						//failure to be a number
-		o = nbr[0];	//it's a number !
-		if(!isJsInt(o.value)) return [];
-		if( o.value < this.lower || o.value > this.upper) return [];
-		return [o];
-	},
-
-//////////////// nul.obj.defined implementation
-
-	/**
-	 * Try to unify to a pair or to another range.
-	 */
-	subUnified: function(o, klg) {
-		this.use(); nul.obj.use(o); nul.klg.mod(klg);
-		
-		if('range'== o.expression) return (o.lower==this.lower && o.upper==this.upper);
-		if('pair'!= o.expression) nul.fail(o, ' is not a range nor a pair');
-		if(ninf== this.lower) nul.fail(this, ' has no first');
-		//TODO O: warn if(pinf== this.upper) : queue infinie
-		klg.unify(nul.obj.litteral.make(this.lower), o.first.value);
-		klg.unify(
-			(this.lower == this.upper) ?
-				nul.obj.empty :
-				new nul.obj.range(this.lower+1, this.upper),
-			o.second);
-		return this;
-	},
-
-//////////////// nul.expression implementation
-
-	/** @constant */
-	expression: 'range',
-	/** <a href="http://code.google.com/p/nul/wiki/Summary">Summary</a> computation of {@link index} */
-	sum_index: function() { return this.indexedSub(this.lower, this.upper); }
-});
-
-/** The set of numbers */
-nul.globals.Q = nul.obj.number;
-/** The set of integers */
-nul.globals.Z = new nul.obj.range();
-/** The set of natural numbers */
-nul.globals.N = new nul.obj.range(0);
-/** The set of texts/strings */
-nul.globals.text = nul.obj.string;
-/** The set of boolean (2 elements) */
-nul.globals.bool = nul.obj.bool;
 /*FILE: src/lng/xpr/klg/null.xpr.knowledge.js*/
 /*  NUL language JavaScript framework
  *  (c) 2009 E-med Ware
@@ -10291,7 +11640,906 @@ nul.obj.operation.binary = new JS.Class(nul.obj.operation, {
 nul.obj.operation.Nary = new JS.Class(nul.obj.operation, {
 	//TODO 3
 });
-/*FILE: src/lng/xpr/klg/nul.klg.ior3.js*/
-/*FILE: src/lng/xpr/klg/nul.klg.eqCls.js*/
-/*FILE: src/lng/xpr/klg/nul.klg.browse.js*/
-/*FILE: src/lng/xpr/klg/nul.klg.algo.js*/
+/*FILE: src/lng/xpr/klg/null.klg.algo.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.xpr.knowledge.include(new JS.Module(/** @lends nul.xpr.knowledge# */{
+ 	/**
+ 	 * Remove any information about locals that are not refered anymore
+ 	 * @param {nul.xpr.object} value
+ 	 * @note remove all access before : they are not preserved
+ 	 * @return nothing
+ 	 */
+ 	pruned: function(value) {
+ 		this.modify();
+		this.clearAccess();
+ 		var vdps = new nul.dependance();
+		
+		if(value) vdps.also(value.dependance());
+		var i;
+		for(i in ownNdx(this.ior3)) vdps.also(this.ior3[i].dependance());
+		for(i in ownNdx(this.veto)) vdps.also(this.veto[i].dependance());
+		vdps = this.localNeed(vdps.usage(this).local);
+
+		//Remove useless equivalence class specifications
+		for(var c=0; c<this.eqCls.length;) {
+			this.eqCls[c] = this.eqCls[c].pruned(this, vdps);
+			if(!this.eqCls[c]) this.eqCls.splice(c,1);
+			else ++c;
+		} 
+ 		
+ 		var deps = this.usage(value);
+ 		
+ 		//Remove trailing unrefered locals (not more to preserve indexes)
+		while(this.nbrLocals() && !deps.local[this.nbrLocals()-1]) this.freeLastLocal();
+ 		this.useLocalNames(deps.local);
+ 		
+ 		this.reAccede();	//TODO O: maintaint access while pruning instead of rebuilding it
+ 		
+ 		return this;
+ 	}.describe('Prune'),
+
+	/**
+	 * Make the need envelope of locals.
+	 * If at least 'lcls' are needed to determine a value, then determine which locals are needed
+	 * to determine a value, for this knowledge, regarding the equivalence classes
+	 * @param {association(ndx: any)} lcls List of needed locals at least
+	 * @return {association(ndx: true)} lcls List of needed locals
+	 */
+	localNeed: function(lcls) {
+		lcls = map(lcls,function() { return 3; });
+		var toNeed = $.keys(lcls);
+		///1: calculate influences
+		var max = function(a,b) { return !a?b:!b?a:a>b?a:b; };
+		/**
+		 * Change the list of local needs and determine which local is discovered needed
+		 * knowing that local 'ndx' is needed 'infl' (infl = 1(belong) or 2(equival))
+		 * @param {index} ndx Local index
+		 * @param {association(ndx:influence)} infl Influence = 1: something belongs to this local. 2: Something is equived to this local
+		 * @param {association(ndx:need)} lcls how locals are already known to be needed
+		 * @return {array[index]} Locals freshly disvorered to be needed
+		 */
+		var influence = function(infl, lcls) {
+/*(infl[ndx] \ lcls[ndx] :	('>' means 'more than 2')
+ * 			0	1	2	>
+ * 		1	1	1	>	>
+ * 		2	2	>	>	>
+ */
+ 			var rv = [];
+ 			for(var ndx in infl)
+				if( (1!= lcls[ndx] || 1!= infl[ndx]) &&	
+					(!lcls[ndx] || 2>= lcls[ndx]) &&
+					(2< (lcls[ndx] = (lcls[ndx]||0)+infl[ndx])) )
+						rv.push(ndx);
+			return rv;
+		};
+		var lclInfl = {};	//nx => {ndx: [0, 1, 2]}
+		//	0: no need
+		//	1: define content
+		//	2: define equivalence
+		for(var c=0; c<this.eqCls.length; ++c) {
+			var ec = this.eqCls[c];
+			var elms = [];
+			elms.pushs(ec.equivls);
+			elms.pushs(ec.belongs);
+			var extInfl = false;
+			
+			//Compute influence from other knowledge.
+			// If influence from several elements, influence the whole class
+			// If influence from only one element, influence the class without that element 
+			for(var e in ownNdx(elms)) if('local'!= elms[e].expression || this.name!= elms[e].klgRef) {
+					extInfl = extInfl?true:e;
+					if(true=== extInfl) break;
+				}
+			//If this refer to something defined by its attributes
+			if(true!== extInfl && !isEmpty(ec.attribs,'')) extInfl = extInfl?true:'attribs:*';
+			//If this refer to something equaled in absolute
+			if(true!== extInfl && this.eqCls[c].eqvlDefined()) extInfl = extInfl?true:'equivls:0';
+			//If this refer to something beblonging in absolute
+			if(true!== extInfl && this.eqCls[c].blngDefined()) extInfl = extInfl?true:'belongs:0';
+			
+			if(extInfl) //If this refer to something defined in another context
+				toNeed.pushs(influence(ec.influence(this, extInfl), lcls));
+			if(true!== extInfl) for(var e in ownNdx(elms)) {
+				//For each usage of this element, influence each other usage of the eqclass
+				for(var srcNdx in elms[e].dependance().usage(this).local)
+					lclInfl[srcNdx] = ec.influence(this, e, extInfl, lclInfl[srcNdx]);
+			}
+		}
+		//2: use influence to need all influenced locals
+		while(toNeed.length)
+			toNeed.pushs(influence(lclInfl[toNeed.shift()], lcls));
+		return map(lcls,function(i, o) { return 3<=o; });
+	},
+	
+  	/**
+ 	 * Know that all the arguments are unifiable
+ 	 * Modifies the knowledge
+ 	 * @param {nul.xpr.object} and {nul.klg.eqClass}
+ 	 * @return {nul.klg.eqClass} unsummarised (if in a higher-stack level unification) or summarised
+ 	 * @throws {nul.ex.failure}
+ 	 */
+ 	unification: function() { 	
+ 		var toUnify = beArrg(arguments);
+ 		this.modify();
+ 		var dstEqCls = new nul.klg.eqClass();
+ 		var alreadyBlg = {};	//TODO 3: make a 'belong' this.access ?
+ 		var toBelong = [];
+ 		var ownClass = true;
+ 		while(toUnify.length || toBelong.length) {
+ 			while(toUnify.length) {
+	 			var v = toUnify.shift();
+	 			nul.xpr.use(v);
+	 			if(this.access[v]) {
+	 				v = this.access[v];
+	 				if(dstEqCls=== v) {}
+	 				else if(!v.summarised) {	//If not summarised, then it's a class built in another unification higher in the stack
+	 					ownClass = false;
+	 					this.unaccede(dstEqCls);
+	 					dstEqCls.merged = v;
+	 					v = dstEqCls;
+	 					dstEqCls = v.merged;
+	 				}
+	 				else this.removeEC(v);
+	 			}
+	 			if(dstEqCls=== v) {}
+	 			else if('eqCls'== v.expression) {
+	 				toUnify.pushs(v.equivls);
+					toBelong.pushs(v.belongs);
+					dstEqCls.hasAttr(v.attribs, this);
+	 			} else {
+	 				this.access[v] = dstEqCls;
+	 				dstEqCls.isEq(v, this);
+	 			}
+	 		}
+	 		if(toBelong.length) {
+	 			var s = toBelong.shift();
+				alreadyBlg[s] = true;
+				dstEqCls.isIn(s, this);
+	 		}
+ 		}
+ 		if(ownClass) this.ownEC(dstEqCls);
+		return dstEqCls;
+ 	}.describe('Unification'),
+
+ 	/**
+ 	 * Get a pruned possible
+ 	 * @param {nul.xpr.object} value
+	 * @return {nul.xpr.possible}
+	 * @throws {nul.ex.failure}
+ 	 */
+ 	wrap: function(value) {
+ 		this.modify(); nul.obj.use(value);
+		var representer = new nul.klg.represent(this);
+		if(nul.debugged) nul.debugged.info('Represent')('Representants', this.name, this);
+		for(var i=0; i<this.eqCls.length;) {
+			var ec = this.eqCls[i];
+			var nec = representer.subBrowse(ec);
+			if(nul.browser.bijectif.unchanged == nec) ++i;
+			else {
+				value = representer.browse(value);
+				this.removeEC(ec);
+				nec = this.unify(nec);
+				
+				//this.unification has effect on other equivalence classes that have to change in the representer
+				representer.invalidateCache();
+				
+				if(nul.debugged) nul.debugged.info('Represent')('Representants', this.name, this);
+				i = 0;
+			}
+		}
+
+		//TODO O: represent sur ior3s : useful or we let it post-resolution ?
+		value = representer.browse(value);
+		
+		var opposition = this.veto;
+		//TODO 3: browse 'vetos' like 'value'
+		this.veto = [];
+		while(opposition.length)
+			this.oppose(representer.browse(opposition.shift()));
+ 		
+		this.simplify();
+		
+		this.pruned(value);
+ 		
+ 		return new nul.xpr.possible(value, this.built());
+ 	}.describe('Wrapping'),
+	
+	
+	/**
+	 * Determine wether the resolution engine can distribute anything
+	 * @return {Boolean}
+	 */
+	distribuable: function() {
+		return !!this.ior3.length;
+	},
+	
+	/**
+	 * Use the resolution engine : make several knowledges (modifiables) without ior3
+	 * @return {nul.xpr.possible[]}
+	 */
+	distribute: function() {
+		if(this.ior3.length) return nul.solve.apply(this.modifiable());
+		return [this.modifiable()];
+	}.describe('Distribution'),
+	
+	/**
+	 * Use the resolution engine : make several knowledges (built) without ior3
+	 * @return {nul.xpr.possible[]}
+	 */
+	distributed: function() {
+		if(this.ior3.length) return map(nul.solve.apply(this.modifiable()), this.built);
+		return [this];
+	}.describe('Distribution'),
+	
+	/**
+	 * Returns a list of all the eqClass we know 'obj' contains
+	 * @param {nul.xpr.object} obj
+	 * @return {Number[]} The indexes of the equivalence classes defining obj in extension 
+	 */
+	extension: function(obj) {
+		var rv = {};
+		for(var ec=0; this.eqCls[ec]; ++ec) {
+			var b = this.eqCls[ec].extension(obj);
+			if(-1< b) rv[ec] = b;
+		}
+		return rv;
+	},
+
+	/**
+	 * @param {String} selfRef
+	 * @param {nul.xpr.object[]} alrEqs TODO 2: rename param
+	 * @param {nul.xpr.object} point
+	 * @return {nul.xpr.possible}
+	 */
+	sumRecursion: function(selfRef, alrEqs, point) {
+		this.modify(); nul.obj.use(point);/* nul.obj.are(alrEqs);*/
+		var rv = [];
+		var blgSpec = false;
+		for(var ec=0; this.eqCls[ec]; ++ec) {
+			for(var b=0; this.eqCls[ec].belongs[b]; ++b) {
+				blgSpec = true;
+				//TODO O: ne pas faire unify et diff sur tout, quand c'est trivial
+				try {
+					var klg = this.clone();
+					var eqc = klg.freeEC(klg.eqCls[ec]);
+					klg.oppose(nul.klg.unification(eqc.belongs.splice(b, 1)[0], nul.obj.local.self(selfRef)));
+					klg.ownEC(eqc);
+					rv.pushs(klg.sumRecursion(selfRef, alrEqs, point));
+				} catch(e) { nul.failed(e); }
+
+				try {
+					var klg = this.clone();		//TODO 2: don't clone?
+					var nalrEqs = map(alrEqs);	//TODO 2: don't clone?
+					var eqc = klg.freeEC(klg.eqCls[ec]);
+					klg.unify(eqc.belongs.splice(b, 1)[0], nul.obj.local.self(selfRef));
+					klg.ownEC(eqc);
+					nalrEqs.unshift(eqc.represent());
+					rv.pushs(klg.sumRecursion(selfRef, nalrEqs, point));
+				} catch(e) { nul.failed(e); }
+			}
+		}
+		if(blgSpec) return rv;
+		return [this.wrap(new nul.obj.lambda(point, nul.obj.pair.list(null, alrEqs)))];
+	}
+}));
+/*FILE: src/lng/xpr/klg/null.klg.browse.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.klg.stepUp = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.stepUp# */{
+	/**
+	 * @class Browser to replace a erference to a knowledge to a reference to another knowledge and modifying the local names 
+	 * @extends nul.browser.bijectif
+	 * @constructs
+	 * @param {String} srcKlgRef The knowledge name whose space the expression is taken of
+	 * @param {nul.xpr.knowledge} dstKlg The knowledge whose space the expression is taken to
+	 */
+	initialize: function(srcKlgRef, dstKlg) {
+		var nl = dstKlg.nbrLocals();
+		this.toNode = function() {
+			return $('<span />')
+				.append($.text('StepUp from '))
+				.append($('<span />').text(srcKlgRef))
+				.append($.text(' to '))
+				.append($('<span />').text(dstKlg.name))
+				.append($.text(' whom has '))
+				.append($('<span />').text(nl))
+				.append($.text(' locals'));				
+		};
+		this.table = {};
+		this.forbid = {};
+		this.table[srcKlgRef] = {
+			klgRef: dstKlg.name,
+			deltaLclNdx: dstKlg.nbrLocals(),
+			prime: true
+		};
+		this.callSuper('StepUp', null);
+	},
+	enterKlg: function(klg) {
+		if(klg && !klg.isA(nul.klg.ncndtnl) && !this.table[klg.name]) {
+			if(nul.debugged) nul.assert(!this.forbid[klg.name], 'Knowledge already used before entering');
+			this.table[klg.name] = { klgRef: nul.execution.name.gen('klg') };
+			for(var v in ownNdx(this.veto)) this.enterKlg(this.veto[v]);
+			for(var i in ownNdx(this.ior3))
+				for(var c in ownNdx(this.ior3[i].choices))
+					this.enterKlg(this.ior3[i].choices[c]);
+		}
+	},
+	enter: function(xpr) {
+		if('possible'== xpr.expression) this.enterKlg(xpr.knowledge);
+		if('klg'== xpr.expression) this.enterKlg(xpr);
+		return this.callSuper();
+	},
+ 	forceBuild: function(xpr) { return 'klg'== xpr.expression && !xpr.isA(nul.klg.ncndtnl); },
+	/**
+	 * If a self-ref was planned, make it in the newly built expression.
+	 */
+	build: function(xpr) {
+		if('klg'== xpr.expression && !xpr.isA(nul.klg.ncndtnl)) {
+			if(nul.debugged) nul.assert(this.table[xpr.name], 'Only leave entered knowledge');
+			xpr.name = this.table[xpr.name].klgRef;
+		}
+		return this.callSuper();
+	},	
+	/**
+	 * Changes locals to refer the new context
+	 */
+	transform: function(xpr) {
+		var dst;
+		if('local'== xpr.expression) {
+			if(dst = this.table[xpr.klgRef]) return new nul.obj.local(dst.klgRef, xpr.ndx+(dst.deltaLclNdx||0), xpr.dbgName).from(xpr);
+			this.forbid[xpr.klgRef] = true;
+		}
+		return nul.browser.bijectif.unchanged;
+	}
+});
+
+nul.klg.represent = new JS.Class(nul.browser.bijectif, /** @lends nul.klg.represent# */ {
+	/**
+	 * @class Browser to replace in an expression any occurrence of an object that appears in an equivalence class by the equivalence class representant
+	 * @extends nul.browser.bijectif
+	 * @constructs
+	 * @param {Access} access The access to use to replace values
+	 */
+	initialize: function(klg) {
+		if(nul.action) {
+			this.toNode = function() {
+				return $('<span />')
+					.append($.text('Representing with '))
+					.append(this.klg.toNode());				
+			};
+			this.klg = klg;
+		}
+		nul.klg.is(klg);
+		this.tbl = klg.info();
+		this.dbgName = klg.name;
+		this.callSuper('Representation');
+		this.prepStack = [];
+	},
+	/**
+	 * Used to browse an equivalence class. As each equivalence class appear in the replacement table, they should be protected not to have
+	 * their whole components replaced by the only representant.
+	 * @param {nul.klg.eqClass} eqc
+     * @return {nul.klg.eqClass|nul.browser.bijectif.unchanged}
+	 */
+	subBrowse: function(eqc) {
+		nul.xpr.use(eqc, 'nul.klg.eqClass');
+        this.protect = {};
+        for(var i=0; i<eqc.equivls.length; ++i)
+        	this.protect[eqc.equivls[i]] = eqc.equivls[i];
+        try { return this.recursion(eqc); }
+        finally {
+            for(var i in this.protect) this.uncache(this.protect[i]);
+            delete this.protect;
+        }
+    },
+    /**
+     * Retrieve, if any, the replacement value for this expression along the replacement table\
+     * @param {nul.expression} xpr
+     * @return {nul.expression | null}
+     */
+    tableTransform: function(xpr) {
+    	if(this.tbl[xpr] && this.tbl[xpr].represent() != xpr) return this.tbl[xpr].represent();
+    },
+    /**
+     * Only cache if it doesn't appear in the replacement table.\
+     * If it does appear, the replacement can be different from one time to another becauyse of protection.
+     */
+	cachable: function(xpr) {
+		return !this.tableTransform(xpr);
+	},
+	/**
+	 * Decide if the value can be changed along the replacement table or not.
+     * @param {nul.expression} xpr
+     * @return {Boolean}
+	 */
+	changeable: function(xpr) {
+		return this.tableTransform(xpr) && (!this.protect || !this.protect[xpr] || 2<this.prepStack.length);
+	},
+	/**
+	 * Only enter if we don't have a replacement value directly in the access table
+	 */
+	enter: function(xpr) {
+		this.prepStack.unshift(xpr);
+		if(this.changeable(xpr)) return false;
+
+		return this.callSuper();
+	},
+	leave: function(xpr) {
+		if('klg'== xpr.expression) {
+			var chd = xpr.modifiable();
+			if(chd.define(this.tbl).length) return chd.built();
+		}
+		return this.callSuper();
+	},
+ 	//forceBuild: function(xpr) { return 'klg'== xpr.expression; },
+	/**
+	 * If a self-ref was planned, make it in the newly built expression.
+	 */
+	build: function(xpr) {
+		if(xpr.setSelfRef) {
+			xpr.selfRef = xpr.setSelfRef;
+			delete xpr.setSelfRef;
+			delete this.prepStack[0].setSelfRef;
+		}
+
+		if('klg'== xpr.expression) {
+			xpr.reAccede().define(this.tbl);
+			return xpr.built();
+		}
+		
+		return this.callSuper();
+	},
+	/**
+	 * Manage the prepStack in case of failure
+	 */
+	abort: function(xpr) {
+		this.prepStack.shift();
+		return this.callSuper();
+	},
+	/**
+	 * Change an expression into another along the table. Mark a selfRef to do if needed.
+	 */
+	transform: function(xpr) {
+		var p = this.prepStack.shift();
+		var evl = new nul.browser.bijectif.evolution(xpr);
+		if(this.changeable(evl.value)) evl.receive(this.tableTransform(xpr));
+		//If I'm replacing a value by an expression that contains this value, just don't
+		var n = this.prepStack.indexOf(evl.value);
+		if(-1< n) {
+			evl.receive(nul.obj.local.self(evl.value.selfRef || evl.value.setSelfRef));
+			this.prepStack[n].setSelfRef = evl.value.ndx;
+		}
+
+		if(nul.debugged && evl.hasChanged) nul.debugged.info('Represent')('Replacement', this.dbgName, evl.changed, xpr, p);
+		return evl.changed;
+	}
+});
+/*FILE: src/lng/xpr/klg/null.klg.eqClass.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.klg.eqClass = new JS.Class(nul.expression, /** @lends nul.klg.eqClass# */{
+//TODO 4: rename local when we have a non-anonymous name
+	/**
+	 * @class Represent a list of values that are known unifiable, along with the sets they're known in and their known attributes 
+	 * @extends nul.expression
+	 * @constructs
+	 * @param {nul.xpr.object} obj An object the class is initialised zith
+	 * @param {Attributes} attr The attributes the object is known zith
+	 */
+	initialize: function(obj, attr) {
+		this.callSuper(null);
+ 		if(obj && 'eqCls'== obj.expression) {
+			this.equivls = map(obj.equivls);	//Equal values
+			this.belongs = map(obj.belongs);	//Sets the values belong to
+			this.attribs = $o.clone(obj.attribs);	//Sets the attributes owned
+ 		} else {
+			this.equivls = obj?[obj]:[];
+			if(obj) this.represent(obj);
+			this.belongs = [];
+			this.attribs = attr || {};
+		}
+	},
+
+//////////////// private
+	
+	/**
+	 * Order the values to equal.
+	 * @param {nul.xpr.object} v
+	 * @param {nul.xpr.knowledge} klg 
+	 * @return A big number if not interesting, a small one if a good "replacement value"
+	 * Note: v is undefined 
+	 */
+	orderEqs: function(v, klg) {
+		//if(nul.obj.local.is(v) && nul.obj.local.self.ref == v.klgRef) return -2;
+		if(v.isA(nul.obj.defined)) return -1;
+		var d = v.dependance();
+		var rv = 0;
+		if('local'!= this.expression || klg.name!= this.klgRef) rv += 1;
+		if(klg && !isEmpty(d.usage(klg).local)) rv += 2;
+		if(v.anonymous) rv += 0.5;
+		return rv;
+	},
+
+//////////////// public equivalence class modification
+
+	/**
+	 * Retrieve the representant of this equivalence class, knowing that it could be 'obj' also.
+	 * @param {nul.xpr.object} obj
+	 * @return {nul.xpr.object}
+	 */
+	represent: function(obj) {
+		return this.equivls[0];
+		if(obj && (!this.representant || this.orderEqs(obj) < this.orderEqs(this.representant))) this.representant = obj;
+		nul.xpr.use(this.representant);
+		return this.representant;
+	},
+	
+	/**
+	 * Add an object in the equivlence.
+	 * @param {nul.xpr.object} o object to add
+	 * @param {nul.xpr.knowledge} klg
+	 * @return nothing
+	 * @throws {nul.ex.failure}
+	 */
+	isEq: function(o, klg) {
+ 		this.modify(); nul.obj.use(o);
+		//Add an object to the equivalence class
+		nul.obj.use(o);
+		if(o.isA(nul.obj.defined)) {
+			if(this.eqvlDefined())
+				nul.trys(function() {
+					nul.klg.mod(klg);
+					var unf;
+					try {
+						unf = this.equivls[0].unified(o, klg);
+					} catch(err) {
+						if(this.equivls[0].expression == o.expression) throw err;
+						nul.failed(err);
+						unf = o.unified(this.equivls[0], klg);
+					}
+					if(true=== unf) unf = this.equivls[0];
+					else {
+						if(nul.debugged) {
+							nul.assert(klg.access[this.equivls[0]] == this, 'Access consistence');
+							nul.assert(klg.access[o] == this, 'Access consistence');
+						}
+						//TODO O: still let 'o' and 'this.equivls[0]' so they are replaced straight in representation ?
+						delete klg.access[o];
+						delete klg.access[this.equivls[0]];
+						klg.access[unf] = this;
+						this.equivls[0] = unf;
+					}
+					return this.represent(unf);
+				}, 'Equivalence', this, [this.equivls[0], o]);
+			else {
+				this.equivls.unshift(o);
+				this.hasAttr(this.attribs, klg);
+			}
+ 			this.wedding(klg);
+		} else {
+			var p = 0;
+			var ordr = this.orderEqs(o, klg);
+			for(p=0; p<this.equivls.length; ++p) if(ordr<this.orderEqs(this.equivls[p], klg)) break;
+			this.equivls.splice(p,0,o);
+		}
+		return this.represent(o);
+	},
+
+	/**
+	 * Add an object as a belongs.
+	 * @param {nul.xpr.object} o object that belongs the class
+	 * @param {nul.xpr.knowledge} klg
+	 * @throws {nul.ex.failure}
+	 */
+	isIn: function(s, klg) {
+ 		this.modify(); s.use();
+ 		if(s.isA(nul.obj.defined)) {
+ 			while(true) {
+ 				var ntr = null, sn;
+	 			for(sn=0; this.belongs[sn] && this.belongs[sn].isA(nul.obj.defined); ++sn) {
+	 				var ntr = this.intersect(klg, s, this.belongs[sn]);
+	 				if(ntr) break;
+	 			}
+ 				if(ntr) {
+ 					this.belongs.splice(sn,1);
+ 					s = ntr;
+ 				} else {
+ 					this.belongs.unshift(s);
+ 					break;
+ 				}
+ 			}
+ 			this.wedding(klg);
+ 		} else {
+ 			var b;
+ 			for(b=0; this.belongs[b]; ++b) if(this.belongs[b].toString() == s.toString()) break;
+ 			if(!this.belongs[b]) this.belongs.push(s);
+ 		}
+	},
+	
+	/**
+	 * Specify attributes
+	 * @param {Attributes} attrs 
+	 * @param {nul.xpr.knowledge} klg
+	 * @return {Boolean} Weither the call was useless
+	 * @throws {nul.ex.failure}
+	 */
+	hasAttr: function(attrs, klg) {
+		this.modify();
+		var useless = true;
+		if(this.eqvlDefined()) {
+			for(var an in attrs) klg.unify(attrs[an], this.equivls[0].attribute(an, klg));
+			useless = isEmpty(attrs);
+			this.attribs = {};
+		} else if(this.attribs !== attrs) {	//TODO 3: gardien est-il necessaire?
+			merge(this.attribs, attrs, function(a,b) {
+				if((a?a.toString():'')==(b?b.toString():'')) return a;
+				useless = false;
+				return (a&&b)?klg.unify(a,b):(a||b);
+			});
+			if(!useless) this.wedding(klg);
+		}
+		return useless;
+	},
+
+	/**
+	 * Sets the information that defines the values : the attributes and the defined belong
+	 * @param {nul.klg.eqClass} def The class that give some definitions for me
+	 * @param {nul.xpr.knowledge} klg The knowledge of this class
+	 * @returns {Boolean} Weither something changed
+	 */
+	define: function(def, klg) {
+		var rv = false;
+		for(var a in def.attribs) if(this.attribs[a] && def.attribs[a] != this.attribs[a]) {
+			rv = true;
+			klg.unify(def.attribs[a], this.attribs[a]);
+			delete this.attribs[a];
+		}
+		//rv |= !this.hasAttr(def.attribs, klg);
+		return rv;
+	},	
+	
+////////////////	private equivalence class modification
+
+	/**
+	 * Try to apply what we know about defined equivalents, defined belongs and attributes
+	 * @param {nul.xpr.knowledge} klg
+	 */
+	wedding: function(klg) {
+		nul.klg.mod(klg);
+		var unf = this.equivls[0];
+		if(!isEmpty(this.attribs) && !unf && this.blngDefined()) {
+			unf = klg.newLocal(nul.understanding.rvName);
+			klg.access[unf] = this;
+			this.equivls.unshift(unf);
+		}
+		for(var sn=0; this.belongs[sn] && this.belongs[sn].isA(nul.obj.defined);) {
+			var attrs = this.attribs;
+			if('lambda'== unf.expression) attrs = klg.attributes(unf.image);
+			var chx = this.belongs[sn].has(unf, attrs);
+			if(chx) {
+				this.belongs.splice(sn,1);
+				unf = klg.hesitate(chx);
+				delete klg.access[this.equivls[0]];
+				klg.access[this.equivls[0] = unf] = this;
+			}
+			else ++sn;
+		}
+	},
+	
+	/**
+	 * Try to see the programmed intersections of these two sets - knowing that these two sets can have different 'opinions' about it.
+	 * Fails when both intersection fail, gives nothing when both intersection give nothing, else give any of the result the intersection gave.
+	 * @param {nul.xpr.knowledge} klg
+	 * @param {nul.obj.defined} s1
+	 * @param {nul.obj.defined} s2
+	 * @return {nul.obj.defined | null} Nothing if nothing can still be said
+	 * @throws {nul.ex.failure}
+	 */
+	intersect: function(klg, s1, s2) {
+		if(s1==s2) return s1;
+		var rv;
+		var trueDft = function(c,d) { return (true===c)?d:c; };
+		
+		return nul.trys(function() {
+			try {
+				rv = s1.intersect(s2, klg);
+				if(rv) return trueDft(rv, s1);					//If (1 & 2) give a result, don't even wonder what (2 & 1) is, just be happy with that
+			} catch(err) {
+				nul.failed(err);								//If (1 & 2) failed, try to give (2 & 1)
+				return trueDft(s2.intersect(s1, klg), s2);		//If (2 & 1) failed too, just fail
+			}
+			//We're here when (1 & 2) returns nothing
+			try {
+				return trueDft(s2.intersect(s1, klg), s2);		//If (2 & 1) give a result, while (1 & 2) had nothing to say, just take that as the answer
+			} catch(err) {
+				nul.failed(err);								//If (2 & 1) failed, we'r not sure, while (1 & 2) didn't fail or give a result
+			}
+			//So we returns nothing
+		}, 'Intersection', this, [s1, s2]);
+	},
+
+////////////////	public prune system
+	
+	/**
+	 * Compute the influence of this equivalence class (excluded 'exclElm')
+	 * @param {nul.xpr.knowledge} klg
+	 * @param {String: integer} excl Element to exclude, from the summary.components
+	 * @param {String: integer} only Element to filter, from the summary.components
+	 * @param {association(ndx=>infl)} already The influences already computed (modified by side-effect)
+	 * @return {association(ndx=>infl)} Where 'ndx' is a local index and 'infl' 1 or 2 
+	 */
+	influence: function(klg, excl, only, already) {
+		var rv = already || {};
+		var eqc = this;
+		var destSelect = function(cn, ndx) {
+			return excl!= cn+':'+ndx && excl!= cn+':*' &&
+				(!only || only==cn+':'+ndx || only==cn+':*' || ('undefined'== typeof ndx && cn==only.substr(0, cn.length)));
+		};
+		var subInfluence = function(cn, infl) {
+			if(destSelect(cn))
+				for(var e in ownNdx(eqc[cn])) if(destSelect(cn, e))
+					for(var ndx in eqc[cn][e].dependance().usage(klg).local)
+						if(!rv[ndx] || rv[ndx]<infl) rv[ndx] = infl;
+		};
+		subInfluence('belongs', 1);
+		subInfluence('equivls', 2);
+		subInfluence('attribs', 3);
+		return rv;
+	},
+	
+	/**
+	 * Remove items that are not used in this knowledge
+	 * Not used = depending on nothing else than the useless locals of thisknowledge
+	 * @param {nul.xpr.knowledge} klg Pruned knowledge this class belongs to
+	 * @param {association(ndx: true)} lcls List of used locals
+	 */
+	pruned: function(klg, lcls) {
+		var remover = function() {
+			if('local'!= this.expression || 
+					klg.name!= this.klgRef ||
+					lcls[this.ndx])
+				return this;
+		};
+		var nVals = maf(this.equivls, remover);
+		var nBlgs = maf(this.belongs, remover);
+		//TODO 3: FA: do we forget attributes ?
+		//FA var nAtts = maf(this.attribs, remover);
+		if(nVals.length == this.equivls.length && nBlgs.length == this.belongs.length
+			/*FA && nAtts.length == this.attribs.length*/) return this;
+		var rv = this.modifiable();
+		rv.equivls = nVals;
+		rv.belongs = nBlgs;
+		//FA rv.attribs = nAtts;
+		return rv.built().placed(klg); 
+	},
+	
+////////////////	public 
+	
+	/**
+	 * Is the equivalences defined or is there only undefined objects unified ?
+	 * @return {Boolean}
+	 */
+	eqvlDefined: function() { return this.equivls.length && this.equivls[0].isA(nul.obj.defined); },
+	/**
+	 * Is the belonging sets defined or is there only undefined sets whose the class belongs to ?
+	 * @return {Boolean}
+	 */
+	blngDefined: function() { return this.belongs.length && this.belongs[0].isA(nul.obj.defined); },
+
+	/**
+	 * Determines weither this class defines elements of obj
+	 * @param {nul.xpr.object} obj
+	 * @return {Number} Index in belongs or -1 if not found
+	 */
+	extension: function(obj) {
+		for(var b=0; this.belongs[b]; ++b)
+			if(obj.toString() == this.belongs[b].toString())
+				return b;
+	},
+	
+//////////////// nul.expression implementation
+	
+	/** @constant */
+	expression: 'eqCls',
+	/** @constant */
+	components: {
+		'equivls' : {type: 'nul.xpr.object', bunch: true},
+		'belongs' : {type: 'nul.xpr.object', bunch: true},
+		'attribs' : {type: 'nul.xpr.object', bunch: true}
+	},
+
+	placed: function(prnt) {
+		nul.klg.mod(prnt);
+		if(!this.equivls.length && isEmpty(this.attribs,'') && 1== this.belongs.length && this.blngDefined()) {
+			if('&phi;'== this.belongs[0].expression) nul.fail("&phi; is empty");
+			return;
+		}
+		//TODO 4: this goes in knowledge prune (cf comment in prune) : pruned called on wrap and general built (for opposition, ior3, ...)
+		if(!this.belongs.length && (!this.equivls.length || 
+			(1== this.equivls.length && isEmpty(this.attribs))))
+				return;
+		return this.callSuper();
+	}
+});
+/*FILE: src/lng/xpr/klg/null.klg.ior3.js*/
+/*  NUL language JavaScript framework
+ *  (c) 2009 E-med Ware
+ *
+ * NUL is freely distributable under the terms of GNU GPLv3 license.
+ *  For details, see the NUL project site : http://code.google.com/p/nul/
+ *
+ *--------------------------------------------------------------------------*/
+
+
+nul.klg.ior3 = new JS.Class(nul.expression, /** @lends nul.klg.ior3# */{
+	/**
+	 * @class Represent a list of possible knowledges 
+	 * @extends nul.expression
+	 * @constructs
+	 * @param {nul.xpr.knowledge[]} choices The possible cases
+	 */
+	initialize: function(choices) {
+		this.callSuper(null);
+		this.choices = map(choices);
+		if(!this.choices[0].isA(nul.klg.ncndtnl)) this.choices.unshift(nul.klg.never);
+		this.alreadyBuilt();
+	},
+
+//////////////// Existence summaries
+
+	maxXst: nul.summary('maxXst'), 	
+	minXst: nul.summary('minXst'), 	
+	sum_maxXst: function() {
+		var rv = 0;
+		for(var h in ownNdx(this.choices))
+			rv += this.choices[h].maxXst();
+		return rv;
+	},
+	sum_minXst: function() {
+		var rv = 0;
+		for(var h in ownNdx(this.choices))
+			rv += this.choices[h].minXst();
+		return rv;
+	},
+
+//////////////// nul.expression implementation
+
+	/** @constant */
+	expression: 'ior3',
+	/** @constant */
+	components: {'choices': {type: 'nul.xpr.knowledge', bunch: true}},
+	built: function() {
+		if(nul.debugged) nul.assert(this.choices.length, 'IOR3 Always has a first unconditional');
+		this.choices = nul.solve.ior3(this.choices);
+		for(var c=1; this.choices[c];)
+			if(!this.choices[c].isA(nul.klg.ncndtnl)) ++c;
+			else {
+				this.choices[0].add(this.choices[c]);
+				this.choices.splice(c,1);
+			}
+		if(nul.klg.never== this.choices[0]) this.choices.shift();
+		return this.callSuper();
+	}
+});

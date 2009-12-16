@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//# uses: src/lng/txt/in/null.understand
 
 nul.compiled = new JS.Class (/** @lends nul.compiled# */{
 		/**
@@ -35,7 +36,7 @@ nul.compiled = new JS.Class (/** @lends nul.compiled# */{
 				 * @return {nul.compiled}
 				 */
 				preceded: function(oprtr, oprnd) {
-					return new nul.compiled.preceded({ operator: oprtr, operands: oprnds});
+					return new nul.compiled.preceded({ operator: oprtr, operand: oprnd});
 				},
 				/**
 				 * @param {String} oprtr
@@ -43,7 +44,7 @@ nul.compiled = new JS.Class (/** @lends nul.compiled# */{
 				 * @return {nul.compiled}
 				 */
 				postceded: function(oprtr, oprnd) {
-					return new nul.compiled.postceded({ operator: oprtr, operands: oprnds});
+					return new nul.compiled.postceded({ operator: oprtr, operand: oprnd});
 				},
 				/**
 				 * @param {nul.compiled} item
