@@ -3,6 +3,7 @@
 	<name>itf</name>
 	<comment></comment>
 	<projects>
+		<project>bin</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -31,7 +31,7 @@
 #tests th {
 	text-align: left;
 	border: 1px #888888 solid;
-	background: #CCCCCC url(../3rd/jquery/theme/images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
+	background: #CCCCCC url(images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x scroll 50% 50%;
 }
 #tests td {
 	white-space: nowrap;

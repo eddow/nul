@@ -7,9 +7,10 @@
  *--------------------------------------------------------------------------*/
 
 /*#
- * uses: src/lng/txt/out/null.txt.node, src/lng/txt/out/null.txt.flat,
+ * uses: src/lng/txt/out/null.txt.node, src/lng/txt/out/null.txt.flat
+ * 	src/lng/txt/out/null.txt.html
  */
-
+//TODO 3: remove src/lng/txt/out/null.txt.html, still refered in dependance html output
 
 nul.txt = new JS.Class(/** @lends nul.txt# */{
 	/**

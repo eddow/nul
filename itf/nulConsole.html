@@ -4,7 +4,8 @@
 	<head>
 		<title>NUL console</title>
 		<link href="nulConsole.css" rel="stylesheet" type="text/css" />
-		<script type="text/javascript" src="../../3rd/codemirror/codemirror.js"></script>
+		<link href="ui.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="../3rd/codemirror/codemirror.js"></script>
 		<script type="text/javascript" src="nulConsole.js"></script>
 	</head>
 	<body>
@@ -30,14 +31,13 @@
 			
 			Expression options
 			
-			--><span class="tabbed"><a href="#" title="Auto break" id="dbgBreakLimited" class="checkable">
+			--><span id="dbgOptions"><span class="tabbed"><a href="#" title="Auto break" id="dbgBreakLimited" class="checkable">
 				<span class="popUp"><input id="dbgBreakLimit" type="text" size="10" value="500" /></span>
 				<span class="checker ui-icon ui-icon-arrowthickstop-1-e"></span>
 			</a></span><span id="loggingOption" class="tabbed"><a href="#" title="Logging" class="checkable">
 				<ul id="dbgLogSelect" class="popUp"></ul>
 				<span class="checker ui-icon ui-icon-note"></span>
-			</a></span>
-			
+			</a></span></span>			
 			
 			<a href="#" name="con_close" class="command ui-icon ui-icon-close console-control"></a>
 			<a href="#" name="con_free" class="command ui-icon ui-icon-copy console-control"></a>
