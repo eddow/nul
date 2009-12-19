@@ -579,7 +579,7 @@ if(nul.action) nul.localsMdl = new JS.Module(/** @lends nul.xpr.knowledge# */{
 	/** @ignore */
  	newLocal: function(name, ndx) {
  		if('undefined'== typeof ndx) ndx = this.locals++;
- 		return new nul.obj.local(this.name, ndx);
+ 		return new nul.obj.local(this.name, ndx, name);
  	}
 });
 

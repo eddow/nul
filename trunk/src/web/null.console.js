@@ -42,7 +42,7 @@ if('undefined'== typeof nul.console) {
 	nul.console = {
 		loadFrame: function(pane, $Pane) {
 			if(!nul.console.frame.loaded) {
-				nul.console.frame.attr('src', nul.rootPath + '/web/console/nulConsole.html'); 	//TODO 2: rel src
+				nul.console.frame.attr('src', '../itf/nulConsole.html'); 	//TODO 2: rel src
 				nul.console.frame.ready(nul.console.frameLoaded);
 				nul.console.frame.loaded = true;
 			}

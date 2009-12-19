@@ -30,6 +30,7 @@
 'src/lng/txt/in/null.understand',
 'src/lng/txt/out/null.txt.node',
 'src/lng/txt/out/null.txt.flat',
+'src/lng/txt/out/null.txt.html',
 'src/lng/xpr/klg/null.xpr.knowledge',
 'src/lng/xpr/klg/null.klg',
 'src/lng/xpr/obj/undefnd/null.obj.data',

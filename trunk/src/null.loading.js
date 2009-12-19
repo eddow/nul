@@ -16,10 +16,7 @@ nul.loading = function() {
 	$('head script').each(function(){
 		var spl = this.src.split('null.');
 		if(1< spl.length) {
-			nul.rootPath = spl[0];
-			                   /*.split('/');
-			nul.rootPath.pop(); nul.rootPath.pop();
-			nul.rootPath = nul.rootPath.join('/');*/
+			nul.rootPath = spl[0];	//TODO 3: quid with rootPath ?
 			nul.loading.fixConsole($(this).attr('noconsole'));
 		}
 	});

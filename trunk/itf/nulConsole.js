@@ -32,8 +32,8 @@ csl = {
 
 		csl.editor = new CodeMirror($('#_nul_editorVw')[0], {
 			parserfile: ["parsenul.js"],
-			path: "../../3rd/codemirror/",
-			stylesheet: "../../3rd/codemirror/nulcolors.css",
+			path: "../3rd/codemirror/",
+			stylesheet: "../3rd/codemirror/nulcolors.css",
 			tabMode: 'shift',
 			lineNumbers: true,
 			height: '100%',
@@ -71,10 +71,7 @@ csl = {
 		if(nul.debugged) {
 			for(var i=0; i<nul.debugged.possibleLogging.length; ++i)
 				logSlct.append('<li class="checkable"><a class="checker">'+nul.debugged.possibleLogging[i]+'</a></li>');
-		} else {
-			logSlct.hide();
-			$('#dbgBreakLimit').hide();
-		}
+		} else $('#dbgOptions').hide();
 		$('#conToolBar .checker').click(function() { $(this).parent('.checkable').toggleClass('checked'); });
 		$(window).keypress(csl.keyHandler);
 		$('a.command').click(function() {
@@ -272,17 +269,25 @@ csl = {
 if('undefined' != typeof nul) {
 	nul.console.child = csl;
 	//TODO 2: use $.include[many]
-	csl.addRef('link', { type: 'text/css', href: '../../lng/txt/out/null.txt.html.css', rel:'stylesheet' });
-	csl.addRef('link', { type: 'text/css', href: '../../3rd/jquery/theme/ui.css',  rel:'stylesheet' });
-	csl.addRef('script', { type: 'text/javascript', src: '../../null.extrn.js', onload: function() {
-		csl.init();
+	csl.addRef('link', { type: 'text/css', href: '../src/lng/txt/out/null.txt.html.css', rel:'stylesheet' });
+	csl.addRef('script', { type: 'text/javascript', src: '../bin/null.3rd.js', onload: function() {
+		//csl.addRef('script', { type: 'text/javascript', src: '../3rd/jquery/ui.all.js', onload: function() {
+			//csl.addRef('script', { type: 'text/javascript', src: '../3rd/jquery/ui.layout.js', onload: function() {
+				csl.init();
+			//}});
+		//}});
 	}});
 	csl.mode = nul.console.frame[0].contentWindow===window?'inside':'outside';
 } else {
-	csl.addRef('script', { type: 'text/javascript', src: '../../null.debug.js', noconsole:'please', onload: function() {
-		nul.load.csl = csl.init;
-		nul.status = csl.status;
-		nul.load.csl.use = {executionReady: true};
+	csl.addRef('link', { type: 'text/css', href: '../src/lng/txt/out/null.txt.html.css', rel:'stylesheet' });
+	csl.addRef('script', { type: 'text/javascript', src: '../bin/null.dev.js', noconsole:'please', onload: function() {
+		//csl.addRef('script', { type: 'text/javascript', src: '../3rd/jquery/ui.all.js', noconsole:'please', onload: function() {
+			//csl.addRef('script', { type: 'text/javascript', src: '../3rd/jquery/ui.layout.js', noconsole:'please', onload: function() {
+				nul.load.csl = csl.init;
+				nul.status = csl.status;
+				nul.load.csl.use = {executionReady: true};
+			//} });
+		//} });
 	} });
 	csl.mode = 'stand-alone';
 };

@@ -5,6 +5,7 @@
  *  For details, see the NUL project site : http://code.google.com/p/nul/
  *
  *--------------------------------------------------------------------------*/
+//#requires: src/null.loading, 3rd/jquery/includeMany
 
 /*
 'web/null.page',
@@ -78,19 +79,22 @@ nul.loading.scripts = [
 
 'web/null.page'
 */
-nul.loading.styles = [ /*#include: bin/null.core.list*/ ''];
+
+nul.loading.scripts = [
+'src/krnl/null.action',
+'src/lng/xpr/null.origin',
+/*#include: bin/null.core.list*/
+'src/krnl/null.debugged'
+];
 
 nul.loading.fixConsole = function(ncd) {
 	if(!ncd) {
-		nul.loading.scripts.push('web/console/null.console');
+		nul.loading.scripts.push('src/web/console/null.console');
 		nul.loading.styles.push('web/console/null.console');
 	}
 };
 nul.loading.follow = function(f) {
-	for(var i=0; nul.loading.styles[i]; ++i) nul.loading.styles[i] = nul.rootPath+nul.loading.styles[i]+'.css';
-	$.include(nul.loading.styles);
-
-	for(var i=0; nul.loading.scripts[i]; ++i) nul.loading.scripts[i] = nul.rootPath+nul.loading.scripts[i]+'.js';
+	for(var i=0; nul.loading.scripts[i]; ++i) nul.loading.scripts[i] = '../'+nul.loading.scripts[i]+'.js';
 	$.chainclude(nul.loading.scripts, f);
 };
 nul.loading();
