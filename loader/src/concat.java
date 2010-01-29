@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class concat {
-		
+	private static boolean someError = false;
 	private static ArrayList<String> multisplit(ArrayList<String> org, String c) {
 		ArrayList<String> rv = new ArrayList<String>();
 		for(String r : org)
@@ -114,14 +114,17 @@ public class concat {
 				
 			} catch (FileNotFoundException fnf) {
 				System.err.println("File:" + fileName + "." + ext + " not found!");
+				someError = true;
 			} catch (Exception e) {
 				System.err.println(e);
+				someError = true;
 			} finally {
 				if(file != null) {
 					try {
 						file.close();
 					} catch (IOException io) {
 						System.err.println(io);
+						someError = true;
 					}
 				}
 			}
@@ -137,14 +140,14 @@ public class concat {
 		String x = "js";
 		if(args.length!=1) {
 	    	System.err.println("Syntax: There is some problem with the arguments!");
-	    	return;
+	    	System.exit(-2);
 	    }
 		Properties properties = new Properties();
 	    try {
 	        properties.load(new FileInputStream(args[0]));
 	    } catch (Exception e) {
 	    	System.err.println("Bad configuration file!");
-	    	return;
+	    	System.exit(-2);
 	    }
 		//System.out.println(properties.getProperty("outputFile"));
 		FileWriter output_file = null;
@@ -152,14 +155,16 @@ public class concat {
 			if (null!= properties.getProperty("output"))
 				output_file = new FileWriter(properties.getProperty("output"));
 		} catch (Exception e) {
-			System.out.println("OUTPUT: Cannot write the file " + properties.getProperty("output"));
+			System.err.println("OUTPUT: Cannot write the file " + properties.getProperty("output"));
+	    	System.exit(-2);
 		}
 		PrintWriter files = null;
 		try {
 			if(null!= properties.getProperty("list"))
 				files = new PrintWriter(new FileWriter(properties.getProperty("list")));
 		} catch (Exception e){
-			System.out.println("LIST: Cannot write the file " + properties.getProperty("list"));
+			System.err.println("LIST: Cannot write the file " + properties.getProperty("list"));
+	    	System.exit(-2);
 		}
 		
 		ArrayList<String> planned = new ArrayList<String>();
@@ -178,5 +183,6 @@ public class concat {
 		//assert: running.size() == 0
 		if (null!= output_file) output_file.close();
 		if (null!= files) files.close();
+		if(someError) System.exit(-1);
 	}
 }
