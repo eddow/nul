@@ -1,3 +1,5 @@
+"\/x" instead of "\/x x"
+
 
 $append
 ; append = { ({}, s, s) [] ((a,.. r), s, (a,.. ra ; append(r, s, ra)))}

@@ -36,6 +36,11 @@ nul.xpr.possible.include(/** @lends nul.xpr.possible# */{
 	 */
 	recur: function() {
 		var klg = this.knowledge;
+		/*
+		 * Algorythme crétin :
+		 * Pour le premier eqCls, on remplace la self-ref par le stéréotype de cet eqCls, on recrée le possible
+		 * et on le re-recur
+		 */
 		for(var c=0; c<klg.eqCls.length; ++c) if(klg.eqCls[c].belongs[0].selfRef) {
 			//TODO R
 		}
